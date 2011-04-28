@@ -8,6 +8,7 @@
 namespace WaveformObjects {
   
   class Waveform {
+    friend class Waveforms;
     friend class WaveformAtAPoint;
     friend class WaveformFT;
     
@@ -92,6 +93,7 @@ namespace WaveformObjects {
     std::vector<double> Omega2m2(const double t1=-1e300, const double t2=1e300) const;
     bool HasNaNs() const;
     std::vector<double> Flux() const;
+    void SetTypeIndex(const unsigned int I) { typeIndex = I; }
     
     // Interpolation routines
     Waveform& Interpolate(const std::vector<double>& Time);
@@ -109,6 +111,7 @@ namespace WaveformObjects {
     Waveform& SetArealRadius(const std::string& AreaFileName);
     Waveform& SetTimeFromLapseSurfaceIntegral(const std::string& LapseFileName, const double ADMMass);
     Waveform& TortoiseOffset(const double ADMMass);
+    Waveform& SetTotalMassToOne(const double TotalMassInCurrentUnits);
     
     // Used before converting to frequency space
     Waveform& SetPhysicalMassAndDistance(const double TotalMassInSolarMasses, const double DistanceInMegaparsecs);

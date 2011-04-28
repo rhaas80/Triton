@@ -43,7 +43,7 @@ public: // Constructor
   ~VectorRearrangerReal() { }
 public: // Access function
   inline double& operator[](const unsigned int i) { return Real[i]; }
-  unsigned int size() const { return Real.size(); }
+  //unsigned int size() const { return Real.size(); }
 };
 
 void SwapVectorHalvesFromNumRecForm(vector<double>& V, const double Norm=1.0) {

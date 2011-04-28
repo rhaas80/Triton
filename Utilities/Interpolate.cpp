@@ -11,57 +11,54 @@ using WU::SplineInterpolator;
 
 
 vector<double> WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2) {
-  if(X1.size()==0) {
-    cerr << "\nIn Interpolate: X1.size()==0 !!!\n" << endl;
-    exit(1);
-  }
-  if(X2.size()==0) {
-    cerr << "\nIn Interpolate: X2.size()==0 !!!\n" << endl;
-    exit(1);
-  }
-  if(Y1.size()==0) {
-    cerr << "\nIn Interpolate: Y1.size()==0 !!!\n" << endl;
-    exit(1);
-  }
-  vector<double> Y2 = X2;
+  if(X1.size()==0) { throw("X1.size()==0"); }
+  if(X2.size()==0) { throw("X2.size()==0"); }
+  if(Y1.size()==0) { throw("Y1.size()==0"); }
+  vector<double> Y2(X2.size());
   WU::Interpolate(X1, Y1, X2, Y2);
   return Y2;
 }
 
 void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, vector<double>& Y2) {
-  if(X1.size()==0) {
-    cerr << "\nIn Interpolate: X1.size()==0 !!!\n" << endl;
-    exit(1);
-  }
-  if(X2.size()==0) {
-    cerr << "\nIn Interpolate: X2.size()==0 !!!\n" << endl;
-    exit(1);
-  }
-  if(Y1.size()==0) {
-    cerr << "\nIn Interpolate: Y1.size()==0 !!!\n" << endl;
-    exit(1);
-  }
+  if(X1.size()==0) { throw("X1.size()==0"); }
+  if(X2.size()==0) { throw("X2.size()==0"); }
+  if(Y1.size()==0) { throw("Y1.size()==0"); }
   SplineInterpolator Spline(X1, Y1);
-  if(Y2.size()!=X2.size()) {
-    Y2 = vector<double>(X2.size(), 0.0);
-  }
+  if(Y2.size()!=X2.size()) { Y2.resize(X2.size()); }
+  for(unsigned int i=0; i<Y2.size(); ++i) { Y2[i] = Spline.interp(X2[i]); }
+  return;
+}
+
+vector<double> WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, const double ExtrapVal) {
+  if(X1.size()==0) { throw("X1.size()==0"); }
+  if(X2.size()==0) { throw("X2.size()==0"); }
+  if(Y1.size()==0) { throw("Y1.size()==0"); }
+  vector<double> Y2(X2.size());
+  WU::Interpolate(X1, Y1, X2, Y2, ExtrapVal);
+  return Y2;
+}
+
+void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, vector<double>& Y2, const double ExtrapVal) {
+  if(X1.size()==0) { throw("X1.size()==0"); }
+  if(X2.size()==0) { throw("X2.size()==0"); }
+  if(Y1.size()==0) { throw("Y1.size()==0"); }
+  SplineInterpolator Spline(X1, Y1);
+  if(Y2.size()!=X2.size()) { Y2.resize(X2.size()); }
   for(unsigned int i=0; i<Y2.size(); ++i) {
-    Y2[i] = Spline.interp(X2[i]);
+    if(X2[i]<X1[0] || X2[i]>X1.back()) {
+      Y2[i] = ExtrapVal;
+    } else {
+      Y2[i] = Spline.interp(X2[i]);
+    }
   }
   return;
 }
 
 double WU::Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const double& X2) {
-  if(X1.size()==0) {
-    cerr << "\nIn Interpolate: X1.size()==0 !!!\n" << endl;
-    exit(1);
-  }
-  if(Y1.size()==0) {
-    cerr << "\nIn Interpolate: Y1.size()==0 !!!\n" << endl;
-    exit(1);
-  }
+  if(X1.size()==0) { throw("X1.size()==0"); }
+  if(Y1.size()==0) { throw("Y1.size()==0"); }
   vector<double> x1(1, X2);
-  vector<double> y1(WU::Interpolate(X1, Y1, x1));
+  vector<double> y1 = WU::Interpolate(X1, Y1, x1);
   return y1[0];
 }
 

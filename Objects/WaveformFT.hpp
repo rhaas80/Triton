@@ -26,6 +26,7 @@ namespace WaveformObjects {
     double Match(const WaveformFT& B, const std::vector<double>& InversePSD) const;
     double Match(const WaveformFT& B, const std::string& Detector="AdvLIGO_ZeroDet_HighP") const;
     WaveformFT& Normalize(const std::vector<double>& InversePSD);
+    WaveformFT& ZeroAbove(const double Frequency);
   }; // class
   
 } // namespace WaveformObjects

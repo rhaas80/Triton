@@ -2,15 +2,18 @@ SOURCES = $(wildcard *.cpp)
 
 RM = /bin/rm
 CC = g++
-OPT = -O3
+#OPT = -O3
 # IFLAGS = -I../Utilities -I../PostNewtonian -I../DataAnalysis
 IFLAGS = -I../Utilities
-CFLAGS = -c -Wall
+#CFLAGS = -c -Wall
 
-all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libWaveforms
+OPT = 
+CFLAGS = -c -ggdb -Wall
+
+all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libObjects
 
 clean:
-	$(RM) -rf *.o *.d libWaveforms.a
+	$(RM) -rf *.o *.d libObjects.a
 
 .cpp.o:
 	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@
@@ -23,6 +26,6 @@ clean:
 
 -include $(EXECUTABLES:=.d)
 
-libWaveforms: $(SOURCES)
+libObjects: $(SOURCES)
 	@$(RM) -f $@
 	@ar cr $@.a $(SOURCES:.cpp=.o)

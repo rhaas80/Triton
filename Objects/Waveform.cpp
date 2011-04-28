@@ -30,13 +30,16 @@ using std::ifstream;
 using std::ofstream;
 using std::min;
 using std::max;
+using std::ios_base;
+
+string tolower(const string& A);
 
 string Rev = "$Rev: 16185 $";
 int Revision = atoi(Rev.substr(5,Rev.size()-6).c_str());
 
 int GetWaveformType(const string& FullPath, const vector<string>& Header);
 string GetFileFormat(const vector<string>& Header);
-void GetWaveformTimeScaleAndLM(const vector<string>& Header, string& Scale, Matrix<int>& lm);
+void GetWaveformTimeScaleAndLM(const string& FullPath, const vector<string>& Header, string& Scale, Matrix<int>& lm);
 
 vector<string> Waveform::Types(12, "");
 /// Note on Waveform Types:
@@ -77,7 +80,7 @@ Waveform::Waveform() :
 Waveform::Waveform(const Waveform& a) :
   history(a.history.str()), typeIndex(a.typeIndex), timeScale(a.timeScale),
   t(a.t), r(a.r), lm(a.lm), mag(a.mag), arg(a.arg)
-{ }
+{ history.seekp(0, ios_base::end); }
 
 Waveform::Waveform(const string& DataFileName, const string& Format) :
   history(""), typeIndex(0), timeScale("Time"),
@@ -97,12 +100,13 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
     gethostname(host, MAXHOSTNAMELEN);
     hostname = host;
   }
-  history << "### Code revision Rev=" << Rev << endl;
-  history << "### pwd = " << pwd << endl;
-  history << "### hostname = " << hostname << endl;
-  history << "### Waveform(" << DataFileName << ", " << Format << ") // constructor from data file" << endl;
+  history << "### Code revision Rev = " << Revision << endl
+	  << "### pwd = " << pwd << endl
+	  << "### hostname = " << hostname << endl
+	  << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\") // constructor from data file" << endl;
   
-  if((DataFileName.size()>4 && DataFileName.compare(DataFileName.size()-4,4,".bbh")==0)
+  if(tolower(Format).find("NINJA") != string::npos
+     || (DataFileName.size()>4 && DataFileName.compare(DataFileName.size()-4,4,".bbh")==0)
      || (DataFileName.size()>8 && DataFileName.compare(DataFileName.size()-8,8,".minimal")==0)) {  //// Is this a NINJA-style metadata file?
     
     // Get the directory of the .bbh file
@@ -238,7 +242,7 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
     
     //// Search for TimeScale, LM info, and Waveform Type
     lm = vector<vector<int> > (Re.size(), vector<int>(2, 0));
-    GetWaveformTimeScaleAndLM(Header, timeScale, lm);
+    GetWaveformTimeScaleAndLM(DataFileName, Header, timeScale, lm);
     typeIndex = GetWaveformType(DataFileName, Header);
     string DetectedFormat = GetFileFormat(Header);
     if(DetectedFormat.empty()) {
@@ -344,10 +348,10 @@ Waveform Waveform::operator/(const Waveform& b) const {
   }
   Waveform c = *this;
   Waveform d = b;
-  c.history << "### *this = Waveform::operator/(const Waveform& b) const" << endl
-	    << "###### Waveform b.history:" << endl
+  c.history << "### this->Waveform::operator/(const Waveform& b) const" << endl
+	    << "###### Begin b.history:" << endl
 	    << d.history.str()
-	    << "###### End of Waveform b.history:" << endl;
+	    << "###### End b.history:" << endl;
   vector<double> NewTime = Intersection(c.t, d.t, 0.005, -1e300);
   c.Interpolate(NewTime);
   d.Interpolate(NewTime);
@@ -358,6 +362,7 @@ Waveform Waveform::operator/(const Waveform& b) const {
 
 Waveform& Waveform::operator=(const Waveform& b) {
   history.str(b.history.str());
+  history.seekp(0, ios_base::end);
   typeIndex = b.typeIndex;
   timeScale = b.timeScale;
   t = b.t;
@@ -487,26 +492,26 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime) {
 }
 
 Waveform& Waveform::Interpolate(const double NewTime) {
-  history << "### this->Interpolate(" + DoubleToString(NewTime) + ")" << endl;
+  history << "### this->Interpolate(" << setprecision(16) << NewTime << ")" << endl;
   this->Interpolate(vector<double>(1, NewTime));
   return *this;
 }
 
 Waveform& Waveform::Interpolate(const Waveform& b) {
-  history << "### this->Interpolate(const Waveform& b)" << history;
+  history << "### this->Interpolate(const Waveform& b)" << endl;
   this->Interpolate(b.t);
   return *this;
 }
 
 // Trim or adjust time axis
 Waveform& Waveform::AddToTime(const double time) {
-  history << "### this->AddToTime(" + DoubleToString(time) + ")" << endl;
+  history << "### this->AddToTime(" << setprecision(16) << time << ")" << endl;
   t += time;
   return *this;
 }
 
 Waveform& Waveform::DropBefore(const double time) {
-  history << "### this->DropBefore(" + DoubleToString(time) + ")" << endl;
+  history << "### this->DropBefore(" << setprecision(16) << time << ")" << endl;
   unsigned int i=0;
   while(i<t.size()-1 && t[i+1]<=time) { ++i; }
   t.erase(t.begin(), t.begin()+i);
@@ -519,7 +524,7 @@ Waveform& Waveform::DropBefore(const double time) {
 }
 
 Waveform& Waveform::DropAfter(const double time) {
-  history << "### this->DropAfter(" + DoubleToString(time) + ")" << endl;
+  history << "### this->DropAfter(" << setprecision(16) << time << ")" << endl;
   unsigned int i=t.size()-1;
   while(i>0 && t[i]>time) { --i; }
   t.erase(t.begin()+i, t.end());
@@ -532,7 +537,7 @@ Waveform& Waveform::DropAfter(const double time) {
 }
 
 Waveform& Waveform::ZeroBefore(const double time) {
-  history << "### this->ZeroBefore(" + DoubleToString(time) + ")" << endl;
+  history << "### this->ZeroBefore(" << setprecision(16) << time << ")" << endl;
   unsigned int i=0;
   while(i<t.size()-1 && t[i+1]<=time) { ++i; }
   for(unsigned int j=0; j<NModes(); ++j) {
@@ -557,43 +562,7 @@ Waveform& Waveform::UniformTimeToPowerOfTwo() {
 }
 
 
-// Used in extrapolation
-Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
-  history << "### this->SetArealRadius(" + AreaFileName + ")" << endl;
-  //// Read data files
-  vector<vector<double> > Area;
-  vector<string> Header;
-  ReadDatFile(AreaFileName,  Area,  Header);
-  r = vector<double>(Area.size());
-  for(unsigned int i=0; i<r.size(); ++i) {
-    r[i] = sqrt(Area[i][1]/(4*M_PI));
-  }
-  return *this;
-}
-
-Waveform& Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName, const double ADMMass) {
-  history << "### this->SetTimeFromLapseSurfaceIntegral(" + LapseFileName + ", " + DoubleToString(ADMMass) + ")" << endl;
-  //// Read data files
-  vector<vector<double> > LapseData;
-  vector<string> Header;
-  ReadDatFile(LapseFileName,  LapseData,  Header);
-  vector<double> Lapse(LapseData.size());
-  for(unsigned int i=0; i<Lapse.size(); ++i) {
-    Lapse[i] = LapseData[i][1]/((4*M_PI)*(r[i]*r[i]));
-  }
-  t = cumtrapz(t, Lapse/sqrt(((-2.0*ADMMass)/r) + 1.0)) + t[0];
-  return *this;
-}
-
-Waveform& Waveform::TortoiseOffset(const double ADMMass) {
-  history << "### this->TortoiseOffset(" + DoubleToString(ADMMass) + ")" << endl;
-  timeScale = "(t-r*)";
-  t = t - (r + (2.0*ADMMass)*log((r/(2.0*ADMMass))-1.0));
-  return *this;
-}
-
-
-// Used before converting to frequency space
+// Used before converting to frequency space or when scaling the mass
 double ScaleMag(const double S, const unsigned int typeIndex) {
   //        { Amp*S when typeIndex mod 3 = 0 (Psi4)
   // Amp -> { Amp   when typeIndex mod 3 = 1 (hdot)
@@ -610,8 +579,55 @@ double ScaleMag(const double S, const unsigned int typeIndex) {
   }
 }
 
+// Used in extrapolation
+Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
+  history << "### this->SetArealRadius(\"" << AreaFileName << "\")" << endl;
+  //// Read data files
+  vector<vector<double> > Area;
+  vector<string> Header;
+  ReadDatFile(AreaFileName,  Area,  Header);
+  r = vector<double>(Area.size());
+  for(unsigned int i=0; i<r.size(); ++i) {
+    r[i] = sqrt(Area[i][1]/(4*M_PI));
+  }
+  return *this;
+}
+
+Waveform& Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName, const double ADMMass) {
+  history << "### this->SetTimeFromLapseSurfaceIntegral(\"" << LapseFileName << "\", " << setprecision(16) << ADMMass << ")" << endl;
+  //// Read data files
+  vector<vector<double> > LapseData;
+  vector<string> Header;
+  ReadDatFile(LapseFileName,  LapseData,  Header);
+  vector<double> Lapse(LapseData.size());
+  for(unsigned int i=0; i<Lapse.size(); ++i) {
+    Lapse[i] = LapseData[i][1]/((4*M_PI)*(r[i]*r[i]));
+  }
+  t = cumtrapz(t, Lapse/sqrt(((-2.0*ADMMass)/r) + 1.0)) + t[0];
+  return *this;
+}
+
+Waveform& Waveform::TortoiseOffset(const double ADMMass) {
+  history << "### this->TortoiseOffset(" << setprecision(16) << ADMMass << ")" << endl;
+  timeScale = "(t-r*)";
+  t = t - (r + (2.0*ADMMass)*log((r/(2.0*ADMMass))-1.0));
+  return *this;
+}
+
+Waveform& Waveform::SetTotalMassToOne(const double TotalMassInCurrentUnits) {
+  history << "### this->SetTotalMassToOne(" << setprecision(16) << TotalMassInCurrentUnits << ")" << endl;
+  mag *= ScaleMag(TotalMassInCurrentUnits, typeIndex);
+  t = t / TotalMassInCurrentUnits;
+  r = r / TotalMassInCurrentUnits;
+  if((typeIndex>2 && typeIndex<6) || typeIndex>8) { typeIndex = typeIndex - 3; }
+  if(timeScale.find("/M") == string::npos) { timeScale = timeScale + "/M"; }
+  return *this;
+}
+
 Waveform& Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSolarMasses, const double DistanceInMegaparsecs) {
-  history << "### this->SetPhysicalMassAndDistance(" + DoubleToString(CurrentUnitMassInSolarMasses) + ", " + DoubleToString(DistanceInMegaparsecs) + ")" << endl;
+  history << "### this->SetPhysicalMassAndDistance(" << setprecision(16)
+	  << CurrentUnitMassInSolarMasses << ", "
+	  << DistanceInMegaparsecs << ")" << endl;
   // See the note above Waveform::Types.  This function removes the (G*M/c^3)
   // from each type, then scales the Time into seconds, and Radius into meters.
   // It then removes the (r/c) from the amplitude of each type.
@@ -628,7 +644,7 @@ Waveform& Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSol
 }
 
 Waveform& Waveform::DropLMode(const int L) {
-  history << "### this->DropLMode(" + DoubleToString(L) + ")" << endl;
+  history << "### this->DropLMode(" << L << ")" << endl;
   vector<vector<double> >::iterator magrit=mag.RawData().end();
   vector<vector<double> >::iterator argrit=arg.RawData().end();
   vector<vector<int> >::iterator LMrit=lm.RawData().end();
@@ -650,7 +666,7 @@ Waveform& Waveform::DropLMode(const int L) {
 }
 
 Waveform& Waveform::DropLMMode(const int L, const int M) {
-  history << "### this->DropLMMode(" + DoubleToString(L) + ", " + DoubleToString(M) + ")" << endl;
+  history << "### this->DropLMMode(" << L << ", " << M << ")" << endl;
   vector<vector<double> >::iterator magrit=mag.RawData().end();
   vector<vector<double> >::iterator argrit=arg.RawData().end();
   vector<vector<int> >::iterator LMrit=lm.RawData().end();
@@ -1229,8 +1245,8 @@ void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
 
 // Related function
 ostream& operator<<(ostream& os, const Waveform& a) {
-  os << a.History() << endl;
-  os << "# [1] = " << a.TimeScale() << endl;
+  os << a.History()
+     << "# [1] = " << a.TimeScale() << endl;
   for(unsigned int Mode=0; Mode<a.NModes(); ++Mode) {
     os << "# [" << 2*Mode+2 << "] = Mag{" << Waveform::Types[a.TypeIndex()] << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl;
     os << "# [" << 2*Mode+3 << "] = Arg{" << Waveform::Types[a.TypeIndex()] << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl;
@@ -1303,7 +1319,29 @@ string GetFileFormat(const vector<string>& Header) {
   return DetectedFormat;
 }
 
-void GetWaveformTimeScaleAndLM(const vector<string>& Header, string& Scale, Matrix<int>& lm) {
+void GetWaveformTimeScaleAndLM(const string& FullPath, const vector<string>& Header, string& Scale, Matrix<int>& lm) {
+  //// Look for the info at the beginning of the file name
+  size_t found;
+  string FileName = FullPath;
+  found=FileName.find_last_of("/\\");
+  if (found!=string::npos) { FileName = FileName.substr(found+1); }
+  if((found = tolower(FileName).find("_l")) != string::npos &&
+     tolower(FileName).find("_m", found) != string::npos)
+    {
+      if(lm.nrows()!=1) {
+	cerr << "\nlm.nrows()=" << lm.nrows() << " but file name " << FileName << " indicates there is just one mode." << endl;
+	throw("Bad LM modes");
+      }
+      size_t LBegin, LEnd, MBegin, MEnd;
+      LBegin = found+2;
+      LEnd = tolower(FileName).find("_m", LBegin);
+      MBegin = LEnd+2;
+      MEnd = tolower(FileName).find_first_of("._", MBegin);
+      lm[0][0] = atoi(FileName.substr(LBegin,LEnd-LBegin).c_str());
+      lm[0][1] = atoi(FileName.substr(MBegin,MEnd-MBegin).c_str());
+      return;
+    }
+  
   //// Look for the info in the Header
   unsigned int i=0;
   size_t Comma, Paren1, Paren2;

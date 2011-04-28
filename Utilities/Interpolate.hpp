@@ -7,6 +7,8 @@ namespace WaveformUtilities {
   
   std::vector<double> Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const std::vector<double>& X2);
   void Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const std::vector<double>& X2, std::vector<double>& Y2);
+  std::vector<double> Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const std::vector<double>& X2, const double ExtrapVal);
+  void Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const std::vector<double>& X2, std::vector<double>& Y2, const double ExtrapVal);
   double Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const double& X2);
   
   

@@ -4,7 +4,7 @@
 #include "NumericalRecipes.hpp"
 #include "GaussJordanElimination.hpp"
 #include "SingularValueDecomposition.hpp"
-using WaveformUtilities::SVD;
+//using WaveformUtilities::SVD;
 #include "Utilities.hpp"
 
 namespace WaveformUtilities {
@@ -25,7 +25,7 @@ namespace WaveformUtilities {
       for(int j=Order-1; j>=0; --j) p=p*x+a[j];
       return p;
     }
-    VecDoub operator()(VecDoub_I &xx) const {
+    VecDoub operator()(VecDoub_I &xx) const { // This is just for testing multi-dimensional fits
       if(Order != 2) throw("This hack was programmed only for Order==2");
       VecDoub ans(6);
       Doub x=xx[0], y=xx[1];

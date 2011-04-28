@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "Utilities.hpp"
-//#include "VectorFunctions.hpp"
 
 namespace WaveformUtilities {
   
@@ -15,15 +14,19 @@ namespace WaveformUtilities {
   public:
     Matrix();
     Matrix(unsigned int rows, unsigned int cols); // Zero-based array
-    Matrix(unsigned int rows, unsigned int cols, const T& a); // a-based array
+    Matrix(unsigned int rows, unsigned int cols, const T& a); // array of a's
     Matrix(const Matrix &rhs);  // Copy constructor
     Matrix& operator=(const Matrix &rhs); //assignment operator
     Matrix& operator=(const std::vector<std::vector<T> >& newData); //assignment operator
     typedef T value_type; // make T available externally
     inline std::vector<T>& operator[](const unsigned int row); //subscripting: reference to row data
     inline const std::vector<T>& operator[](const unsigned int row) const;
-    Matrix operator-(const Matrix& b) const;
-    Matrix operator/(const Matrix& b) const;
+    bool operator==(const Matrix<T>& b) const;
+    bool operator!=(const Matrix<T>& b) const;
+    inline const std::vector<std::vector<T> >& RawData() const { return Data; }
+    inline std::vector<std::vector<T> >& RawData() { return Data; }
+    //Matrix operator-(const Matrix& b) const; // implemented in "VectorFunctions.hpp"
+    //Matrix operator/(const Matrix& b) const; // implemented in "VectorFunctions.hpp"
     inline unsigned int nrows() const { return Data.size(); }
     inline unsigned int ncols() const { return Data.size()>0 ? Data[0].size() : 0; }
     void resize(unsigned int newNRows, unsigned int newNCols); // resize (contents not preserved)
@@ -87,34 +90,60 @@ namespace WaveformUtilities {
   }
   
   template <class T>
-  Matrix<T> Matrix<T>::operator-(const Matrix& b) const {
-    if(nrows() != b.nrows()) {
-      std::cerr << "\nthis->nrows()=" << nrows() << "\tb.nrows()=" << b.nrows() << std::endl;
-      throw("Cannot subtract Matrices with unequal numbers of rows");
+  bool Matrix<T>::operator==(const Matrix<T>& b) const {
+    if(nrows() != b.nrows() || ncols() != b.ncols()) {
+      return false;
     }
-    if(ncols() != b.ncols()) {
-      std::cerr << "\nthis->ncols()=" << ncols() << "\tb.ncols()=" << b.ncols() << std::endl;
-      throw("Cannot subtract Matrices with unequal numbers of cols");
+    for(unsigned int row=0; row<nrows(); ++row) {
+      for(unsigned int col=0; col<ncols(); ++col) {
+	if(Data[row][col] != b.Data[row][col]) { return false; }
+      }
     }
-    Matrix c;
-    c.Data = Data-b.Data;
-    return c;
+    return true;
   }
   
   template <class T>
-  Matrix<T> Matrix<T>::operator/(const Matrix& b) const {
-    if(nrows() != b.nrows()) {
-      std::cerr << "\nthis->nrows()=" << nrows() << "\tb.nrows()=" << b.nrows() << std::endl;
-      throw("Cannot divide Matrices with unequal numbers of rows");
+  bool Matrix<T>::operator!=(const Matrix<T>& b) const {
+    if(nrows() != b.nrows() || ncols() != b.ncols()) {
+      return true;
     }
-    if(ncols() != b.ncols()) {
-      std::cerr << "\nthis->ncols()=" << ncols() << "\tb.ncols()=" << b.ncols() << std::endl;
-      throw("Cannot divide Matrices with unequal numbers of cols");
+    for(unsigned int row=0; row<nrows(); ++row) {
+      for(unsigned int col=0; col<ncols(); ++col) {
+	if(Data[row][col] != b.Data[row][col]) { return true; }
+      }
     }
-    Matrix c;
-    c.Data = Data/b.Data;
-    return c;
+    return false;
   }
+  
+//   template <class T>
+//   Matrix<T> Matrix<T>::operator-(const Matrix& b) const {
+//     if(nrows() != b.nrows()) {
+//       std::cerr << "\nthis->nrows()=" << nrows() << "\tb.nrows()=" << b.nrows() << std::endl;
+//       throw("Cannot subtract Matrices with unequal numbers of rows");
+//     }
+//     if(ncols() != b.ncols()) {
+//       std::cerr << "\nthis->ncols()=" << ncols() << "\tb.ncols()=" << b.ncols() << std::endl;
+//       throw("Cannot subtract Matrices with unequal numbers of cols");
+//     }
+//     Matrix c;
+//     c.Data = Data-b.Data;
+//     return c;
+//   }
+  
+//   template <class T>
+//   Matrix<T> Matrix<T>::operator/(const Matrix& b) const {
+//     if(nrows() != b.nrows()) {
+//       std::cerr << "\nthis->nrows()=" << nrows() << "\tb.nrows()=" << b.nrows() << std::endl;
+//       throw("Cannot divide Matrices with unequal numbers of rows");
+//     }
+//     if(ncols() != b.ncols()) {
+//       std::cerr << "\nthis->ncols()=" << ncols() << "\tb.ncols()=" << b.ncols() << std::endl;
+//       throw("Cannot divide Matrices with unequal numbers of cols");
+//     }
+//     Matrix c;
+//     c.Data = Data/b.Data;
+//     return c;
+//   }
   
   template <class T>
   void Matrix<T>::resize(unsigned int newNRows, unsigned int newNCols)

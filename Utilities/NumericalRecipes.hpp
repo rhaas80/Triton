@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
+#include <fcntl.h>
 #include <string>
 #include <cctype>
 

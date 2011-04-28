@@ -1,15 +1,19 @@
 #include "VectorFunctions.hpp"
-#include <iostream>
 #include <cmath>
-#include <vector>
 #include <limits>
-//#include "Interpolate.hpp"
-//#include "SavitzkyGolaySmoothing.hpp"
 #include "Utilities.hpp"
-using namespace std;
 namespace WU = WaveformUtilities;
 using WU::Matrix;
+using std::vector;
+using std::complex;
+using std::cerr;
+using std::flush;
+using std::endl;
+using std::ostream;
+using std::min;
+using std::max;
 
+// Local to this file
 bool DimensionsAgree(const vector<double>& a, const vector<double>& b) {
   if(a.size() != b.size()) {
     cerr << "\na.size()=" << a.size() << "\tb.size()=" << b.size() << endl;
@@ -898,7 +902,7 @@ vector<double> WU::Intersection(const vector<double>& t1, const vector<double>& 
 
 vector<double> WU::Intersection(const vector<vector<double> >& Times, const double MinStep, const double MinTime) {
   vector<double> Time = Times[0];
-  //// Get the intersection of all the time data
+  // Get the intersection of all the time data
   for(unsigned int i=1; i<Times.size(); ++i) {
     Time = Intersection(Time, Times[i], MinStep, MinTime);
   }
@@ -958,21 +962,6 @@ vector<double> WU::Union(const vector<double>& t1, const vector<double>& t2, con
   return t;
 }
 
-// vector<double> WU::Union(const vector<double>& t1, const vector<double>& t2, const double MinStep) {
-//   vector<double> t1a(0), t1c(0), t2a(0), t2c(0);
-//   double min1 = t1[0];
-//   double min2 = t2[0];
-//   double mint = min(min1, min2);
-//   double max1 = t1[t1.size()-1];
-//   double max2 = t2[t2.size()-1];
-//   double maxt = max(max1, max2);
-//   if(min1-MinStep>mint) { t1a = vector<double>(1, mint); }
-//   if(min2-MinStep>mint) { t2a = vector<double>(1, mint); }
-//   if(max1+MinStep<maxt) { t1c = vector<double>(1, maxt); }
-//   if(max2+MinStep<maxt) { t2c = vector<double>(1, maxt); }
-//   return LocalIntersection<TimeSeqRef>(TimeSeqRef(t1a, t1, t1c), TimeSeqRef(t2a, t2, t2c), MinStep, -1.0e290);
-// }
-
 vector<double> WU::Unwrap(const vector<double>& In) {
   // Compare Matlab's unwrap.m file
   vector<double> Out = In;
@@ -1026,7 +1015,7 @@ void WU::ReIm(const vector<vector<double> >& amp, const vector<vector<double> >&
   }
 }
 
-unsigned int maxIndex(const vector<double>& a) {
+unsigned int WU::maxIndex(const vector<double>& a) {
   double max=a[0];
   unsigned int Index=0;
   for(unsigned int i=1; i<a.size(); ++i) {
@@ -1038,7 +1027,7 @@ unsigned int maxIndex(const vector<double>& a) {
   return Index;
 }
 
-//// Miscellaneous helpers
+// Miscellaneous helpers
 double WU::Factorial(const int n) {
   static vector<double> a(171);
   static bool initialize=true;

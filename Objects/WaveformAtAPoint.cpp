@@ -10,6 +10,8 @@
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
 using std::vector;
+using std::setprecision;
+using std::ios_base;
 
 
 WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const double Vartheta, const double Varphi)
@@ -17,7 +19,8 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
 {
   // Record that this is happening
   SetHistory(W.History());
-  history << "### WaveformAtAPoint(W, " << dt << ", " << Vartheta << ", " << Varphi << ");" << endl;
+  history.seekp(0, ios_base::end);
+  history << "### WaveformAtAPoint(W, " << setprecision(16) << dt << ", " << Vartheta << ", " << Varphi << ");" << endl;
   
   // Make sure to copy over some other data
   TypeIndex() = W.TypeIndex();
@@ -52,9 +55,10 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
 }
 
 std::ostream& operator<<(std::ostream& os, const WaveformAtAPoint& a) {
-  os << "# [1] = " << a.TimeScale() << endl;
-  os << "# [2] = Re{" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Varphi() << ")}" << endl;
-  os << "# [3] = Im{" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Vartheta() << ")}" << endl;
+  os << a.History()
+     << "# [1] = " << a.TimeScale() << endl
+     << "# [2] = Re{" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Varphi() << ")}" << endl
+     << "# [3] = Im{" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Vartheta() << ")}" << endl;
   for(unsigned int i=0; i<a.NTimes(); ++i) {
     os << a.T(i) << " " << a.Re(i) << " " << a.Im(i) << endl;
   }

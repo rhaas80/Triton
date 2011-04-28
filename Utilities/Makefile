@@ -2,8 +2,10 @@ SOURCES = $(wildcard *.cpp)
 
 RM = /bin/rm
 CC = g++
-OPT = -O3
-CFLAGS = -c
+OPT = 
+CFLAGS = -c -ggdb
+# OPT = -O3
+# CFLAGS = -c
 
 all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libUtilities
 
