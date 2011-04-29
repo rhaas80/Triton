@@ -193,25 +193,18 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
     typeIndex = GetWaveformType(DataFileName, Header);
     
     if(Format.compare("ReIm") == 0) {
-      mag.resize(Re.size(), Re[0].size());
-      arg.resize(Re.size(), Re[0].size());
+      vector<vector<double> > ReA=Re, ImA=Im;
       //ORIENTATION!!! 3 following lines
       for(unsigned int i=0; i<Re.size(); ++i) { // Loop over components
-	MagArg(Re[i], Im[i], mag[i], arg[i]);
+	MagArg(ReA[i], ImA[i], Re[i], Im[i]);
       }
-    } else if(Format.compare("MagArg") == 0) {
-      mag = Re;
-      arg = Im;
-    } else {
-      cerr << "Unknown format " << Format << endl;
-      throw("Bad format");
     }
-    Re.clear();
-    Im.clear();
     
-    for(unsigned int i=0; i<NModes(); ++i) {
-      mag[i] = WaveformUtilities::Interpolate(Times[i], mag[i], t);
-      arg[i] = WaveformUtilities::Interpolate(Times[i], arg[i], t);
+    mag.resize(Re.size(), t.size());
+    arg.resize(Im.size(), t.size());
+    for(unsigned int i=0; i<Times.size(); ++i) {
+      mag[i] = WaveformUtilities::Interpolate(Times[i], Re[i], t);
+      arg[i] = WaveformUtilities::Interpolate(Times[i], Im[i], t);
     }
     
   } else {  //// Treat this file like a normal data file

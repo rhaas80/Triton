@@ -59,8 +59,9 @@ namespace WaveformUtilities {
   Matrix<T>& Matrix<T>::operator=(const std::vector<std::vector<T> > &newData) {
     for(unsigned int i=1; i<newData.size(); ++i) { // Check that the input is rectangular
       if(newData[i].size() != ncols()) {
-	std::cerr << "\nnewData[" << i << "].size()=" << newData[i].size() << "\tncols()=" << ncols() << std::endl;
-	throw("Input data is not rectangular");
+	std::cerr << "\nnewData.size()=" << newData.size() << "\tnewData[" << i << "].size()==" << newData[i].size() << std::endl;
+	std::cerr << "nrows()=" << nrows() << "\tncols()=" << ncols() << std::endl;
+	throw("Input data is not rectangular, or you need to resize this object");
       }
     }
     Data = newData;
@@ -170,6 +171,7 @@ namespace WaveformUtilities {
   void Matrix<T>::push_back(const std::vector<T>& NewRow) {
     if(nrows()==0) {
       Data = std::vector<std::vector<T> >(1, NewRow);
+      return;
     }
     if (NewRow.size() != ncols()) {
       std::cerr << "\nNewRow.size()=" << NewRow.size() << "\tncols()=" << ncols() << std::endl;

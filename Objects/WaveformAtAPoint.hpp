@@ -5,13 +5,13 @@
 
 namespace WaveformObjects {
   
-  //// This class defines a derived class of a Waveform evaluated at a point.  A separate class is needed because
-  //// a Waveform evaluated at a point need not have a well defined (smooth, simple) amplitude and phase, and thus
-  //// must be stored as (Re,Im) data rather than (Amp,Phi) data.  The second constructor is provided because 
-  //// the memory requirements are prohibitive when interpolating an entire Waveform to a uniform time grid of
-  //// sufficient resolution to obtain a good FT of the data.  This constructor, then, constructs a uniform
-  //// time grid sized to the next power of two, using the input timestep and the time grid of the input Waveform,
-  //// and progressively interpolates each mode and evaluates it at the desired point.
+  /// This class defines a derived class of a Waveform evaluated at a point.  A separate class is needed because
+  /// a Waveform evaluated at a point need not have a well defined (smooth, simple) amplitude and phase, and thus
+  /// must be stored as (Re,Im) data rather than (Amp,Phi) data.  The second constructor is provided because 
+  /// the memory requirements are prohibitive when interpolating an entire Waveform to a uniform time grid of
+  /// sufficient resolution to obtain a good FT of the data.  This constructor, then, constructs a uniform
+  /// time grid sized to the next power of two, using the input timestep and the time grid of the input Waveform,
+  /// and progressively interpolates each mode and evaluates it at the desired point.
   
   class WaveformAtAPoint : public Waveform {
     friend class WaveformFT;
