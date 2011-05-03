@@ -1,8 +1,11 @@
+#include "NumericalRecipes.hpp"
+
 #include <fstream>
 #include <iomanip>
 
 #include "WaveformFT.hpp"
 #include "NoiseCurves.hpp";
+#include "VectorFunctions.hpp";
 
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
@@ -34,7 +37,7 @@ int main() {
     ofs.close();
     cout << "☺" << endl;
   }
-
+  
   W.DropBefore(-1.0e5).SetPhysicalMassAndDistance(TotalMassInSolarMasses, DistanceInMegaparsecs);
   
   if(WriteFiles) {
@@ -58,6 +61,7 @@ int main() {
   }
   
   WaveformFT WFT(WAAP);
+  //WFT = WFT*(1.0/WFT.NTimes());
   
   if(WriteFiles) {
     cout << "Writing " << OutWaveformFT << " ... " << flush;
@@ -67,14 +71,33 @@ int main() {
     ofs3.close();
     cout << "☺" << endl;
   }
-
+  
   vector<double> InversePSD = InverseNoiseCurve(WFT.F(), Detector);
   cout << "WFT.SNR() = " << WFT.SNR(InversePSD) << endl;
+  cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << endl;
   cout << "WFT.Match(WFT, InversePSD) = " << WFT.Match(WFT, InversePSD) << endl;
   cout << "Normalizing" << endl;
   WFT.Normalize(InversePSD);
   cout << "WFT.SNR() = " << WFT.SNR(InversePSD) << endl;
+  cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << endl;
   cout << "WFT.Match(WFT, InversePSD) = " << WFT.Match(WFT, InversePSD) << endl;
+  
+  // Test that WFT.Re() is even and WFT.Im() is odd
+  return 0;
+  cout << "\n\n\n" << endl;
+  const double Tol = 1e-13;
+  const WaveformFT& F = WFT;
+  const double Max = max(maxfabs(F.Re()), maxfabs(F.Im()));
+  for(unsigned int i=0; i<F.NTimes()/2; ++i) {
+    const double a = 1.0 - F.Re(i)/F.Re(F.NTimes()-i-1);
+    const double b = 1.0 + F.Im(i)/F.Im(F.NTimes()-i-1);
+    if(a==a && abs(a)>Tol && fabs(F.Re(i))>Tol*Max) {
+      cout << "Re " << i << " " << F.Re(i) << " " << F.Re(F.NTimes()-i-1) << " " << a << endl;
+    }
+    if(b==b && abs(b)>Tol && fabs(F.Im(i))>Tol*Max) {
+      cout << "Im " << i << " " << F.Im(i) << " " << F.Im(F.NTimes()-i-1) << " " << b << endl;
+    }
+  }
   
   return 0;
 }

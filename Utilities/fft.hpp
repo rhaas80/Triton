@@ -14,6 +14,7 @@ namespace WaveformUtilities {
   void ifft(const std::vector<double>& ReF, const std::vector<double>& ImF, std::vector<double>& ReT, std::vector<double>& ImT);
   
   std::vector<double> convlv(const std::vector<double>& data, const std::vector<double>& respns, const int isign);
+  void realft(std::vector<double>& data, const int isign);
   
 }
 

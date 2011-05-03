@@ -69,8 +69,8 @@ vector<double> IniLIGO_Approx(const vector<double>& F, const bool Invert=false, 
       if(f<FMin || f>FMax) { PSD[i] = 0.0; }
       else {
  	const double x = f / 150.0;
-	PSD[i] = 1.0 / (9e-46 * (pow(4.49*x, -56) + 0.16*pow(x, -4.52) + 0.32*pow(x,2) + 0.52));
-	//PSD[i] = 1.0 / (3.316e-46 * (pow(4.49*x, -56) + 0.16*pow(x, -4.52) + 0.32*pow(x,2) + 0.52));
+	PSD[i] = 1.0 / (9e-46 * (pow(4.49*x, -56) + 0.16*pow(x, -4.52) + 0.32*pow(x,2) + 0.52)); // Table IV of PRD 63 044023
+	//PSD[i] = 1.0 / (3.136e-46 * (pow(4.49*x, -56) + 0.16*pow(x, -4.52) + 0.32*pow(x,2) + 0.52)); // Eq. (10) of CQG 26 (2009) 114006
       }
     }
   } else {
@@ -79,8 +79,8 @@ vector<double> IniLIGO_Approx(const vector<double>& F, const bool Invert=false, 
       if(f<FMin || f>FMax) { PSD[i] = numeric_limits<double>::infinity(); }
       else {
  	const double x = f / 150.0;
-	PSD[i] = 9e-46 * (pow(4.49*x, -56) + 0.16*pow(x, -4.52) + 0.32*pow(x,2) + 0.52);
-	//PSD[i] = 3.316e-46 * (pow(4.49*x, -56) + 0.16*pow(x, -4.52) + 0.32*pow(x,2) + 0.52);
+	PSD[i] = 9e-46 * (pow(4.49*x, -56) + 0.16*pow(x, -4.52) + 0.32*pow(x,2) + 0.52); // Table IV of PRD 63 044023
+	//PSD[i] = 3.136e-46 * (pow(4.49*x, -56) + 0.16*pow(x, -4.52) + 0.32*pow(x,2) + 0.52); // Eq. (10) of CQG 26 (2009) 114006
       }
     }
   }

@@ -15,6 +15,7 @@ namespace WaveformObjects {
   
   class WaveformAtAPoint : public Waveform {
     friend class WaveformFT;
+    friend class WaveformReFT;
     
   private:  // Member data
     double vartheta;

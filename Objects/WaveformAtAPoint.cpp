@@ -44,6 +44,10 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
   // Step through the modes interpolating to the new time
   vector<double> SWSHAmp, SWSHPhi, Amplitude, Phase;
   SWSH(W.LM().RawData(), vartheta, varphi, SWSHAmp, SWSHPhi);
+//   cout << "\nDebugging at " << __LINE__ << " of " << __FILE__ << endl;
+//   cout << "W.LM() = " << W.LM();
+//   cout << "SWSHAmp = " << SWSHAmp << endl;
+//   cout << "SWSHPhi = " << SWSHPhi << endl;
   for(unsigned int mode=0; mode<W.NModes(); ++mode) { // Loop over components
     Amplitude = SWSHAmp[mode] * WaveformUtilities::Interpolate(W.T(), W.Mag(mode), NewTime, 0.0);
     Phase     = SWSHPhi[mode] + WaveformUtilities::Interpolate(W.T(), W.Arg(mode), NewTime, W.Arg(mode).back());

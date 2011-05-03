@@ -484,6 +484,20 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime) {
   return *this;
 }
 
+Waveform& Waveform::Interpolate(const vector<double>& NewTime, const double ExtrapVal) {
+  history << "### this->Interpolate(const vector<double>& NewTime, " << ExtrapVal << ")" << endl;
+  if(r.size()==t.size()) {
+    r = WaveformUtilities::Interpolate(t, r, NewTime, r.back());
+  }
+  //ORIENTATION!!! 4 following lines
+  for(unsigned int i=0; i<NModes(); ++i) {
+    mag[i] = WaveformUtilities::Interpolate(t, mag[i], NewTime, ExtrapVal);
+    arg[i] = WaveformUtilities::Interpolate(t, arg[i], NewTime, arg[i].back());
+  }
+  t = NewTime;
+  return *this;
+}
+
 Waveform& Waveform::Interpolate(const double NewTime) {
   history << "### this->Interpolate(" << setprecision(16) << NewTime << ")" << endl;
   this->Interpolate(vector<double>(1, NewTime));
@@ -493,6 +507,12 @@ Waveform& Waveform::Interpolate(const double NewTime) {
 Waveform& Waveform::Interpolate(const Waveform& b) {
   history << "### this->Interpolate(const Waveform& b)" << endl;
   this->Interpolate(b.t);
+  return *this;
+}
+
+Waveform& Waveform::Interpolate(const Waveform& b, const double ExtrapVal) {
+  history << "### this->Interpolate(const Waveform& b, " << ExtrapVal << ")" << endl;
+  this->Interpolate(b.t, ExtrapVal);
   return *this;
 }
 
@@ -743,6 +763,11 @@ Waveform& Waveform::DropNegativeMModes() {
     argrit--;
     LMrit--;
   }
+  return *this;
+}
+
+Waveform& Waveform::Conjugate() {
+  Arg() = -Arg();
   return *this;
 }
 

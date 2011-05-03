@@ -13,11 +13,19 @@ using std::cerr;
 using std::endl;
 using std::ios_base;
 
+double BumpFunction(const double x, const double x0, const double x1) {
+  if(x<=x0) { return 0.0; }
+  if(x>=x1) { return 1.0; }
+  const double t = (x-x0)/(x1-x0);
+  return 1.0 / (1.0 + exp(1.0/t - 1.0/(1-t)));
+}
+
 WaveformFT::WaveformFT()
   : Normalized(false)
 { }
 
-WaveformFT::WaveformFT(const WaveformAtAPoint& W, const double DetectorResponseAmp, const double DetectorResponsePhase)
+WaveformFT::WaveformFT(const WaveformAtAPoint& W, const unsigned int WindowNCycles,
+		       const double DetectorResponseAmp, const double DetectorResponsePhase)
   : WaveformAtAPoint(W), Normalized(false)
 {
   // Record that this is happening
@@ -28,7 +36,7 @@ WaveformFT::WaveformFT(const WaveformAtAPoint& W, const double DetectorResponseA
   const double dt = W.T(1)-W.T(0);
   T() = TimeToFrequency(W.T());
   
-  // Now do the actual work
+  // Now get the actual data
   vector<double> zero(NTimes(), 0.0);
   vector<double> RealT;
   if(DetectorResponsePhase!=0.0) {
@@ -38,6 +46,31 @@ WaveformFT::WaveformFT(const WaveformAtAPoint& W, const double DetectorResponseA
   } else {
     RealT = W.Re();
   }
+  
+  {
+    // Zero up to the first zero crossing for continuity
+    unsigned int i=0;
+    const double Sign = RealT[0] / abs(RealT[0]);
+    while(RealT[i++]*Sign>0) { }
+    for(unsigned int j=0; j<i; ++j) {
+      RealT[j] = 0.0;
+    }
+    // Now find the following 2*N zero crossings
+    const double i0 = i;
+    const double t0 = W.T(i0);
+    for(unsigned int j=0; j<WindowNCycles; ++j) {
+      while(RealT[i++]*Sign<0) { }
+      while(RealT[i++]*Sign>0) { }
+    }
+    // And window the data
+    const unsigned int i1 = i;
+    const double t1 = W.T(i1);
+    for(unsigned int j=i0; j<=i1; j++) {
+      RealT[j] *= BumpFunction(W.T(j), t0, t1);
+    }
+  }
+  
+  // Do the actual work
   fft(RealT, zero, Re(), Im());
   //// The return from fft needs to be multiplied by N*dt to correspond to the continuum FT
   Re() *= NTimes()*dt;
@@ -60,6 +93,23 @@ WaveformFT& WaveformFT::ZeroAbove(const double Frequency) {
   return *this;
 }
 
+double WaveformFT::InnerProduct(const WaveformFT& B, const std::vector<double>& InversePSD) const {
+  if(NTimes() != B.NTimes()) {
+    cerr << "\nthis->NTimes()=" << NTimes() << "\tB.NTimes()=" << B.NTimes() << endl;
+    throw("Incompatible sizes");
+  }
+  if(NTimes() != InversePSD.size()) {
+    cerr << "\nWaveform size=" << NTimes() << "\tInversePSD.size()=" << InversePSD.size() << endl;
+    throw("Incompatible sizes");
+  }
+  double InnerProduct = 0.0;
+  for(unsigned int i=0; i<NTimes(); ++i) {
+    InnerProduct += (Re(i)*B.Re(i)+Im(i)*B.Im(i))*InversePSD[i];
+  }
+  InnerProduct = 2*(F(1)-F(0))*InnerProduct;
+  return InnerProduct; // Remember: double-sided frequency
+}
+
 double WaveformFT::SNR(const std::vector<double>& InversePSD) const {
   if(NTimes() != InversePSD.size()) {
     cerr << "\nWaveform size=" << NTimes() << "\tInversePSD.size()=" << InversePSD.size() << endl;
@@ -67,6 +117,8 @@ double WaveformFT::SNR(const std::vector<double>& InversePSD) const {
   }
   double SNRSquared = 0.0;
   for(unsigned int i=0; i<NTimes(); ++i) {
+//   cerr << "\nDEBUGGING!!! " << __LINE__ << " " << __FILE__ << endl;
+//   for(unsigned int i=NTimes()/2; i<NTimes(); ++i) {
     SNRSquared += (Re(i)*Re(i)+Im(i)*Im(i))*InversePSD[i];
   }
   SNRSquared = 2*(F(1)-F(0))*SNRSquared;
@@ -88,8 +140,12 @@ double WaveformFT::Match(const WaveformFT& B, const std::vector<double>& Inverse
     throw("Incompatible resolutions");
   }
   // s1 x s2* = (a1 + i b1) (a2 - i b2) = (a1 a2 + b1 b2) + i(b1 a2 - a1 b2)
-  vector<double> re = (Re()*B.Re()+Im()*B.Im())*InversePSD;
-  vector<double> im = (Im()*B.Re()-Re()*B.Im())*InversePSD;
+  vector<double> re(NTimes(),0.0);
+  vector<double> im(NTimes(),0.0);
+  for(unsigned int i=NTimes()/2; i<NTimes(); ++i) {
+    re[i] = (Re(i)*B.Re(i)+Im(i)*B.Im(i))*InversePSD[i];
+    im[i] = (Im(i)*B.Re(i)-Re(i)*B.Im(i))*InversePSD[i];
+  }
   vector<double> IFFTRe(NTimes());
   vector<double> IFFTIm(NTimes());
   ifft(re, im, IFFTRe, IFFTIm);
@@ -98,11 +154,34 @@ double WaveformFT::Match(const WaveformFT& B, const std::vector<double>& Inverse
   /// the continuum-analog data, rather than just the return from the bare FFT sum.
   /// See, e.g., Eq. (A.33) [rather than Eq. (A.35)] of
   /// http://etd.caltech.edu/etd/available/etd-01122009-143851/
-  return 2.0*df*maxmag(IFFTRe, IFFTIm);
+  return 4.0*df*maxmag(IFFTRe, IFFTIm);
+  
+//   vector<double> re(NTimes()/2), im(NTimes()/2);
+//   cerr << "\nDEBUGGING!!! " << __LINE__ << " " << __FILE__ << endl;
+//   for(unsigned int i=NTimes()/2; i<NTimes(); ++i) {
+//     re[i-NTimes()/2] = (Re(i)*B.Re(i)+Im(i)*B.Im(i))*InversePSD[i];
+//     im[i-NTimes()/2] = (Im(i)*B.Re(i)-Re(i)*B.Im(i))*InversePSD[i];
+//   }
+//   vector<double> IFFTRe(NTimes()/2);
+//   vector<double> IFFTIm(NTimes()/2);
 }
 
 double WaveformFT::Match(const WaveformFT& B, const std::string& Detector) const {
   return Match(B, NoiseCurve(F(), Detector, true));
+}
+
+WaveformFT WaveformFT::operator-(const WaveformFT& b) const {
+  WaveformFT c(*this);
+  c.Re() = Re()-b.Re();
+  c.Im() = Im()-b.Im();
+  return c;
+}
+
+WaveformFT WaveformFT::operator*(const double b) const {
+  WaveformFT c(*this);
+  c.Re() *= b;
+  c.Im() *= b;
+  return c;
 }
 
 std::ostream& operator<<(std::ostream& os, const WaveformFT& a) {

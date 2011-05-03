@@ -50,14 +50,14 @@ ostream& operator<<(ostream& out, const vector<int>& v) {
 }
 
 ostream& operator<<(ostream& out, const Matrix<double>& M) {
-  for(unsigned int i=0; i<M.nrows()-1; ++i) {
+  for(unsigned int i=0; i<M.nrows(); ++i) {
     out << M[i] << endl;
   }
   return out;
 }
 
 ostream& operator<<(ostream& out, const Matrix<int>& M) {
-  for(unsigned int i=0; i<M.nrows()-1; ++i) {
+  for(unsigned int i=0; i<M.nrows(); ++i) {
     out << M[i] << endl;
   }
   return out;
@@ -771,7 +771,7 @@ double WU::maxmag(const vector<double>& Re, const vector<double>& Im) {
   if(Re.size()==0) { return 0.0; }
   double c=sqrt(Re[0]*Re[0]+Im[0]*Im[0]);
   for(unsigned int i=1; i<Im.size(); ++i) {
-    double d = sqrt(Re[i]*Re[i]+Im[i]*Im[i]);
+    const double d = sqrt(Re[i]*Re[i]+Im[i]*Im[i]);
     if(c<d) { c = d; }
   }
   return c;
