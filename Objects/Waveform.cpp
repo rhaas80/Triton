@@ -105,7 +105,7 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
 	  << "### hostname = " << hostname << endl
 	  << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\") // constructor from data file" << endl;
   
-  if(tolower(Format).find("NINJA") != string::npos
+  if(tolower(Format).find("ninja") != string::npos
      || (DataFileName.size()>4 && DataFileName.compare(DataFileName.size()-4,4,".bbh")==0)
      || (DataFileName.size()>8 && DataFileName.compare(DataFileName.size()-8,8,".minimal")==0)) {  //// Is this a NINJA-style metadata file?
     
