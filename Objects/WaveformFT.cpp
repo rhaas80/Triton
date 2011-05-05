@@ -29,12 +29,11 @@ WaveformFT::WaveformFT(const WaveformAtAPoint& W, const unsigned int WindowNCycl
   : WaveformAtAPoint(W), Normalized(false)
 {
   // Record that this is happening
-  history.seekp(0, ios_base::end);
-  history << "### WaveformFT(W, " << DetectorResponseAmp << ", " << DetectorResponsePhase << ");" << endl;
+  History() << "### WaveformFT(W, " << DetectorResponseAmp << ", " << DetectorResponsePhase << ");" << endl;
   
   // Set up the frequency data
   const double dt = W.T(1)-W.T(0);
-  T() = TimeToFrequency(W.T());
+  TRef() = TimeToFrequency(W.T());
   
   // Now get the actual data
   vector<double> zero(NTimes(), 0.0);
@@ -56,7 +55,7 @@ WaveformFT::WaveformFT(const WaveformAtAPoint& W, const unsigned int WindowNCycl
       RealT[j] = 0.0;
     }
     // Now find the following 2*N zero crossings
-    const double i0 = i;
+    const unsigned int i0 = i;
     const double t0 = W.T(i0);
     for(unsigned int j=0; j<WindowNCycles; ++j) {
       while(RealT[i++]*Sign<0) { }
@@ -71,24 +70,24 @@ WaveformFT::WaveformFT(const WaveformAtAPoint& W, const unsigned int WindowNCycl
   }
   
   // Do the actual work
-  fft(RealT, zero, Re(), Im());
+  fft(RealT, zero, ReRef(), ImRef());
   //// The return from fft needs to be multiplied by N*dt to correspond to the continuum FT
-  Re() *= NTimes()*dt;
-  Im() *= NTimes()*dt;
+  ReRef() *= NTimes()*dt;
+  ImRef() *= NTimes()*dt;
 }
 
 WaveformFT& WaveformFT::Normalize(const std::vector<double>& InversePSD) {
   if(Normalized) { return *this; }
   const double snr = SNR(InversePSD);
-  Re() /= snr;
-  Im() /= snr;
+  ReRef() /= snr;
+  ImRef() /= snr;
   Normalized = true;
   return *this;
 }
 
 WaveformFT& WaveformFT::ZeroAbove(const double Frequency) {
   for(unsigned int f=0; f<NTimes(); ++f) {
-    if(fabs(F(f))>Frequency) { Re(f) = 0.0; Im(f) = 0.0; }
+    if(fabs(F(f))>Frequency) { ReRef(f) = 0.0; ImRef(f) = 0.0; }
   }
   return *this;
 }
@@ -172,20 +171,20 @@ double WaveformFT::Match(const WaveformFT& B, const std::string& Detector) const
 
 WaveformFT WaveformFT::operator-(const WaveformFT& b) const {
   WaveformFT c(*this);
-  c.Re() = Re()-b.Re();
-  c.Im() = Im()-b.Im();
+  c.ReRef() = Re()-b.Re();
+  c.ImRef() = Im()-b.Im();
   return c;
 }
 
 WaveformFT WaveformFT::operator*(const double b) const {
   WaveformFT c(*this);
-  c.Re() *= b;
-  c.Im() *= b;
+  c.ReRef() *= b;
+  c.ImRef() *= b;
   return c;
 }
 
 std::ostream& operator<<(std::ostream& os, const WaveformFT& a) {
-  os << a.History()
+  os << a.HistoryStr()
      << "# [1] = " << a.TimeScale() << endl
      << "# [2] = Re{F[" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Varphi() << ")]}" << endl
      << "# [3] = Im{F[" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Vartheta() << ")]}" << endl;

@@ -18,18 +18,17 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
   : vartheta(Vartheta), varphi(Varphi)
 {
   // Record that this is happening
-  SetHistory(W.History());
-  history.seekp(0, ios_base::end);
-  history << "### WaveformAtAPoint(W, " << setprecision(16) << dt << ", " << Vartheta << ", " << Varphi << ");" << endl;
+  SetHistory(W.HistoryStr());
+  History() << "### WaveformAtAPoint(W, " << setprecision(16) << dt << ", " << Vartheta << ", " << Varphi << ");" << endl;
   
   // Make sure to copy over some other data
-  TypeIndex() = W.TypeIndex();
-  TimeScale() = W.TimeScale();
+  TypeIndexRef() = W.TypeIndex();
+  TimeScaleRef() = W.TimeScale();
   
   // Store the vartheta, varphi data instead of l,m data
-  LM() = Matrix<int>(1, 2);
-  L(0) = vartheta;
-  M(0) = varphi;
+  LMRef() = Matrix<int>(1, 2);
+  LRef(0) = vartheta;
+  MRef(0) = varphi;
   
   // Construct a grid with even spacing dt whose size is the next power of 2
   const unsigned int N1 = floor((W.T().back()-W.T(0))/dt);
@@ -38,28 +37,24 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
   for(unsigned int i=0; i<N2; ++i) {
     NewTime[i] = W.T(0) + i*dt;
   }
-  mag = Matrix<double>(1, N2, 0.0);
-  arg = Matrix<double>(1, N2, 0.0);
+  MagRef() = Matrix<double>(1, N2, 0.0);
+  ArgRef() = Matrix<double>(1, N2, 0.0);
   
   // Step through the modes interpolating to the new time
   vector<double> SWSHAmp, SWSHPhi, Amplitude, Phase;
   SWSH(W.LM().RawData(), vartheta, varphi, SWSHAmp, SWSHPhi);
-//   cout << "\nDebugging at " << __LINE__ << " of " << __FILE__ << endl;
-//   cout << "W.LM() = " << W.LM();
-//   cout << "SWSHAmp = " << SWSHAmp << endl;
-//   cout << "SWSHPhi = " << SWSHPhi << endl;
   for(unsigned int mode=0; mode<W.NModes(); ++mode) { // Loop over components
     Amplitude = SWSHAmp[mode] * WaveformUtilities::Interpolate(W.T(), W.Mag(mode), NewTime, 0.0);
     Phase     = SWSHPhi[mode] + WaveformUtilities::Interpolate(W.T(), W.Arg(mode), NewTime, W.Arg(mode).back());
-    Re() += Amplitude * cos(Phase);
-    Im() += Amplitude * sin(Phase);
+    ReRef() += Amplitude * cos(Phase);
+    ImRef() += Amplitude * sin(Phase);
   }
-  t = NewTime;
-  r = WaveformUtilities::Interpolate(W.T(), W.R(), t);
+  TRef() = NewTime;
+  RRef() = WaveformUtilities::Interpolate(W.T(), W.R(), T());
 }
 
 std::ostream& operator<<(std::ostream& os, const WaveformAtAPoint& a) {
-  os << a.History()
+  os << a.HistoryStr()
      << "# [1] = " << a.TimeScale() << endl
      << "# [2] = Re{" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Varphi() << ")}" << endl
      << "# [3] = Im{" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Vartheta() << ")}" << endl;

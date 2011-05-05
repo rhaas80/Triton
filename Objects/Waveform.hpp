@@ -8,10 +8,6 @@
 namespace WaveformObjects {
   
   class Waveform {
-    friend class Waveforms;
-    friend class WaveformAtAPoint;
-    friend class WaveformFT;
-    friend class WaveformReFT;
     
   public:  // Constructors and Destructor
     Waveform();
@@ -40,12 +36,12 @@ namespace WaveformObjects {
     Waveform& operator=(const Waveform& b);
     Waveform operator/(const Waveform& b) const;
     
-  public:  // Access functions
+  public:  // Getty access functions
     // Basic Waveform information
     inline const unsigned int NTimes() const { return t.size(); }
     inline const unsigned int NModes() const { return lm.nrows(); }
     inline const unsigned int TypeIndex() const { return typeIndex; }
-    inline const std::string History() const { return history.str(); }
+    inline const std::string HistoryStr() const { return history.str(); }
     inline const std::string TimeScale() const { return timeScale; }
     // Data from a single mode at an instant of time
     inline const double T(const unsigned int Time) const { return t[Time]; }
@@ -65,28 +61,29 @@ namespace WaveformObjects {
     inline const WaveformUtilities::Matrix<double>& Mag() const { return mag; }
     inline const WaveformUtilities::Matrix<double>& Arg() const { return arg; }
     
-  private:  // Access functions
+  public:  // Setty access functions
     // Basic Waveform information
-    inline unsigned int& TypeIndex() { return typeIndex; }
-    void SetHistory(const std::string& Hist) { history.str(Hist); }
-    inline std::string& TimeScale() { return timeScale; }
+    inline unsigned int& TypeIndexRef() { return typeIndex; }
+    void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
+    inline std::stringstream& History() { return history; }
+    inline std::string& TimeScaleRef() { return timeScale; }
     // Data from a single mode at an instant of time
-    inline double& T(const unsigned int Time) { return t[Time]; }
-    inline double& R(const unsigned int Time) { return r[Time]; }
-    inline double& Mag(const unsigned int Mode, const unsigned int Time) { return mag[Mode][Time]; }
-    inline double& Arg(const unsigned int Mode, const unsigned int Time) { return arg[Mode][Time]; }
+    inline double& TRef(const unsigned int Time) { return t[Time]; }
+    inline double& RRef(const unsigned int Time) { return r[Time]; }
+    inline double& MagRef(const unsigned int Mode, const unsigned int Time) { return mag[Mode][Time]; }
+    inline double& ArgRef(const unsigned int Mode, const unsigned int Time) { return arg[Mode][Time]; }
     // Data from a single mode throughout time
-    inline std::vector<double>& T() { return t; }
-    inline std::vector<double>& R() { return r; }
-    inline int& L(const unsigned int Mode) { return lm[Mode][0]; }
-    inline int& M(const unsigned int Mode) { return lm[Mode][1]; }
-    inline std::vector<int>& LM(const unsigned int Mode) { return lm[Mode]; }
-    inline std::vector<double>& Mag(const unsigned int Mode) { return mag[Mode]; }
-    inline std::vector<double>& Arg(const unsigned int Mode) { return arg[Mode]; }
+    inline std::vector<double>& TRef() { return t; }
+    inline std::vector<double>& RRef() { return r; }
+    inline int& LRef(const unsigned int Mode) { return lm[Mode][0]; }
+    inline int& MRef(const unsigned int Mode) { return lm[Mode][1]; }
+    inline std::vector<int>& LMRef(const unsigned int Mode) { return lm[Mode]; }
+    inline std::vector<double>& MagRef(const unsigned int Mode) { return mag[Mode]; }
+    inline std::vector<double>& ArgRef(const unsigned int Mode) { return arg[Mode]; }
     // Data for all modes throughout time
-    inline WaveformUtilities::Matrix<int>& LM() { return lm; }
-    inline WaveformUtilities::Matrix<double>& Mag() { return mag; }
-    inline WaveformUtilities::Matrix<double>& Arg() { return arg; }
+    inline WaveformUtilities::Matrix<int>& LMRef() { return lm; }
+    inline WaveformUtilities::Matrix<double>& MagRef() { return mag; }
+    inline WaveformUtilities::Matrix<double>& ArgRef() { return arg; }
     
   public:  // Member functions
     // Handy description routines

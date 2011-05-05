@@ -389,8 +389,8 @@ vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
   
   //// Error if not found
   if(TwomTwo==-1) {
-    cerr << "Can't find the 2,-2 component of the data!" << endl;
-    exit(1);
+    cerr << "\nlm=\n" << lm << endl;
+    throw("Bad L,M data");
   }
   
   //// Return differentiated Arg data
@@ -767,7 +767,7 @@ Waveform& Waveform::DropNegativeMModes() {
 }
 
 Waveform& Waveform::Conjugate() {
-  Arg() = -Arg();
+  ArgRef() = -Arg();
   return *this;
 }
 
@@ -1263,7 +1263,7 @@ void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
 
 // Related function
 ostream& operator<<(ostream& os, const Waveform& a) {
-  os << a.History()
+  os << a.HistoryStr()
      << "# [1] = " << a.TimeScale() << endl;
   for(unsigned int Mode=0; Mode<a.NModes(); ++Mode) {
     os << "# [" << 2*Mode+2 << "] = Mag{" << Waveform::Types[a.TypeIndex()] << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl;

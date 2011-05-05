@@ -77,7 +77,7 @@ void Waveforms::AlignPhases(const double& AlignmentPoint) {
   int I = int(floor(AlignmentPoint * Ws[0].NTimes()));
   for(unsigned int i=1; i<Ws.size(); ++i) { // Loop over Waveforms
     for(unsigned int j=0; j<Ws[i].NModes(); ++j) { // Loop over components
-      Ws[i].Arg(j) = Ws[i].Arg(j) + (2.0 * M_PI * round((Ws[i-1].Arg(j,I)-Ws[i].Arg(j,I))/(2.0*M_PI)));
+      Ws[i].ArgRef(j) = Ws[i].Arg(j) + (2.0 * M_PI * round((Ws[i-1].Arg(j,I)-Ws[i].Arg(j,I))/(2.0*M_PI)));
     }
   }
   PhasesAligned = true;
@@ -122,9 +122,9 @@ Waveform Waveforms::Extrapolate(const int ExtrapolationOrder) {
       phiFit.fit();
       
       //// Evaluate at 0 and set the relevant component of Extrap
-      Extrap.R(i) = numeric_limits<double>::infinity( );
-      Extrap.Mag(j,i) = ampFit.a[0];
-      Extrap.Arg(j,i) = phiFit.a[0];
+      Extrap.RRef(i) = numeric_limits<double>::infinity( );
+      Extrap.MagRef(j,i) = ampFit.a[0];
+      Extrap.ArgRef(j,i) = phiFit.a[0];
     }
   }
   

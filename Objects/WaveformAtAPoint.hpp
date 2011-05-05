@@ -14,8 +14,6 @@ namespace WaveformObjects {
   /// and progressively interpolates each mode and evaluates it at the desired point.
   
   class WaveformAtAPoint : public Waveform {
-    friend class WaveformFT;
-    friend class WaveformReFT;
     
   private:  // Member data
     double vartheta;
@@ -26,13 +24,13 @@ namespace WaveformObjects {
     WaveformAtAPoint(const Waveform& W, const double dt, const double Vartheta, const double Varphi);
     ~WaveformAtAPoint() { }
     
-  private: // Member functions
-    inline double& Vartheta() { return vartheta; }
-    inline double& Varphi() { return varphi; }
-    inline double& Re(const unsigned int i) { return Mag(0,i); }
-    inline double& Im(const unsigned int i) { return Arg(0,i); }
-    inline std::vector<double>& Re() { return Mag(0); }
-    inline std::vector<double>& Im() { return Arg(0); }
+  public: // Member functions
+    inline double& VarthetaRef() { return vartheta; }
+    inline double& VarphiRef() { return varphi; }
+    inline double& ReRef(const unsigned int i) { return MagRef(0,i); }
+    inline double& ImRef(const unsigned int i) { return ArgRef(0,i); }
+    inline std::vector<double>& ReRef() { return MagRef(0); }
+    inline std::vector<double>& ImRef() { return ArgRef(0); }
     
   public:  // Member functions
     inline const double Vartheta() const { return vartheta; }
@@ -41,6 +39,7 @@ namespace WaveformObjects {
     inline const double Im(const unsigned int i) const { return Arg(0,i); }
     inline const std::vector<double>& Re() const { return Mag(0); }
     inline const std::vector<double>& Im() const { return Arg(0); }
+    
   };
   
 } // namespace WaveformObjects
