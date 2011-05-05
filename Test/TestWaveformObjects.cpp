@@ -65,39 +65,39 @@ int main() {
   
   if(WriteFiles) {
     cout << "Writing " << OutWaveformFT << " ... " << flush;
-    ofstream ofs3(OutWaveformFT.c_str(), ofstream::out);
-    ofs3 << setprecision(14) << flush;
-    ofs3 << WFT;
-    ofs3.close();
+    ofstream ofs(OutWaveformFT.c_str(), ofstream::out);
+    ofs << setprecision(14) << flush;
+    ofs << WFT;
+    ofs.close();
     cout << "☺" << endl;
   }
   
   vector<double> InversePSD = InverseNoiseCurve(WFT.F(), Detector);
-  cout << "WFT.SNR() = " << WFT.SNR(InversePSD) << endl;
-  cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << endl;
-  cout << "WFT.Match(WFT, InversePSD) = " << WFT.Match(WFT, InversePSD) << endl;
+  cout << "WFT.SNR() = " << WFT.SNR(InversePSD) << " [76 is typical]" << endl;
+  cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << " [5850 is typical]" << endl;
+  cout << "WFT.Match(WFT, InversePSD) = " << WFT.Match(WFT, InversePSD) << " [5850 is typical]" << endl;
   cout << "Normalizing" << endl;
   WFT.Normalize(InversePSD);
-  cout << "WFT.SNR() = " << WFT.SNR(InversePSD) << endl;
-  cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << endl;
-  cout << "WFT.Match(WFT, InversePSD) = " << WFT.Match(WFT, InversePSD) << endl;
+  cout << "WFT.SNR() = " << WFT.SNR(InversePSD) << " [This should be 1]" << endl;
+  cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << " [This should be 1]" << endl;
+  cout << "WFT.Match(WFT, InversePSD) = " << WFT.Match(WFT, InversePSD) << " [This should be 1]" << endl;
   
   // Test that WFT.Re() is even and WFT.Im() is odd
-  return 0;
-  cout << "\n\n\n" << endl;
-  const double Tol = 1e-13;
+  const double Tol = 1e-7;
+  cout << "\n\nChecking that \\tilde{h}(-f) = \\tilde{h}^\\ast(f) to within " << Tol << " ..." << endl;
   const WaveformFT& F = WFT;
   const double Max = max(maxfabs(F.Re()), maxfabs(F.Im()));
   for(unsigned int i=0; i<F.NTimes()/2; ++i) {
-    const double a = 1.0 - F.Re(i)/F.Re(F.NTimes()-i-1);
-    const double b = 1.0 + F.Im(i)/F.Im(F.NTimes()-i-1);
+    const double a = 1.0 - F.Re(i)/F.Re(F.NTimes()-2-i);
+    const double b = 1.0 + F.Im(i)/F.Im(F.NTimes()-2-i);
     if(a==a && abs(a)>Tol && fabs(F.Re(i))>Tol*Max) {
-      cout << "Re " << i << " " << F.Re(i) << " " << F.Re(F.NTimes()-i-1) << " " << a << endl;
+      cout << "Re " << i << " " << F.Re(i) << " " << F.Re(F.NTimes()-2-i) << " " << a << endl;
     }
     if(b==b && abs(b)>Tol && fabs(F.Im(i))>Tol*Max) {
-      cout << "Im " << i << " " << F.Im(i) << " " << F.Im(F.NTimes()-i-1) << " " << b << endl;
+      cout << "Im " << i << " " << F.Im(i) << " " << F.Im(F.NTimes()-2-i) << " " << b << endl;
     }
   }
+  cout << "Done checking." << endl;
   
   return 0;
 }

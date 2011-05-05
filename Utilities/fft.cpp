@@ -1,6 +1,7 @@
 #include "fft.hpp"
 
 #include "NumericalRecipes.hpp"
+#include "VectorFunctions.hpp"
 #include "Utilities.hpp"
 
 using namespace std;
@@ -100,12 +101,24 @@ void WU::ifft(const vector<double>& ReF, const vector<double>& ImF, vector<doubl
   return;
 }
 
-void WU::fft (const vector<double>& T, const vector<double>& ReT, const vector<double>& ImT, vector<double>& F, vector<double>& ReF, vector<double>& ImF) {
+void WU::fft(const vector<double>& T, const vector<double>& ReT, const vector<double>& ImT, vector<double>& F, vector<double>& ReF, vector<double>& ImF) {
   F = TimeToFrequency(T);
   WU::fft(ReT, ImT, ReF, ImF);
   return;
 }
 
+void realft(VecDoub_IO &Data, const Int isign);
+
+void  WU::realfft(std::vector<double>& data) {
+  realft(data, 1);
+  data /= data.size();
+  return;
+}
+
+void WU::realifft(std::vector<double>& data) {
+  realft(data, -1);
+  return;
+}
 
 
 //// Numerical Recipes routines
