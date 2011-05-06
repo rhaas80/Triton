@@ -45,7 +45,7 @@ namespace WaveformObjects {
     inline const std::string TimeScale() const { return timeScale; }
     // Data from a single mode at an instant of time
     inline const double T(const unsigned int Time) const { return t[Time]; }
-    inline const double R(const unsigned int Time) const { return r[Time]; }
+    inline const double R(const unsigned int Time) const { if(r.size()>1) {return r[Time]; } else { return r[0]; } }
     inline const double Mag(const unsigned int Mode, const unsigned int Time) const { return mag[Mode][Time]; }
     inline const double Arg(const unsigned int Mode, const unsigned int Time) const { return arg[Mode][Time]; }
     // Data from a single mode throughout time
@@ -69,7 +69,7 @@ namespace WaveformObjects {
     inline std::string& TimeScaleRef() { return timeScale; }
     // Data from a single mode at an instant of time
     inline double& TRef(const unsigned int Time) { return t[Time]; }
-    inline double& RRef(const unsigned int Time) { return r[Time]; }
+    inline double& RRef(const unsigned int Time) { if(r.size()>1) {return r[Time]; } else { return r[0]; } }
     inline double& MagRef(const unsigned int Mode, const unsigned int Time) { return mag[Mode][Time]; }
     inline double& ArgRef(const unsigned int Mode, const unsigned int Time) { return arg[Mode][Time]; }
     // Data from a single mode throughout time

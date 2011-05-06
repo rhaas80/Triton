@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iomanip>
 
-#include "WaveformFT.hpp"
+#include "WaveformAtAPointFT.hpp"
 #include "NoiseCurves.hpp";
 #include "VectorFunctions.hpp";
 
@@ -23,7 +23,7 @@ int main() {
   const double DistanceInMegaparsecs = 100;
   const double dt = 1.0/IniLIGOSamplingFreq;
   
-  const bool WriteFiles = false;
+  const bool WriteFiles = true;
   
   cout << "Reading " << InFile << " ... " << flush;
   Waveform W(InFile, "MagArg");
@@ -60,7 +60,7 @@ int main() {
     cout << "☺" << endl;
   }
   
-  WaveformFT WFT(WAAP);
+  WaveformAtAPointFT WFT(WAAP);
   //WFT = WFT*(1.0/WFT.NTimes());
   
   if(WriteFiles) {
@@ -82,22 +82,22 @@ int main() {
   cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << " [This should be 1]" << endl;
   cout << "WFT.Match(WFT, InversePSD) = " << WFT.Match(WFT, InversePSD) << " [This should be 1]" << endl;
   
-  // Test that WFT.Re() is even and WFT.Im() is odd
-  const double Tol = 1e-7;
-  cout << "\n\nChecking that \\tilde{h}(-f) = \\tilde{h}^\\ast(f) to within " << Tol << " ..." << endl;
-  const WaveformFT& F = WFT;
-  const double Max = max(maxfabs(F.Re()), maxfabs(F.Im()));
-  for(unsigned int i=0; i<F.NTimes()/2; ++i) {
-    const double a = 1.0 - F.Re(i)/F.Re(F.NTimes()-2-i);
-    const double b = 1.0 + F.Im(i)/F.Im(F.NTimes()-2-i);
-    if(a==a && abs(a)>Tol && fabs(F.Re(i))>Tol*Max) {
-      cout << "Re " << i << " " << F.Re(i) << " " << F.Re(F.NTimes()-2-i) << " " << a << endl;
-    }
-    if(b==b && abs(b)>Tol && fabs(F.Im(i))>Tol*Max) {
-      cout << "Im " << i << " " << F.Im(i) << " " << F.Im(F.NTimes()-2-i) << " " << b << endl;
-    }
-  }
-  cout << "Done checking." << endl;
+//   // Test that WFT.Re() is even and WFT.Im() is odd
+//   const double Tol = 1e-7;
+//   cout << "\n\nChecking that \\tilde{h}(-f) = \\tilde{h}^\\ast(f) to within " << Tol << " ..." << endl;
+//   const WaveformAtAPointFT& F = WFT;
+//   const double Max = max(maxfabs(F.Re()), maxfabs(F.Im()));
+//   for(unsigned int i=0; i<F.NTimes()/2; ++i) {
+//     const double a = 1.0 - F.Re(i)/F.Re(F.NTimes()-2-i);
+//     const double b = 1.0 + F.Im(i)/F.Im(F.NTimes()-2-i);
+//     if(a==a && abs(a)>Tol && fabs(F.Re(i))>Tol*Max) {
+//       cout << "Re " << i << " " << F.Re(i) << " " << F.Re(F.NTimes()-2-i) << " " << a << endl;
+//     }
+//     if(b==b && abs(b)>Tol && fabs(F.Im(i))>Tol*Max) {
+//       cout << "Im " << i << " " << F.Im(i) << " " << F.Im(F.NTimes()-2-i) << " " << b << endl;
+//     }
+//   }
+//   cout << "Done checking." << endl;
   
   return 0;
 }

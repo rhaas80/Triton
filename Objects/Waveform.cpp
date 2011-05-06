@@ -184,7 +184,7 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
     }
     ifs.close();
     
-    r = vector<double>(t.size(), 0.0);
+    r = vector<double>(1, 0.0);
     
     //// Search for TimeScale, LM info, Format, and Waveform Type
     //LM = vector<vector<int> > (mag.size(), vector<int>(2, 0));
@@ -217,7 +217,7 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
     for(unsigned int i=0; i<t.size(); ++i) {
       t[i] = Data[i][0];
     }
-    r = vector<double>(t.size(), 0.0);
+    r = vector<double>(1, 0.0);
     
     //// Get mag and arg data
     // The data has vectors of vectors of components at a given time;
@@ -328,7 +328,7 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
 //       ++i;
 //     }
 //   }
-//   r.resize(t.size(), 0.0);
+//   r.resize(1, 0.0);
 // }
 
 
@@ -527,8 +527,8 @@ Waveform& Waveform::DropBefore(const double time) {
   history << "### this->DropBefore(" << setprecision(16) << time << ")" << endl;
   unsigned int i=0;
   while(i<t.size()-1 && t[i+1]<=time) { ++i; }
+  if(r.size()==t.size()) { r.erase(r.begin(), r.begin()+i); }
   t.erase(t.begin(), t.begin()+i);
-  r.erase(r.begin(), r.begin()+i);
   for(unsigned int j=0; j<NModes(); ++j) {
     mag[j].erase(mag[j].begin(), mag[j].begin()+i);
     arg[j].erase(arg[j].begin(), arg[j].begin()+i);
@@ -540,8 +540,8 @@ Waveform& Waveform::DropAfter(const double time) {
   history << "### this->DropAfter(" << setprecision(16) << time << ")" << endl;
   unsigned int i=t.size()-1;
   while(i>0 && t[i]>time) { --i; }
+  if(r.size()==t.size()) { r.erase(r.begin()+i, r.end()); }
   t.erase(t.begin()+i, t.end());
-  r.erase(r.begin()+i, r.end());
   for(unsigned int j=0; j<NModes(); ++j) {
     mag[j].erase(mag[j].begin()+i, mag[j].end());
     arg[j].erase(arg[j].begin()+i, arg[j].end());
@@ -599,7 +599,7 @@ Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
   vector<vector<double> > Area;
   vector<string> Header;
   ReadDatFile(AreaFileName,  Area,  Header);
-  r = vector<double>(Area.size());
+  r.resize(Area.size());
   for(unsigned int i=0; i<r.size(); ++i) {
     r[i] = sqrt(Area[i][1]/(4*M_PI));
   }
@@ -607,23 +607,39 @@ Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
 }
 
 Waveform& Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName, const double ADMMass) {
+  if(r.size()==0) { throw("Bad size for r data."); }
   history << "### this->SetTimeFromLapseSurfaceIntegral(\"" << LapseFileName << "\", " << setprecision(16) << ADMMass << ")" << endl;
   //// Read data files
   vector<vector<double> > LapseData;
   vector<string> Header;
   ReadDatFile(LapseFileName,  LapseData,  Header);
   vector<double> Lapse(LapseData.size());
-  for(unsigned int i=0; i<Lapse.size(); ++i) {
-    Lapse[i] = LapseData[i][1]/((4*M_PI)*(r[i]*r[i]));
+  if(Lapse.size() != r.size() && r.size()!=1) {
+    cerr << "\nLapse.size()=" << Lapse.size() << "\tr.size()=" << r.size() << "\tLapseFileName=" << LapseFileName << endl;
+    throw("Bad size for Lapse data");
   }
-  t = cumtrapz(t, Lapse/sqrt(((-2.0*ADMMass)/r) + 1.0)) + t[0];
+  if(r.size()==1) {
+    for(unsigned int i=0; i<Lapse.size(); ++i) {
+      Lapse[i] = LapseData[i][1]/((4*M_PI)*(r[0]*r[0]));
+    }
+    t = cumtrapz(t, Lapse/sqrt(((-2.0*ADMMass)/r[0]) + 1.0)) + t[0];
+  } else {
+    for(unsigned int i=0; i<Lapse.size(); ++i) {
+      Lapse[i] = LapseData[i][1]/((4*M_PI)*(r[i]*r[i]));
+    }
+    t = cumtrapz(t, Lapse/sqrt(((-2.0*ADMMass)/r) + 1.0)) + t[0];
+  }
   return *this;
 }
 
 Waveform& Waveform::TortoiseOffset(const double ADMMass) {
   history << "### this->TortoiseOffset(" << setprecision(16) << ADMMass << ")" << endl;
   timeScale = "(t-r*)";
-  t = t - (r + (2.0*ADMMass)*log((r/(2.0*ADMMass))-1.0));
+  if(r.size()==1) {
+    t = t - (r[0] + (2.0*ADMMass)*log((r[0]/(2.0*ADMMass))-1.0));
+  } else {
+    t = t - (r + (2.0*ADMMass)*log((r/(2.0*ADMMass))-1.0));
+  }
   return *this;
 }
 
@@ -648,8 +664,8 @@ Waveform& Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSol
   if(typeIndex>5) { throw(("Cannot SetPhysicalDistance for Waveform of Type " + Waveform::Types[typeIndex]).c_str()); }
   double MassInSeconds = CurrentUnitMassInSolarMasses * SolarMass * NewtonsConstant / (SpeedOfLight*SpeedOfLight*SpeedOfLight);
   double DistanceInMeters = DistanceInMegaparsecs * OneMegaparsec;
-  mag = mag * (ScaleMag(1.0/MassInSeconds, typeIndex) * SpeedOfLight / DistanceInMeters);
-  t = t * MassInSeconds;
+  mag *= (ScaleMag(1.0/MassInSeconds, typeIndex) * SpeedOfLight / DistanceInMeters);
+  t *= MassInSeconds;
   r = vector<double>(r.size(), DistanceInMeters);
   typeIndex = typeIndex + 9;
   if(timeScale.find("/M") != string::npos) { timeScale.erase(timeScale.find("/M"),2); }
@@ -767,7 +783,7 @@ Waveform& Waveform::DropNegativeMModes() {
 }
 
 Waveform& Waveform::Conjugate() {
-  ArgRef() = -Arg();
+  ArgRef() *= -1.0;
   return *this;
 }
 
@@ -907,7 +923,7 @@ Waveform Waveform::HybridizeWith(const Waveform& b, const double t1, const doubl
   int it=c.t.size()-1;
   while(c.T(it)>b.T().back() && it>0) { --it; }
   c.t.erase(c.t.begin()+it, c.t.end());
-  c.r = vector<double>(NTimes(), 0.0);
+  c.r = vector<double>(1, 0.0);
   c.mag.resize(NModes(), NTimes());
   c.arg.resize(NModes(), NTimes());
   unsigned int J01=0, J12=c.t.size()-1;

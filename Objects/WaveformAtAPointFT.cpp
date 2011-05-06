@@ -1,6 +1,6 @@
 #include "NumericalRecipes.hpp"
 
-#include "WaveformFT.hpp"
+#include "WaveformAtAPointFT.hpp"
 
 #include "NoiseCurves.hpp"
 #include "VectorFunctions.hpp"
@@ -20,23 +20,23 @@ double BumpFunction(const double x, const double x0, const double x1) {
   return 1.0 / (1.0 + exp(1.0/t - 1.0/(1-t)));
 }
 
-WaveformFT::WaveformFT()
+WaveformAtAPointFT::WaveformAtAPointFT()
   : Normalized(false)
 { }
 
-WaveformFT::WaveformFT(const WaveformAtAPoint& W, const unsigned int WindowNCycles,
+WaveformAtAPointFT::WaveformAtAPointFT(const WaveformAtAPoint& W, const unsigned int WindowNCycles,
 		       const double DetectorResponseAmp, const double DetectorResponsePhase)
   : WaveformAtAPoint(W), Normalized(false)
 {
   // Record that this is happening
-  History() << "### WaveformFT(W, " << DetectorResponseAmp << ", " << DetectorResponsePhase << ");" << endl;
+  History() << "### WaveformAtAPointFT(W, " << DetectorResponseAmp << ", " << DetectorResponsePhase << ");" << endl;
   
   // Set up the frequency data
   const double dt = W.T(1)-W.T(0);
-  TRef() = TimeToFrequency(W.T());
+  TRef() = TimeToPositiveFrequencies(W.T());
+  RRef().resize(NTimes());
   
   // Now get the actual data
-  vector<double> zero(NTimes(), 0.0);
   vector<double> RealT;
   if(DetectorResponsePhase!=0.0) {
     RealT = W.Re()*(DetectorResponseAmp*cos(DetectorResponsePhase)) - W.Im()*(DetectorResponseAmp*sin(DetectorResponsePhase));
@@ -70,13 +70,21 @@ WaveformFT::WaveformFT(const WaveformAtAPoint& W, const unsigned int WindowNCycl
   }
   
   // Do the actual work
-  fft(RealT, zero, ReRef(), ImRef());
-  //// The return from fft needs to be multiplied by N*dt to correspond to the continuum FT
-  ReRef() *= NTimes()*dt;
-  ImRef() *= NTimes()*dt;
+  realdft(RealT);
+  // The return from realdft needs to be multiplied by dt to correspond to the continuum FT
+  ReRef().resize(NTimes());
+  ImRef().resize(NTimes());
+  for(unsigned int i=0; i<RealT.size()/2; ++i) {
+    ReRef(i) = dt*RealT[2*i];
+    ImRef(i) = dt*RealT[2*i+1];
+  }
+  // Sort out some funky storage
+  ReRef().back() = 0.0; // RealT[1]; // just ignore data at the Nyquist frequency
+  ImRef().back() = 0.0;
+  ImRef(0) = 0.0; 
 }
 
-WaveformFT& WaveformFT::Normalize(const std::vector<double>& InversePSD) {
+WaveformAtAPointFT& WaveformAtAPointFT::Normalize(const std::vector<double>& InversePSD) {
   if(Normalized) { return *this; }
   const double snr = SNR(InversePSD);
   ReRef() /= snr;
@@ -85,14 +93,14 @@ WaveformFT& WaveformFT::Normalize(const std::vector<double>& InversePSD) {
   return *this;
 }
 
-WaveformFT& WaveformFT::ZeroAbove(const double Frequency) {
+WaveformAtAPointFT& WaveformAtAPointFT::ZeroAbove(const double Frequency) {
   for(unsigned int f=0; f<NTimes(); ++f) {
     if(fabs(F(f))>Frequency) { ReRef(f) = 0.0; ImRef(f) = 0.0; }
   }
   return *this;
 }
 
-double WaveformFT::InnerProduct(const WaveformFT& B, const std::vector<double>& InversePSD) const {
+double WaveformAtAPointFT::InnerProduct(const WaveformAtAPointFT& B, const std::vector<double>& InversePSD) const {
   if(NTimes() != B.NTimes()) {
     cerr << "\nthis->NTimes()=" << NTimes() << "\tB.NTimes()=" << B.NTimes() << endl;
     throw("Incompatible sizes");
@@ -105,11 +113,11 @@ double WaveformFT::InnerProduct(const WaveformFT& B, const std::vector<double>& 
   for(unsigned int i=0; i<NTimes(); ++i) {
     InnerProduct += (Re(i)*B.Re(i)+Im(i)*B.Im(i))*InversePSD[i];
   }
-  InnerProduct = 2*(F(1)-F(0))*InnerProduct;
-  return InnerProduct; // Remember: double-sided frequency
+  InnerProduct = 4*(F(1)-F(0))*InnerProduct; // Remember: single-sided frequency
+  return InnerProduct;
 }
 
-double WaveformFT::SNR(const std::vector<double>& InversePSD) const {
+double WaveformAtAPointFT::SNR(const std::vector<double>& InversePSD) const {
   if(NTimes() != InversePSD.size()) {
     cerr << "\nWaveform size=" << NTimes() << "\tInversePSD.size()=" << InversePSD.size() << endl;
     throw("Incompatible sizes");
@@ -120,17 +128,19 @@ double WaveformFT::SNR(const std::vector<double>& InversePSD) const {
 //   for(unsigned int i=NTimes()/2; i<NTimes(); ++i) {
     SNRSquared += (Re(i)*Re(i)+Im(i)*Im(i))*InversePSD[i];
   }
-  SNRSquared = 2*(F(1)-F(0))*SNRSquared;
-  return sqrt(SNRSquared); // Remember: double-sided frequency
+  SNRSquared = 4*(F(1)-F(0))*SNRSquared; // Remember: single-sided frequency
+  return sqrt(SNRSquared);
 }
 
-double WaveformFT::Match(const WaveformFT& B, const std::vector<double>& InversePSD) const {
+double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<double>& InversePSD) const {
+  const unsigned int n = NTimes();
+  const unsigned int N = 2*(n-1);
 //   if(!Normalized || !B.Normalized) {
-//     cerr << "\n\nWARNING!!!  Matching non-normalized WaveformFT objects.  WARNING!!!\n" << endl;
+//     cerr << "\n\nWARNING!!!  Matching non-normalized WaveformAtAPointFT objects.  WARNING!!!\n" << endl;
 //   }
-  if(NTimes() != B.NTimes() || NTimes() != InversePSD.size()) {
-    cerr << "Waveform sizes, " << NTimes() << " and " << B.NTimes()
-	 << ", are not compatible with InversePSD size, " << InversePSD.size() << endl;
+  if(n != B.NTimes() || n != InversePSD.size()) {
+    cerr << "Waveform sizes, " << n << " and " << B.NTimes()
+	 << ", are not compatible with InversePSD size, " << InversePSD.size() << "." << endl;
     throw("Incompatible sizes");
   }
   const double df = F(1)-F(0);
@@ -138,52 +148,45 @@ double WaveformFT::Match(const WaveformFT& B, const std::vector<double>& Inverse
     cerr << "Waveform frequency steps, " << df << " and " << B.F(1)-B.F(0) << ", are not compatible in Match." << endl;
     throw("Incompatible resolutions");
   }
-  // s1 x s2* = (a1 + i b1) (a2 - i b2) = (a1 a2 + b1 b2) + i(b1 a2 - a1 b2)
-  vector<double> re(NTimes(),0.0);
-  vector<double> im(NTimes(),0.0);
-  for(unsigned int i=NTimes()/2; i<NTimes(); ++i) {
-    re[i] = (Re(i)*B.Re(i)+Im(i)*B.Im(i))*InversePSD[i];
-    im[i] = (Im(i)*B.Re(i)-Re(i)*B.Im(i))*InversePSD[i];
+  // s1 s2* = (a1 + i b1) (a2 - i b2) = (a1 a2 + b1 b2) + i(b1 a2 - a1 b2)
+  WaveformUtilities::WrapVecDoub data(2*N);
+  for(unsigned int i=0; i<n; ++i) {
+    data.real(i) = (Re(i)*B.Re(i)+Im(i)*B.Im(i))*InversePSD[i];
+    data.imag(i) = (Im(i)*B.Re(i)-Re(i)*B.Im(i))*InversePSD[i];
   }
-  vector<double> IFFTRe(NTimes());
-  vector<double> IFFTIm(NTimes());
-  ifft(re, im, IFFTRe, IFFTIm);
+  idft(data);
+  double maxmag=sqrt(SQR(data.real(0)) + SQR(data.imag(0)));
+  for(unsigned int i=1; i<N; ++i) {
+    const double magi = sqrt(SQR(data.real(i)) + SQR(data.imag(i)));
+    if(magi>maxmag) { maxmag = magi; }
+  }
   /// The return from ifft is just the bare FFT sum, so we multiply by df to get
   /// the continuum-analog FT.  This is correct because the input data (re,im) are
   /// the continuum-analog data, rather than just the return from the bare FFT sum.
   /// See, e.g., Eq. (A.33) [rather than Eq. (A.35)] of
   /// http://etd.caltech.edu/etd/available/etd-01122009-143851/
-  return 4.0*df*maxmag(IFFTRe, IFFTIm);
-  
-//   vector<double> re(NTimes()/2), im(NTimes()/2);
-//   cerr << "\nDEBUGGING!!! " << __LINE__ << " " << __FILE__ << endl;
-//   for(unsigned int i=NTimes()/2; i<NTimes(); ++i) {
-//     re[i-NTimes()/2] = (Re(i)*B.Re(i)+Im(i)*B.Im(i))*InversePSD[i];
-//     im[i-NTimes()/2] = (Im(i)*B.Re(i)-Re(i)*B.Im(i))*InversePSD[i];
-//   }
-//   vector<double> IFFTRe(NTimes()/2);
-//   vector<double> IFFTIm(NTimes()/2);
+  return 4.0*df*maxmag;
 }
 
-double WaveformFT::Match(const WaveformFT& B, const std::string& Detector) const {
+double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::string& Detector) const {
   return Match(B, NoiseCurve(F(), Detector, true));
 }
 
-WaveformFT WaveformFT::operator-(const WaveformFT& b) const {
-  WaveformFT c(*this);
+WaveformAtAPointFT WaveformAtAPointFT::operator-(const WaveformAtAPointFT& b) const {
+  WaveformAtAPointFT c(*this);
   c.ReRef() = Re()-b.Re();
   c.ImRef() = Im()-b.Im();
   return c;
 }
 
-WaveformFT WaveformFT::operator*(const double b) const {
-  WaveformFT c(*this);
+WaveformAtAPointFT WaveformAtAPointFT::operator*(const double b) const {
+  WaveformAtAPointFT c(*this);
   c.ReRef() *= b;
   c.ImRef() *= b;
   return c;
 }
 
-std::ostream& operator<<(std::ostream& os, const WaveformFT& a) {
+std::ostream& operator<<(std::ostream& os, const WaveformAtAPointFT& a) {
   os << a.HistoryStr()
      << "# [1] = " << a.TimeScale() << endl
      << "# [2] = Re{F[" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Varphi() << ")]}" << endl

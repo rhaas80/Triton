@@ -50,7 +50,11 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
     ImRef() += Amplitude * sin(Phase);
   }
   TRef() = NewTime;
-  RRef() = WaveformUtilities::Interpolate(W.T(), W.R(), T());
+  if(W.R().size()==W.T().size()) {
+    RRef() = WaveformUtilities::Interpolate(W.T(), W.R(), T());
+  } else {
+    RRef() = W.R();
+  }
 }
 
 std::ostream& operator<<(std::ostream& os, const WaveformAtAPoint& a) {

@@ -122,11 +122,11 @@ Waveform Waveforms::Extrapolate(const int ExtrapolationOrder) {
       phiFit.fit();
       
       //// Evaluate at 0 and set the relevant component of Extrap
-      Extrap.RRef(i) = numeric_limits<double>::infinity( );
       Extrap.MagRef(j,i) = ampFit.a[0];
       Extrap.ArgRef(j,i) = phiFit.a[0];
     }
   }
+  Extrap.RRef() = vector<double>(1, numeric_limits<double>::infinity( ) );
   
   return Extrap;
 }
