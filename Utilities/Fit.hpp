@@ -43,16 +43,16 @@ namespace WaveformUtilities {
   struct Fit {
     Int ndat, ma;
     VecDoub_I &x,&y,&sig;
-    //VecDoub (*funcs)(const Doub); // replacing this with line below
-    const BasisFunctions& funcs; // makes this class templated on a functor
+    //VecDoub (*funcs)(const Doub); // <replaced />
+    const BasisFunctions& funcs; // <replacement />
     VecBool ia;
     
     VecDoub a;
     MatDoub covar;
     Doub chisq;
     
-    //Fit(VecDoub_I &xx, VecDoub_I &yy, VecDoub_I &ssig, VecDoub funks(const Doub)) // replacing this with line below
-    Fit(VecDoub_I &xx, VecDoub_I &yy, VecDoub_I &ssig, const BasisFunctions& funks) // makes this class templated on a functor
+    //Fit(VecDoub_I &xx, VecDoub_I &yy, VecDoub_I &ssig, VecDoub funks(const Doub)) // <replaced />
+    Fit(VecDoub_I &xx, VecDoub_I &yy, VecDoub_I &ssig, const BasisFunctions& funks) // <replacement />
       : ndat(xx.size()), x(xx), y(yy), sig(ssig), funcs(funks) {
       ma = funcs(x[0]).size();
       a.resize(ma);

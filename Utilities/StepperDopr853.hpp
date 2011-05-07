@@ -350,7 +350,7 @@ Doub StepperDopr853<D>::error(const Doub h) {
   return std::abs(h)*err*sqrt(1.0/(n*deno));
 }
 template <class D>
-StepperDopr853<D>::Controller::Controller() : reject(false), errold(1.0e-4) {}
+StepperDopr853<D>::Controller::Controller() : errold(1.0e-4), reject(false) {}
 template <class D>
 bool StepperDopr853<D>::Controller::success(const Doub err, Doub &h) {
   static const Doub beta=0.0,alpha=1.0/8.0-beta*0.2,safe=0.9,minscale=0.333,

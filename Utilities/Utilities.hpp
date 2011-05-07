@@ -2,7 +2,7 @@
 #define UTILITIES_HPP
 
 #define throw(message) \
-  { printf("ERROR: %s\n\tin file %s at line %d\n", message, __FILE__, __LINE__); throw(1); }
+  { fprintf(stderr, "ERROR: %s\n\tin file %s at line %d\n", message, __FILE__, __LINE__); throw(1); }
 
 #ifndef EulerGamma
 #define EulerGamma 0.57721566490153286061

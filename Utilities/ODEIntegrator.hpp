@@ -134,10 +134,12 @@ namespace WaveformUtilities {
 			  Output &outt,typename Stepper::Dtype &derivss,
 			  const bool denseishh,
 			  bool (*ContinueIntegrating)(const double& x, const std::vector<double>& y, const std::vector<double>& dydx))
-    : nvar(ystartt.size()),
-      y(nvar),dydx(nvar),ystart(ystartt),x(xx1),nok(0),nbad(0),
-      x1(xx1),x2(xx2),hmin(hminn),dense(outt.dense),denseish(denseishh),ContinueIntegration(ContinueIntegrating),
-      out(outt),derivs(derivss), s(y,dydx,x,atol,rtol,dense) {
+    : nok(0), nbad(0), nvar(ystartt.size()),
+      x1(xx1), x2(xx2), hmin(hminn), dense(outt.dense),
+      denseish(denseishh), ContinueIntegration(ContinueIntegrating),
+      y(nvar), dydx(nvar), ystart(ystartt), out(outt), derivs(derivss),
+      s(y,dydx,x,atol,rtol,dense),
+      x(xx1) {
     // </replacement>
     EPS=std::numeric_limits<Doub>::epsilon();
     h=SIGN(h1,x2-x1);

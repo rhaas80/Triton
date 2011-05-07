@@ -5,7 +5,9 @@
 #include "NoiseCurves.hpp"
 #include "VectorFunctions.hpp"
 #include "fft.hpp"
+#include "Fit.hpp"
 
+namespace WU = WaveformUtilities;
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
 using std::vector;
@@ -19,6 +21,12 @@ double BumpFunction(const double x, const double x0, const double x1) {
   const double t = (x-x0)/(x1-x0);
   return 1.0 / (1.0 + exp(1.0/t - 1.0/(1-t)));
 }
+
+double DoubleSidedF(const unsigned int i, const unsigned int N, const double df) {
+  if(i<N/2) { return i*df; }
+  return i*df - N*df;
+}
+
 
 WaveformAtAPointFT::WaveformAtAPointFT()
   : Normalized(false)
@@ -155,10 +163,11 @@ double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<
     data.imag(i) = (Im(i)*B.Re(i)-Re(i)*B.Im(i))*InversePSD[i];
   }
   idft(data);
+  int maxi=0;
   double maxmag=sqrt(SQR(data.real(0)) + SQR(data.imag(0)));
   for(unsigned int i=1; i<N; ++i) {
-    const double magi = sqrt(SQR(data.real(i)) + SQR(data.imag(i)));
-    if(magi>maxmag) { maxmag = magi; }
+    const double mag = sqrt(SQR(data.real(i)) + SQR(data.imag(i)));
+    if(mag>maxmag) { maxmag = mag; maxi = int(i); }
   }
   /// The return from ifft is just the bare FFT sum, so we multiply by df to get
   /// the continuum-analog FT.  This is correct because the input data (re,im) are
@@ -166,6 +175,26 @@ double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<
   /// See, e.g., Eq. (A.33) [rather than Eq. (A.35)] of
   /// http://etd.caltech.edu/etd/available/etd-01122009-143851/
   return 4.0*df*maxmag;
+//   if(maxi<6 || abs(int(N)/2-maxi)<6 || abs(int(N)-maxi)<6) { return 4.0*df*maxmag; }
+//   const unsigned int nfit = std::min(11, int(std::min(int(2*maxi-1), int(2*(int(N)-maxi)-1))));
+//   cerr << "\nDebugging at " << __LINE__ << " of " << __FILE__ << endl;
+//   cerr << maxi << " " << nfit << endl;
+//   cerr << 11 << " " << int(2*maxi-1) << " " << int(2*(int(N)-maxi)-1) << endl;
+//   if(nfit<5) { return 4.0*df*maxmag; }
+//   vector<double> xx(nfit),yy(nfit),ssig(nfit);
+//   for(unsigned int i=maxi-((nfit-1)/2), j=0; i<=maxi+((nfit-1)/2); ++i, ++j) {
+//     xx[j] = DoubleSidedF(i,N,df)-DoubleSidedF(maxi,N,df);
+//     yy[j] = sqrt(SQR(data.real(i))+SQR(data.imag(i)));
+//     ssig[j] = 1.0;
+//   }
+//   WU::PolynomialBasisFunctions p(2);
+//   WU::Fit<WU::PolynomialBasisFunctions> myfit(xx,yy,ssig,p);
+//   myfit.fit();
+//   maxmag = myfit.a[0] - SQR(myfit.a[1])/(4.0*myfit.a[2]);
+//   cerr << "\nDebugging at " << __LINE__ << " of " << __FILE__ << endl;
+//   cerr << myfit.a << endl;
+//   cerr << maxmag << endl;
+//   return 4.0*df*maxmag;
 }
 
 double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::string& Detector) const {
