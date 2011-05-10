@@ -39,7 +39,14 @@ public:
       * (1.0 + v*v*(dvdt2 + v*(dvdt3 + v*(dvdt4 + v*(dvdt5 + v*(dvdt6 + dvdt6Ln4v*log(4.0*v) + v*(dvdt7) ) ) ) ) ) );
     dydt[1]=cubv;
   }
+  
+  bool ContinueIntegrating(const double& t, const vector<double>& y, const vector<double>& dydt) const {
+    return (dydt[0]>0.0 && y[0]<1.0);
+  }
+  
 };
+
+typedef bool (T4::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
 
 void WU::TaylorT4(const double delta, const double chis, const double v0,
 		  vector<double>& t, vector<double>& v, vector<double>& Phi,
@@ -53,7 +60,8 @@ void WU::TaylorT4(const double delta, const double chis, const double v0,
   ystart[1]=0.0;
   Output out(nsave);
   T4 d(delta, chis);
-  Odeint<StepperDopr853<T4> > ode(ystart,t0,t1,atol,rtol,h1,hmin,out,d,denseish);
+  ContinueTest test = &T4::ContinueIntegrating;
+  Odeint<StepperDopr853<T4> > ode(ystart,t0,t1,atol,rtol,h1,hmin,out,d,denseish,test);
   try {
     ode.integrate();
   } catch(NRerror err) { }

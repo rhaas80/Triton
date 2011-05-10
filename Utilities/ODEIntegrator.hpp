@@ -95,7 +95,7 @@ namespace WaveformUtilities {
     bool dense;
     // <added>
     bool denseish;
-    bool (*ContinueIntegration)(const double& x, const std::vector<double>& y, const std::vector<double>& dydx);
+    bool (Stepper::Dtype::*ContinueIntegration)(const double& x, const std::vector<double>& y, const std::vector<double>& dydx) const;
     // </added>
     VecDoub y,dydx;
     VecDoub &ystart;
@@ -114,7 +114,7 @@ namespace WaveformUtilities {
 	   const Doub atol,const Doub rtol,const Doub h1,
 	   const Doub hminn,Output &outt,typename Stepper::Dtype &derivss,
 	   const bool denseishh=false,
-	   bool (*ContinueIntegrating)(const double& x, const std::vector<double>& y, const std::vector<double>& dydx) = NULL);
+	   bool (Stepper::Dtype::*ContinueIntegrating)(const double& x, const std::vector<double>& y, const std::vector<double>& dydx) const = NULL);
     // </replacement>
     void integrate();
   };
@@ -133,7 +133,7 @@ namespace WaveformUtilities {
 			  const Doub atol, const Doub rtol, const Doub h1, const Doub hminn,
 			  Output &outt,typename Stepper::Dtype &derivss,
 			  const bool denseishh,
-			  bool (*ContinueIntegrating)(const double& x, const std::vector<double>& y, const std::vector<double>& dydx))
+			  bool (Stepper::Dtype::*ContinueIntegrating)(const double& x, const std::vector<double>& y, const std::vector<double>& dydx) const)
     : nok(0), nbad(0), nvar(ystartt.size()),
       x(xx1), x1(xx1), x2(xx2), hmin(hminn), dense(outt.dense),
       denseish(denseishh), ContinueIntegration(ContinueIntegrating),
@@ -177,7 +177,7 @@ namespace WaveformUtilities {
 	throw("Step size too small in Odeint");
       }
       // <added>
-      if (ContinueIntegration!=NULL && !ContinueIntegration(x, y, dydx)) {
+      if (ContinueIntegration!=NULL && !(derivs.*ContinueIntegration)(x, y, dydx)) {
 	std::cerr << "\nRight-hand side asked to stop integration.  Returning now." << std::endl;
 	return;
       }

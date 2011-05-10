@@ -48,13 +48,15 @@ public:
       * (1.0 + v*v*(dvdtNum2 + v*(dvdtNum3 + v*(dvdtNum4 + v*(dvdtNum5 + v*(dvdtNum6 + dvdtNum6Ln4v*log(4.0*v) + v*(dvdtNum7) ) ) ) ) ) )
       / (1.0 + v*v*(dvdtDen2 + v*(dvdtDen3 + v*(dvdtDen4 + v*(dvdtDen5 + v*(dvdtDen6) ) ) ) ) );
     dydt[1]=cubv;
-    //std::cerr << t << "\t" << y << "\t" << dydt << endl;
   }
+  
+  bool ContinueIntegrating(const double& t, const vector<double>& y, const vector<double>& dydt) const {
+    return (dydt[0]>0.0 && y[0]<1.0);
+  }
+  
 };
 
-bool ContinueIntegrating(const double& x, const std::vector<double>& y, const std::vector<double>& dydx) {
-  return dydx[0]>0.0;
-}
+typedef bool (T1::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
 
 void WU::TaylorT1(const double delta, const double chis, const double v0,
 		  vector<double>& t, vector<double>& v, vector<double>& Phi,
@@ -68,7 +70,8 @@ void WU::TaylorT1(const double delta, const double chis, const double v0,
   ystart[1]=0.0;
   Output out(nsave);
   T1 d(delta, chis);
-  Odeint<StepperDopr853<T1> > ode(ystart,t0,t1,atol,rtol,h1,hmin,out,d,denseish,ContinueIntegrating);
+  ContinueTest test = &T1::ContinueIntegrating;
+  Odeint<StepperDopr853<T1> > ode(ystart,t0,t1,atol,rtol,h1,hmin,out,d,denseish,test);
   try {
     ode.integrate();
   } catch(NRerror err) { }
