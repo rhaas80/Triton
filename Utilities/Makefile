@@ -2,8 +2,10 @@ SOURCES = $(wildcard *.cpp)
 
 RM = /bin/rm
 CC = g++
-OPT = 
-CFLAGS = -c -ggdb
+# OPT = -O3
+# CFLAGS = -c
+OPT = -O3
+CFLAGS = -c
 # OPT = -O3
 # CFLAGS = -c
 
@@ -13,7 +15,7 @@ clean:
 	$(RM) -rf *.o *.d libUtilities.a
 
 .cpp.o:
-	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@
+	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@ -pg -g
 
 %.d: %.cpp
 	@set -e; $(RM) -f $@; \

@@ -24,7 +24,7 @@ clean:
 	$(RM) -f *.d $(EXECUTABLES)
 
 $(EXECUTABLES): % : %.cpp
-	$(CC) $(OPT) $(WFLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
+	$(CC) $(OPT) $(WFLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@ -pg -g
 	@$(CC) -MM $(IFLAGS) $*.cpp > $*.d.tmp
 	@sed -e 's/.o:/:/'< $*.d.tmp > $*.d
 	@$(RM) -f $*.d.tmp

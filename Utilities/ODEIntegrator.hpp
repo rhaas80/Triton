@@ -91,7 +91,7 @@ namespace WaveformUtilities {
     Int nok;
     Int nbad;
     Int nvar;
-    Doub x1,x2,hmin;
+    Doub x,x1,x2,hmin;
     bool dense;
     // <added>
     bool denseish;
@@ -103,7 +103,7 @@ namespace WaveformUtilities {
     typename Stepper::Dtype &derivs;
     Stepper s;
     Int nstp;
-    Doub x,h;
+    Doub h;
     // <replaced>
     //Odeint(VecDoub_IO &ystartt,const Doub xx1,const Doub xx2,
     //	   const Doub atol,const Doub rtol,const Doub h1,
@@ -135,11 +135,10 @@ namespace WaveformUtilities {
 			  const bool denseishh,
 			  bool (*ContinueIntegrating)(const double& x, const std::vector<double>& y, const std::vector<double>& dydx))
     : nok(0), nbad(0), nvar(ystartt.size()),
-      x1(xx1), x2(xx2), hmin(hminn), dense(outt.dense),
+      x(xx1), x1(xx1), x2(xx2), hmin(hminn), dense(outt.dense),
       denseish(denseishh), ContinueIntegration(ContinueIntegrating),
       y(nvar), dydx(nvar), ystart(ystartt), out(outt), derivs(derivss),
-      s(y,dydx,x,atol,rtol,dense),
-      x(xx1) {
+      s(y,dydx,x,atol,rtol,dense) {
     // </replacement>
     EPS=std::numeric_limits<Doub>::epsilon();
     h=SIGN(h1,x2-x1);
@@ -174,9 +173,15 @@ namespace WaveformUtilities {
 	return;
       }
       if (std::abs(s.hnext) <= hmin) {
-	std::cerr << "std::abs(s.hnext)=" << std::abs(s.hnext) << "\thmin=" << hmin << std::endl; // <added />
+	std::cerr << "\nstd::abs(s.hnext)=" << std::abs(s.hnext) << "\thmin=" << hmin << std::endl; // <added />
 	throw("Step size too small in Odeint");
       }
+      // <added>
+      if (ContinueIntegration!=NULL && !ContinueIntegration(x, y, dydx)) {
+	std::cerr << "\nRight-hand side asked to stop integration.  Returning now." << std::endl;
+	return;
+      }
+      // </added>
       h=s.hnext;
     }
     throw("Too many steps in routine Odeint");
@@ -198,7 +203,7 @@ namespace WaveformUtilities {
 					       rtol(rtoll),dense(dens),n(y.size()),neqn(n),yout(n),yerr(n) {}
   };
   
-  #include "StepperDopr853.hpp"
+  #include "StepperDopr853a.hpp"
   #include "StepperBS.hpp"
   
 } // namespace WaveformUtilities

@@ -36,7 +36,7 @@ int main() {
   ystart[1]=0.0;
   WU::Output out(20);
   DampedHarmonicOscillator d(1, 1, 0.05, ystart[0], ystart[1]);
-  WU::Odeint< WU::StepperDopr853<DampedHarmonicOscillator> > ode(ystart,x1,x2,atol,rtol,h1,hmin,out,d, true);
+  WU::Odeint< WU::StepperDopr853<DampedHarmonicOscillator> > ode(ystart,x1,x2,atol,rtol,h1,hmin,out,d,true);
   ode.integrate();
   
   cout << "# [1] = t"

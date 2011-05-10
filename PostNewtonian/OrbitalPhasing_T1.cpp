@@ -11,7 +11,10 @@ using WaveformUtilities::Odeint;
 using WaveformUtilities::StepperDopr853;
 using std::vector;
 
-inline double CUB(const double x) { return x*x; }
+using std::cerr;
+using std::endl;
+
+inline double CUB(const double x) { return x*x*x; }
 
 class T1 {
 private:
@@ -42,11 +45,16 @@ public:
     const double& v=y[0];
     const double cubv=CUB(v);
     dydt[0] = (6.4*nu)*CUB(cubv)
-      * (1 + v*v*(dvdtNum2 + v*(dvdtNum3 + v*(dvdtNum4 + v*(dvdtNum5 + v*(dvdtNum6 + dvdtNum6Ln4v*log(4.0*v) + v*(dvdtNum7) ) ) ) ) ) )
-      / (1 + v*v*(dvdtDen2 + v*(dvdtDen3 + v*(dvdtDen4 + v*(dvdtDen5 + v*(dvdtDen6) ) ) ) ) );
+      * (1.0 + v*v*(dvdtNum2 + v*(dvdtNum3 + v*(dvdtNum4 + v*(dvdtNum5 + v*(dvdtNum6 + dvdtNum6Ln4v*log(4.0*v) + v*(dvdtNum7) ) ) ) ) ) )
+      / (1.0 + v*v*(dvdtDen2 + v*(dvdtDen3 + v*(dvdtDen4 + v*(dvdtDen5 + v*(dvdtDen6) ) ) ) ) );
     dydt[1]=cubv;
+    //std::cerr << t << "\t" << y << "\t" << dydt << endl;
   }
 };
+
+bool ContinueIntegrating(const double& x, const std::vector<double>& y, const std::vector<double>& dydx) {
+  return dydx[0]>0.0;
+}
 
 void WU::TaylorT1(const double delta, const double chis, const double v0,
 		  vector<double>& t, vector<double>& v, vector<double>& Phi,
@@ -54,13 +62,13 @@ void WU::TaylorT1(const double delta, const double chis, const double v0,
 {
   const double nu( (1.0-delta*delta)/4.0 );
   const double GuessedLength = 1.1 * 5.0/(256.0*nu*pow(v0,8));
-  const double rtol=1.0e-10, atol=0.0, h1=1.0e2, hmin=1.0e-3, t0=-GuessedLength, t1=0.0;
+  const double rtol=1.0e-11, atol=0.0, h1=1.0e2, hmin=1.0e-3, t0=-GuessedLength, t1=0.0;
   vector<double> ystart(2);
   ystart[0]=v0;
   ystart[1]=0.0;
   Output out(nsave);
   T1 d(delta, chis);
-  Odeint<StepperDopr853<T1> > ode(ystart,t0,t1,atol,rtol,h1,hmin,out,d,denseish);
+  Odeint<StepperDopr853<T1> > ode(ystart,t0,t1,atol,rtol,h1,hmin,out,d,denseish,ContinueIntegrating);
   try {
     ode.integrate();
   } catch(NRerror err) { }

@@ -2,13 +2,12 @@ SOURCES = $(wildcard *.cpp)
 
 RM = /bin/rm
 CC = g++
-#OPT = -O3
 # IFLAGS = -I../Utilities -I../PostNewtonian -I../DataAnalysis
 IFLAGS = -I../Utilities
-#CFLAGS = -c -Wall
-
-OPT = 
-CFLAGS = -c -ggdb -Wall
+OPT = -O3
+CFLAGS = -c -Wall
+# OPT = -O3
+# CFLAGS = -c
 
 all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libObjects
 
@@ -16,7 +15,7 @@ clean:
 	$(RM) -rf *.o *.d libObjects.a
 
 .cpp.o:
-	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@
+	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@ -pg -g
 
 %.d: %.cpp
 	@set -e; $(RM) -f $@; \

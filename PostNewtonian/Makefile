@@ -3,8 +3,8 @@ SOURCES = $(wildcard *.cpp)
 RM = /bin/rm
 CC = g++
 OPT = -O3
-IFLAGS = -I../Utilities
 CFLAGS = -c -Wall
+IFLAGS = -I../Utilities
 
 all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libPostNewtonian
 
@@ -12,7 +12,7 @@ clean:
 	$(RM) -rf *.o *.d libPostNewtonian.a
 
 .cpp.o:
-	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@
+	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@ -pg -g
 
 %.d: %.cpp
 	@set -e; $(RM) -f $@; \
