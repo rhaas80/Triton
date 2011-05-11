@@ -820,6 +820,22 @@ double WU::sum(const vector<double>& In) {
   return Out;
 }
 
+double WU::max(const vector<double>& In) {
+  double Out = In[0];
+  for(unsigned int i=1; i<In.size(); ++i) {
+    if(In[i]>Out) { Out = In[i]; }
+  }
+  return Out;
+}
+
+double WU::min(const vector<double>& In) {
+  double Out = In[0];
+  for(unsigned int i=1; i<In.size(); ++i) {
+    if(In[i]<Out) { Out = In[i]; }
+  }
+  return Out;
+}
+
 double WU::avg(const vector<double>& In) { return sum(In)/double(In.size()); }
 
 double WU::trapz(const vector<double>& t, const vector<double>& f) {

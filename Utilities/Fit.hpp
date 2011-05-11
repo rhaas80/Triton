@@ -199,9 +199,9 @@ namespace WaveformUtilities {
     //void (*funcs)(const Doub, VecDoub_I &, Doub &, VecDoub_O &); // replacing this with line below
     const BasisFunctions& funcs; // makes this class templated on a functor
     VecBool ia;
+    MatDoub alpha;
     VecDoub a;
     MatDoub covar;
-    MatDoub alpha;
     Doub chisq;
     
     //FitNonlinear(VecDoub_I &xx, VecDoub_I &yy, VecDoub_I &ssig, VecDoub_I &aa,       // replacing these with lines below

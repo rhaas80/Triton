@@ -115,6 +115,8 @@ namespace WaveformUtilities {
   /// Integral, derivative, etc.
   std::vector<double> diff(const std::vector<double>& In);
   double sum(const std::vector<double>& In);
+  double max(const std::vector<double>& In);
+  double min(const std::vector<double>& In);
   double avg(const std::vector<double>& In);
   double trapz(const std::vector<double>& t, const std::vector<double>& f);
   std::vector<double> cumtrapz(const std::vector<double>& t, const std::vector<double>& f);
