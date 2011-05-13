@@ -12,8 +12,8 @@ using namespace std;
 
 int main() {
   const double delta = 0.0000;
-  const double chis = 0.0000;
-  const double v0 = 0.024;
+  const double chis = -0.9900;
+  const double v0 = 0.144;//0.02025;
   vector<double> t, v, Phi;
   const int NPoints = 10000;
   const int nsave = 40;
@@ -22,7 +22,7 @@ int main() {
   
   clock_t start,end;
   
-  const unsigned int N=10;
+  const unsigned int N=1000;
   
   cout << N << " iterations of TaylorT1 ... " << endl;
   start = clock();

@@ -758,6 +758,54 @@ Matrix<double> fmod(const Matrix<double>& numerator, const double& denominator) 
   return y;
 }
 
+inline double WU::square(const std::vector<double>& x) {
+  vector<double> y(x.size());
+  for(unsigned int i=0; i<x.size(); ++i) {
+    y[i]=square(x[i]);
+  }
+}
+
+inline double WU::cube(const std::vector<double>& x) {
+  vector<double> y(x.size());
+  for(unsigned int i=0; i<x.size(); ++i) {
+    y[i]=cube(x[i]);
+  }
+}
+
+inline double WU::fourth(const std::vector<double>& x) {
+  vector<double> y(x.size());
+  for(unsigned int i=0; i<x.size(); ++i) {
+    y[i]=fourth(x[i]);
+  }
+}
+
+inline double WU::fifth(const std::vector<double>& x) {
+  vector<double> y(x.size());
+  for(unsigned int i=0; i<x.size(); ++i) {
+    y[i]=fifth(x[i]);
+  }
+}
+
+inline double WU::sixth(const std::vector<double>& x) {
+  vector<double> y(x.size());
+  for(unsigned int i=0; i<x.size(); ++i) {
+    y[i]=sixth(x[i]);
+  }
+}
+
+inline double WU::seventh(const std::vector<double>& x) {
+  vector<double> y(x.size());
+  for(unsigned int i=0; i<x.size(); ++i) {
+    y[i]=seventh(x[i]);
+  }
+}
+
+inline double WU::eighth(const std::vector<double>& x) {
+  vector<double> y(x.size());
+  for(unsigned int i=0; i<x.size(); ++i) {
+    y[i]=eighth(x[i]);
+  }
+}
 
 double WU::maxfabs(const vector<double>& x) {
   if(x.size()==0) { return 0.0; }
@@ -881,10 +929,10 @@ vector<double> WU::Intersection(const vector<double>& t1, const vector<double>& 
   vector<double> t(t1.size()+t2.size());
   double min1 = t1[0];
   double min2 = t2[0];
-  double mint = max(max(min1, min2), MinTime);
+  double mint = std::max(std::max(min1, min2), MinTime);
   double max1 = t1.back();
   double max2 = t2.back();
-  double maxt = min(max1, max2);
+  double maxt = std::min(max1, max2);
   if(mint > max1 || mint > max2) {
     cerr << "\nmin(t1)=" << min1 << "\tmin(t2)=" << min2 << endl;
     cerr << "max(t1)=" << max1 << "\tmax(t2)=" << max2 << endl;
@@ -898,17 +946,17 @@ vector<double> WU::Intersection(const vector<double>& t1, const vector<double>& 
     if(t[I]<min1 || t[I]>max1) { // if t[I] is less than the smallest t1, or greater than the largest t1, I1=0;
       I1=0;
     } else {
-      I1 = max(I1, (unsigned int)1);
+      I1 = std::max(I1, (unsigned int)1);
       while(t[I]>t1[I1] && I1<size1) { I1++; }
     }
     // adjust I2 to ensure that t[I] is in the interval ( t2[I2-1], t2[I2] ]
     if(t[I]<min2 || t[I]>max2) { // if t[I] is less than the smallest t2, or greater than the largest t2, I2=0;
       I2=0;
     } else {
-      I2 = max(I2, (unsigned int)1);
+      I2 = std::max(I2, (unsigned int)1);
       while(t[I]>t2[I2] && I2<size2) { I2++; }
     }
-    t[I+1] = t[I] + max(min(t1[I1]-t1[I1-1], t2[I2]-t2[I2-1]), MinStep);
+    t[I+1] = t[I] + std::max(std::min(t1[I1]-t1[I1-1], t2[I2]-t2[I2-1]), MinStep);
     if(t[I+1]>maxt) { break; }
     I++;
   }
@@ -937,10 +985,10 @@ vector<double> WU::Union(const vector<double>& t1, const vector<double>& t2, con
   vector<double> t(t1.size()+t2.size()+4);
   double min1 = t1[0];
   double min2 = t2[0];
-  double mint = min(min1, min2);
+  double mint = std::min(min1, min2);
   double max1 = t1.back();
   double max2 = t2.back();
-  double maxt = max(max1, max2);
+  double maxt = std::max(max1, max2);
   if(min2 > max1 || min1 > max2) {
     cerr << "\nmin(t1)=" << min1 << "\tmin(t2)=" << min2 << endl;
     cerr << "max(t1)=" << max1 << "\tmax(t2)=" << max2 << endl;
@@ -954,22 +1002,22 @@ vector<double> WU::Union(const vector<double>& t1, const vector<double>& t2, con
     if(t[I]<min1 || t[I]>max1) { // if t[I] is less than the smallest t1, or greater than the largest t1, I1=0;
       I1=0;
     } else {
-      I1 = max(I1, (unsigned int)1);
+      I1 = std::max(I1, (unsigned int)1);
       while(t[I]>t1[I1] && I1<size1) { I1++; }
     }
     // adjust I2 to ensure that t[I] is in the interval ( t2[I2-1], t2[I2] ]
     if(t[I]<min2 || t[I]>max2) { // if t[I] is less than the smallest t2, or greater than the largest t2, I2=0;
       I2=0;
     } else {
-      I2 = max(I2, (unsigned int)1);
+      I2 = std::max(I2, (unsigned int)1);
       while(t[I]>t2[I2] && I2<size2) { I2++; }
     }
     if(I1==0) {
-      t[I+1] = t[I] + max(t2[I2]-t2[I2-1], MinStep);
+      t[I+1] = t[I] + std::max(t2[I2]-t2[I2-1], MinStep);
     } else if(I2==0) {
-      t[I+1] = t[I] + max(t1[I1]-t1[I1-1], MinStep);
+      t[I+1] = t[I] + std::max(t1[I1]-t1[I1-1], MinStep);
     } else {
-      t[I+1] = t[I] + max(min(t1[I1]-t1[I1-1], t2[I2]-t2[I2-1]), MinStep);
+      t[I+1] = t[I] + std::max(std::min(t1[I1]-t1[I1-1], t2[I2]-t2[I2-1]), MinStep);
     }
     if(t[I+1]>maxt) { break; }
     I++;

@@ -104,6 +104,26 @@ WaveformUtilities::Matrix<double> fmod(const WaveformUtilities::Matrix<double>& 
 
 namespace WaveformUtilities {
   
+  /// Small integer powers
+  /// To compute x^n efficiently, write n in binary, then replace each 1 with "SX" and each 0 with "S",
+  /// and cross off the first SX appearing at the left.  Read from left to right, this rule tells us to
+  /// square (S) or multiply by x (X) in turn.  This algorithm is the most efficient choice up to n=15.
+  /// [Knuth, Vol 2., 4.6.3]
+  inline double square(const double x) { return x*x; } // n=10; 1==1
+  inline double cube(const double x) { return x*x*x; } // n=11; 2==2
+  inline double fourth(const double x) { return square(square(x)); } // n=100; 2<3
+  inline double fifth(const double x) { return x*fourth(x); } // n=101; 3<4
+  inline double sixth(const double x) { return square(x*square(x)); } // n=110; 3<5
+  inline double seventh(const double x) { return x*square(x*square(x)); } // n=111; 4<6
+  inline double eighth(const double x) { return square(square(square(x))); } // n=1000; 3<7
+  inline double square(const std::vector<double>& x);
+  inline double cube(const std::vector<double>& x);
+  inline double fourth(const std::vector<double>& x);
+  inline double fifth(const std::vector<double>& x);
+  inline double sixth(const std::vector<double>& x);
+  inline double seventh(const std::vector<double>& x);
+  inline double eighth(const std::vector<double>& x);
+  
   /// Max functions
   double maxfabs(const std::vector<double>& x);
   double maxmag(const std::vector<double>& Re, const std::vector<double>& Im);
@@ -111,12 +131,12 @@ namespace WaveformUtilities {
   double maxmag(const WaveformUtilities::Matrix<double>& Re, const WaveformUtilities::Matrix<double>& Im);
   unsigned int maxIndex(const std::vector<double>& a);
   unsigned int maxIndex(const WaveformUtilities::Matrix<double>& a);
+  double max(const std::vector<double>& In);
+  double min(const std::vector<double>& In);
   
   /// Integral, derivative, etc.
   std::vector<double> diff(const std::vector<double>& In);
   double sum(const std::vector<double>& In);
-  double max(const std::vector<double>& In);
-  double min(const std::vector<double>& In);
   double avg(const std::vector<double>& In);
   double trapz(const std::vector<double>& t, const std::vector<double>& f);
   std::vector<double> cumtrapz(const std::vector<double>& t, const std::vector<double>& f);
