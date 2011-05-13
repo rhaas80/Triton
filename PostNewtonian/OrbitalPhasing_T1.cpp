@@ -31,7 +31,7 @@ public:
       dvdtNum3((-11*chis)/4. + 3*chis*nu + 4*M_PI),
       dvdtNum4((-44711 + 18711*pow(chis,2) + 166878*nu - 2268*pow(chis,2)*nu + 32760*pow(nu,2))/9072.),
       dvdtNum5((-8442*chis - 3024*pow(chis,3) + 53872*chis*nu + 9072*pow(chis,3)*nu - 35168*chis*pow(nu,2) - 24573*M_PI - 48972*nu*M_PI)/2016.),
-      dvdtNum6((19931218557 - 3416878080*EulerGamma - 3625933850*nu - 6542127900*pow(nu,2) - 501270000*pow(nu,3) + 1117670400*pow(M_PI,2) + 179001900*nu*pow(M_PI,2))/2.095632e8),
+      dvdtNum6((19931218557 - 3416878080*EulerGamma - 3625933850*nu - 6542127900*pow(nu,2) - 501270000*pow(nu,3) - 2270268000*chis*M_PI + 2375049600*chis*nu*M_PI + 1117670400*pow(M_PI,2) + 179001900*nu*pow(M_PI,2))/2.095632e8),
       dvdtNum6Ln4v(-16.304761904761904),
       dvdtNum7((5*(-78168*M_PI + 300643*nu*M_PI + 154708*pow(nu,2)*M_PI))/12096.),
       dvdtDen2(-1.5 - nu/6.),

@@ -122,10 +122,10 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
     case 2:
       lnv = log(v);
       Re = Hhat_L2_M2_Re_v0 + v*v*(Hhat_L2_M2_Re_v2 + v*(Hhat_L2_M2_Re_v3 + v*(Hhat_L2_M2_Re_v4 + v*(Hhat_L2_M2_Re_v5 + v*(Hhat_L2_M2_Re_v6 + lnv*Hhat_L2_M2_Re_v6lnv)))));
-      Im = v*v*v*v*v*(Hhat_L2_M2_Im_v5 + v*Hhat_L2_M2_Im_v6);
+      Im = fifth(v)*(Hhat_L2_M2_Im_v5 + v*Hhat_L2_M2_Im_v6);
       break;
     case 1:
-      Re = v*v*v*v*(Hhat_L2_M1_Re_v4 + v*v*Hhat_L2_M1_Re_v6);
+      Re = fourth(v)*(Hhat_L2_M1_Re_v4 + v*v*Hhat_L2_M1_Re_v6);
       Im = v*(Hhat_L2_M1_Im_v1 + v*v*(Hhat_L2_M1_Im_v3 + v*(Hhat_L2_M1_Im_v4 + v*(Hhat_L2_M1_Im_v5 + v*Hhat_L2_M1_Im_v6))));
       break;
     case 0:
@@ -136,19 +136,19 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
   case 3:
     switch(abs(M)) {
     case 3:
-      Re = v*v*v*v*(Hhat_L3_M3_Re_v4 + v*v*Hhat_L3_M3_Re_v6);
+      Re = fourth(v)*(Hhat_L3_M3_Re_v4 + v*v*Hhat_L3_M3_Re_v6);
       Im = v*(Hhat_L3_M3_Im_v1 + v*v*(Hhat_L3_M3_Im_v3 + v*(Hhat_L3_M3_Im_v4 + v*(Hhat_L3_M3_Im_v5 + v*Hhat_L3_M3_Im_v6))));
       break;
     case 2:
       Re = v*v*(Hhat_L3_M2_Re_v2 + v*v*(Hhat_L3_M2_Re_v4 + v*(Hhat_L3_M2_Re_v5 + v*Hhat_L3_M2_Re_v6)));
-      Im = v*v*v*v*v*Hhat_L3_M2_Im_v5;
+      Im = fifth(v)*Hhat_L3_M2_Im_v5;
       break;
     case 1:
-      Re = v*v*v*v*(Hhat_L3_M1_Re_v4 + v*v*Hhat_L3_M1_Re_v6);
+      Re = fourth(v)*(Hhat_L3_M1_Re_v4 + v*v*Hhat_L3_M1_Re_v6);
       Im = v*(Hhat_L3_M1_Im_v1 + v*v*(Hhat_L3_M1_Im_v3 + v*(Hhat_L3_M1_Im_v4 + v*(Hhat_L3_M1_Im_v5 + v*Hhat_L3_M1_Im_v6))));
       break;
     case 0:
-      Im = v*v*v*v*v*Hhat_L3_M0_Im_v5;
+      Im = fifth(v)*Hhat_L3_M0_Im_v5;
       break;
     }
     break;
@@ -156,18 +156,18 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
     switch(abs(M)) {
     case 4:
       Re = v*v*(Hhat_L4_M4_Re_v2 + v*v*(Hhat_L4_M4_Re_v4 + v*(Hhat_L4_M4_Re_v5 + v*Hhat_L4_M4_Re_v6)));
-      Im = v*v*v*v*v*Hhat_L4_M4_Im_v5;
+      Im = fifth(v)*Hhat_L4_M4_Im_v5;
       break;
     case 3:
-      Re = v*v*v*v*v*v*Hhat_L4_M3_Re_v6;
+      Re = sixth(v)*Hhat_L4_M3_Re_v6;
       Im = v*v*v*(Hhat_L4_M3_Im_v3 + v*v*(Hhat_L4_M3_Im_v5 + v*Hhat_L4_M3_Im_v6));
       break;
     case 2:
       Re = v*v*(Hhat_L4_M2_Re_v2 + v*v*(Hhat_L4_M2_Re_v4 + v*(Hhat_L4_M2_Re_v5 + v*Hhat_L4_M2_Re_v6)));
-      Im = v*v*v*v*v*Hhat_L4_M2_Im_v5;
+      Im = fifth(v)*Hhat_L4_M2_Im_v5;
       break;
     case 1:
-      Re = v*v*v*v*v*v*Hhat_L4_M1_Re_v6;
+      Re = sixth(v)*Hhat_L4_M1_Re_v6;
       Im = v*v*v*(Hhat_L4_M1_Im_v3 + v*v*(Hhat_L4_M1_Im_v5 + v*Hhat_L4_M1_Im_v6));
       break;
     case 0:
@@ -178,21 +178,21 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
   case 5:
     switch(abs(M)) {
     case 5:
-      Re = v*v*v*v*v*v*Hhat_L5_M5_Re_v6;
+      Re = sixth(v)*Hhat_L5_M5_Re_v6;
       Im = v*v*v*(Hhat_L5_M5_Im_v3 + v*v*(Hhat_L5_M5_Im_v5 + v*Hhat_L5_M5_Im_v6));
       break;
     case 4:
-      Re = v*v*v*v*(Hhat_L5_M4_Re_v4 + v*v*Hhat_L5_M4_Re_v6);
+      Re = fourth(v)*(Hhat_L5_M4_Re_v4 + v*v*Hhat_L5_M4_Re_v6);
       break;
     case 3:
-      Re = v*v*v*v*v*v*Hhat_L5_M3_Re_v6;
+      Re = sixth(v)*Hhat_L5_M3_Re_v6;
       Im = v*v*v*(Hhat_L5_M3_Im_v3 + v*v*(Hhat_L5_M3_Im_v5 + v*Hhat_L5_M3_Im_v6));
       break;
     case 2:
-      Re = v*v*v*v*(Hhat_L5_M2_Re_v4 + v*v*Hhat_L5_M2_Re_v6);
+      Re = fourth(v)*(Hhat_L5_M2_Re_v4 + v*v*Hhat_L5_M2_Re_v6);
       break;
     case 1:
-      Re = v*v*v*v*v*v*Hhat_L5_M1_Re_v6;
+      Re = sixth(v)*Hhat_L5_M1_Re_v6;
       Im = v*v*v*(Hhat_L5_M1_Im_v3 + v*v*(Hhat_L5_M1_Im_v5 + v*Hhat_L5_M1_Im_v6));
       break;
     case 0:
@@ -202,22 +202,22 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
   case 6:
     switch(abs(M)) {
     case 6:
-      Re = v*v*v*v*(Hhat_L6_M6_Re_v4 + v*v*Hhat_L6_M6_Re_v6);
+      Re = fourth(v)*(Hhat_L6_M6_Re_v4 + v*v*Hhat_L6_M6_Re_v6);
       break;
     case 5:
-      Im = v*v*v*v*v*Hhat_L6_M5_Im_v5;
+      Im = fifth(v)*Hhat_L6_M5_Im_v5;
       break;
     case 4:
-      Re = v*v*v*v*(Hhat_L6_M4_Re_v4 + v*v*Hhat_L6_M4_Re_v6);
+      Re = fourth(v)*(Hhat_L6_M4_Re_v4 + v*v*Hhat_L6_M4_Re_v6);
       break;
     case 3:
-      Im = v*v*v*v*v*Hhat_L6_M3_Im_v5;
+      Im = fifth(v)*Hhat_L6_M3_Im_v5;
       break;
     case 2:
-      Re = v*v*v*v*(Hhat_L6_M2_Re_v4 + v*v*Hhat_L6_M2_Re_v6);
+      Re = fourth(v)*(Hhat_L6_M2_Re_v4 + v*v*Hhat_L6_M2_Re_v6);
       break;
     case 1:
-      Im = v*v*v*v*v*Hhat_L6_M1_Im_v5;
+      Im = fifth(v)*Hhat_L6_M1_Im_v5;
       break;
     case 0:
       break;
@@ -226,25 +226,25 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
   case 7:
     switch(abs(M)) {
     case 7:
-      Im = v*v*v*v*v*Hhat_L7_M7_Im_v5;
+      Im = fifth(v)*Hhat_L7_M7_Im_v5;
       break;
     case 6:
-      Re = v*v*v*v*v*v*Hhat_L7_M6_Re_v6;
+      Re = sixth(v)*Hhat_L7_M6_Re_v6;
       break;
     case 5:
-      Im = v*v*v*v*v*Hhat_L7_M5_Im_v5;
+      Im = fifth(v)*Hhat_L7_M5_Im_v5;
       break;
     case 4:
-      Re = v*v*v*v*v*v*Hhat_L7_M4_Re_v6;
+      Re = sixth(v)*Hhat_L7_M4_Re_v6;
       break;
     case 3:
-      Im = v*v*v*v*v*Hhat_L7_M3_Im_v5;
+      Im = fifth(v)*Hhat_L7_M3_Im_v5;
       break;
     case 2:
-      Re = v*v*v*v*v*v*Hhat_L7_M2_Re_v6;
+      Re = sixth(v)*Hhat_L7_M2_Re_v6;
       break;
     case 1:
-      Im = v*v*v*v*v*Hhat_L7_M1_Im_v5;
+      Im = fifth(v)*Hhat_L7_M1_Im_v5;
       break;
     case 0:
       break;
@@ -253,22 +253,22 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
   case 8:
     switch(abs(M)) {
     case 8:
-      Re = v*v*v*v*v*v*Hhat_L8_M8_Re_v6;
+      Re = sixth(v)*Hhat_L8_M8_Re_v6;
       break;
     case 7:
       break;
     case 6:
-      Re = v*v*v*v*v*v*Hhat_L8_M6_Re_v6;
+      Re = sixth(v)*Hhat_L8_M6_Re_v6;
       break;
     case 5:
       break;
     case 4:
-      Re = v*v*v*v*v*v*Hhat_L8_M4_Re_v6;
+      Re = sixth(v)*Hhat_L8_M4_Re_v6;
       break;
     case 3:
       break;
     case 2:
-      Re = v*v*v*v*v*v*Hhat_L8_M2_Re_v6;
+      Re = sixth(v)*Hhat_L8_M2_Re_v6;
       break;
     case 1:
       break;
@@ -306,4 +306,56 @@ void WaveformUtilities::WaveformAmplitudes::rhOverM(const int L, const int M, co
   Mag = NormalizationFactor*v*v*sqrt(Re*Re+Im*Im);
   Arg = Unwrap(atan2(Im, Re)) - M*psi;
   return;
+}
+
+WaveformUtilities::WaveformAmplitudesSumMMagSquared::WaveformAmplitudesSumMMagSquared(const WaveformUtilities::WaveformAmplitudes& WA)
+  : NormalizationFactor(WA.NormalizationFactor*WA.NormalizationFactor),
+    Sum_v0(8*Power(WA.Hhat_L2_M2_Re_v0,2)),
+    Sum_v2(2*(Power(WA.Hhat_L2_M1_Im_v1,2) + 8*WA.Hhat_L2_M2_Re_v0*WA.Hhat_L2_M2_Re_v2 + Power(WA.Hhat_L3_M1_Im_v1,2) + 9*Power(WA.Hhat_L3_M3_Im_v1,2))),
+    Sum_v3(16*WA.Hhat_L2_M2_Re_v0*WA.Hhat_L2_M2_Re_v3),
+    Sum_v4(4*WA.Hhat_L2_M1_Im_v1*WA.Hhat_L2_M1_Im_v3 + 8*Power(WA.Hhat_L2_M2_Re_v2,2) + 16*WA.Hhat_L2_M2_Re_v0*WA.Hhat_L2_M2_Re_v4 + 4*WA.Hhat_L3_M1_Im_v1*WA.Hhat_L3_M1_Im_v3 + 8*Power(WA.Hhat_L3_M2_Re_v2,2) + 36*WA.Hhat_L3_M3_Im_v1*WA.Hhat_L3_M3_Im_v3 + 8*Power(WA.Hhat_L4_M2_Re_v2,2) + 32*Power(WA.Hhat_L4_M4_Re_v2,2)),
+    Sum_v5(4*WA.Hhat_L2_M1_Im_v1*WA.Hhat_L2_M1_Im_v4 + 16*WA.Hhat_L2_M2_Re_v2*WA.Hhat_L2_M2_Re_v3 + 16*WA.Hhat_L2_M2_Re_v0*WA.Hhat_L2_M2_Re_v5 + 4*WA.Hhat_L3_M1_Im_v1*WA.Hhat_L3_M1_Im_v4 + 36*WA.Hhat_L3_M3_Im_v1*WA.Hhat_L3_M3_Im_v4),
+    Sum_v6(2*(Power(WA.Hhat_L2_M1_Im_v3,2) + 2*WA.Hhat_L2_M1_Im_v1*WA.Hhat_L2_M1_Im_v5 + 4*Power(WA.Hhat_L2_M2_Re_v3,2) + 8*WA.Hhat_L2_M2_Re_v2*WA.Hhat_L2_M2_Re_v4 + 8*WA.Hhat_L2_M2_Re_v0*WA.Hhat_L2_M2_Re_v6 + Power(WA.Hhat_L3_M1_Im_v3,2) + 2*WA.Hhat_L3_M1_Im_v1*WA.Hhat_L3_M1_Im_v5 + 8*WA.Hhat_L3_M2_Re_v2*WA.Hhat_L3_M2_Re_v4 + 9*Power(WA.Hhat_L3_M3_Im_v3,2) + 18*WA.Hhat_L3_M3_Im_v1*WA.Hhat_L3_M3_Im_v5 + Power(WA.Hhat_L4_M1_Im_v3,2) + 8*WA.Hhat_L4_M2_Re_v2*WA.Hhat_L4_M2_Re_v4 + 9*Power(WA.Hhat_L4_M3_Im_v3,2) + 32*WA.Hhat_L4_M4_Re_v2*WA.Hhat_L4_M4_Re_v4 + Power(WA.Hhat_L5_M1_Im_v3,2) + 9*Power(WA.Hhat_L5_M3_Im_v3,2) + 25*Power(WA.Hhat_L5_M5_Im_v3,2))),
+    Sum_v6lnv(16*WA.Hhat_L2_M2_Re_v0*WA.Hhat_L2_M2_Re_v6lnv),
+    Sum_v7(4*(WA.Hhat_L2_M1_Im_v3*WA.Hhat_L2_M1_Im_v4 + WA.Hhat_L2_M1_Im_v1*WA.Hhat_L2_M1_Im_v6 + 4*WA.Hhat_L2_M2_Re_v3*WA.Hhat_L2_M2_Re_v4 + 4*WA.Hhat_L2_M2_Re_v2*WA.Hhat_L2_M2_Re_v5 + WA.Hhat_L3_M1_Im_v3*WA.Hhat_L3_M1_Im_v4 + WA.Hhat_L3_M1_Im_v1*WA.Hhat_L3_M1_Im_v6 + 4*WA.Hhat_L3_M2_Re_v2*WA.Hhat_L3_M2_Re_v5 + 9*WA.Hhat_L3_M3_Im_v3*WA.Hhat_L3_M3_Im_v4 + 9*WA.Hhat_L3_M3_Im_v1*WA.Hhat_L3_M3_Im_v6 + 4*WA.Hhat_L4_M2_Re_v2*WA.Hhat_L4_M2_Re_v5 + 16*WA.Hhat_L4_M4_Re_v2*WA.Hhat_L4_M4_Re_v5)),
+    Sum_v8(2*(Power(WA.Hhat_L2_M1_Re_v4,2) + Power(WA.Hhat_L2_M1_Im_v4,2) + 2*WA.Hhat_L2_M1_Im_v3*WA.Hhat_L2_M1_Im_v5 + 4*Power(WA.Hhat_L2_M2_Re_v4,2) + 8*WA.Hhat_L2_M2_Re_v3*WA.Hhat_L2_M2_Re_v5 + 8*WA.Hhat_L2_M2_Re_v2*WA.Hhat_L2_M2_Re_v6 + Power(WA.Hhat_L3_M1_Re_v4,2) + Power(WA.Hhat_L3_M1_Im_v4,2) + 2*WA.Hhat_L3_M1_Im_v3*WA.Hhat_L3_M1_Im_v5 + 4*Power(WA.Hhat_L3_M2_Re_v4,2) + 8*WA.Hhat_L3_M2_Re_v2*WA.Hhat_L3_M2_Re_v6 + 9*Power(WA.Hhat_L3_M3_Re_v4,2) + 9*Power(WA.Hhat_L3_M3_Im_v4,2) + 18*WA.Hhat_L3_M3_Im_v3*WA.Hhat_L3_M3_Im_v5 + 2*WA.Hhat_L4_M1_Im_v3*WA.Hhat_L4_M1_Im_v5 + 4*Power(WA.Hhat_L4_M2_Re_v4,2) + 8*WA.Hhat_L4_M2_Re_v2*WA.Hhat_L4_M2_Re_v6 + 18*WA.Hhat_L4_M3_Im_v3*WA.Hhat_L4_M3_Im_v5 + 16*Power(WA.Hhat_L4_M4_Re_v4,2) + 32*WA.Hhat_L4_M4_Re_v2*WA.Hhat_L4_M4_Re_v6 + 2*WA.Hhat_L5_M1_Im_v3*WA.Hhat_L5_M1_Im_v5 + 4*Power(WA.Hhat_L5_M2_Re_v4,2) + 18*WA.Hhat_L5_M3_Im_v3*WA.Hhat_L5_M3_Im_v5 + 16*Power(WA.Hhat_L5_M4_Re_v4,2) + 50*WA.Hhat_L5_M5_Im_v3*WA.Hhat_L5_M5_Im_v5 + 4*Power(WA.Hhat_L6_M2_Re_v4,2) + 16*Power(WA.Hhat_L6_M4_Re_v4,2) + 36*Power(WA.Hhat_L6_M6_Re_v4,2))),
+    Sum_v8lnv(16*WA.Hhat_L2_M2_Re_v2*WA.Hhat_L2_M2_Re_v6lnv),
+    Sum_v9(4*(WA.Hhat_L2_M1_Im_v4*WA.Hhat_L2_M1_Im_v5 + WA.Hhat_L2_M1_Im_v3*WA.Hhat_L2_M1_Im_v6 + 4*WA.Hhat_L2_M2_Re_v4*WA.Hhat_L2_M2_Re_v5 + 4*WA.Hhat_L2_M2_Re_v3*WA.Hhat_L2_M2_Re_v6 + WA.Hhat_L3_M1_Im_v4*WA.Hhat_L3_M1_Im_v5 + WA.Hhat_L3_M1_Im_v3*WA.Hhat_L3_M1_Im_v6 + 4*WA.Hhat_L3_M2_Re_v4*WA.Hhat_L3_M2_Re_v5 + 9*WA.Hhat_L3_M3_Im_v4*WA.Hhat_L3_M3_Im_v5 + 9*WA.Hhat_L3_M3_Im_v3*WA.Hhat_L3_M3_Im_v6 + WA.Hhat_L4_M1_Im_v3*WA.Hhat_L4_M1_Im_v6 + 4*WA.Hhat_L4_M2_Re_v4*WA.Hhat_L4_M2_Re_v5 + 9*WA.Hhat_L4_M3_Im_v3*WA.Hhat_L4_M3_Im_v6 + 16*WA.Hhat_L4_M4_Re_v4*WA.Hhat_L4_M4_Re_v5 + WA.Hhat_L5_M1_Im_v3*WA.Hhat_L5_M1_Im_v6 + 9*WA.Hhat_L5_M3_Im_v3*WA.Hhat_L5_M3_Im_v6 + 25*WA.Hhat_L5_M5_Im_v3*WA.Hhat_L5_M5_Im_v6)),
+    Sum_v9lnv(16*WA.Hhat_L2_M2_Re_v3*WA.Hhat_L2_M2_Re_v6lnv),
+    Sum_v10(2*(Power(WA.Hhat_L2_M1_Im_v5,2) + 2*WA.Hhat_L2_M1_Re_v4*WA.Hhat_L2_M1_Re_v6 + 2*WA.Hhat_L2_M1_Im_v4*WA.Hhat_L2_M1_Im_v6 + 4*Power(WA.Hhat_L2_M2_Re_v5,2) + 4*Power(WA.Hhat_L2_M2_Im_v5,2) + 8*WA.Hhat_L2_M2_Re_v4*WA.Hhat_L2_M2_Re_v6 + Power(WA.Hhat_L3_M1_Im_v5,2) + 2*WA.Hhat_L3_M1_Re_v4*WA.Hhat_L3_M1_Re_v6 + 2*WA.Hhat_L3_M1_Im_v4*WA.Hhat_L3_M1_Im_v6 + 4*Power(WA.Hhat_L3_M2_Re_v5,2) + 4*Power(WA.Hhat_L3_M2_Im_v5,2) + 8*WA.Hhat_L3_M2_Re_v4*WA.Hhat_L3_M2_Re_v6 + 9*Power(WA.Hhat_L3_M3_Im_v5,2) + 18*WA.Hhat_L3_M3_Re_v4*WA.Hhat_L3_M3_Re_v6 + 18*WA.Hhat_L3_M3_Im_v4*WA.Hhat_L3_M3_Im_v6 + Power(WA.Hhat_L4_M1_Im_v5,2) + 4*Power(WA.Hhat_L4_M2_Re_v5,2) + 4*Power(WA.Hhat_L4_M2_Im_v5,2) + 8*WA.Hhat_L4_M2_Re_v4*WA.Hhat_L4_M2_Re_v6 + 9*Power(WA.Hhat_L4_M3_Im_v5,2) + 16*Power(WA.Hhat_L4_M4_Re_v5,2) + 16*Power(WA.Hhat_L4_M4_Im_v5,2) + 32*WA.Hhat_L4_M4_Re_v4*WA.Hhat_L4_M4_Re_v6 + Power(WA.Hhat_L5_M1_Im_v5,2) + 8*WA.Hhat_L5_M2_Re_v4*WA.Hhat_L5_M2_Re_v6 + 9*Power(WA.Hhat_L5_M3_Im_v5,2) + 32*WA.Hhat_L5_M4_Re_v4*WA.Hhat_L5_M4_Re_v6 + 25*Power(WA.Hhat_L5_M5_Im_v5,2) + Power(WA.Hhat_L6_M1_Im_v5,2) + 8*WA.Hhat_L6_M2_Re_v4*WA.Hhat_L6_M2_Re_v6 + 9*Power(WA.Hhat_L6_M3_Im_v5,2) + 32*WA.Hhat_L6_M4_Re_v4*WA.Hhat_L6_M4_Re_v6 + 25*Power(WA.Hhat_L6_M5_Im_v5,2) + 72*WA.Hhat_L6_M6_Re_v4*WA.Hhat_L6_M6_Re_v6 + Power(WA.Hhat_L7_M1_Im_v5,2) + 9*Power(WA.Hhat_L7_M3_Im_v5,2) + 25*Power(WA.Hhat_L7_M5_Im_v5,2) + 49*Power(WA.Hhat_L7_M7_Im_v5,2))),
+    Sum_v10lnv(16*WA.Hhat_L2_M2_Re_v4*WA.Hhat_L2_M2_Re_v6lnv),
+    Sum_v11(4*WA.Hhat_L2_M1_Im_v5*WA.Hhat_L2_M1_Im_v6 + 16*WA.Hhat_L2_M2_Re_v5*WA.Hhat_L2_M2_Re_v6 + 16*WA.Hhat_L2_M2_Im_v5*WA.Hhat_L2_M2_Im_v6 + 4*WA.Hhat_L3_M1_Im_v5*WA.Hhat_L3_M1_Im_v6 + 16*WA.Hhat_L3_M2_Re_v5*WA.Hhat_L3_M2_Re_v6 + 36*WA.Hhat_L3_M3_Im_v5*WA.Hhat_L3_M3_Im_v6 + 4*WA.Hhat_L4_M1_Im_v5*WA.Hhat_L4_M1_Im_v6 + 16*WA.Hhat_L4_M2_Re_v5*WA.Hhat_L4_M2_Re_v6 + 36*WA.Hhat_L4_M3_Im_v5*WA.Hhat_L4_M3_Im_v6 + 64*WA.Hhat_L4_M4_Re_v5*WA.Hhat_L4_M4_Re_v6 + 4*WA.Hhat_L5_M1_Im_v5*WA.Hhat_L5_M1_Im_v6 + 36*WA.Hhat_L5_M3_Im_v5*WA.Hhat_L5_M3_Im_v6 + 100*WA.Hhat_L5_M5_Im_v5*WA.Hhat_L5_M5_Im_v6),
+    Sum_v11lnv(16*WA.Hhat_L2_M2_Re_v5*WA.Hhat_L2_M2_Re_v6lnv),
+    Sum_v12(2*Power(WA.Hhat_L2_M1_Re_v6,2) + 2*Power(WA.Hhat_L2_M1_Im_v6,2) + 8*Power(WA.Hhat_L2_M2_Re_v6,2) + 8*Power(WA.Hhat_L2_M2_Im_v6,2) + 2*Power(WA.Hhat_L3_M1_Re_v6,2) + 2*Power(WA.Hhat_L3_M1_Im_v6,2) + 8*Power(WA.Hhat_L3_M2_Re_v6,2) + 18*Power(WA.Hhat_L3_M3_Re_v6,2) + 18*Power(WA.Hhat_L3_M3_Im_v6,2) + 2*Power(WA.Hhat_L4_M1_Re_v6,2) + 2*Power(WA.Hhat_L4_M1_Im_v6,2) + 8*Power(WA.Hhat_L4_M2_Re_v6,2) + 18*Power(WA.Hhat_L4_M3_Re_v6,2) + 18*Power(WA.Hhat_L4_M3_Im_v6,2) + 32*Power(WA.Hhat_L4_M4_Re_v6,2) + 2*Power(WA.Hhat_L5_M1_Re_v6,2) + 2*Power(WA.Hhat_L5_M1_Im_v6,2) + 8*Power(WA.Hhat_L5_M2_Re_v6,2) + 18*Power(WA.Hhat_L5_M3_Re_v6,2) + 18*Power(WA.Hhat_L5_M3_Im_v6,2) + 32*Power(WA.Hhat_L5_M4_Re_v6,2) + 50*Power(WA.Hhat_L5_M5_Re_v6,2) + 50*Power(WA.Hhat_L5_M5_Im_v6,2) + 8*Power(WA.Hhat_L6_M2_Re_v6,2) + 32*Power(WA.Hhat_L6_M4_Re_v6,2) + 72*Power(WA.Hhat_L6_M6_Re_v6,2) + 8*Power(WA.Hhat_L7_M2_Re_v6,2) + 32*Power(WA.Hhat_L7_M4_Re_v6,2) + 72*Power(WA.Hhat_L7_M6_Re_v6,2) + 8*Power(WA.Hhat_L8_M2_Re_v6,2) + 32*Power(WA.Hhat_L8_M4_Re_v6,2) + 72*Power(WA.Hhat_L8_M6_Re_v6,2) + 128*Power(WA.Hhat_L8_M8_Re_v6,2)),
+    Sum_v12lnv(16*WA.Hhat_L2_M2_Re_v6*WA.Hhat_L2_M2_Re_v6lnv),
+    Sum_v12lnv2(8*Power(WA.Hhat_L2_M2_Re_v6lnv,2))
+{ }
+
+double WaveformUtilities::WaveformAmplitudesSumMMagSquared::SumMMagSquared(const double v) const {
+  const double lnv = log(v);
+  return
+    NormalizationFactor*fourth(v)
+    *(Sum_v0
+     + v*(Sum_v2
+	  + v*(Sum_v3
+	       + v*(Sum_v4
+		    + v*(Sum_v5
+			 + v*(Sum_v6 + lnv*Sum_v6lnv
+			      + v*(Sum_v7
+				   + v*(Sum_v8 + lnv*Sum_v8lnv
+					+ v*(Sum_v9 + lnv*Sum_v9lnv
+					     + v*(Sum_v10 + lnv*Sum_v10lnv
+						  + v*(Sum_v11 + lnv*Sum_v11lnv
+						       + v*(Sum_v12 + lnv*(Sum_v12lnv + lnv*Sum_v12lnv2) )
+						       )
+						  )
+					     )
+					)
+				   )
+			      )
+			 )
+		    )
+	       )
+	 )
+     );
 }
