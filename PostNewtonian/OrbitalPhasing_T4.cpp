@@ -66,14 +66,12 @@ void WU::TaylorT4(const double delta, const double chis, const double v0,
     ode.integrate();
   } catch(NRerror err) { }
   
-  t.resize(out.count);
-  v.resize(out.count);
-  Phi.resize(out.count);
-  for (int i=0;i<out.count;i++) {
-    t[i] = out.xsave[i]-out.xsave[out.count-1];
-    v[i] = out.ysave[0][i];
-    Phi[i] = out.ysave[1][i];
-  }
+  out.xsave.resize(out.count);
+  t.swap(out.xsave);
+  out.ysave.resize(out.ysave.nrows(), out.count);
+  v.swap(out.ysave[0]);
+  Phi.swap(out.ysave[1]);
+  t -= t.back();
   
   return;
 }

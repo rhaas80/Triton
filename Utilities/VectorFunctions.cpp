@@ -758,53 +758,60 @@ Matrix<double> fmod(const Matrix<double>& numerator, const double& denominator) 
   return y;
 }
 
-inline double WU::square(const std::vector<double>& x) {
+inline vector<double> WU::square(const std::vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=square(x[i]);
   }
+  return y;
 }
 
-inline double WU::cube(const std::vector<double>& x) {
+inline vector<double> WU::cube(const std::vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=cube(x[i]);
   }
+  return y;
 }
 
-inline double WU::fourth(const std::vector<double>& x) {
+inline vector<double> WU::fourth(const std::vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=fourth(x[i]);
   }
+  return y;
 }
 
-inline double WU::fifth(const std::vector<double>& x) {
+inline vector<double> WU::fifth(const std::vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=fifth(x[i]);
   }
+  return y;
 }
 
-inline double WU::sixth(const std::vector<double>& x) {
+inline vector<double> WU::sixth(const std::vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=sixth(x[i]);
   }
+  return y;
 }
 
-inline double WU::seventh(const std::vector<double>& x) {
+inline vector<double> WU::seventh(const std::vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=seventh(x[i]);
   }
+  return y;
 }
 
-inline double WU::eighth(const std::vector<double>& x) {
+inline vector<double> WU::eighth(const std::vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=eighth(x[i]);
   }
+  return y;
 }
 
 double WU::maxfabs(const vector<double>& x) {
@@ -908,7 +915,8 @@ vector<double> WU::cumtrapz(const vector<double>& t, const vector<double>& f) {
 
 vector<double> WU::dydx(const vector<double>& y, const vector<double>& x) {
   if(! DimensionsAgree(y,x)) { throw("Size disagreement"); }
-  if(y.size()==0) { return vector<double>(0); }
+  if(y.size()<2) { cerr << "\nsize=" << y.size() << endl; throw("Not enough points for a derivative"); }
+  //if(y.size()==0) { return vector<double>(0); }
   vector<double> D = y;
   const unsigned int i1 = y.size()-1;
   D[0] = (y[1]-y[0]) / (x[1]-x[0]);

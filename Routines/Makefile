@@ -1,17 +1,13 @@
 ## Set these variables as appropriate
-SUBLIBS = ../Objects ../Utilities
-# SUBLIBS = ../Objects ../PostNewtonian ../Utilities
+SUBLIBS = ../Utilities ../PostNewtonian ../Objects
 SOURCES = $(wildcard *.cpp)
 EXECUTABLES = $(SOURCES:%.cpp=%)
 
 
 ## This is a basic makefile; the lines below shouldn't need much tweaking.
+include ../MachineDefs
+
 .PHONY: sublibs $(SUBLIBS)
-RM = /bin/rm
-CC = g++
-OPT = -O3
-CFLAGS = -c
-WFLAGS = -Wall
 IFLAGS:=$(SUBLIBS:%=-I%)
 LFLAGS:=$(SUBLIBS:%=-L%)
 lFLAGS:=$(SUBLIBS:../%=-l%)
@@ -21,14 +17,14 @@ all: sublibs $(EXECUTABLES)
 -include $(EXECUTABLES:=.d)
 
 clean:
-	$(RM) -f *.d $(EXECUTABLES)
+	-$(RM) *.d $(EXECUTABLES)
 
 $(EXECUTABLES): % : %.cpp
-	$(CC) $(OPT) $(WFLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@ -pg -g
-	@$(CC) -MM $(IFLAGS) $*.cpp > $*.d.tmp
-	@sed -e 's/.o:/:/'< $*.d.tmp > $*.d
-	@$(RM) -f $*.d.tmp
-	@(pushd ../bin >& /dev/null && ln -sf ../Routines/$@ . ; popd >& /dev/null)
+	$(C++) $(C++FLAGS) -c $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
+	@$(MAKEDEPEND) $(IFLAGS) $*.cpp > $*.d.tmp
+	@$(SED) -e 's/.o:/:/'< $*.d.tmp > $*.d
+	@$(RM) $*.d.tmp
+	@(pushd ../bin >& /dev/null && $(LN) ../Routines/$@ . ; popd >& /dev/null)
 
 sublibs: $(SUBLIBS)
 

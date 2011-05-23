@@ -3,6 +3,7 @@
 
 #include "WaveformAmplitudes.hpp"
 #include "WaveformAmplitudesResummed.hpp"
+#include "VectorFunctions.hpp"
 
 namespace WaveformUtilities {
   
@@ -74,11 +75,11 @@ namespace WaveformUtilities {
   class Torque_KFPhi {
   private:
     const double nu;
-    const Flux& F;
+    Flux& F;
     mutable double v, r, prstar, pPhi;
   public:
     mutable double Torque;
-    Torque_KFPhi(const double delta, const double chis, const Flux& iF);
+    Torque_KFPhi(const double delta, const double chis, Flux& iF);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0);
   };
   
@@ -87,14 +88,16 @@ namespace WaveformUtilities {
   class Torque_nKFPhi {
   private:
     const double nu;
-    const HamiltonianCircular& Hcirc;
-    const Flux& F;
+    HamiltonianCircular& Hcirc;
+    Flux& F;
     mutable double v, r, prstar, pPhi;
   public:
     mutable double Torque;
-    Torque_nKFPhi(const double delta, const double chis, const HamiltonianCircular& iHcirc, const Flux& iF);
+    Torque_nKFPhi(const double delta, const double chis, HamiltonianCircular& iHcirc, Flux& iF);
     double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new);
   };
+  
+  #include "Flux.tpp"
   
 }
 

@@ -1,30 +1,23 @@
-SOURCES = $(wildcard *.cpp)
+include ../MachineDefs
 
-RM = /bin/rm
-CC = g++
-# OPT = -O3
-# CFLAGS = -c
-OPT = -O3
-CFLAGS = -c
-# OPT = -O3
-# CFLAGS = -c
+SOURCES = $(wildcard *.cpp)
 
 all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libUtilities
 
 clean:
-	$(RM) -rf *.o *.d libUtilities.a
+	-$(RM) *.o *.d libUtilities.a
 
 .cpp.o:
-	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@ -pg -g
+	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@
 
 %.d: %.cpp
-	@set -e; $(RM) -f $@; \
-	$(CC) -MM $(IFLAGS) $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	$(RM) -f $@.$$$$
+	@set -e; $(RM) $@; \
+	$(MAKEDEPEND) $< > $@.$$$$; \
+	$(SED) 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	$(RM) $@.$$$$
 
--include $(EXECUTABLES:=.d)
+-include $(SOURCES:.cpp=.d)
 
 libUtilities: $(SOURCES)
-	@$(RM) -f $@
-	@ar cr $@.a $(SOURCES:.cpp=.o)
+	@$(RM) $@
+	@$(AR) $(ARFLAGS) $@.a $(SOURCES:.cpp=.o)

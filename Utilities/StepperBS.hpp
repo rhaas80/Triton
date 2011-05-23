@@ -248,7 +248,7 @@ void StepperBS<D>::step(const Doub htry,D &derivs) {
   static bool first_step=true,last_step=false;
   static bool forward,reject=false,prev_reject=false;
   Int i,k;
-  Doub fac,h,hnew,hopt_int,err;
+  Doub fac,h,hnew,hopt_int=0,err; /// <added> initialization of hopt_int for compiler's sanity
   bool firstk;
   VecDoub hopt(IMAXX),work(IMAXX);
   VecDoub ysav(n),yseq(n);

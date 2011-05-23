@@ -25,7 +25,8 @@ namespace WaveformUtilities {
     VecDoub xsave;
     MatDoub ysave;
     Output() : kmax(-1),dense(false),count(0) {}
-    Output(const Int nsavee) : kmax(500),nsave(nsavee),count(0),xsave(kmax) {
+    //Output(const Int nsavee) : kmax(500),nsave(nsavee),count(0),xsave(kmax) { // <replaced />
+    Output(const Int nsavee) : kmax(8000),nsave(nsavee),count(0),xsave(kmax) { // <replacement /> (The cost of resizes is hurting me)
       dense = nsave > 0 ? true : false;
     }
     void init(const Int neqn, const Doub xlo, const Doub xhi) {
@@ -41,7 +42,8 @@ namespace WaveformUtilities {
     }
     void resize() {
       Int kold=kmax;
-      kmax *= 2;
+      //kmax *= 2; // <replaced />
+      kmax *= 4; // <replacement />
       VecDoub tempvec(xsave);
       xsave.resize(kmax);
       for (Int k=0; k<kold; k++)
@@ -86,7 +88,8 @@ namespace WaveformUtilities {
   template<class Stepper>
   struct Odeint {
     //static const Int MAXSTP=50000; // <replaced />
-    static const Int MAXSTP=5000000;
+//     static const Int MAXSTP=5000000;
+    static const Int MAXSTP=200;
     Doub EPS;
     Int nok;
     Int nbad;
@@ -173,12 +176,14 @@ namespace WaveformUtilities {
 	return;
       }
       if (std::abs(s.hnext) <= hmin) {
-	std::cerr << "\nstd::abs(s.hnext)=" << std::abs(s.hnext) << "\thmin=" << hmin << std::endl; // <added />
-	throw("Step size too small in Odeint");
+// 	std::cerr << "\nstd::abs(s.hnext)=" << std::abs(s.hnext) << "\thmin=" << hmin << std::endl; // <added />
+// 	throw("Step size too small in Odeint");
+	return;
       }
       // <added>
       if (ContinueIntegration!=NULL && !(derivs.*ContinueIntegration)(x, y, dydx)) {
-	std::cerr << "\nRight-hand side asked to stop integration.  Returning now." << std::endl;
+	out.save(x,y); /// Save last step
+// 	std::cerr << "\nRight-hand side asked to stop integration.  Returning now." << std::endl;
 	return;
       }
       // </added>

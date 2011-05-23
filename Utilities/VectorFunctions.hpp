@@ -103,7 +103,7 @@ WaveformUtilities::Matrix<double> fmod(const WaveformUtilities::Matrix<double>& 
 WaveformUtilities::Matrix<double> fmod(const WaveformUtilities::Matrix<double>& numerator, const double& denominator);
 
 namespace WaveformUtilities {
-  
+  /// NOTE!!! After optimization, the following are barely faster than pow.  It's probably not worth the effort.
   /// Small integer powers
   /// To compute x^n efficiently, write n in binary, then replace each 1 with "SX" and each 0 with "S",
   /// and cross off the first SX appearing at the left.  Read from left to right, this rule tells us to
@@ -112,17 +112,19 @@ namespace WaveformUtilities {
   inline double square(const double x) { return x*x; } // n=10; 1==1
   inline double cube(const double x) { return x*x*x; } // n=11; 2==2
   inline double fourth(const double x) { return square(square(x)); } // n=100; 2<3
-  inline double fifth(const double x) { return x*fourth(x); } // n=101; 3<4
+  inline double fifth(const double x) { return x*square(square(x)); } // n=101; 3<4
   inline double sixth(const double x) { return square(x*square(x)); } // n=110; 3<5
   inline double seventh(const double x) { return x*square(x*square(x)); } // n=111; 4<6
   inline double eighth(const double x) { return square(square(square(x))); } // n=1000; 3<7
-  inline double square(const std::vector<double>& x);
-  inline double cube(const std::vector<double>& x);
-  inline double fourth(const std::vector<double>& x);
-  inline double fifth(const std::vector<double>& x);
-  inline double sixth(const std::vector<double>& x);
-  inline double seventh(const std::vector<double>& x);
-  inline double eighth(const std::vector<double>& x);
+  inline double ninth(const double x) { return x*square(square(square(x))); } // n=1001; 4<8
+  inline double tenth(const double x) { return square(x*square(square(x))); } // n=1010; 3<9
+  inline std::vector<double> square(const std::vector<double>& x);
+  inline std::vector<double> cube(const std::vector<double>& x);
+  inline std::vector<double> fourth(const std::vector<double>& x);
+  inline std::vector<double> fifth(const std::vector<double>& x);
+  inline std::vector<double> sixth(const std::vector<double>& x);
+  inline std::vector<double> seventh(const std::vector<double>& x);
+  inline std::vector<double> eighth(const std::vector<double>& x);
   
   /// Max functions
   double maxfabs(const std::vector<double>& x);

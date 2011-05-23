@@ -1,30 +1,26 @@
+include ../MachineDefs
+
 SOURCES = $(wildcard *.cpp)
 
-RM = /bin/rm
-CC = g++
 # IFLAGS = -I../Utilities -I../PostNewtonian -I../DataAnalysis
-IFLAGS = -I../Utilities
-OPT = -O3
-CFLAGS = -c -Wall
-# OPT = -O3
-# CFLAGS = -c
+IFLAGS = -I../Utilities -I../PostNewtonian
 
 all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libObjects
 
 clean:
-	$(RM) -rf *.o *.d libObjects.a
+	-$(RM) *.o *.d libObjects.a
 
 .cpp.o:
-	$(CC) $(OPT) $(CFLAGS) $(IFLAGS) $< -o $@ -pg -g
+	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@
 
 %.d: %.cpp
 	@set -e; $(RM) -f $@; \
-	$(CC) -MM $(IFLAGS) $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	$(RM) -f $@.$$$$
+	$(MAKEDEPEND) $(IFLAGS) $< > $@.$$$$; \
+	$(SED) 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	$(RM) $@.$$$$
 
--include $(EXECUTABLES:=.d)
+-include $(SOURCES:.cpp=.d)
 
 libObjects: $(SOURCES)
-	@$(RM) -f $@
-	@ar cr $@.a $(SOURCES:.cpp=.o)
+	@$(RM) $@
+	@$(AR) $(ARFLAGS) $@.a $(SOURCES:.cpp=.o)
