@@ -14,6 +14,8 @@ struct StepperBS : StepperBase {
   MatDoub fsave;
   VecInt ipoint;
   VecDoub dens;
+  bool first_step,last_step;
+  bool forward,reject,prev_reject;
   StepperBS(VecDoub_IO &yy, VecDoub_IO &dydxx, Doub &xx, const Doub atol,
 	    const Doub rtol, bool dens);
   void step(const Doub htry,D &derivs);
@@ -30,7 +32,9 @@ StepperBS<D>::StepperBS(VecDoub_IO &yy,VecDoub_IO &dydxx,Doub &xx,
 			const Doub atoll,const Doub rtoll, bool dens) :
   StepperBase(yy,dydxx,xx,atoll,rtoll,dens),nseq(IMAXX),cost(IMAXX),
   table(KMAXX,n),dydxnew(n),coeff(IMAXX,IMAXX),errfac(2*IMAXX+2),ysave(IMAXX,n),
-  fsave(IMAXX*(2*IMAXX+1),n),ipoint(IMAXX+1),dens((2*IMAXX+5)*n) {
+  fsave(IMAXX*(2*IMAXX+1),n),ipoint(IMAXX+1),dens((2*IMAXX+5)*n),
+  first_step(true), last_step(false), forward(true), reject(false), prev_reject(false)
+{
   EPS=std::numeric_limits<Doub>::epsilon();
   if (dense)
     for (Int i=0;i<IMAXX;i++)
@@ -245,8 +249,8 @@ template <class D>
 void StepperBS<D>::step(const Doub htry,D &derivs) {
   const Doub STEPFAC1=0.65,STEPFAC2=0.94,STEPFAC3=0.02,STEPFAC4=4.0,
     KFAC1=0.8,KFAC2=0.9;
-  static bool first_step=true,last_step=false;
-  static bool forward,reject=false,prev_reject=false;
+//   static bool first_step=true,last_step=false;
+//   static bool forward,reject=false,prev_reject=false;
   Int i,k;
   Doub fac,h,hnew,hopt_int=0,err; /// <added> initialization of hopt_int for compiler's sanity
   bool firstk;

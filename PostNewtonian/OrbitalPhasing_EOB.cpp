@@ -122,25 +122,7 @@ void WU::EOB(const double delta, const double chis, const double v0,
   const double dpPhi0dr = (-8*pow(g.Dt,2) + 7*g.dDtdr*g.Dt*r0 - 2*pow(g.dDtdr,2)*pow(r0,2))/(pow(4*g.Dt - g.dDtdr*r0,1.5)*sqrt(-2*g.Dt + g.dDtdr*r0));
   ystart[2] = nu * g.drstardr * T.Torque / dpPhi0dr;
   if(ystart[2]>0.0) ystart[2] *= -1;
-  //ystart = ReduceEccentricity(g, H, d, ystart, AcceptableEcc, v0);
-  
-//   //// This block is for testing only!!!
-//   const vector<double> ystartsave = ystart; // DEBUG TEST
-//   ystart = ReduceEccentricity(g, H, d, ystartsave, AcceptableEcc, v0);
-//   g(r0);
-//   F(v0);
-//   H(r0, 0.0, ystartsave[3]);
-//   T(v0, r0, 0.0, ystartsave[3]);
-//   ystart = ReduceEccentricity(g, H, d, ystartsave, AcceptableEcc, v0);
-//   //// This block is for testing only!!!
-  cout << std::setprecision(16) << ystart << endl;
-  cout << std::setprecision(16) << GuessedLength << endl;
-  cout << std::setprecision(16) << rtol << endl;
-  cout << std::setprecision(16) << nsave << endl;
-  cout << std::setprecision(16) << denseish << endl;
-  cout << std::setprecision(16) << delta << endl;
-  cout << std::setprecision(16) << chis << endl;
-  cout << std::setprecision(16) << v0 << endl;
+  ystart = ReduceEccentricity(g, H, d, ystart, AcceptableEcc, v0);
   
   EOBIntegration(H, d, ystart, GuessedLength, rtol, nsave, denseish, t, v, Phi, r, prstar, pPhi);
   
@@ -158,47 +140,37 @@ void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength,
   const double h1=1.0e2, hmin=1.0e-2;
   Output out(nsave);
   
-//   /// First pass, integrating until tLength or the 'Early' integration test fails
-//   ContinueTest test = &HamEqn::ContinueIntegratingEarly;
-//   Odeint<StepperBS<HamEqn> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, test);
-//   try {
-//     odeA.integrate();
-//   } catch(NRerror err) { }
+  /// First pass, integrating until tLength or the 'Early' integration test fails
+  ContinueTest test = &HamEqn::ContinueIntegratingEarly;
+  Odeint<StepperBS<HamEqn> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, test);
+  cout << "y0=" << std::setprecision(16) << y0 << endl;
+  cout << "t0=" << t0 << " t1=" << t1 << " atol=" << atol << " rtol=" << rtol << " h1=" << h1 << " hmin=" << hmin << endl;
+  try {
+    odeA.integrate();
+  } catch(NRerror err) { }
   
-//   /// Second pass, only if 'Early' integration test failed
-//   {
-//     const double t1A = out.xsave[out.count-1];
-//     vector<double> y(out.ysave.nrows());
-//     for(unsigned int i=0; i<y.size(); ++i) {
-//       y[i] = out.ysave[i][out.count-1];
+  /// Second pass, only if 'Early' integration test failed
+  {
+    const double t1A = out.xsave[out.count-1];
+//     for(unsigned int i=0; i<y0.size(); ++i) {
+//       y0[i] = out.ysave[i][out.count-1];
 //     }
-//     vector<double> dydt(out.ysave.nrows());
-//     d(t1A, y, dydt);
-//     if(! (d.*test)(t1A, y, dydt) ) {
-//       cout << "A: out.count=" << out.count << endl;
-//       test = &HamEqn::ContinueIntegrating;
-//       Odeint<StepperDopr853<HamEqn> > odeB(y, t1A, t1, atol, rtol, out.xsave[out.count-1]-out.xsave[out.count-2], hmin, out, d, denseish, test);
+    vector<double> dydt(out.ysave.nrows());
+    d(t1A, y0, dydt);
+    if(! (d.*test)(t1A, y0, dydt) ) {
+      cout << "A: out.count=" << out.count << endl;
+      test = &HamEqn::ContinueIntegrating;
+      const double h1 = (out.xsave[out.count-1]-out.xsave[out.count-2])*nsave/5.0;
+      Odeint<StepperDopr853<HamEqn> > odeB(y0, t1A, t1, atol, rtol, h1, hmin, out, d, denseish, test);
+      cout << "y0=" << y0 << endl;
+      cout << "t1A=" << t1A << " t1=" << t1 << " atol=" << atol << " rtol=" << rtol << " h1=" << h1 << " hmin=" << hmin << endl;
+      cout << "Debug following line " << __LINE__ << " of " << __FILE__ << endl;
 //       try {
 // 	odeB.integrate();
 //       } catch(NRerror err) { }
-//       cout << "B: out.count=" << out.count << endl;
-//     }
-//   }
-  
-  
-  
-  
-  //// This block is just for testing
-  ContinueTest test = &HamEqn::ContinueIntegrating;
-  Odeint<StepperBS<HamEqn> > odeB(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, test);
-//   ContinueTest test = &HamEqn::ContinueIntegrating;
-//   Odeint<StepperDopr853<HamEqn> > odeB(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, test);
-  try {
-    odeB.integrate();
-  } catch(NRerror err) { }
-  //// This block is just for testing
-  
-  
+      cout << "B: out.count=" << out.count << endl;
+    }
+  }
   
   /// Save the results
   out.xsave.resize(out.count);
@@ -213,8 +185,7 @@ void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength,
     H(r[i], prstar[i], pPhi[i]);
     v[i] = pow(H.dHdpPhi, 1./3.);
   }
-  cout << "Debug line " << __LINE__ + 1 << " of " << __FILE__ << endl;
-  //t -= t.back();
+  t -= t.back();
   
   return;
 }
@@ -312,14 +283,12 @@ vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double
   //// Reduce eccentricity
   double BestEcc=1.e100;
   //// Iterations of arXiv:1012.1549's method
-  for(unsigned int i=0; i<2; ++i) {
-//   for(unsigned int i=0; i<1000; ++i) {
+  for(unsigned int i=0; i<1000; ++i) {
     double DeltarDot=666, DeltaPhiDot=-666;
     EOBIntegration(H, d, ystart, GuessedLength, rtol, nsave, denseish, t, v, Phi, r, prstar, pPhi);
     g(ystartinitial[0]);
     H(ystartinitial[0], ystartinitial[2], ystartinitial[3]);
     double Ecc = Eccentricity_rDot(t, prstar, ystartinitial[0], H.dHdpPhi, DeltarDot, DeltaPhiDot);
-    cout << "i:" << i << std::setprecision(14) << "\tEcc=" << Ecc << endl;
     
     if(i==0) {
       BestEcc = Ecc;
@@ -330,7 +299,7 @@ vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double
       }
     }
     if(fabs(BestEcc)<AcceptableEcc) {
-      cout << "Achieved acceptable eccentricity of e=" << std::setprecision(14) << BestEcc << " in " << i << " iterations." << endl;
+      //cout << "Achieved acceptable eccentricity of e=" << std::setprecision(14) << BestEcc << " in " << i << " iterations." << endl;
       return Bestystart;
     }
     ystart = ystartinitial;

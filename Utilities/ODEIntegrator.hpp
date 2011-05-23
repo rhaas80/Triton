@@ -88,8 +88,7 @@ namespace WaveformUtilities {
   template<class Stepper>
   struct Odeint {
     //static const Int MAXSTP=50000; // <replaced />
-//     static const Int MAXSTP=5000000;
-    static const Int MAXSTP=200;
+    static const Int MAXSTP=5000000;
     Doub EPS;
     Int nok;
     Int nbad;
@@ -169,24 +168,22 @@ namespace WaveformUtilities {
       } else {
 	out.save(x,y);
       }
-      if ((x-x2)*(x2-x1) >= 0.0) {
+      if ((x-x2)*(x2-x1) >= 0.0
+	  ||(ContinueIntegration!=NULL && !(derivs.*ContinueIntegration)(x, y, dydx)) // <added />
+	  ) {
 	for (Int i=0;i<nvar;i++) ystart[i]=y[i];
 	if (out.kmax > 0 && std::abs(out.xsave[out.count-1]-x2) > 100.0*std::abs(x2)*EPS)
 	  out.save(x,y);
 	return;
       }
       if (std::abs(s.hnext) <= hmin) {
+	for (Int i=0;i<nvar;i++) ystart[i]=y[i];
+	if (out.kmax > 0 && std::abs(out.xsave[out.count-1]-x2) > 100.0*std::abs(x2)*EPS)
+	  out.save(x,y); /// Save last step
 // 	std::cerr << "\nstd::abs(s.hnext)=" << std::abs(s.hnext) << "\thmin=" << hmin << std::endl; // <added />
 // 	throw("Step size too small in Odeint");
 	return;
       }
-      // <added>
-      if (ContinueIntegration!=NULL && !(derivs.*ContinueIntegration)(x, y, dydx)) {
-	out.save(x,y); /// Save last step
-// 	std::cerr << "\nRight-hand side asked to stop integration.  Returning now." << std::endl;
-	return;
-      }
-      // </added>
       h=s.hnext;
     }
     throw("Too many steps in routine Odeint");

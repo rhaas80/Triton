@@ -14,79 +14,53 @@ int main() {
   const double v0 = 0.104;//0.02025;
 //   vector<double> t, v, Phi;
 //   vector<double> r, prstar, pPhi;
-  const double rtol=1e-8;
-  const int nsave = 0;
-  const bool denseish = false;
+  const int nsave = 10;
+  const bool denseish = true;
   cout << "v0 = " << v0 << "\tOmega0 = " << v0*v0*v0 << "\tdelta = " << delta << "\tchis = " << chis << endl;
   
   clock_t start,end;
   
-  vector<double> t1, t2;
-  {
-    const unsigned int trynum=0;
-    vector<double> t, v, Phi;
-    vector<double> r, prstar, pPhi;
-    start = clock();
-    WaveformUtilities::EOB(delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
-    end = clock();
-    cout << "rtol=" << rtol << " took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << flush;
-    ofstream ofs(("Outputs/TestEOBInt_try" + WaveformUtilities::DoubleToString(trynum) + ".dat").c_str());
-    ofs << "# [1] = t" << endl << "# [2] = v" << endl << "# [3] = Phi" << endl
-	<< "# [4] = r" << endl << "# [5] = prstar" << endl << "# [6] = pPhi" << endl;
-    ofs << setprecision(16);
-    for(unsigned int i=0; i<t.size(); ++i) {
-      ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
-    }
-    ofs.close();
-    cout << "  t.size()=" << t.size();
-    cout << "  ☺" << endl;
-    t1.swap(t);
-  }
-  {
-    const unsigned int trynum=1;
-    vector<double> t, v, Phi;
-    vector<double> r, prstar, pPhi;
-    start = clock();
-    WaveformUtilities::EOB(delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
-    end = clock();
-    cout << "rtol=" << rtol << " took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << flush;
-    ofstream ofs(("Outputs/TestEOBInt_try" + WaveformUtilities::DoubleToString(trynum) + ".dat").c_str());
-    ofs << "# [1] = t" << endl << "# [2] = v" << endl << "# [3] = Phi" << endl
-	<< "# [4] = r" << endl << "# [5] = prstar" << endl << "# [6] = pPhi" << endl;
-    ofs << setprecision(16);
-    for(unsigned int i=0; i<t.size(); ++i) {
-      ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
-    }
-    ofs.close();
-    cout << "  t.size()=" << t.size();
-    cout << "  ☺" << endl;
-    t2.swap(t);
-  }
-  
-  for(unsigned int i=0; i<t1.size() && i<t2.size(); ++i) {
-    cout << setprecision(18) << "t1[" << i << "]=" << t1[i] << "\tt2[" << i << "]=" << t2[i] << endl;
-    if(t1[i]!=t2[i]) { break; }
-  }
-  
-//   const double sqrt10 = sqrt(10);
-//   for(double rtol=1e-4; rtol>1.01e-5; rtol/=10) {
+//   {
+//     const double rtol=1e-11;
+//     const unsigned int trynum=0;
 //     vector<double> t, v, Phi;
 //     vector<double> r, prstar, pPhi;
 //     start = clock();
 //     WaveformUtilities::EOB(delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
 //     end = clock();
 //     cout << "rtol=" << rtol << " took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << flush;
-// //     ofstream ofs(("Outputs/TestEOBInt_rtol" + WaveformUtilities::DoubleToString(rtol) + ".dat").c_str());
-// //     ofs << "# [1] = t" << endl << "# [2] = v" << endl << "# [3] = Phi" << endl
-// // 	<< "# [4] = r" << endl << "# [5] = prstar" << endl << "# [6] = pPhi" << endl;
-// //     ofs << setprecision(16);
-// //     for(unsigned int i=0; i<t.size(); ++i) {
-// //       ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
-// //     }
-// //     ofs.close();
+//     ofstream ofs(("Outputs/TestEOBInt_try" + WaveformUtilities::DoubleToString(trynum) + ".dat").c_str());
+//     ofs << "# [1] = t" << endl << "# [2] = v" << endl << "# [3] = Phi" << endl
+// 	<< "# [4] = r" << endl << "# [5] = prstar" << endl << "# [6] = pPhi" << endl;
+//     ofs << setprecision(16);
+//     for(unsigned int i=0; i<t.size(); ++i) {
+//       ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
+//     }
+//     ofs.close();
 //     cout << "  t.size()=" << t.size();
 //     cout << "  ☺" << endl;
+//     t1.swap(t);
 //   }
+  
+  const double sqrt10 = sqrt(10);
+  for(double rtol=1e-9; rtol>1.01e-10; rtol/=10) {
+    vector<double> t, v, Phi;
+    vector<double> r, prstar, pPhi;
+    start = clock();
+    WaveformUtilities::EOB(delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
+    end = clock();
+    cout << "rtol=" << rtol << " took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << flush;
+    ofstream ofs(("Outputs/TestEOBInt_rtol" + WaveformUtilities::DoubleToString(rtol) + ".dat").c_str());
+    ofs << "# [1] = t" << endl << "# [2] = v" << endl << "# [3] = Phi" << endl
+	<< "# [4] = r" << endl << "# [5] = prstar" << endl << "# [6] = pPhi" << endl;
+    ofs << setprecision(16);
+    for(unsigned int i=0; i<t.size(); ++i) {
+      ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
+    }
+    ofs.close();
+    cout << "  t.size()=" << t.size();
+    cout << "  ☺" << endl;
+  }
   
   return 0;
 }
