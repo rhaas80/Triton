@@ -41,7 +41,7 @@ void WaveformUtilities::EOBMetricNonspinning::operator()(const double r_new) {
 WaveformUtilities::EOBHamiltonianNonspinning::EOBHamiltonianNonspinning(const double delta, EOBMetricNonspinning& ig)
   : nu((1.0-delta*delta)/4.0), g(ig),
     r(0.0), prstar(0.0), pPhi(0.0),
-    Heff(0.0), H(0.0), dHdr(0.0), dHdPhi(0.0), dHdprstar(0.0), dHdpPhi(0.0)
+    Heff(0.0), H(0.0), dHdr(0.0), dHdPhi(0.0), dHdprstar(0.0), dHdpPhi(0.0), v(0.0)
 { }
 
 void WaveformUtilities::EOBHamiltonianNonspinning::operator()(const double r_new, const double prstar_new, const double pPhi_new) {
@@ -57,6 +57,7 @@ void WaveformUtilities::EOBHamiltonianNonspinning::operator()(const double r_new
   dHdprstar = (2*prstar + (8*g.Dt*(4 - 3*nu)*nu*pow(prstar,3))/pow(r,4)) / (2*nu*H*Heff);
   dHdpPhi = ((2*g.Dt*pPhi)/pow(r,4)) / (2*nu*H*Heff);
   H -= 1.0/nu;
+  v = dHdpPhi<0 ? -pow(-dHdpPhi, 1./3.) : pow(dHdpPhi, 1./3.);
   return;
 }
 
@@ -97,22 +98,3 @@ void WaveformUtilities::EOBMetricWithSpin::operator()(const double r_new) {
   drstardr = 1.0 / drdrstar;
   return;
 }
-
-// void WaveformUtilities::EOBHamiltonianWithSpin::operator()(const double r_new, const double prstar_new, const double pPhi_new) {
-//   g(r_new);
-//   if(r==r_new && prstar==prstar_new && pPhi==pPhi_new) { return; }
-//   r = r_new;
-//   prstar = prstar_new;
-//   pPhi = pPhi_new;
-  
-//   choke;
-  
-//   Heff;
-//   H = (sqrt(1 + 2*nu*(Heff-1)) - 1) / nu;
-//   dHdr;
-//   dHdPhi;
-//   dHdprstar;
-//   dHdpPhi;
-//   return;
-// }
-

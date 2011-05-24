@@ -1,3 +1,6 @@
+/// The following has been reordered to make the const Doub's members, so
+/// that multiple instances can be included in a single executable.
+
 template <class D>
 struct StepperDopr853 : StepperBase {
   typedef D Dtype;
@@ -340,6 +343,7 @@ template <class D>
 bool StepperDopr853<D>::Controller::success(const Doub err, Doub &h) {
   static const Doub beta=0.0,alpha=1.0/8.0-beta*0.2,safe=0.9,minscale=0.333,
     maxscale=6.0;
+  if(err != err) { h *= minscale; return false; } // <added /> to catch NaNs from too-large timesteps
   Doub scale;
   if (err <= 1.0) {
     if (err == 0.0)

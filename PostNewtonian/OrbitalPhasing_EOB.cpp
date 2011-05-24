@@ -59,7 +59,7 @@ public:
     /// Refresh the Metric, Hamiltonian, and Torque objects
     g(y[0]);
     H(y[0], y[2], y[3]);
-    T(pow(H.dHdpPhi,1./3.), y[0], y[2], y[3]); /// (v, r, prstar, pPhi)
+    T(H.v, y[0], y[2], y[3]); /// (v, r, prstar, pPhi)
     
     /// Eqs. (10) of Pan et al., 2011:
     dydt[0] = g.drdrstar * H.dHdprstar;
@@ -84,7 +84,7 @@ typedef bool (HamEqn::*ContinueTest)(const double& t, const vector<double>& y, c
 
 vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double>& ystartGuess, const double AcceptableEcc, const double& v0);
 
-void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength, const double rtol, const int nsave, const bool denseish,
+void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
 		    vector<double>& t, vector<double>& v, vector<double>& Phi,
 		    vector<double>& r, vector<double>& prstar, vector<double>& pPhi);
 
@@ -93,8 +93,6 @@ void WU::EOB(const double delta, const double chis, const double v0,
 	     vector<double>& r, vector<double>& prstar, vector<double>& pPhi,
 	     const int nsave, const bool denseish, const double rtol)
 {
-  //vector<double> r, prstar, pPhi;
-  
   /// Construct the physics objects
   Met g(delta);
   Ham H(delta, g);
@@ -104,11 +102,11 @@ void WU::EOB(const double delta, const double chis, const double v0,
   HamEqn d(g, H, T);
   
   /// Guess some parameters
-  const double nu( (1.0-delta*delta)/4.0 );
+  const double nu = (1.0-delta*delta)/4.0;
   const double GuessedLength = 1.1 * 5.0/(256.0*nu*pow(v0,8));
-  //const double rtol=1.0e-10;
   const double AcceptableEcc=1e-12;
   const double r0 = 1.0/(v0*v0);
+  const double h1=(2.0*M_PI/(v0*v0*v0))/4.0;
   
   /// Set up initial conditions
   vector<double> ystart(4, 0.0);
@@ -124,51 +122,41 @@ void WU::EOB(const double delta, const double chis, const double v0,
   if(ystart[2]>0.0) ystart[2] *= -1;
   ystart = ReduceEccentricity(g, H, d, ystart, AcceptableEcc, v0);
   
-  EOBIntegration(H, d, ystart, GuessedLength, rtol, nsave, denseish, t, v, Phi, r, prstar, pPhi);
+  EOBIntegration(H, d, ystart, GuessedLength, rtol, h1, nsave, denseish, t, v, Phi, r, prstar, pPhi);
   
   return;
 }
 
 
 
-void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength, const double rtol, const int nsave, const bool denseish,
+void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
 		    vector<double>& t, vector<double>& v, vector<double>& Phi,
 		    vector<double>& r, vector<double>& prstar, vector<double>& pPhi)
 {
   const double atol = 0.0;
   const double t0 = -tLength, t1 = 0.0;
-  const double h1=1.0e2, hmin=1.0e-2;
+  const double hmin=1.0e-2;
   Output out(nsave);
   
   /// First pass, integrating until tLength or the 'Early' integration test fails
   ContinueTest test = &HamEqn::ContinueIntegratingEarly;
   Odeint<StepperBS<HamEqn> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, test);
-  cout << "y0=" << std::setprecision(16) << y0 << endl;
-  cout << "t0=" << t0 << " t1=" << t1 << " atol=" << atol << " rtol=" << rtol << " h1=" << h1 << " hmin=" << hmin << endl;
   try {
     odeA.integrate();
   } catch(NRerror err) { }
   
   /// Second pass, only if 'Early' integration test failed
   {
-    const double t1A = out.xsave[out.count-1];
-//     for(unsigned int i=0; i<y0.size(); ++i) {
-//       y0[i] = out.ysave[i][out.count-1];
-//     }
+    const double t0B = out.xsave[out.count-1];
     vector<double> dydt(out.ysave.nrows());
-    d(t1A, y0, dydt);
-    if(! (d.*test)(t1A, y0, dydt) ) {
-      cout << "A: out.count=" << out.count << endl;
+    d(t0B, y0, dydt);
+    if(! (d.*test)(t0B, y0, dydt) ) {
       test = &HamEqn::ContinueIntegrating;
-      const double h1 = (out.xsave[out.count-1]-out.xsave[out.count-2])*nsave/5.0;
-      Odeint<StepperDopr853<HamEqn> > odeB(y0, t1A, t1, atol, rtol, h1, hmin, out, d, denseish, test);
-      cout << "y0=" << y0 << endl;
-      cout << "t1A=" << t1A << " t1=" << t1 << " atol=" << atol << " rtol=" << rtol << " h1=" << h1 << " hmin=" << hmin << endl;
-      cout << "Debug following line " << __LINE__ << " of " << __FILE__ << endl;
-//       try {
-// 	odeB.integrate();
-//       } catch(NRerror err) { }
-      cout << "B: out.count=" << out.count << endl;
+      const double h1 = 10.0; //MIN(nsave*(out.xsave[out.count-1]-out.xsave[out.count-2])/1.0, (t1-t0B)/100.0);
+      Odeint<StepperDopr853<HamEqn> > odeB(y0, t0B, t1, atol, rtol, h1, hmin, out, d, denseish, test);
+      try {
+	odeB.integrate();
+      } catch(NRerror err) { }
     }
   }
   
@@ -183,7 +171,7 @@ void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength,
   v.resize(out.count);
   for (int i=0;i<out.count;i++) {
     H(r[i], prstar[i], pPhi[i]);
-    v[i] = pow(H.dHdpPhi, 1./3.);
+    v[i] = H.v;
   }
   t -= t.back();
   
@@ -272,8 +260,9 @@ double Eccentricity_rDot(const vector<double>& t, const vector<double>& rDot, co
   return -Br / (r0 * omegar);
 }
 vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double>& ystartGuess, const double AcceptableEcc, const double& v0) {
-  const double Omega0( v0*v0*v0 );
-  const double r0( 1.0/(v0*v0) );
+  const double Omega0 = v0*v0*v0;
+  const double r0 = 1.0/(v0*v0);
+  const double h1=(2.0*M_PI/Omega0)/100.0;
   const double rtol=1.0e-10, GuessedLength=2*(2.0*M_PI/Omega0), nsave=100, denseish=false;
   vector<double> ystart(ystartGuess);
   vector<double> ystartinitial(ystart);
@@ -285,7 +274,7 @@ vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double
   //// Iterations of arXiv:1012.1549's method
   for(unsigned int i=0; i<1000; ++i) {
     double DeltarDot=666, DeltaPhiDot=-666;
-    EOBIntegration(H, d, ystart, GuessedLength, rtol, nsave, denseish, t, v, Phi, r, prstar, pPhi);
+    EOBIntegration(H, d, ystart, GuessedLength, rtol, h1, nsave, denseish, t, v, Phi, r, prstar, pPhi);
     g(ystartinitial[0]);
     H(ystartinitial[0], ystartinitial[2], ystartinitial[3]);
     double Ecc = Eccentricity_rDot(t, prstar, ystartinitial[0], H.dHdpPhi, DeltarDot, DeltaPhiDot);

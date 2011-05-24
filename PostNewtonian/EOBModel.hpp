@@ -35,6 +35,7 @@ namespace WaveformUtilities {
     double dHdPhi;
     double dHdprstar;
     double dHdpPhi;
+    double v;
   };
   
   
@@ -72,6 +73,7 @@ namespace WaveformUtilities {
 //     double dHdPhi;
 //     double dHdprstar;
 //     double dHdpPhi;
+//     double v;
 //   };
   
   
