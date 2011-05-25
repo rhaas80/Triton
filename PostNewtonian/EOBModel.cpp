@@ -53,20 +53,19 @@ void WaveformUtilities::EOBHamiltonianNonspinning::operator()(const double r_new
   Heff = sqrt(pow(prstar,2) + (g.Dt*(1 + (pow(pPhi,2) + ((8 - 6*nu)*nu*pow(prstar,4)))/pow(r,2)))/pow(r,2));
   H = sqrt(1 + 2*nu*(Heff-1)) / nu;
   dHdr = ((g.dDtdr*r*(pow(pPhi,2) + 2*(4-3*nu)*nu*pow(prstar,4) + pow(r,2)) - 2*g.Dt*(2*pow(pPhi,2) + 4*(4-3*nu)*nu*pow(prstar,4) + pow(r,2)))/pow(r,5)) / (2*nu*H*Heff);
-  //dHdPhi = 0.0;
+  ///dHdPhi = 0.0;
   dHdprstar = (2*prstar + (8*g.Dt*(4 - 3*nu)*nu*pow(prstar,3))/pow(r,4)) / (2*nu*H*Heff);
   dHdpPhi = ((2*g.Dt*pPhi)/pow(r,4)) / (2*nu*H*Heff);
   H -= 1.0/nu;
-  v = dHdpPhi<0 ? -pow(-dHdpPhi, 1./3.) : pow(dHdpPhi, 1./3.);
+  v = (dHdpPhi>0 ? pow(dHdpPhi, 1./3.) : -pow(-dHdpPhi, 1./3.));
   return;
 }
 
 
-
 WaveformUtilities::EOBMetricWithSpin::EOBMetricWithSpin(const double delta, const double chis)
   : nu((1.0-delta*delta)/4.0),
-    a4(94./3. - M_PI*M_PI*41./32.), // Eq. (9) of Pan et al., 2011
-    a5(-5.828-143.5*nu+447*nu*nu), // Eq. (35a) of Pan et al., 2011
+    a4((94./3. - M_PI*M_PI*41./32.)*nu), // Eq. (9) of Pan et al., 2011
+    a5((-5.828-143.5*nu+447*nu*nu)*nu), // Eq. (35a) of Pan et al., 2011
     a6(184*nu), // Eq. (35b) of Pan et al., 2011
     chikerr(chis), // a.k.a. chieff.  See Eq. (17) of PRD 81, 084041
     DtNum0(4*a5 + a6 - 24*pow(chikerr,4) + pow(chikerr,6) - 2*a4*(-6 + pow(chikerr,2)) + pow(chikerr,2)*(80 - 24*nu) - 4*(16 + (-16 + nu)*nu)),

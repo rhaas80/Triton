@@ -67,7 +67,7 @@ double WU::Interpolate(const std::vector<double>& X1, const std::vector<double>&
 Interpolator::Interpolator(const std::vector<double>& x, const vector<double>& y, int m)
   : n(x.size()), mm(m), jsav(0), cor(0), xx(x), yy(y)
 {
-  dj = MIN(1,int(pow(double(n),0.25)));
+  dj = MAX(1,int(pow(double(n),0.25)));
 }
 
 Int Interpolator::locate(const Doub x) {
@@ -166,7 +166,6 @@ Doub PolynomialInterpolator::rawinterp(Int jl, Doub x) {
 void SplineInterpolator::sety2(VecDoub_I &xv, VecDoub_I &yv, Doub yp1, Doub ypn) {
   Int i,k;
   Doub p,qn,sig,un;
-  Int n=y2.size();
   VecDoub u(n-1);
   if (yp1 > 0.99e99)
     y2[0]=u[0]=0.0;

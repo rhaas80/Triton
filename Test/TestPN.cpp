@@ -12,12 +12,13 @@
 using namespace std;
 
 int main() {
-  const bool SpeedComparison = true;
+  const bool SpeedComparison = false;
   const bool WaveformOutput = true;
   
-  const double delta = 0.0000;
+  const double q = 6;
+  const double delta=(q-1.0)/(q+1.0);
   const double chis = 0;//-0.9900;
-  const double v0 = 0.144;//0.02025;
+  const double v0 = 0.11;//0.02025;
   vector<double> t, v, Phi;
   vector<double> r, prstar, pPhi;
   const int NPoints = 10000;
@@ -78,7 +79,7 @@ int main() {
       start = clock();
       WaveformUtilities::TaylorT1(delta, chis, v0, t, v, Phi, nsave, denseish);
       end = clock();
-      cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
+      cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_T1.dat");
       ofs << "# [1] = t" << endl
 	  << "# [2] = v" << endl
@@ -95,7 +96,7 @@ int main() {
       start = clock();
       WaveformUtilities::TaylorT2(delta, chis, v0, t, v, Phi, NPoints);
       end = clock();
-      cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
+      cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_T2.dat");
       ofs << "# [1] = t" << endl
 	  << "# [2] = v" << endl
@@ -112,7 +113,7 @@ int main() {
       start = clock();
       WaveformUtilities::TaylorT3(delta, chis, v0, t, v, Phi, NPoints);
       end = clock();
-      cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
+      cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_T3.dat");
       ofs << "# [1] = t" << endl
 	  << "# [2] = v" << endl
@@ -129,7 +130,7 @@ int main() {
       start = clock();
       WaveformUtilities::TaylorT4(delta, chis, v0, t, v, Phi, nsave, denseish);
       end = clock();
-      cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
+      cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_T4.dat");
       ofs << "# [1] = t" << endl
 	  << "# [2] = v" << endl
@@ -146,7 +147,7 @@ int main() {
       start = clock();
       WaveformUtilities::EOB(delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish);
       end = clock();
-      cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
+      cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_EOB.dat");
       ofs << "# [1] = t" << endl
 	  << "# [2] = v" << endl
