@@ -1,47 +1,3 @@
-#include <fstream>
-#include <iomanip>
-#include "NumericalRecipes.hpp"
-
-#include "OrbitalPhasing_EOB.hpp"
-
-#include "Flux.hpp"
-#include "EOBModel.hpp"
-#include "ODEIntegrator.hpp"
-#include "Fit.hpp"
-#include "VectorFunctions.hpp"
-#include "PNWaveform.hpp"
-namespace WU = WaveformUtilities;
-typedef int NRerror;
-
-using WaveformUtilities::Output;
-using WaveformUtilities::Odeint;
-using WaveformUtilities::StepperBS;
-using WaveformUtilities::StepperDopr853;
-using WaveformUtilities::dydx;
-using WaveformUtilities::max;
-using WaveformUtilities::min;
-using WaveformUtilities::avg;
-using WaveformUtilities::cube;
-using WaveformUtilities::sixth;
-using WaveformUtilities::FitNonlinear;
-using WaveformUtilities::PNLMax;
-using WaveformUtilities::Flux_Taylor;
-using WaveformUtilities::Flux_Pade44LogConst;
-using WaveformUtilities::Flux_Pade44LogFac;
-using WaveformUtilities::Flux_SumAmplitudes;
-using WaveformUtilities::Flux_SumAmplitudesResummed;
-using WaveformUtilities::Torque_KFPhi;
-using WaveformUtilities::Torque_nKFPhi;
-using WaveformUtilities::EOBMetricNonspinning;
-using WaveformUtilities::EOBHamiltonianNonspinning;
-using WaveformUtilities::EOBMetricWithSpin;
-using std::vector;
-using std::cerr;
-using std::cout;
-using std::flush;
-using std::endl;
-
-
 /// The following template is the general structure containing the EOB Hamilton equations
 /// y[0] = r
 /// y[1] = Phi
@@ -50,12 +6,12 @@ using std::endl;
 template <class Metric, class Hamiltonian, class Torque>
 class EOBHamiltonEquations {
 private:
-  Metric& g;
-  Hamiltonian& H;
-  Torque& T;
+  const Metric& g;
+  const Hamiltonian& H;
+  const Torque& T;
 public:
-  EOBHamiltonEquations(Metric& ig, Hamiltonian& iH, Torque& iT) : g(ig), H(iH), T(iT) { }
-  void operator()(const double t, const vector<double>& y, vector<double>& dydt) const {
+  EOBHamiltonEquations(const Metric& ig, const Hamiltonian& iH, const Torque& iT) : g(ig), H(iH), T(iT) { }
+  void operator()(const double t, const std::vector<double>& y, std::vector<double>& dydt) const {
     /// Refresh the Metric, Hamiltonian, and Torque objects
     g(y[0]);
     H(y[0], y[2], y[3]);
@@ -67,51 +23,49 @@ public:
     dydt[2] = -g.drdrstar * H.dHdr + (T.Torque * y[2] / y[3]);
     dydt[3] = T.Torque;
   }
-  bool ContinueIntegratingEarly(const double& t, const vector<double>& y, const vector<double>& dydt) const {
+  bool ContinueIntegratingEarly(const double& t, const std::vector<double>& y, const std::vector<double>& dydt) const {
     return (y[0]>15.0); /// Ensures that r>15
   }
-  bool ContinueIntegrating(const double& t, const vector<double>& y, const vector<double>& dydt) const {
-    return (y[0]>1.0 && y[2]<0.0); /// Ensures that r>1 and that prstar<0
+  bool ContinueIntegrating(const double& t, const std::vector<double>& y, const std::vector<double>& dydt) const {
+    return (y[0]>1.5 && y[2]<0.0); /// Ensures that r>1.5 and prstar<0
   }
 };
 
-typedef EOBMetricNonspinning Met;
-typedef EOBHamiltonianNonspinning Ham;
-typedef Flux_Pade44LogFac Flu;
-typedef Torque_nKFPhi<Ham, Flu> Tor;
-typedef EOBHamiltonEquations<Met, Ham, Tor> HamEqn;
-typedef bool (HamEqn::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
 
-vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double>& ystartGuess, const double AcceptableEcc, const double& v0);
+template <class Metric, class Hamiltonian, class HamiltonEquations>
+std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, const HamiltonEquations& d,
+				  const std::vector<double>& ystartGuess, const double AcceptableEcc, const double& v0);
 
-void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
-		    vector<double>& t, vector<double>& v, vector<double>& Phi,
-		    vector<double>& r, vector<double>& prstar, vector<double>& pPhi);
 
-void WU::EOB(const double delta, const double chis, const double v0,
-	     vector<double>& t, vector<double>& v, vector<double>& Phi,
-	     vector<double>& r, vector<double>& prstar, vector<double>& pPhi,
-	     const int nsave, const bool denseish, const double rtol)
+template <class Hamiltonian, class HamiltonEquations>
+void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d, std::vector<double>& y0,
+		    const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
+		    std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
+		    std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi);
+
+
+template <class Metric, class Hamiltonian, class Torque>
+void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
+	 const double delta, const double chis, const double v0,
+	 std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
+	 std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi,
+	 const int nsave, const bool denseish, const double rtol)
 {
-  /// Construct the physics objects
-  Met g(delta);
-  Ham H(delta, g);
-  Ham Hcirc(delta, g);
-  Flu F(delta, chis);
-  Tor T(delta, chis, Hcirc, F);
-  HamEqn d(g, H, T);
+  clock_t start,end;
+  
+  /// Construct the physics object
+  EOBHamiltonEquations<Metric, Hamiltonian, Torque> d(g, H, T);
   
   /// Guess some parameters
   const double nu = (1.0-delta*delta)/4.0;
   const double GuessedLength = 1.1 * 5.0/(256.0*nu*pow(v0,8));
   const double AcceptableEcc=1e-12;
   const double r0 = 1.0/(v0*v0);
-  const double h1=(2.0*M_PI/(v0*v0*v0))/4.0;
+  const double h1=10*(2.0*M_PI/(v0*v0*v0))/4.0;
   
   /// Set up initial conditions
-  vector<double> ystart(4, 0.0);
+  std::vector<double> ystart(4, 0.0);
   g(r0);
-  F(v0);
   ystart[0] = r0;
   ystart[1] = 0.0;
   ystart[3] = r0*sqrt((r0*g.dDtdr - 2*g.Dt)/(-r0*g.dDtdr + 4*g.Dt));
@@ -120,27 +74,33 @@ void WU::EOB(const double delta, const double chis, const double v0,
   const double dpPhi0dr = (-8*pow(g.Dt,2) + 7*g.dDtdr*g.Dt*r0 - 2*pow(g.dDtdr,2)*pow(r0,2))/(pow(4*g.Dt - g.dDtdr*r0,1.5)*sqrt(-2*g.Dt + g.dDtdr*r0));
   ystart[2] = nu * g.drstardr * T.Torque / dpPhi0dr;
   if(ystart[2]>0.0) ystart[2] *= -1;
+  start = clock();
   ystart = ReduceEccentricity(g, H, d, ystart, AcceptableEcc, v0);
+  end = clock();
+  std::cout << "\nEccentricity reduction took " << std::setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << std::flush;
   
+  start = clock();
   EOBIntegration(H, d, ystart, GuessedLength, rtol, h1, nsave, denseish, t, v, Phi, r, prstar, pPhi);
+  end = clock();
+  std::cout << "\tEOBIntegration took " << std::setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << std::endl;
   
   return;
 }
 
 
-
-void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
-		    vector<double>& t, vector<double>& v, vector<double>& Phi,
-		    vector<double>& r, vector<double>& prstar, vector<double>& pPhi)
+template <class Hamiltonian, class HamiltonEquations>
+void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d,
+		    std::vector<double>& y0, const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
+		    std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
+		    std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi)
 {
   const double atol = 0.0;
-  const double t0 = -tLength, t1 = 0.0;
+  const double t0 = 0.0, t1 = tLength;
   const double hmin=1.0e-2;
   Output out(nsave);
   
   /// First pass, integrating until tLength or the 'Early' integration test fails
-  ContinueTest test = &HamEqn::ContinueIntegratingEarly;
-  Odeint<StepperBS<HamEqn> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, test);
+  Odeint<StepperBS<HamiltonEquations> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, &HamiltonEquations::ContinueIntegratingEarly);
   try {
     odeA.integrate();
   } catch(NRerror err) { }
@@ -148,12 +108,12 @@ void EOBIntegration(Ham& H, HamEqn& d, vector<double>& y0, const double tLength,
   /// Second pass, only if 'Early' integration test failed
   {
     const double t0B = out.xsave[out.count-1];
-    vector<double> dydt(out.ysave.nrows());
+    std::vector<double> dydt(out.ysave.nrows());
     d(t0B, y0, dydt);
-    if(! (d.*test)(t0B, y0, dydt) ) {
-      test = &HamEqn::ContinueIntegrating;
-      const double h1 = 10.0; //MIN(nsave*(out.xsave[out.count-1]-out.xsave[out.count-2])/1.0, (t1-t0B)/100.0);
-      Odeint<StepperDopr853<HamEqn> > odeB(y0, t0B, t1, atol, rtol, h1, hmin, out, d, denseish, test);
+    if(! d.ContinueIntegratingEarly(t0B, y0, dydt) ) {
+      --out.count;
+      const double h1 = MIN(nsave*(out.xsave[out.count-1]-out.xsave[out.count-2])/1.0, (t1-t0B)/100.0);
+      Odeint<StepperDopr853<HamiltonEquations> > odeB(y0, t0B, t1, atol, rtol, h1, hmin, out, d, denseish, &HamiltonEquations::ContinueIntegrating);
       try {
 	odeB.integrate();
       } catch(NRerror err) { }
@@ -205,7 +165,7 @@ public:
 class Eccentricity_rDotDotFit {
 public:
   Eccentricity_rDotDotFit() { }
-  void operator()(const double x, const vector<double> &a, double &y, vector<double> &dyda) const {
+  void operator()(const double x, const std::vector<double> &a, double &y, std::vector<double> &dyda) const {
     //// Model: y(x) =  -a0*sin(a1*x+a2);
     y = -a[0]*sin(a[1]*x+a[2]);
     dyda[0] = -sin(a[1]*x+a[2]);
@@ -214,20 +174,20 @@ public:
     return;
   }
 };
-double Eccentricity_rDot(const vector<double>& t, const vector<double>& rDot, const double r0, const double Omega0, double& DeltarDot, double& DeltaPhiDot) {
+double Eccentricity_rDot(const std::vector<double>& t, const std::vector<double>& rDot, const double r0, const double Omega0, double& DeltarDot, double& DeltaPhiDot) {
   //// Do the fit to the model:
   ////   rDot(t) = vbar0 + arbar0*t + Br*cos(omegar*t+phir)
   
   //// First fit to rDotDot to find phase, frequency, and amplitude
-  vector<double> rDotDot = dydx(rDot, t);
-  vector<double> aDotDotGuesses(3);
+  std::vector<double> rDotDot = dydx(rDot, t);
+  std::vector<double> aDotDotGuesses(3);
   aDotDotGuesses[0] = 0.5*(max(rDotDot)-min(rDotDot));
   aDotDotGuesses[1] = Omega0;
   aDotDotGuesses[2] = 0.0;
-  vector<double> rDotDotMinusAvg = rDotDot-avg(rDotDot);
-  vector<double> TrivialSigmas(t.size(), 1.0);
+  std::vector<double> rDotDotMinusAvg = rDotDot-avg(rDotDot);
+  std::vector<double> TrivialSigmas(t.size(), 1.0);
   Eccentricity_rDotDotFit e_dd;
-  WU::FitNonlinear<Eccentricity_rDotDotFit> rDotDotFit(t, rDotDotMinusAvg, TrivialSigmas, aDotDotGuesses, e_dd, 1.e-6);
+  FitNonlinear<Eccentricity_rDotDotFit> rDotDotFit(t, rDotDotMinusAvg, TrivialSigmas, aDotDotGuesses, e_dd, 1.e-8);
   rDotDotFit.hold(0, aDotDotGuesses[0]);
   rDotDotFit.hold(1, aDotDotGuesses[1]);
   rDotDotFit.fit();
@@ -237,14 +197,14 @@ double Eccentricity_rDot(const vector<double>& t, const vector<double>& rDot, co
   rDotDotFit.fit();
   
   //// Next fit to rDot to find all parameters
-  vector<double> aDotGuesses(5);
+  std::vector<double> aDotGuesses(5);
   aDotGuesses[0] = avg(rDot);
   aDotGuesses[1] = avg(rDotDot);
   aDotGuesses[2] = rDotDotFit.a[0] / rDotDotFit.a[1];
   aDotGuesses[3] = rDotDotFit.a[1];
   aDotGuesses[4] = rDotDotFit.a[2];
   Eccentricity_rDotFit e_d;
-  WU::FitNonlinear<Eccentricity_rDotFit> rDotFit(t, rDot, TrivialSigmas, aDotGuesses, e_d, 1.e-6);
+  FitNonlinear<Eccentricity_rDotFit> rDotFit(t, rDot, TrivialSigmas, aDotGuesses, e_d, 1.e-8);
   rDotFit.fit();
   
   //// Adjust the parameters
@@ -259,20 +219,26 @@ double Eccentricity_rDot(const vector<double>& t, const vector<double>& rDot, co
   //// Return the measured eccentricity
   return -Br / (r0 * omegar);
 }
-vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double>& ystartGuess, const double AcceptableEcc, const double& v0) {
+template <class Metric, class Hamiltonian, class HamiltonEquations>
+std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, const HamiltonEquations& d,
+				  const std::vector<double>& ystartGuess, const double AcceptableEcc, const double& v0)
+{
+  const unsigned int NMaxIterations=1000;
   const double Omega0 = v0*v0*v0;
   const double r0 = 1.0/(v0*v0);
-  const double h1=(2.0*M_PI/Omega0)/100.0;
-  const double rtol=1.0e-10, GuessedLength=2*(2.0*M_PI/Omega0), nsave=100, denseish=false;
-  vector<double> ystart(ystartGuess);
-  vector<double> ystartinitial(ystart);
-  vector<double> Bestystart(ystart);
-  vector<double> t, Phi, v, r, prstar, pPhi;
+  const double rtol=1.0e-11, GuessedLength=2*(2.0*M_PI/Omega0);
+  const int nsave=1000;
+  const bool denseish=false;
+  const double h1=2*(2.0*M_PI/Omega0)/double(nsave);
+  std::vector<double> ystart(ystartGuess);
+  std::vector<double> ystartinitial(ystart);
+  std::vector<double> Bestystart(ystart);
+  std::vector<double> t, Phi, v, r, prstar, pPhi;
   
   //// Reduce eccentricity
   double BestEcc=1.e100;
   //// Iterations of arXiv:1012.1549's method
-  for(unsigned int i=0; i<1000; ++i) {
+  for(unsigned int i=0; i<NMaxIterations; ++i) {
     double DeltarDot=666, DeltaPhiDot=-666;
     EOBIntegration(H, d, ystart, GuessedLength, rtol, h1, nsave, denseish, t, v, Phi, r, prstar, pPhi);
     g(ystartinitial[0]);
@@ -288,7 +254,7 @@ vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double
       }
     }
     if(fabs(BestEcc)<AcceptableEcc) {
-      //cout << "Achieved acceptable eccentricity of e=" << std::setprecision(14) << BestEcc << " in " << i << " iterations." << endl;
+      std::cout << "Achieved acceptable eccentricity of e=" << std::setprecision(14) << BestEcc << " in " << i << " iterations." << std::endl;
       return Bestystart;
     }
     ystart = ystartinitial;
@@ -298,9 +264,10 @@ vector<double> ReduceEccentricity(Met& g, Ham& H, HamEqn& d, const vector<double
     ystart[2] += Multiplier*g.drdrstar * DeltarDot;
     ystart[3] += Multiplier*r0*r0 * DeltaPhiDot;
     ystartinitial = ystart;
+    //std::cout << "i: " << i << "\tEcc: " << Ecc << std::endl;
   }
-  cerr << "!!! Did not achieve acceptable eccentricity reduction !!!" << endl
-       << "Proceeding anyway, with e=" << BestEcc << "." << endl;
+  std::cerr << "!!! Did not achieve acceptable eccentricity reduction !!!" << std::endl
+	    << "Proceeding anyway, with e=" << BestEcc << "." << std::endl;
   
   return Bestystart;
 }

@@ -24,6 +24,7 @@ using WaveformUtilities::Torque_nKFPhi;
 using WaveformUtilities::EOBMetricNonspinning;
 using WaveformUtilities::EOBHamiltonianNonspinning;
 using WaveformUtilities::EOBMetricWithSpin;
+using WaveformUtilities::EOBHamiltonianWithSpin;
 using WaveformUtilities::WaveformAmplitudes;
 using WaveformUtilities::WaveformAmplitudesResummed;
 
@@ -226,13 +227,13 @@ vector<double> EOBRightHandSide::HamiltoniansAndDerivatives(const double& r, con
     pPhi*H1/Heffsqrt
     + (chieff+sigma)*H4 + pPhi*(dsigmadpPhi)*H4;
   
-  const double Hreal = sqrt(1+2*nu*(Heff-1))/nu;
+  const double Hreal = sqrt(1+2*nu*(Heff-1)) / nu;
   
   Derivatives[0] = dHeffdr / (nu*Hreal);
   Derivatives[1] = dHeffdprstar / (nu*Hreal);
   Derivatives[2] = dHeffdpPhi / (nu*Hreal);
   Derivatives[3] = Heff;
-  Derivatives[4] = Hreal;
+  Derivatives[4] = Hreal - 1/nu;
   return Derivatives;
 }
 //// Flux
@@ -382,17 +383,21 @@ public:
   }
 };
 
-typedef EOBMetricNonspinning Met;
-typedef EOBHamiltonianNonspinning Ham;
 typedef Flux_Pade44LogFac Flu;
 typedef Torque_KFPhi<Flu> Tor;
+typedef EOBMetricNonspinning Met;
+typedef EOBHamiltonianNonspinning Ham;
 typedef EOBHamiltonEquations<Met, Ham, Tor> HamEqn;
+typedef EOBMetricWithSpin MetS;
+typedef EOBHamiltonianWithSpin HamS;
+typedef EOBHamiltonEquations<MetS, HamS, Tor> HamEqnS;
 typedef bool (HamEqn::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
 
 
 int main() {
   const double delta = 0.0;
   const double chis = 0.0;
+  const double chia = 0.0;
   
   // Old one
   EOBRightHandSide d1(delta, chis, 0.0, 7);
@@ -403,6 +408,13 @@ int main() {
   Flu F(delta, chis);
   Tor T(delta, chis, F);
   HamEqn d2(g, H, T);
+  
+  // Newest one
+  MetS gS(delta, chis, chia);
+  HamS HS(delta, chis, chia, gS);
+  Flu FS(delta, chis);
+  Tor TS(delta, chis, FS);
+  HamEqnS d3(gS, HS, TS);
   
   const unsigned int N = 400;
   const double r0=30;
@@ -416,19 +428,19 @@ int main() {
     ofstream ofs("Outputs/TestEOBEqns_g.dat");
     ofs << "# [1] = r" << endl
 	<< "# [2] = Dt1" << endl
-	<< "# [3] = DR1" << endl
+	<< "# [3] = Dr1" << endl
 	<< "# [4] = dDtdr1" << endl
-	<< "# [5] = dDRdr1" << endl
+	<< "# [5] = dDrdr1" << endl
 	<< "# [6] = drstardr1" << endl
 	<< "# [7] = Dt2" << endl
-	<< "# [8] = DR2" << endl
+	<< "# [8] = Dr2" << endl
 	<< "# [9] = dDtdr2" << endl
-	<< "# [10] = dDRdr2" << endl
+	<< "# [10] = dDrdr2" << endl
 	<< "# [11] = drstardr2" << endl
 	<< "# [12] = d Dt" << endl
-	<< "# [13] = d DR" << endl
+	<< "# [13] = d Dr" << endl
 	<< "# [14] = d dDtdr" << endl
-	<< "# [15] = d dDRdr" << endl
+	<< "# [15] = d dDrdr" << endl
 	<< "# [16] = d drstardr" << endl;
     for(unsigned int n=0; n<N; ++n) {
       const double r = r0 - n*(r0-r1)/(N-1.0);
@@ -437,12 +449,47 @@ int main() {
 	  << d1.Deltat15(r) << " " << d1.DeltaR15(r) << " "
 	  << d1.dDeltat15dr(r) << " " << d1.dDeltaR15dr(r) << " "
 	  << d1.drstardr(r) << " "
-	  << g.Dt << " " << g.DR << " "
-	  << g.dDtdr << " " << g.dDRdr << " "
+	  << g.Dt << " " << g.Dr << " "
+	  << g.dDtdr << " " << g.dDrdr << " "
 	  << g.drstardr << " "
-	  << g.Dt-d1.Deltat15(r) << " " << g.DR-d1.DeltaR15(r) << " "
-	  << g.dDtdr-d1.dDeltat15dr(r) << " " << g.dDRdr-d1.dDeltaR15dr(r) << " "
+	  << g.Dt-d1.Deltat15(r) << " " << g.Dr-d1.DeltaR15(r) << " "
+	  << g.dDtdr-d1.dDeltat15dr(r) << " " << g.dDrdr-d1.dDeltaR15dr(r) << " "
 	  << g.drstardr-d1.drstardr(r) << endl;
+    }
+    ofs.close();
+  }
+  
+  { /// Test the metric
+    ofstream ofs("Outputs/TestEOBEqns_gS.dat");
+    ofs << "# [1] = r" << endl
+	<< "# [2] = Dt1" << endl
+	<< "# [3] = Dr1" << endl
+	<< "# [4] = dDtdr1" << endl
+	<< "# [5] = dDrdr1" << endl
+	<< "# [6] = drstardr1" << endl
+	<< "# [7] = Dt3" << endl
+	<< "# [8] = Dr3" << endl
+	<< "# [9] = dDtdr3" << endl
+	<< "# [10] = dDrdr3" << endl
+	<< "# [11] = drstardr3" << endl
+	<< "# [12] = d Dt" << endl
+	<< "# [13] = d Dr" << endl
+	<< "# [14] = d dDtdr" << endl
+	<< "# [15] = d dDrdr" << endl
+	<< "# [16] = d drstardr" << endl;
+    for(unsigned int n=0; n<N; ++n) {
+      const double r = r0 - n*(r0-r1)/(N-1.0);
+      gS(r);
+      ofs << r << " "
+	  << d1.Deltat15(r) << " " << d1.DeltaR15(r) << " "
+	  << d1.dDeltat15dr(r) << " " << d1.dDeltaR15dr(r) << " "
+	  << d1.drstardr(r) << " "
+	  << gS.Dt << " " << gS.Dr << " "
+	  << gS.dDtdr << " " << gS.dDrdr << " "
+	  << gS.drstardr << " "
+	  << gS.Dt-d1.Deltat15(r) << " " << gS.Dr-d1.DeltaR15(r) << " "
+	  << gS.dDtdr-d1.dDeltat15dr(r) << " " << gS.dDrdr-d1.dDeltaR15dr(r) << " "
+	  << gS.drstardr-d1.drstardr(r) << endl;
     }
     ofs.close();
   }
@@ -457,16 +504,16 @@ int main() {
 	<< "# [6] = d1.dHdr" << endl
 	<< "# [7] = d1.dHdprstar" << endl
 	<< "# [8] = d1.dHdpPhi" << endl
-	<< "# [9] = " << endl
-	<< "# [10] = " << endl
-	<< "# [11] = " << endl
-	<< "# [12] = " << endl
-	<< "# [13] = " << endl
-	<< "# [14] = " << endl
-	<< "# [15] = " << endl
-	<< "# [16] = " << endl
-	<< "# [17] = " << endl
-	<< "# [18] = " << endl;
+	<< "# [9] = d2.H" << endl
+	<< "# [10] = d2.Heff" << endl
+	<< "# [11] = d2.dHdr" << endl
+	<< "# [12] = d2.dHdprstar" << endl
+	<< "# [13] = d2.dHdpPhi" << endl
+	<< "# [14] = d H" << endl
+	<< "# [15] = d Heff" << endl
+	<< "# [16] = d dHdr" << endl
+	<< "# [17] = d dHdprstar" << endl
+	<< "# [18] = d dHdpPhi" << endl;
     for(unsigned int n=0; n<N; ++n) {
       const double r = r0 - n*(r0-r1)/(N-1.0);
       const double prstar = prstar0 - n*(prstar0-prstar1)/(N-1.0);
@@ -481,15 +528,50 @@ int main() {
       
       H(r, prstar, pPhi);
       ofs << r << " " << prstar << " " << pPhi << " "
-	  << Hderivs[4] << " " << Hderivs[3] << " "
-	  << d1.dDeltat15dr(r) << " " << d1.dDeltaR15dr(r) << " "
-	  << d1.drstardr(r) << " "
-	  << g.Dt << " " << g.DR << " "
-	  << g.dDtdr << " " << g.dDRdr << " "
-	  << g.drstardr << " "
-	  << g.Dt-d1.Deltat15(r) << " " << g.DR-d1.DeltaR15(r) << " "
-	  << g.dDtdr-d1.dDeltat15dr(r) << " " << g.dDRdr-d1.dDeltaR15dr(r) << " "
-	  << g.drstardr-d1.drstardr(r) << endl;
+	  << Hderivs[4] << " " << Hderivs[3] << " " << Hderivs[0] << " " << Hderivs[1] << " " << Hderivs[2] << " "
+	  << H.H << " " << H.Heff << " " << H.dHdr << " " << H.dHdprstar << " " << H.dHdpPhi << " "
+	  << H.H-Hderivs[4] << " " << H.Heff-Hderivs[3] << " " << H.dHdr-Hderivs[0] << " " << H.dHdprstar-Hderivs[1] << " " << H.dHdpPhi-Hderivs[2] << endl;
+    }
+    ofs.close();
+  }
+  
+  { /// Test the Hamiltonian
+    ofstream ofs("Outputs/TestEOBEqns_HS.dat");
+    ofs << "# [1] = r" << endl
+	<< "# [2] = prstar" << endl
+	<< "# [3] = pPhi" << endl
+	<< "# [4] = d1.H" << endl
+	<< "# [5] = d1.Heff" << endl
+	<< "# [6] = d1.dHdr" << endl
+	<< "# [7] = d1.dHdprstar" << endl
+	<< "# [8] = d1.dHdpPhi" << endl
+	<< "# [9] = d3.H" << endl
+	<< "# [10] = d3.Heff" << endl
+	<< "# [11] = d3.dHdr" << endl
+	<< "# [12] = d3.dHdprstar" << endl
+	<< "# [13] = d3.dHdpPhi" << endl
+	<< "# [14] = d H" << endl
+	<< "# [15] = d Heff" << endl
+	<< "# [16] = d dHdr" << endl
+	<< "# [17] = d dHdprstar" << endl
+	<< "# [18] = d dHdpPhi" << endl;
+    for(unsigned int n=0; n<N; ++n) {
+      const double r = r0 - n*(r0-r1)/(N-1.0);
+      const double prstar = prstar0 - n*(prstar0-prstar1)/(N-1.0);
+      const double pPhi = pPhi0 - n*(pPhi0-pPhi1)/(N-1.0);
+      
+      vector<double> Hderivs = d1.HamiltoniansAndDerivatives(r, prstar, pPhi);
+//   Derivatives[0] = dHeffdr / (nu*Hreal);
+//   Derivatives[1] = dHeffdprstar / (nu*Hreal);
+//   Derivatives[2] = dHeffdpPhi / (nu*Hreal);
+//   Derivatives[3] = Heff;
+//   Derivatives[4] = Hreal;
+      
+      HS(r, prstar, pPhi);
+      ofs << r << " " << prstar << " " << pPhi << " "
+	  << Hderivs[4] << " " << Hderivs[3] << " " << Hderivs[0] << " " << Hderivs[1] << " " << Hderivs[2] << " "
+	  << HS.H << " " << HS.Heff << " " << HS.dHdr << " " << HS.dHdprstar << " " << HS.dHdpPhi << " "
+	  << HS.H-Hderivs[4] << " " << HS.Heff-Hderivs[3] << " " << HS.dHdr-Hderivs[0] << " " << HS.dHdprstar-Hderivs[1] << " " << HS.dHdpPhi-Hderivs[2] << endl;
     }
     ofs.close();
   }

@@ -19,7 +19,7 @@ namespace WaveformUtilities {
   
   class Flux_Taylor : public Flux_Base {
   private:
-    double nu, F0, F2, F3, F4, F5, F6, F6lnv, F7;
+    const double nu, F0, F2, F3, F4, F5, F6, F6lnv, F7;
   public:
     Flux_Taylor(const double delta, const double chis);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
@@ -53,7 +53,7 @@ namespace WaveformUtilities {
   
   class Flux_SumAmplitudes : public Flux_Base, private WaveformAmplitudesSumMMagSquared {
   private:
-    double N;
+    const double N;
   public:
     Flux_SumAmplitudes(const double delta, const double chis);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
@@ -64,7 +64,7 @@ namespace WaveformUtilities {
   class Flux_SumAmplitudesResummed : public Flux_Base, private WaveformAmplitudesResummedSumMMagSquared<Metric, Hamiltonian> {
   private:
     mutable double r, prstar, pPhi;
-    double N;
+    const double N;
   public:
     Flux_SumAmplitudesResummed(const double delta, const double chis, const Metric& ig, const Hamiltonian& iH);
     double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const;
@@ -75,12 +75,12 @@ namespace WaveformUtilities {
   class Torque_KFPhi {
   private:
     const double nu;
-    Flux& F;
+    const Flux& F;
     mutable double v, r, prstar, pPhi;
   public:
     mutable double Torque;
-    Torque_KFPhi(const double delta, const double chis, Flux& iF);
-    double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0);
+    Torque_KFPhi(const double delta, const double chis, const Flux& iF);
+    double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
   
   
@@ -88,13 +88,13 @@ namespace WaveformUtilities {
   class Torque_nKFPhi {
   private:
     const double nu;
-    HamiltonianCircular& Hcirc;
-    Flux& F;
+    const HamiltonianCircular& Hcirc;
+    const Flux& F;
     mutable double v, r, prstar, pPhi;
   public:
     mutable double Torque;
-    Torque_nKFPhi(const double delta, const double chis, HamiltonianCircular& iHcirc, Flux& iF);
-    double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new);
+    Torque_nKFPhi(const double delta, const double chis, const HamiltonianCircular& iHcirc, const Flux& iF);
+    double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const;
   };
   
   #include "Flux.tpp"

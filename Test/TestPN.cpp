@@ -9,13 +9,20 @@
 #include "OrbitalPhasing_T3.hpp"
 #include "OrbitalPhasing_T4.hpp"
 #include "OrbitalPhasing_EOB.hpp"
+#include "EOBModel.hpp"
+#include "Flux.hpp"
 using namespace std;
+
+typedef WaveformUtilities::EOBMetricNonspinning Met;
+typedef WaveformUtilities::EOBHamiltonianNonspinning Ham;
+typedef WaveformUtilities::Flux_Pade44LogFac Flu;
+typedef WaveformUtilities::Torque_nKFPhi<Ham, Flu> Tor;
 
 int main() {
   const bool SpeedComparison = false;
   const bool WaveformOutput = true;
   
-  const double q = 6;
+  const double q = 1;
   const double delta=(q-1.0)/(q+1.0);
   const double chis = 0;//-0.9900;
   const double v0 = 0.11;//0.02025;
@@ -64,9 +71,15 @@ int main() {
     cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
     
 //     cout << N << " iterations of EOB ... " << endl;
+//     const Met g(delta);
+//     const Ham H(delta, g);
+//     const Ham Hcirc(delta, g);
+//     const Flu F(delta, chis);
+//     const Tor T(delta, chis, Hcirc, F);
+//     const double rtol=1.0e-8;
 //     start = clock();
 //     for(unsigned int i=0; i<N; ++i) {
-//       WaveformUtilities::EOB(delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish);
+//       WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
 //     }
 //     end = clock();
 //     cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
@@ -144,8 +157,14 @@ int main() {
     
     {
       cout << "Calculating EOB ... " << flush;
+      const Met g(delta);
+      const Ham H(delta, g);
+      const Ham Hcirc(delta, g);
+      const Flu F(delta, chis);
+      const Tor T(delta, chis, Hcirc, F);
+      const double rtol=1.0e-9;
       start = clock();
-      WaveformUtilities::EOB(delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish);
+      WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
       end = clock();
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_EOB.dat");

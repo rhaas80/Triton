@@ -137,13 +137,13 @@ double Flux_SumAmplitudesResummed<Metric, Hamiltonian>::operator()(const double 
 
 
 template <class Flux>
-Torque_KFPhi<Flux>::Torque_KFPhi(const double delta, const double chis, Flux& iF)
+Torque_KFPhi<Flux>::Torque_KFPhi(const double delta, const double chis, const Flux& iF)
   : nu((1.0-delta*delta)/4.0), F(iF),
     v(0.0), r(0.0), prstar(0.0), pPhi(0.0), Torque(0.0)
 { }
 
 template <class Flux>
-double Torque_KFPhi<Flux>::operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) {
+double Torque_KFPhi<Flux>::operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const {
   if(v==v_new && r==r_new && prstar==prstar_new && pPhi==pPhi_new) { return Torque; }
   v = v_new;
   r = r_new;
@@ -155,13 +155,13 @@ double Torque_KFPhi<Flux>::operator()(const double v_new, const double r_new, co
 
 
 template <class HamiltonianCircular, class Flux>
-Torque_nKFPhi<HamiltonianCircular, Flux>::Torque_nKFPhi(const double delta, const double chis, HamiltonianCircular& iHcirc, Flux& iF)
+Torque_nKFPhi<HamiltonianCircular, Flux>::Torque_nKFPhi(const double delta, const double chis, const HamiltonianCircular& iHcirc, const Flux& iF)
   : nu((1.0-delta*delta)/4.0), Hcirc(iHcirc), F(iF),
     v(0.0), r(0.0), prstar(0.0), pPhi(0.0), Torque(0.0)
 { }
 
 template <class HamiltonianCircular, class Flux>
-double Torque_nKFPhi<HamiltonianCircular, Flux>::operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) {
+double Torque_nKFPhi<HamiltonianCircular, Flux>::operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const {
   if(v==v_new && r==r_new && prstar==prstar_new && pPhi==pPhi_new) { return Torque; }
   v = v_new;
   r = r_new;
