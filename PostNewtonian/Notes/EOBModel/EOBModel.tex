@@ -1,0 +1,528 @@
+\documentclass[twoside, aps, prd, letterpaper, noshowpacs, %
+amsmath, amssymb, amsfonts, nofootinbib, floatfix, notitlepage]%
+{revtex4-1}
+% \documentclass[lengthcheck, aps, prd, letterpaper, noshowpacs, %
+% amsmath, amssymb, amsfonts, nofootinbib, floatfix]{revtex4-1}
+%\pdfoutput=1
+
+\input{Externals/UsePackages}
+\input{Externals/Preamble}
+\input{Externals/Macros}
+\input{Externals/Affiliations}
+
+\allowdisplaybreaks[4]
+
+\usepackage[absolute]{textpos}
+\setlength{\TPHorizModule}{1.35in}
+\setlength{\TPVertModule}{\TPHorizModule}
+
+\newcommand{\drstardr}{\frac{d\rstar}{dr}}
+
+%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%
+
+
+% \graphicspath{%
+%   {Plots/}%
+% }
+
+\title[EOB for dummies] {EOB for dummies}
+
+\surnames{Boyle} 
+
+\author{Michael Boyle} \Cornell
+
+\begin{abstract}
+  Here we explicitly give all necessary components of the EOB model
+  collected in one place, to ease implementation and ensure clarity.
+  We first give the basic equations to compute the inspiral phasing.
+  We then describe the waveform amplitude, which is required when
+  evolving the phase.  We describe the ringdown carefully and exhibit
+  the method for joining the inspiral and ringdown in detail.
+  Finally, we also give a suggested implementation for the LIGO
+  Algorithm Library.  For simplicity, we treat all quantities as
+  dimensionless.
+\end{abstract}
+
+\date{\today}
+
+% \pacs{%
+%   04.30.-w, % Gravitational waves
+%   04.80.Nn, % Gravitational wave detectors and experiments
+%   04.25.dg % NR studies of black holes and black-hole binaries
+% }
+
+% 04.25.-g, % Approximation methods; equations of motion
+% 04.25.D-, % Numerical relativity
+% 04.25.dc, % NR studies of crit. behavior, sing.'s, cosmic censorsh.
+% 04.25.dg, % NR studies of black holes and black-hole binaries
+% 04.25.dk, % NR studies of other relativistic binaries
+% 04.25.Nx, % PN approximation; perturbation theory; etc.
+% 04.30.-w, % Gravitational waves
+% 04.30.Db, % Wave generation and sources
+% 04.30.Nk, % Wave propagation and interactions
+% 04.30.Tv, % Gravitational-wave astrophysics
+% 04.80.Nn, % Gravitational wave detectors and experiments
+
+\maketitle
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{textblock}{1}(-.49,-.05)
+  \rotatebox{-36}{\includegraphics[height=1.35in]{Dummie}}
+\end{textblock}
+
+\section{Inspiral orbital phase}
+\label{sec:InspiralOrbitalPhase}
+The phasing of the EOB system during inspiral consists of four basic
+ingredients.  These four ingredients are changed from one paper to the
+next, but are generally combined in a standard way.  The ingredients
+are:
+\begin{enumerate}
+ \item the effective metric;
+ \item the flux of energy $\Flux$ carried away by gravitational waves;
+ \item the relation of $\Flux$ to the flux of angular momentum
+  $\EOBTorque$ being carried away; and
+ \item the Hamiltonian $H$.
+\end{enumerate}
+In the non-precessing case, the system is described by coordinates $r$
+and $\OrbitalPhase$ (describing the position of the reduced mass
+moving in the effective background), which are obtained by evolving
+the Hamilton equations:\footnote{The form of these equations is fairly
+  standard, except for the $\EOBTorque$ term in the equation for
+  $d\prstar/dt$, which is a small correction throughout most of the
+  inspiral.}
+\begin{equation}
+  \label{eq:HamiltonEquations}
+  \begin{aligned}
+    \frac{dr}{dt} &= \frac{dr}{d\rstar}\, \frac{\partial H}
+    {\partial \prstar}~; \qquad \qquad & \frac{d \prstar}{d t} &=
+    -\frac{dr}{d\rstar}\, \frac{\partial H} {\partial r}
+    -\EOBTorque\, \frac{\prstar}
+    {\pPhi}~;
+    \\
+    \frac{d \OrbitalPhase}{d t} &= \frac{\partial H} {\partial
+      \pPhi}~; & \frac{d \pPhi}{d t} &= -\EOBTorque~.
+  \end{aligned}
+\end{equation}
+The tortoise coordinate $\rstar$ is introduced in an attempt to keep
+the equations more regular near the ``horizon'', and can be computed
+from the metric components given below.  The remainder of this section
+explicitly presents the ingredients necessary to construct and
+integrate these equations.
+
+\subsection{Effective metric}
+The basic EOB model is based on a static, spherically symmetric
+effective metric:\footnote{The metric components $A(r)$ and $D(r)$ can
+  be computed as power series in $1/r$, using known PN formulas.
+  These power series are written in the form $A(r) =
+  \sum_{j=0}^{k+1}\, \frac{a_{j}}{r^{j}}$, $D(r) = \sum_{j=0}^{k}\,
+  \frac{d_{j}}{r^{j}}$.  The series are known up to $k=3$---that is,
+  $a_{4}$ and $d_{3}$ are known.  Beyond that, the parameters are
+  ``calibrated'' to match numerical simulations.  Logarithmic terms
+  may appear at $k=4$, but typically are not modeled.  These are the
+  series that are expanded in \Pade form in
+  Eqs.~\eqref{MetricCoefficientA} and~\eqref{eq:MetricCoefficientD}.}
+\begin{equation}
+  \label{eq:EOBmetric}
+  ds_\text{eff}^2 = -A(r)\,dt^2 + \frac{D(r)}{A(r)}\,dr^2 +
+  r^2\,\left(d\Theta^2+\sin^2\Theta\,d\OrbitalPhase^2\right)~,
+\end{equation}
+The equations of motion describe a particle moving in this effective
+background.  We begin by expanding the metric components in
+Eq.~\eqref{eq:EOBmetric} as \Pade approximants.  First, we use the
+coefficient $A(r)$ in \Pade form:
+\begin{gather}
+  \label{MetricCoefficientA}
+  A(r) = A_5^1(r) = \frac{\mathrm{Num}(A_5^1)}{\mathrm{Den}(A_5^1)}~,
+  \\
+  \intertext{where}
+  \begin{split}
+    \mathrm{Num}(A_5^1) = r^4\,\left[-64 + 12\,a_4+4\,a_5+a_6+64 \nu-4
+      \nu ^2 \right] + r^5\,\left[32-4\,a_4-a_5-24 \nu \right]
+  \end{split}
+  \\ \intertext{and}
+  \begin{split}
+    \mathrm{Den}(A_5^1) &=
+    4\,a_4^2 + 4\,a_4\,a_5 + a_5^2 - a_4\,a_6 + 16\,a_6 +
+    (32\,a_4 + 16\,a_5 - 8\,a_6)\,\nu + 4\,a_4\,\nu^2 + 32\,\nu ^3 \\
+    &\quad + r\,\left[ 4\,a_4^2 + a_4\,a_5 + 16\,a_5 + 8\,a_6 +
+      (32\,a_4-2\,a_6)\,\nu + 32\,\nu^2 + 8\,\nu^3 \right]  \\
+    &\quad + r^2\,\left[16\,a_4 + 8\,a_5 + 4\,a_6 +
+      (8\,a_4+2\,a_5)\,\nu + 32\,\nu^2\right] \\
+    &\quad + r^3\,\left[8\,a_4+4\,a_5+2\,a_6+32\,\nu-8\,\nu ^2\right]
+    \\
+    &\quad + r^4\,\left[4\,a_4+2\,a_5+a_6+16\,\nu-4\,\nu ^2\right] \\
+    &\quad + r^5\,\left[32-4\,a_4-a_5+24\,\nu\right]~.
+  \end{split}
+\end{gather}
+The coefficient $a_{4}$ is known from post-Newtonian calculations, and
+$a_{5}$ and $a_{6}$ are fit in Ref.~\cite{PanEtAl:2011}, obtaining
+\begin{subequations}
+  \label{eq:a4a5a6values}
+  \begin{gather}
+    a_{4} = \left( \frac{94}{3} - \frac{41}{32}\, \pi^{2} \right)\,
+    \nu~, \\
+    a_{5} = (-5.828\,\nu - 143.5\,\nu^{2} + 447\,\nu^3)~, \\
+    a_{6} = 184\, \nu~.
+  \end{gather}
+\end{subequations}
+The other metric coefficient $D(r)$ is also expanded in \Pade form:
+\begin{equation}
+  \label{eq:MetricCoefficientD}
+  D(r) = D_{3}^{0}(r) = \frac{r^{3}} {(52\,\nu - 6\,\nu^{2}) + 6\,
+    \nu\, r + r^{3}}~.
+\end{equation}
+Using the expressions of Eqs.~\eqref{MetricCoefficientA}
+and~\eqref{eq:MetricCoefficientD}, we can also calculate the relation
+between the standard and tortoise radii needed for the Hamilton
+equations:
+\begin{equation}
+  \label{eq:TortoiseRadius}
+  \frac{dr}{d\rstar} = \frac{A(r)}{\sqrt{D(r)}}~.
+\end{equation}
+
+
+\subsection{Energy and angular momentum fluxes}
+Standard Hamiltonian systems are conservative---no energy can be lost.
+The EOB model incorporates the loss of energy in the form of
+gravitational waves by including terms expressing the forces they
+exert on the system.  In the Hamilton equations,
+Eq.~\eqref{eq:HamiltonEquations}, those are the terms proportional to
+$-\EOBTorque$, which is the torque acting on the system due to the
+angular momentum being carried away by the gravitational waves.  This
+can be related to the flux of energy $\Flux$ carried off by the
+gravitational waves as\footnote{Note that this expression is not
+  unique in the literature.  Other references have introduced more
+  complicated expressions similar to this, meant to incorporate
+  non-Keplerian corrections~\cite{DamourEtAl:1998}.  Here,
+  non-Keplerian corrections are included to the waveform instead.}
+\begin{equation}
+  \label{eq:TorqueAndFlux}
+  \EOBTorque = \frac{1}{\nu\, \OrbitalFreq}\, \Flux~,
+\end{equation}
+where $\OrbitalFreq \define d\OrbitalPhase / dt$.  The energy flux is
+given by\footnote{Again, this form of the flux is not the only choice
+  used in the EOB literature.  Many different approximations have been
+  used in its place.  In particular, simpler flux approximants are
+  used when computation time is critical, as in LAL.}
+\begin{subequations}
+  \label{eq:Flux}
+  \begin{align}
+  \label{eq:FluxExact}
+    \Flux(r, \OrbitalFreq, \prstar, \pPhi) &= \frac{1}{16\, \pi}\,
+    \sum_{\ell=2}^{\infty}\, \sum_{m=-\ell}^{\ell}\,
+    \abs{\frac{\mathcal{R}}{M}\, \dot{h}_{\ellm} (r, \OrbitalFreq,
+      \prstar, \pPhi)}^{2}~,
+    \\ \label{eq:FluxApprox}
+    & \approx \frac{\OrbitalFreq^{2}} {8\, \pi}\, \sum_{\ell}\,
+    \sum_{m\geq 0}\, m^{2}\, \abs{ \frac{\mathcal{R}}{M}\, h_{\ellm}
+      (r, \OrbitalFreq, \prstar, \pPhi)}^{2}~.
+  \end{align}
+\end{subequations}
+The approximation in the second line is valid in the slow-motion
+limit, where the change in the waveform is dominated by the frequency
+rather than the changing amplitude.  Also, if the modes are explicitly
+summed, computational efficiency dictates that only the modes with the
+largest expected amplitude be included in the sum.  The quantity
+$h_{\ellm}$ is the waveform amplitude, given by
+Eq.~\eqref{eq:WaveformAmplitude} below, and $\mathcal{R}/M$ simply
+factors out the dependence on $\mathcal{R}$ and $M$ (so that the final
+equations do not involve those parameters).
+
+
+\subsection{Hamiltonian}
+As described above, the binary is evolved as a standard Hamiltonian
+system, where the Hamiltonian function is\footnote{This form of the
+  Hamiltonian is fairly standard for nonspinning systems throughout
+  the literature.  The $\prstar^{4}$ term should really have a factor
+  of $(d\rstar/dr)^{4}$, but this is dropped because it is formally of
+  a higher PN order.  (Although its magnitude would be very important
+  in that term by the time $r \approx 8$, for example.)}
+\begin{equation}
+  \label{eq:Hamiltonian}
+  H = \frac{1}{\nu}\, \sqrt{1 + 2\, \nu\, \left(
+      \sqrt{\prstar^{2} + A(r) \left[ 1 + \frac{\pPhi^{2}}{r^{2}} +
+          (8\, \nu - 6\, \nu^{2})\, \frac{\prstar^{4}} {r^{2}}
+        \right]} - 1 \right)} - \frac{1}{\nu}~.
+\end{equation}
+
+\section{Factorized inspiral waveform}
+\label{sec:InspiralWaveform}
+
+To define the waveform amplitude, we need to define a number of
+auxiliary functions.  First, three velocity parameters:
+\begin{gather}
+  \label{eq:vOrbitalFreq}
+  v_{\OrbitalFreq} = \OrbitalFreq^{1/3}~,
+  \\ \label{eq:vPhi}
+  \vPhi = \OrbitalFreq\, \left\{ \frac{\partial H(r, \prstar=0,
+      \pPhi)} {\partial \pPhi} \right\}^{-2/3} = \OrbitalFreq\,
+  \left\{ r\, \frac{2 + 4\, \nu\, \left[ \sqrt{A(r)\, (1 +
+          \pPhi^{2}/r^{2})} - 1 \right]} {dA(r)/dr} \right\}^{1/3}~,
+  \\ \label{eq:Vlm}
+  V_{\ell,m} =
+  \begin{cases}
+    \OrbitalFreq\, \vPhi^{\ell+\epsilon-3} & \text{$(\ell, m) = (2,1)$
+      or $(4,4)$;} \\
+    \vPhi^{\ell+\epsilon} & \text{otherwise.}
+  \end{cases}
+\end{gather}
+In Eq.~\eqref{eq:vPhi}, $A(r)$ and its derivative are computed from
+the \Pade form given in Eq.~\eqref{MetricCoefficientA}.  In
+Eq.~\eqref{eq:Vlm}, the parity $\epsilon$ is defined by
+\begin{equation}
+  \label{eq:DefineParity}
+  \epsilon =
+  \begin{cases}
+    0 & \text{$\ell + m$ even;} \\
+    1 & \text{$\ell + m$ odd.}
+  \end{cases}
+\end{equation}
+Next, we introduce a couple convenient normalization constants:
+\begin{gather}
+  \label{eq:DefineNormalizationConstantn}
+  n_{\ellm} =
+  \begin{cases}
+    (i\, m)^\ell\, \frac{8\, \pi}{(2 \ell+1)!!}\, \sqrt{\frac{(\ell+1)
+        (\ell+2)}{(\ell-1) \ell}} & \text{$\ell + m$ even;} \\
+    -(i\, m)^\ell\, \frac{16\, \pi\, i}{(2\, \ell+1)!!}\,
+    \sqrt{\frac{(\ell+2) (2\, \ell+1) \left(\ell^2-m^2\right)}
+      {(\ell-1) \ell (\ell+1) (2\, \ell-1)}} & \text{$\ell + m$ odd;}
+  \end{cases}
+  \\
+  \label{eq:DefineNormalizationConstantc}
+  c_{k} = \left( \frac{1 + \sqrt{1-4\, \nu }}{2}
+  \right)^{k -1} + (-1)^{k}
+  \left(\frac{1-\sqrt{1-4\, \nu}}{2}\right)^{k-1}~.
+\end{gather}
+
+The full waveform is refactorized as five terms multiplying the
+Newtonian waveform: an effective source term
+$S_{\text{eff}}^{(\epsilon)}$; a tail term $T_{\ellm}$; a phase term
+$\delta_{\ellm}$; an amplitude-correction term $\rho_{\ellm}$; and a
+non-quasicircular term $\NQC_{\ellm}$.  Except for calibrations listed
+below, the phase terms $\delta_{\ellm}$ can be read from Eqs.~(26)
+and~(E1), and the amplitude terms $\rho_{\ellm}$ from Eqs.~(29)
+and~(D1) of Ref.~\cite{PanEtAl:2010b}.\footnote{In that reference, $q$
+  denotes the spin parameter, which we set to zero for this paper, $v$
+  should be replaced by $\vOmega$, and the superscript $L$ on some
+  expressions is irrelevant for our purposes.  (In particular, we use
+  the expressions with superscript $L$, and ignore alternative
+  expressions appearing later with superscript $H$.)}  The nonzero
+calibrations are
+\begin{gather}
+  \label{eq:CalibratedDeltaAndRhoTerms}
+  \tilde{\delta}_{2,1} = 30\, \nu\, \vOmega^{7/2}~, \\
+  \tilde{\delta}_{3,3} = -10\, \nu\, \vOmega^{7/2}~, \\
+  \tilde{\delta}_{4,4} = -70\, \nu\, \vOmega^{5/2}~, \\
+  \tilde{\delta}_{5,5} = 40\, \nu\, \vOmega^{5/2}~, \\
+  \tilde{\rho}_{2,1} = -5\, \nu\, \vOmega^{3}~, \\
+  \tilde{\rho}_{3,3} = -20\, \nu\, \vOmega^{3}~, \\
+  \tilde{\rho}_{4,4} = -14\, \nu\, \vOmega^{3}~, \\ %\intertext{and}
+  \tilde{\rho}_{4,4} = 4\, \nu\, \vOmega^{3}~.
+\end{gather}
+The remaining factorization terms are defined as follows.
+\begin{gather}
+  \label{eq:DefineSourceTerm}
+  S_{\text{eff}}^{(\epsilon)} =
+  \begin{cases}
+    \sqrt{\prstar^{2} + A(r) \left[ 1 + \frac{\pPhi^{2}}{r^{2}} + (8\,
+        \nu - 6\, \nu^{2})\, \frac{\prstar^{4}} {r^{2}} \right]} &
+    \epsilon=0~;
+    \\
+    \pPhi\, \vOmega & \epsilon=1~;
+  \end{cases}
+  \\
+  \label{eq:DefineTailTerm}
+  T_{\ellm} = \frac{\Gamma(\ell + 1 - 2\, i\, m\, \OrbitalFreq\, H)}
+  {\Gamma(\ell + 1)}\, \exp \left\{ m\, \OrbitalFreq\, H\, \left[\pi +
+      2\, i\, \log(2\, m\, \OrbitalFreq / \sqrt{e}) \right] \right\}~;
+  \\
+  \label{eq:DefineNQCTerm}
+  \NQC_{\ellm} = \left( 1 + a_{1}^{h_{\ellm}}\, \frac{\prstar^{2}}
+    {r^{2}\, \OrbitalFreq^{2}} + a_{2}^{h_{\ellm}}\,
+    \frac{\prstar^{2}} {r^{3}\, \OrbitalFreq^{2}} +
+    a_{3}^{h_{\ellm}}\, \frac{\prstar^{2}} {r^{7/2}\,
+      \OrbitalFreq^{2}} \right) \times \exp \left[ i\, \left(
+      b_{1}^{h_{\ellm}}\, \frac{\prstar} {r \OrbitalFreq} +
+      b_{2}^{h_{\ellm}}\, \frac{\prstar^{3}} {r\, \OrbitalFreq}
+    \right) \right]~.
+\end{gather}
+Here, $\Gamma$ is the usual Gamma function.  The parameters
+$a_{i}^{h_{\ellm}}$, and $b_{i}^{h_{\ellm}}$ are given by the fit in
+Table~III of Ref.~\cite{PanEtAl:2011}.
+
+Finally, we can combine these elements to write the waveform
+amplitude:
+\begin{equation}
+  \label{eq:WaveformAmplitude}
+  \frac{\mathcal{R}}{M}\, h_{\ellm} = \nu\, n_{\ellm}\, c_{\ell +
+    \epsilon}\, V_{\ell,m}\, Y^{\ell-\epsilon, -m}
+  \left(\frac{\pi}{2}, \OrbitalPhase \right)\,
+  S_{\text{eff}}^{(\epsilon)}\, T_{\ellm}\, e^{i\, (\delta_{\ellm} +
+    \tilde{\delta}_{\ellm})}\, (\rho_{\ellm} +
+  \tilde{\rho}_{\ellm})^{\ell}\, \NQC_{\ellm}~,
+\end{equation}
+where $Y$ is the standard (spin weight 0) spherical harmonic.  This
+expression is used both to obtain the orbital phase in
+Eq.~\eqref{eq:Flux}, and to obtain the waveform itself.
+
+\section{Initial data}
+\label{sec:EOBInitialData}
+\Note{Stuff goes here.}
+
+
+\section{Attaching the ringdown}
+\label{sec:AttachingTheRingdown}
+\Note{Stuff goes here.}
+
+
+\section{Including spin}
+\label{sec:IncludingSpin}
+\begin{align}
+  \label{eq:SpinRelations}
+  \Spin &\define \Spin_{1} + \Spin_{2} & \Chi &\define
+  \frac{\Spin}{M^{2}} = (1 - 2\,\nu)\, \ChiS
+  + \delta\, \ChiA \\
+  \SpinStar &\define \frac{M_{2}}{M_{1}}\, \Spin_{1} +
+  \frac{M_{1}}{M_{2}}\, \Spin_{2} & \ChiStar &\define
+  \frac{\SpinStar}{M^{2}} = 2\, \nu\, \ChiS \\
+  \SpinKerr &= \Spin + \SpinStar & \ChiKerr &\define
+  \frac{\SpinKerr}{M^{2}} = \Chi + \ChiStar
+\end{align}
+
+\begin{equation}
+  \label{eq:iota}
+  \iota \define r^{2} + \ChiKerr^{2}
+\end{equation}
+
+\begin{equation}
+  \label{eq:kappa}
+  \kappa \define \iota - \Delta_{t}
+\end{equation}
+
+\begin{equation}
+  \label{eq:lambda}
+  \lambda \define \iota^{2} - \ChiKerr^{2}\,
+  \Delta_{t}\, \sin^{2} \theta
+\end{equation}
+
+\begin{equation}
+  \label{eq:rho}
+  \rho \define \sqrt{r^{2} + \ChiKerr^{2}\, \cos^{2} \theta}
+\end{equation}
+
+\begin{equation}
+  \label{eq:alpha}
+  \alpha \define \rho\, \sqrt{ \frac{\Delta_{t}} {\lambda} }
+\end{equation}
+
+\begin{equation}
+  \label{eq:beta}
+  \Vector{\beta} \define \frac{\kappa} {\lambda}\, (\ChiKerr \times \Vector{r})
+\end{equation}
+
+\begin{equation}
+  \label{eq:tau}
+  \Vector{\tau} \define \frac{\kappa} {\lambda}\, (\Vector{r} \times
+  \Vector{p})
+\end{equation}
+
+\begin{equation}
+  \label{eq:gamma}
+  \gamma^{ij} = \frac{1}{\rho^{2}}\, \left[ \Delta_{r}\, n^{i}\, n^{j}
+    - r^{2}\, (\delta^{ij} - n^{i}\, n^{j}) \right] - \frac{1}
+  {\rho^{2}\, \Delta_{t}}\, (\ChiKerr \times \Vector{r})^{i}\,
+  (\ChiKerr \times \Vector{r})^{j} - \frac{\beta^{i}\, \beta^{j}}
+  {\alpha^{2}}
+\end{equation}
+
+\begin{equation}
+  \label{eq:sigma}
+  \begin{split}
+    \Vector{\sigma} &\define \frac{\pPhi^2} {r^2}\, \left[\frac{1}{2}
+      \Chi \left(a + \frac{3 \nu} {8} \right) + \frac{1}{2} \ChiStar
+      \left( b - \frac{\nu}{2} - \frac{5} {8} \right) \right] -
+    \pr^2\, \frac{\Delta_{r}} {r^{2}}\, \left[ \Chi \left( a +
+        \frac{33\, \nu} {16} \right) + \ChiStar \left( b + \frac{26}
+        {16}\, \nu + \frac{5} {16} \right) \right]
+    \\
+    &\phantom{\define~} - \frac{1} {r}\, \left[\frac{1}{2} \Chi
+      (a+\nu) + \frac{1}{8} \ChiStar (4 b + 5 \nu + 2) \right] -
+    \frac{\ChiStar} {4}
+  \end{split}
+\end{equation}
+
+\begin{equation}
+  \label{eq:HeffSpin}
+  \Heff = \alpha\, \sqrt{1 + \gamma^{ij}\, p_{i}\, p_{j} +
+    \frac{(8-6\, \nu)\, \nu\, \pr^{4}} {\rho^{2}}} + \beta^{i}\, p_{i} +
+  \tau^{i}\, \sigma_{i} + a_{\text{SS}}\, \nu\, \frac{\ChiKerr \cdot
+    \ChiStar} {r^{4}}
+\end{equation}
+
+\subsection{Non-precessing systems}
+\label{sec:NonprecessingSystems}
+
+\begin{equation}
+  \label{eq:HeffSpin}
+  \Heff = \sqrt{ \frac{\iota^{2}}{\lambda}\,
+    \prstar^{2} + \frac{r^{2}\, \Delta_{t}} {\lambda} \left[ 1 +
+      \frac{r^{2}\, \pPhi^{2}} {\lambda} + \frac{(8-6\, \nu)\, \nu\,
+        (\prstar\, \drstardr)^{4}} {r^{2}} \right] } + \frac{\kappa\,
+    (\chiKerr + \sigma)} {\lambda}\, \pPhi + a_{\text{SS}}\, \nu\,
+  \frac{\chiKerr\, \chiStar} {r^{4}}
+\end{equation}
+[Check that the last $\pPhi$ term shouldn't have another $r$ factor.]
+
+\begin{equation}
+  \label{eq:HamiltonianSpin}
+  H = \frac{1}{\nu}\, \sqrt{1 + 2\, \nu\, \left(
+      \sqrt{\Heff} - 1 \right)} - \frac{1}{\nu}~.
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{acknowledgments}
+%   It is my pleasure to thank \Note{?}.  This project was supported
+%   in part by a grant from the Sherman Fairchild Foundation; by NSF
+%   Grants No.\ PHY-0969111 and No.\ PHY-1005426; and by NASA Grant
+%   No.\ NNX09AF96G. The numerical computations presented in this
+%   paper were performed primarily on the \texttt{Zwicky} cluster
+%   hosted at Caltech by the Center for Advanced Computing Research,
+%   which was cofunded by the Sherman Fairchild Foundation and the NSF
+%   MRI-R\textsuperscript{2} program.
+% \end{acknowledgments}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix* % Use \appendix* if there is just one appendix
+% \appendix % Use \appendix if there are multiple appendices
+
+% \section{Approximating gravitational waveforms}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+\bibliography{Externals/References}
+
+
+%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
