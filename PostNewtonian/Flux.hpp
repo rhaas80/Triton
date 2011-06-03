@@ -26,6 +26,15 @@ namespace WaveformUtilities {
   };
   
   
+  class Flux_Taylor8 : public Flux_Base {
+  private:
+    const double nu, F0, F2, F3, F4, F5, F6, F6lnv, F7, F8, F8lnv;
+  public:
+    Flux_Taylor8(const double delta, const double chis);
+    double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
+  };
+  
+  
   class Flux_Pade44LogConst : public Flux_Base {
   private:
     const double nu, N;
@@ -78,24 +87,27 @@ namespace WaveformUtilities {
     const Flux& F;
     mutable double v, r, prstar, pPhi;
   public:
+    typedef Flux FluxType;
     mutable double Torque;
     Torque_KFPhi(const double delta, const double chis, const Flux& iF);
+    template <class H> Torque_KFPhi(const double delta, const double chis, const Flux& iF, const H& Ham);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
   
-  
-  template <class HamiltonianCircular, class Flux>
-  class Torque_nKFPhi {
-  private:
-    const double nu;
-    const HamiltonianCircular& Hcirc;
-    const Flux& F;
-    mutable double v, r, prstar, pPhi;
-  public:
-    mutable double Torque;
-    Torque_nKFPhi(const double delta, const double chis, const HamiltonianCircular& iHcirc, const Flux& iF);
-    double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const;
-  };
+  /// This choice is significantly slower, and makes only a miniscule difference in the result
+//   template <class HamiltonianCircular, class Flux>
+//   class Torque_nKFPhi {
+//   private:
+//     const double nu;
+//     const HamiltonianCircular& Hcirc;
+//     const Flux& F;
+//     mutable double v, r, prstar, pPhi;
+//   public:
+//     typedef Flux FluxType;
+//     mutable double Torque;
+//     Torque_nKFPhi(const double delta, const double chis, const Flux& iF, const HamiltonianCircular& iHcirc);
+//     double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const;
+//   };
   
   #include "Flux.tpp"
   

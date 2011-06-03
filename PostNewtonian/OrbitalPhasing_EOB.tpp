@@ -46,7 +46,7 @@ void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d, std::vector<doub
 
 template <class Metric, class Hamiltonian, class Torque>
 void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
-	 const double delta, const double chis, const double v0,
+	 const double delta, const double chis, const double chia, const double v0,
 	 std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
 	 std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi,
 	 const int nsave, const bool denseish, const double rtol)
@@ -74,6 +74,27 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
   const double dpPhi0dr = (-8*pow(g.Dt,2) + 7*g.dDtdr*g.Dt*r0 - 2*pow(g.dDtdr,2)*pow(r0,2))/(pow(4*g.Dt - g.dDtdr*r0,1.5)*sqrt(-2*g.Dt + g.dDtdr*r0));
   ystart[2] = nu * g.drstardr * T.Torque / dpPhi0dr;
   if(ystart[2]>0.0) ystart[2] *= -1;
+  
+  //// If spin is too large, build up to the goal gradually, reducing eccentricity at each step
+  std::vector<double> chisMax(10);
+  chisMax[0] = 0.1; chisMax[1] = 0.2; chisMax[2] = 0.3; chisMax[3] = 0.4; chisMax[4] = 0.45; chisMax[5] = 0.5; chisMax[6] = 0.6; chisMax[7] = 0.7; chisMax[8] = 0.8; chisMax[9] = 0.9;
+  for(unsigned int i=0; i<chisMax.size(); ++i) {
+    const double chismax = chisMax[i];
+    if(fabs(chis)>chismax) {
+      double chisloc = (chis>0 ? chismax : -chismax);
+      //std::cout << "Reducing eccentricity with chis=" << chisloc << " ... " << std::flush;
+      Metric g(delta, chisloc, chia);
+      Hamiltonian H(delta, chisloc, chia, g);
+      Hamiltonian Hcirc(delta, chisloc, chia, g);
+      typename Torque::FluxType F(delta, chisloc); /// TODO: Fix this line to work with general Flux types
+      Torque T(delta, chisloc, F, Hcirc);
+      EOBHamiltonEquations<Metric, Hamiltonian, Torque> d(g, H, T);
+      ystart = ReduceEccentricity(g, H, d, ystart, 1.e-8, v0);
+    }
+  }
+  
+  //// Now reduce eccentricity with the real parameters
+  //std::cout << "Reducing eccentricity ... " << std::flush;
   start = clock();
   ystart = ReduceEccentricity(g, H, d, ystart, AcceptableEcc, v0);
   end = clock();
@@ -254,7 +275,7 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
       }
     }
     if(fabs(BestEcc)<AcceptableEcc) {
-      std::cout << "Achieved acceptable eccentricity of e=" << std::setprecision(14) << BestEcc << " in " << i << " iterations." << std::endl;
+      //std::cout << "Achieved acceptable eccentricity of e=" << std::setprecision(14) << BestEcc << " in " << i << " iterations." << std::endl;
       return Bestystart;
     }
     ystart = ystartinitial;

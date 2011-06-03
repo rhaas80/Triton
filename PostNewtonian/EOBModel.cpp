@@ -8,7 +8,7 @@ using WaveformUtilities::fourth;
 using std::sqrt;
 
 
-WaveformUtilities::EOBMetricNonspinning::EOBMetricNonspinning(const double delta)
+WaveformUtilities::EOBMetricNonspinning::EOBMetricNonspinning(const double delta, const double chis, const double chia)
   : nu((1.0-delta*delta)/4.0),
     a4((94./3. - M_PI*M_PI*41./32.)*nu), // Eq. (9) of Pan et al., 2011
     a5((-5.828-143.5*nu+447*nu*nu)*nu), // Eq. (35a) of Pan et al., 2011
@@ -37,13 +37,13 @@ void WaveformUtilities::EOBMetricNonspinning::operator()(const double r_new) con
   Dt = DtNum / DtDen;
   Dr = Dt * Dinv;
   dDtdr = ((pow(r,5)*(6*DtNum0 + 7*r*(DtNum1)))*DtDen - DtNum*(DtDen1 + r*(2*DtDen2 + r*(3*DtDen3 + r*(4*DtDen4 + r*(5*DtDen5)))))) / (DtDen*DtDen);
-  dDrdr = dDtdr*Dinv + Dt * (-2*Dinv2 + -3*Dinv3/r)/(r*r*r);
+  dDrdr = dDtdr*Dinv + (pow(r,3)*(DtNum0+r*(DtNum1))/DtDen)*(-2*Dinv2 + -3*Dinv3/r);
   drdrstar = sqrt(Dt*Dr) / (r*r);  // Eq. (28) of PRD 81, 084041 [Pan et al., 2010]
   drstardr = 1.0 / drdrstar;
   return;
 }
 
-WaveformUtilities::EOBHamiltonianNonspinning::EOBHamiltonianNonspinning(const double delta, const EOBMetricNonspinning& ig)
+WaveformUtilities::EOBHamiltonianNonspinning::EOBHamiltonianNonspinning(const double delta, const double chis, const double chia, const EOBMetricNonspinning& ig)
   : nu((1.0-delta*delta)/4.0), g(ig),
     r(0.0), prstar(0.0), pPhi(0.0),
     Heff(0.0), H(0.0), dHdr(0.0), dHdPhi(0.0), dHdprstar(0.0), dHdpPhi(0.0), v(0.0)
@@ -69,9 +69,12 @@ void WaveformUtilities::EOBHamiltonianNonspinning::operator()(const double r_new
 
 WaveformUtilities::EOBMetricWithSpin::EOBMetricWithSpin(const double delta, const double chis, const double chia)
   : nu((1.0-delta*delta)/4.0),
-    a4((94./3. - M_PI*M_PI*41./32.)*nu), // Eq. (9) of Pan et al., 2011
-    a5((-5.828-143.5*nu+447*nu*nu)*nu), // Eq. (35a) of Pan et al., 2011
-    a6(184*nu), // Eq. (35b) of Pan et al., 2011
+//     a4(((94./3.) - M_PI*M_PI*41./32.)*nu), // Eq. (9) of Pan et al., 2011
+//     a5((-5.828-143.5*nu+447*nu*nu)*nu), // Eq. (35a) of Pan et al., 2011
+//     a6(184*nu), // Eq. (35b) of Pan et al., 2011
+    a4(((94.0/3.0)-(41.0/32.0)*M_PI*M_PI)*nu),
+    a5(nu*(-82.5384+508.681*nu-787.826*nu*nu)), // Eq. (27) of Pan et al. 2011
+    a6(nu*(500.0-1800.0*nu)), // Eq. (28) of Pan et al. 2011
     chiKerr(chis + delta*chia), // a.k.a. chieff.  See Eq. (17) of PRD 81, 084041
     DtNum0(4*a5 + a6 - 24*pow(chiKerr,4) + pow(chiKerr,6) - 2*a4*(-6 + pow(chiKerr,2)) + pow(chiKerr,2)*(80 - 24*nu) - 4*(16 + (-16 + nu)*nu)),
     DtNum1(32 - 4*a4 - a5 + 6*pow(chiKerr,4) + 4*pow(chiKerr,2)*(-8 + nu) - 24*nu),
@@ -97,7 +100,7 @@ void WaveformUtilities::EOBMetricWithSpin::operator()(const double r_new) const 
   Dt = DtNum / DtDen;
   Dr = Dt * Dinv;
   dDtdr = ((pow(r,5)*(6*DtNum0 + 7*r*(DtNum1)))*DtDen - DtNum*(DtDen1 + r*(2*DtDen2 + r*(3*DtDen3 + r*(4*DtDen4 + r*(5*DtDen5)))))) / (DtDen*DtDen);
-  dDrdr = dDtdr*Dinv + Dt * (-2*Dinv2 + -3*Dinv3/r)/(r*r*r);
+  dDrdr = dDtdr*Dinv + (pow(r,3)*(DtNum0+r*(DtNum1))/DtDen)*(-2*Dinv2 + -3*Dinv3/r);
   drdrstar = sqrt(Dt*Dr) / (r*r + chiKerr*chiKerr);  // Eq. (28) of PRD 81, 084041 [Pan et al., 2010]
   drstardr = 1.0 / drdrstar;
   ddrstardrdr = (2*r/(r*r+chiKerr*chiKerr) - 0.5*dDrdr/Dr - 0.5*dDtdr/Dr) * drstardr;
@@ -113,10 +116,11 @@ WaveformUtilities::EOBHamiltonianWithSpin::EOBHamiltonianWithSpin(const double d
     a(0.0), /// calibrated; PRD 81, 084041
     b(-1.65), /// calibrated; PRD 81, 084041 p. 10
     aSSterm(1.5*nu*chiKerr*chistar), /// calibrated; PRD 81, 084041 Eq. (19) and p. 10
-    sigmapPhi((chi*(a+3*nu/8.0)+chistar*(b-nu/8.0))/2.0),
-    sigmapr(chi*(2*a+39*nu/16.0)-chistar*(b+31*nu/16.0)),
-    sigmarinv(chi*(a+nu)/2.0+chistar*(4*b+5*nu+2)/8.0),
-    sigmaconst(chistar/4.0),
+    sigmaconst(-chistar/4.),
+    sigmarinv((-4*a*chi - 4*chi*nu - chistar*(2 + 4*b + 5*nu))/8.),
+    sigmapPhi((8*a*chi + 3*chi*nu + chistar*(-5 + 8*b + 4*nu))/16.),
+    sigmapr((-3*(4*a*chi + (5 + 4*b)*chistar + 6*chi*nu))/8.),
+    sigmaprDr((8*a*chi + 3*chi*nu + chistar*(-5 + 8*b + 4*nu))/16.),
     r(0.0), prstar(0.0), pPhi(0.0),
     Heff(0.0), H(0.0), dHdr(0.0), dHdPhi(0.0), dHdprstar(0.0), dHdpPhi(0.0), v(0.0)
 { }
@@ -128,27 +132,29 @@ void WaveformUtilities::EOBHamiltonianWithSpin::operator()(const double r_new, c
   prstar = prstar_new;
   pPhi = pPhi_new;
   
-  
   const double lambda = -(pow(chiKerr,2)*g.Dt) + pow(pow(chiKerr,2) + pow(r,2),2);
   const double dlambdadr = -(pow(chiKerr,2)*g.dDtdr) + 4*r*(pow(chiKerr,2) + pow(r,2));
   const double kappa = pow(chiKerr,2) - g.Dt + pow(r,2);
   const double dkappadr = -g.dDtdr + 2*r;
   
-  const double sigma = -sigmaconst + (pow(pPhi,2)*sigmapPhi)/pow(r,2) + (pow(prstar,2)*pow(pow(chiKerr,2) + pow(r,2),2)*sigmapr)/(g.Dr*g.Dt) - sigmarinv/r;
-  const double dsigmadr = (-2*pow(pPhi,2)*sigmapPhi)/pow(r,3) + (4*pow(prstar,2)*r*(pow(chiKerr,2) + pow(r,2))*sigmapr)/(g.Dr*g.Dt) - (g.dDtdr*pow(prstar,2)*pow(pow(chiKerr,2) + pow(r,2),2)*sigmapr)/(g.Dr*pow(g.Dt,2)) - (g.dDrdr*pow(prstar,2)*pow(pow(chiKerr,2) + pow(r,2),2)*sigmapr)/(pow(g.Dr,2)*g.Dt) + sigmarinv/pow(r,2);
-  const double dsigmadprstar = (2*prstar*pow(pow(chiKerr,2) + pow(r,2),2)*sigmapr)/(g.Dr*g.Dt);
+  const double sigma = sigmaconst + (pow(pPhi,2)*sigmapPhi)/pow(r,2) + sigmarinv/r + pow(prstar,2)*(sigmapr + (g.Dr*sigmaprDr)/pow(r,2))*pow(g.drstardr,2);
+  const double dsigmadr = (-2*pow(pPhi,2)*sigmapPhi)/pow(r,3) + pow(g.drstardr,2)*pow(prstar,2)*((-2*g.Dr*sigmaprDr)/pow(r,3) + (g.dDrdr*sigmaprDr)/pow(r,2)) + 2*g.ddrstardrdr*g.drstardr*pow(prstar,2)*(sigmapr + (g.Dr*sigmaprDr)/pow(r,2)) - sigmarinv/pow(r,2);
+  const double dsigmadprstar = 2*pow(g.drstardr,2)*prstar*(sigmapr + (g.Dr*sigmaprDr)/pow(r,2));
   const double dsigmadpPhi = (2*pPhi*sigmapPhi)/pow(r,2);
   
-  const double HeffRadicand = prstar*prstar*square(r*r+chiKerr*chiKerr)/lambda + (r*r*g.Dt/lambda)*(1 + r*r*pPhi*pPhi/lambda + (8-6*nu)*nu*fourth(prstar*g.drstardr)/(r*r));
-  const double dHeffRadicanddr = (2*pow(chiKerr,8)*lambda*(dlambdadr*g.Dr*g.Dt + g.dDtdr*g.Dr*lambda + 2*g.dDrdr*g.Dt*lambda)*nu*(-4 + 3*nu)*pow(prstar,4) + pow(chiKerr,4)*lambda*pow(prstar,2)*(-(dlambdadr*pow(g.Dr,3)*pow(g.Dt,2)) + 48*g.Dr*g.Dt*lambda*(4 - 3*nu)*nu*pow(prstar,2)*pow(r,3) + 12*(dlambdadr*g.Dr*g.Dt + g.dDtdr*g.Dr*lambda + 2*g.dDrdr*g.Dt*lambda)*nu*(-4 + 3*nu)*pow(prstar,2)*pow(r,4)) + 2*pow(chiKerr,2)*lambda*pow(prstar,2)*r*(8*g.dDrdr*g.Dt*lambda*nu*(-4 + 3*nu)*pow(prstar,2)*pow(r,5) + pow(g.Dr,3)*pow(g.Dt,2)*(2*lambda - dlambdadr*r) + 4*g.Dr*nu*(-4 + 3*nu)*pow(prstar,2)*pow(r,4)*(-6*g.Dt*lambda + dlambdadr*g.Dt*r + g.dDtdr*lambda*r)) + 8*pow(chiKerr,6)*lambda*nu*(-4 + 3*nu)*pow(prstar,4)*r*(2*g.dDrdr*g.Dt*lambda*r + g.Dr*(-2*g.Dt*lambda + dlambdadr*g.Dt*r + g.dDtdr*lambda*r)) + r*(4*g.dDrdr*g.Dt*pow(lambda,2)*nu*(-4 + 3*nu)*pow(prstar,4)*pow(r,7) + 2*g.Dr*lambda*nu*(-4 + 3*nu)*pow(prstar,4)*pow(r,6)*(-8*g.Dt*lambda + dlambdadr*g.Dt*r + g.dDtdr*lambda*r) + pow(g.Dr,3)*pow(g.Dt,2)*(g.Dt*(2*lambda - dlambdadr*r)*(lambda + 2*pow(pPhi,2)*pow(r,2)) + lambda*r*(pow(prstar,2)*r*(4*lambda - dlambdadr*r) + g.dDtdr*(lambda + pow(pPhi,2)*pow(r,2))))))/(pow(g.Dr,3)*pow(g.Dt,2)*pow(lambda,3));
-  const double dHeffRadicanddprstar = (2*prstar*pow(pow(chiKerr,2) + pow(r,2),2)*(1 + (2*(8 - 6*nu)*nu*pow(prstar,2)*pow(pow(chiKerr,2) + pow(r,2),2))/(pow(g.Dr,2)*g.Dt)))/lambda;
+  const double HeffRadicand = (pow(prstar,2)*pow(pow(chiKerr,2) + pow(r,2),2) + (g.Dt*(2*pow(g.drstardr,4)*lambda*(4 - 3*nu)*nu*pow(prstar,4) + lambda*pow(r,2) + pow(pPhi,2)*pow(r,4)))/lambda)/lambda;
+  
+  const double dHeffRadicanddr = (-(pow(chiKerr,4)*dlambdadr*lambda*pow(prstar,2)) - 2*pow(g.drstardr,3)*lambda*(-(dlambdadr*g.drstardr*g.Dt) + g.dDtdr*g.drstardr*lambda + 4*g.ddrstardrdr*g.Dt*lambda)*nu*(-4 + 3*nu)*pow(prstar,4) + 2*pow(lambda,2)*(g.Dt + 2*pow(chiKerr,2)*pow(prstar,2))*r + lambda*(g.dDtdr*lambda - dlambdadr*(g.Dt + 2*pow(chiKerr,2)*pow(prstar,2)))*pow(r,2) + 4*lambda*(g.Dt*pow(pPhi,2) + lambda*pow(prstar,2))*pow(r,3) + ((-2*dlambdadr*g.Dt + g.dDtdr*lambda)*pow(pPhi,2) - dlambdadr*lambda*pow(prstar,2))*pow(r,4))/pow(lambda,3);
+  const double dHeffRadicanddprstar = (2*prstar*(2*pow(g.drstardr,4)*g.Dt*(8 - 6*nu)*nu*pow(prstar,2) + pow(pow(chiKerr,2) + pow(r,2),2)))/lambda;
   const double dHeffRadicanddpPhi = (2*g.Dt*pPhi*pow(r,4))/pow(lambda,2);
   
-  const double dHeffdr = dHeffRadicanddr/(2.*sqrt(HeffRadicand)) - (4*aSSterm)/pow(r,5) + (dsigmadr*kappa*lambda*pPhi*r + pPhi*(dkappadr*lambda*r + kappa*(lambda - dlambdadr*r))*(chiKerr + sigma))/pow(lambda,2);
-  const double dHeffdprstar = dHeffRadicanddprstar/(2.*sqrt(HeffRadicand)) + (dsigmadprstar*kappa*pPhi*r)/lambda;
-  const double dHeffdpPhi = dHeffRadicanddpPhi/(2.*sqrt(HeffRadicand)) + (kappa*r*(chiKerr + dsigmadpPhi*pPhi + sigma))/lambda;
+  const double dHeffdr = dHeffRadicanddr/(2.*sqrt(HeffRadicand)) - (4*aSSterm)/pow(r,5) + (dsigmadr*kappa*lambda*pPhi + (-(dlambdadr*kappa) + dkappadr*lambda)*pPhi*(chiKerr + sigma))/pow(lambda,2);
+  const double dHeffdprstar = dHeffRadicanddprstar/(2.*sqrt(HeffRadicand)) + (dsigmadprstar*kappa*pPhi)/lambda;
+  const double dHeffdpPhi = dHeffRadicanddpPhi/(2.*sqrt(HeffRadicand)) + (kappa*(chiKerr + dsigmadpPhi*pPhi + sigma))/lambda;
   
-  Heff = sqrt(HeffRadicand) + pPhi*r*kappa*(chiKerr+sigma)/lambda + aSSterm/fourth(r);
+  Heff = sqrt(HeffRadicand)
+    + pPhi*kappa*(chiKerr+sigma)/lambda
+    + aSSterm/fourth(r);
   H = sqrt(1 + 2*nu*(Heff-1)); /// This is a temporary value; see below
   dHdr = dHeffdr / H;
   ///dHdPhi = 0.0;

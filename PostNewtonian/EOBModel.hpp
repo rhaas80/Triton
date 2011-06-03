@@ -10,7 +10,7 @@ namespace WaveformUtilities {
     const double Dinv0, Dinv2, Dinv3;
     mutable double r;
   public:
-    EOBMetricNonspinning(const double delta);
+    EOBMetricNonspinning(const double delta, const double chis=0, const double chia=0);
     void operator()(const double r_new) const;
     mutable double Dt;
     mutable double Dr;
@@ -26,9 +26,8 @@ namespace WaveformUtilities {
     const EOBMetricNonspinning& g;
     mutable double r, prstar, pPhi;
   public:
-    EOBHamiltonianNonspinning(const double delta, const EOBMetricNonspinning& ig);
+    EOBHamiltonianNonspinning(const double delta, const double chis, const double chia, const EOBMetricNonspinning& ig);
     void operator()(const double r_new, const double prstar_new, const double pPhi_new) const;
-    operator double() const { return H; }
     mutable double Heff;
     mutable double H;
     mutable double dHdr;
@@ -64,12 +63,11 @@ namespace WaveformUtilities {
     const double nu;
     const EOBMetricWithSpin& g;
     const double chi, chistar, chiKerr, a, b, aSSterm;
-    const double sigmapPhi, sigmapr, sigmarinv, sigmaconst;
+    const double  sigmaconst, sigmarinv, sigmapPhi, sigmapr, sigmaprDr;
     mutable double r, prstar, pPhi;
   public:
     EOBHamiltonianWithSpin(const double delta, const double chis, const double chia, const EOBMetricWithSpin& ig);
     void operator()(const double r_new, const double prstar_new, const double pPhi_new) const;
-    operator double() { return H; }
     mutable double Heff;
     mutable double H;
     mutable double dHdr;

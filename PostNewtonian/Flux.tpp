@@ -17,6 +17,28 @@ double Flux_Taylor::operator()(const double v_new, const double r_new, const dou
 }
 
 
+Flux_Taylor8::Flux_Taylor8(const double delta, const double chis)
+  : nu((1.0-delta*delta)/4.0),
+    F0((32*std::pow(nu,2))/5.),
+    F2((-1247 - 980*nu)/336.),
+    F3(chis*(-2.75 + 3*nu) + 4*M_PI),
+    F4((-44711 - 567*std::pow(chis,2)*(-33 + 4*nu) + 18*nu*(9271 + 1820*nu))/9072.),
+    F5((3*std::pow(chis,3)*(-1 + 3*nu))/4. - (chis*(567 + 4*nu*(-935 + 628*nu)))/144. - ((8191 + 16324*nu)*M_PI)/672.),
+    F6(95.10839000836025 - (1712*EulerGamma)/105. - (nu*(941801 + 6*nu*(283209 + 21700*nu)))/54432. - (65*chis*M_PI)/6. + (34*chis*nu*M_PI)/3. + ((256 + 41*nu)*std::pow(M_PI,2))/48. - (1712*std::log(4))/105.),
+    F6lnv(-16.304761904761904),
+    F7((5*(-78168 + nu*(300643 + 154708*nu))*M_PI)/12096.),
+    F8(-117.5043907226773),
+    F8lnv(52.74308390022676)
+{ }
+
+double Flux_Taylor8::operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const {
+  if(v==v_new) { return Flux; }
+  v = v_new;
+  const double lnv = std::log(v);
+  return Flux = F0*tenth(v)*(1 + v*v*(F2 + v*(F3 + v*(F4 + v*(F5 + v*(F6 + lnv*F6lnv + v*(F7 + v*(F8 + lnv*F8lnv) ) ) ) ) ) ) );
+}
+
+
 Flux_Pade44LogConst::Flux_Pade44LogConst(const double delta, const double chis)
   : nu((1.0-delta*delta)/4.0), N((32*nu*nu)/5.),
     f2((-1247 - 980*nu)/336.),
@@ -142,6 +164,12 @@ Torque_KFPhi<Flux>::Torque_KFPhi(const double delta, const double chis, const Fl
     v(0.0), r(0.0), prstar(0.0), pPhi(0.0), Torque(0.0)
 { }
 
+template <class Flux> template <class Ham>
+Torque_KFPhi<Flux>::Torque_KFPhi(const double delta, const double chis, const Flux& iF, const Ham& H)
+  : nu((1.0-delta*delta)/4.0), F(iF),
+    v(0.0), r(0.0), prstar(0.0), pPhi(0.0), Torque(0.0)
+{ }
+
 template <class Flux>
 double Torque_KFPhi<Flux>::operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const {
   if(v==v_new && r==r_new && prstar==prstar_new && pPhi==pPhi_new) { return Torque; }
@@ -154,25 +182,25 @@ double Torque_KFPhi<Flux>::operator()(const double v_new, const double r_new, co
 }
 
 
-template <class HamiltonianCircular, class Flux>
-Torque_nKFPhi<HamiltonianCircular, Flux>::Torque_nKFPhi(const double delta, const double chis, const HamiltonianCircular& iHcirc, const Flux& iF)
-  : nu((1.0-delta*delta)/4.0), Hcirc(iHcirc), F(iF),
-    v(0.0), r(0.0), prstar(0.0), pPhi(0.0), Torque(0.0)
-{ }
+// template <class HamiltonianCircular, class Flux>
+// Torque_nKFPhi<HamiltonianCircular, Flux>::Torque_nKFPhi(const double delta, const double chis, const Flux& iF, const HamiltonianCircular& iHcirc)
+//   : nu((1.0-delta*delta)/4.0), Hcirc(iHcirc), F(iF),
+//     v(0.0), r(0.0), prstar(0.0), pPhi(0.0), Torque(0.0)
+// { }
 
-template <class HamiltonianCircular, class Flux>
-double Torque_nKFPhi<HamiltonianCircular, Flux>::operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const {
-  if(v==v_new && r==r_new && prstar==prstar_new && pPhi==pPhi_new) { return Torque; }
-  v = v_new;
-  r = r_new;
-  prstar = prstar_new;
-  pPhi = pPhi_new;
-  Hcirc(r, 0.0, pPhi);
-  F(v, r, prstar, pPhi);
-  /// Eqs. (65) and (66) of Boyle et al., 2008: PRD 78, 104020
-  /// r_Omega := (dH/dpPhi)^(-2/3) = (Omega_circ)^(-2/3)
-  /// VPhi := Omega * r_Omega
-  /// VPhi^6 = v^18 * (dH/dpPhi)^(-4)
-  /// v^3 / VPhi^6 = (dH/dpPhi)^4 / v^15
-  return Torque = -F.Flux * std::pow(Hcirc.dHdpPhi,4) / (nu*std::pow(v,15));
-}
+// template <class HamiltonianCircular, class Flux>
+// double Torque_nKFPhi<HamiltonianCircular, Flux>::operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const {
+//   if(v==v_new && r==r_new && prstar==prstar_new && pPhi==pPhi_new) { return Torque; }
+//   v = v_new;
+//   r = r_new;
+//   prstar = prstar_new;
+//   pPhi = pPhi_new;
+//   Hcirc(r, 0.0, pPhi);
+//   F(v, r, prstar, pPhi);
+//   /// Eqs. (65) and (66) of Boyle et al., 2008: PRD 78, 104020
+//   /// r_Omega := (dH/dpPhi)^(-2/3) = (Omega_circ)^(-2/3)
+//   /// VPhi := Omega * r_Omega
+//   /// VPhi^6 = v^18 * (dH/dpPhi)^(-4)
+//   /// v^3 / VPhi^6 = (dH/dpPhi)^4 / v^15
+//   return Torque = -F.Flux * std::pow(Hcirc.dHdpPhi,4) / (nu*std::pow(v,15));
+// }

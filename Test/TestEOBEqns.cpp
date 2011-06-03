@@ -20,7 +20,6 @@ using WaveformUtilities::Flux_Pade44LogFac;
 using WaveformUtilities::Flux_SumAmplitudes;
 using WaveformUtilities::Flux_SumAmplitudesResummed;
 using WaveformUtilities::Torque_KFPhi;
-using WaveformUtilities::Torque_nKFPhi;
 using WaveformUtilities::EOBMetricNonspinning;
 using WaveformUtilities::EOBHamiltonianNonspinning;
 using WaveformUtilities::EOBMetricWithSpin;
@@ -185,12 +184,12 @@ vector<double> EOBRightHandSide::HamiltoniansAndDerivatives(const double& r, con
   const double H0 = r*r*Deltat/Den;
   const double dH0dr = (2*r*Deltat+r*r*dDeltatdr)/Den - dDendr*H0/Den;
   const double H1 = (Deltat*Den-chieff*chieff*Den+chieff*chieff*SQR(r*r+chieff*chieff-Deltat)) / SQR(Den);
-  const double dH1dr = (dDeltatdr*Den+Deltat*dDendr-chieff*chieff*dDendr+chieff*chieff*2*(2*r-dDeltatdr)*(r*r+chieff*chieff-dDeltatdr)) / SQR(Den) - 2*dDendr*H1/Den;
+  const double dH1dr = (dDeltatdr*Den+Deltat*dDendr-chieff*chieff*dDendr+chieff*chieff*2*(2*r-dDeltatdr)*(r*r+chieff*chieff-Deltat)) / SQR(Den) - 2*dDendr*H1/Den;
   const double H2 = SQR(r*r+chieff*chieff)/Den;
   const double dH2dr = 4*r*(r*r+chieff*chieff)/Den - dDendr*H2/Den;
-  const double H3 = (8-6*nu)*nu*SQR(SQR(r*r+chieff*chieff))/(Den*SQR(Deltat)*DeltaR);
-  const double dH3dr = (8-6*nu)*nu*8*r*CUB(r*r+chieff*chieff)/(Den*SQR(Deltat)*DeltaR)
-    - (dDendr*SQR(Deltat)*DeltaR+Den*2*Deltat*dDeltatdr*DeltaR+Den*SQR(Deltat)*dDeltaRdr)*H3/(Den*SQR(Deltat)*DeltaR);
+  const double H3 = (8-6*nu)*nu*SQR(SQR(r*r+chieff*chieff))/(Den*SQR(DeltaR)*Deltat);
+  const double dH3dr = (8-6*nu)*nu*8*r*CUB(r*r+chieff*chieff)/(Den*SQR(DeltaR)*Deltat)
+    - (dDendr*SQR(DeltaR)*Deltat+Den*2*DeltaR*dDeltaRdr*Deltat+Den*SQR(DeltaR)*dDeltatdr)*H3/(Den*SQR(DeltaR)*Deltat);
   const double H4 = (r*r+chieff*chieff-Deltat)/Den;
   const double dH4dr = (2*r-dDeltatdr)/Den - dDendr*H4/Den;
   
@@ -215,11 +214,11 @@ vector<double> EOBRightHandSide::HamiltoniansAndDerivatives(const double& r, con
   const double Heff =
     Heffsqrt
     + pPhi*(chieff+sigma)*H4
-    + a3PNSS*chieff*chistar/(r*r*r*r);
+    + a3PNSS*nu*chieff*chistar/(r*r*r*r);
   const double dHeffdr =
     0.5*(dH0dr + SQR(pPhi)*dH1dr + SQR(prstar)*dH2dr + SQR(SQR(prstar))*dH3dr)/Heffsqrt
     + pPhi*dsigmadr*H4 + pPhi*(chieff+sigma)*dH4dr
-    - 4*a3PNSS*chieff*chistar/(r*r*r*r*r);
+    - 4*a3PNSS*nu*chieff*chistar/(r*r*r*r*r);
   const double dHeffdprstar =
     0.5*(2*prstar*H2 + 4*CUB(prstar)*H3)/Heffsqrt
     + pPhi*(dsigmadprstar)*H4;
@@ -395,19 +394,20 @@ typedef bool (HamEqn::*ContinueTest)(const double& t, const vector<double>& y, c
 
 
 int main() {
-  const double delta = 0.0;
-  const double chis = 0.0;
+  const double q = 1.0;
+  const double delta=(q-1.0)/(q+1.0);
+  const double chis = 0.95;
   const double chia = 0.0;
   
   // Old one
   EOBRightHandSide d1(delta, chis, 0.0, 7);
   
-  // New one
-  Met g(delta);
-  Ham H(delta, g);
-  Flu F(delta, chis);
-  Tor T(delta, chis, F);
-  HamEqn d2(g, H, T);
+//   // New one
+//   Met g(delta);
+//   Ham H(delta, chis, chia, g);
+//   Flu F(delta, chis);
+//   Tor T(delta, chis, F);
+//   HamEqn d2(g, H, T);
   
   // Newest one
   MetS gS(delta, chis, chia);
@@ -416,48 +416,48 @@ int main() {
   Tor TS(delta, chis, FS);
   HamEqnS d3(gS, HS, TS);
   
-  const unsigned int N = 400;
+  const unsigned int N = 10000;
   const double r0=30;
   const double r1=2;
-  const double prstar0 = 1e-4;
-  const double prstar1 = 1e-3;
+  const double prstar0 = -1e-4;
+  const double prstar1 = -1e-3;
   const double pPhi0 = 6;
   const double pPhi1 = 1;
   
-  { /// Test the metric
-    ofstream ofs("Outputs/TestEOBEqns_g.dat");
-    ofs << "# [1] = r" << endl
-	<< "# [2] = Dt1" << endl
-	<< "# [3] = Dr1" << endl
-	<< "# [4] = dDtdr1" << endl
-	<< "# [5] = dDrdr1" << endl
-	<< "# [6] = drstardr1" << endl
-	<< "# [7] = Dt2" << endl
-	<< "# [8] = Dr2" << endl
-	<< "# [9] = dDtdr2" << endl
-	<< "# [10] = dDrdr2" << endl
-	<< "# [11] = drstardr2" << endl
-	<< "# [12] = d Dt" << endl
-	<< "# [13] = d Dr" << endl
-	<< "# [14] = d dDtdr" << endl
-	<< "# [15] = d dDrdr" << endl
-	<< "# [16] = d drstardr" << endl;
-    for(unsigned int n=0; n<N; ++n) {
-      const double r = r0 - n*(r0-r1)/(N-1.0);
-      g(r);
-      ofs << r << " "
-	  << d1.Deltat15(r) << " " << d1.DeltaR15(r) << " "
-	  << d1.dDeltat15dr(r) << " " << d1.dDeltaR15dr(r) << " "
-	  << d1.drstardr(r) << " "
-	  << g.Dt << " " << g.Dr << " "
-	  << g.dDtdr << " " << g.dDrdr << " "
-	  << g.drstardr << " "
-	  << g.Dt-d1.Deltat15(r) << " " << g.Dr-d1.DeltaR15(r) << " "
-	  << g.dDtdr-d1.dDeltat15dr(r) << " " << g.dDrdr-d1.dDeltaR15dr(r) << " "
-	  << g.drstardr-d1.drstardr(r) << endl;
-    }
-    ofs.close();
-  }
+//   { /// Test the metric
+//     ofstream ofs("Outputs/TestEOBEqns_g.dat");
+//     ofs << "# [1] = r" << endl
+// 	<< "# [2] = Dt1" << endl
+// 	<< "# [3] = Dr1" << endl
+// 	<< "# [4] = dDtdr1" << endl
+// 	<< "# [5] = dDrdr1" << endl
+// 	<< "# [6] = drstardr1" << endl
+// 	<< "# [7] = Dt2" << endl
+// 	<< "# [8] = Dr2" << endl
+// 	<< "# [9] = dDtdr2" << endl
+// 	<< "# [10] = dDrdr2" << endl
+// 	<< "# [11] = drstardr2" << endl
+// 	<< "# [12] = d Dt" << endl
+// 	<< "# [13] = d Dr" << endl
+// 	<< "# [14] = d dDtdr" << endl
+// 	<< "# [15] = d dDrdr" << endl
+// 	<< "# [16] = d drstardr" << endl;
+//     for(unsigned int n=0; n<N; ++n) {
+//       const double r = r0 - n*(r0-r1)/(N-1.0);
+//       g(r);
+//       ofs << r << " "
+// 	  << d1.Deltat15(r) << " " << d1.DeltaR15(r) << " "
+// 	  << d1.dDeltat15dr(r) << " " << d1.dDeltaR15dr(r) << " "
+// 	  << d1.drstardr(r) << " "
+// 	  << g.Dt << " " << g.Dr << " "
+// 	  << g.dDtdr << " " << g.dDrdr << " "
+// 	  << g.drstardr << " "
+// 	  << g.Dt-d1.Deltat15(r) << " " << g.Dr-d1.DeltaR15(r) << " "
+// 	  << g.dDtdr-d1.dDeltat15dr(r) << " " << g.dDrdr-d1.dDeltaR15dr(r) << " "
+// 	  << g.drstardr-d1.drstardr(r) << endl;
+//     }
+//     ofs.close();
+//   }
   
   { /// Test the metric
     ofstream ofs("Outputs/TestEOBEqns_gS.dat");
@@ -494,46 +494,46 @@ int main() {
     ofs.close();
   }
   
-  { /// Test the Hamiltonian
-    ofstream ofs("Outputs/TestEOBEqns_H.dat");
-    ofs << "# [1] = r" << endl
-	<< "# [2] = prstar" << endl
-	<< "# [3] = pPhi" << endl
-	<< "# [4] = d1.H" << endl
-	<< "# [5] = d1.Heff" << endl
-	<< "# [6] = d1.dHdr" << endl
-	<< "# [7] = d1.dHdprstar" << endl
-	<< "# [8] = d1.dHdpPhi" << endl
-	<< "# [9] = d2.H" << endl
-	<< "# [10] = d2.Heff" << endl
-	<< "# [11] = d2.dHdr" << endl
-	<< "# [12] = d2.dHdprstar" << endl
-	<< "# [13] = d2.dHdpPhi" << endl
-	<< "# [14] = d H" << endl
-	<< "# [15] = d Heff" << endl
-	<< "# [16] = d dHdr" << endl
-	<< "# [17] = d dHdprstar" << endl
-	<< "# [18] = d dHdpPhi" << endl;
-    for(unsigned int n=0; n<N; ++n) {
-      const double r = r0 - n*(r0-r1)/(N-1.0);
-      const double prstar = prstar0 - n*(prstar0-prstar1)/(N-1.0);
-      const double pPhi = pPhi0 - n*(pPhi0-pPhi1)/(N-1.0);
+//   { /// Test the Hamiltonian
+//     ofstream ofs("Outputs/TestEOBEqns_H.dat");
+//     ofs << "# [1] = r" << endl
+// 	<< "# [2] = prstar" << endl
+// 	<< "# [3] = pPhi" << endl
+// 	<< "# [4] = d1.H" << endl
+// 	<< "# [5] = d1.Heff" << endl
+// 	<< "# [6] = d1.dHdr" << endl
+// 	<< "# [7] = d1.dHdprstar" << endl
+// 	<< "# [8] = d1.dHdpPhi" << endl
+// 	<< "# [9] = d2.H" << endl
+// 	<< "# [10] = d2.Heff" << endl
+// 	<< "# [11] = d2.dHdr" << endl
+// 	<< "# [12] = d2.dHdprstar" << endl
+// 	<< "# [13] = d2.dHdpPhi" << endl
+// 	<< "# [14] = d H" << endl
+// 	<< "# [15] = d Heff" << endl
+// 	<< "# [16] = d dHdr" << endl
+// 	<< "# [17] = d dHdprstar" << endl
+// 	<< "# [18] = d dHdpPhi" << endl;
+//     for(unsigned int n=0; n<N; ++n) {
+//       const double r = r0 - n*(r0-r1)/(N-1.0);
+//       const double prstar = prstar0 - n*(prstar0-prstar1)/(N-1.0);
+//       const double pPhi = pPhi0 - n*(pPhi0-pPhi1)/(N-1.0);
       
-      vector<double> Hderivs = d1.HamiltoniansAndDerivatives(r, prstar, pPhi);
-//   Derivatives[0] = dHeffdr / (nu*Hreal);
-//   Derivatives[1] = dHeffdprstar / (nu*Hreal);
-//   Derivatives[2] = dHeffdpPhi / (nu*Hreal);
-//   Derivatives[3] = Heff;
-//   Derivatives[4] = Hreal;
+//       vector<double> Hderivs = d1.HamiltoniansAndDerivatives(r, prstar, pPhi);
+// //   Derivatives[0] = dHeffdr / (nu*Hreal);
+// //   Derivatives[1] = dHeffdprstar / (nu*Hreal);
+// //   Derivatives[2] = dHeffdpPhi / (nu*Hreal);
+// //   Derivatives[3] = Heff;
+// //   Derivatives[4] = Hreal;
       
-      H(r, prstar, pPhi);
-      ofs << r << " " << prstar << " " << pPhi << " "
-	  << Hderivs[4] << " " << Hderivs[3] << " " << Hderivs[0] << " " << Hderivs[1] << " " << Hderivs[2] << " "
-	  << H.H << " " << H.Heff << " " << H.dHdr << " " << H.dHdprstar << " " << H.dHdpPhi << " "
-	  << H.H-Hderivs[4] << " " << H.Heff-Hderivs[3] << " " << H.dHdr-Hderivs[0] << " " << H.dHdprstar-Hderivs[1] << " " << H.dHdpPhi-Hderivs[2] << endl;
-    }
-    ofs.close();
-  }
+//       H(r, prstar, pPhi);
+//       ofs << r << " " << prstar << " " << pPhi << " "
+// 	  << Hderivs[4] << " " << Hderivs[3] << " " << Hderivs[0] << " " << Hderivs[1] << " " << Hderivs[2] << " "
+// 	  << H.H << " " << H.Heff << " " << H.dHdr << " " << H.dHdprstar << " " << H.dHdpPhi << " "
+// 	  << H.H-Hderivs[4] << " " << H.Heff-Hderivs[3] << " " << H.dHdr-Hderivs[0] << " " << H.dHdprstar-Hderivs[1] << " " << H.dHdpPhi-Hderivs[2] << endl;
+//     }
+//     ofs.close();
+//   }
   
   { /// Test the Hamiltonian
     ofstream ofs("Outputs/TestEOBEqns_HS.dat");
