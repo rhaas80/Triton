@@ -14,8 +14,8 @@ namespace WaveformObjects {
     Waveform(const Waveform& W);
     Waveform(const std::string& DataFileName, const std::string& Format);
     Waveform(const std::string& Approximant, const double delta, const double chis, const double chia, const double v0,
-	     const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0,
-	     const int nsave=-1, const bool denseish=true);
+	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     ~Waveform() { }
     void clear() { t.clear(); r.clear(); lm.clear(); mag.clear(); arg.clear(); }
     
@@ -35,6 +35,7 @@ namespace WaveformObjects {
   public:  // Operators
     Waveform& operator=(const Waveform& b);
     Waveform operator/(const Waveform& b) const;
+    Waveform operator[](const unsigned int mode) const;
     
   public:  // Getty access functions
     // Basic Waveform information
@@ -43,6 +44,7 @@ namespace WaveformObjects {
     inline const unsigned int TypeIndex() const { return typeIndex; }
     inline const std::string HistoryStr() const { return history.str(); }
     inline const std::string TimeScale() const { return timeScale; }
+    inline const std::string Type() const { return Types[typeIndex]; }
     // Data from a single mode at an instant of time
     inline const double T(const unsigned int Time) const { return t[Time]; }
     inline const double R(const unsigned int Time) const { if(r.size()>1) {return r[Time]; } else { return r[0]; } }
@@ -147,7 +149,10 @@ namespace WaveformObjects {
   
 } // namespace WaveformObjects
 
-// Related function
+// Related functions
 std::ostream& operator<<(std::ostream& os, const WaveformObjects::Waveform& a);
+void Output(const std::string& FileName, const WaveformObjects::Waveform& a, const unsigned int precision=14);
+void OutputSingleMode(std::ostream& os, const WaveformObjects::Waveform& a, const unsigned int Mode);
+void OutputSingleMode(const std::string& FileName, const WaveformObjects::Waveform& a, const unsigned int Mode, const unsigned int precision=14);
 
 #endif // WAVEFORM_HPP

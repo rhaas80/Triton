@@ -5,6 +5,9 @@ SOURCES = $(wildcard *.cpp)
 all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libUtilities
 
 clean:
+	-$(RM) `ls *.o | grep -v NoiseCurves` *.d libUtilities.a
+
+realclean:
 	-$(RM) *.o *.d libUtilities.a
 
 .cpp.o:

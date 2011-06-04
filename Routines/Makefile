@@ -19,12 +19,12 @@ all: sublibs $(EXECUTABLES)
 clean:
 	-$(RM) *.d $(EXECUTABLES)
 
-$(EXECUTABLES): % : %.cpp
-	$(C++) $(C++FLAGS) -c $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
+$(EXECUTABLES): % : sublibs %.cpp
+	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
 	@$(MAKEDEPEND) $(IFLAGS) $*.cpp > $*.d.tmp
 	@$(SED) -e 's/.o:/:/'< $*.d.tmp > $*.d
-	@$(RM) $*.d.tmp
-	@(pushd ../bin >& /dev/null && $(LN) ../Routines/$@ . ; popd >& /dev/null)
+	@$(RM) -f $*.d.tmp
+	@$(LN) $@ ../bin
 
 sublibs: $(SUBLIBS)
 

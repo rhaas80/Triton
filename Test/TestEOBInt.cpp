@@ -13,7 +13,7 @@ using namespace std;
 typedef WaveformUtilities::EOBMetricNonspinning Met;
 typedef WaveformUtilities::EOBHamiltonianNonspinning Ham;
 typedef WaveformUtilities::Flux_Pade44LogFac Flu;
-typedef WaveformUtilities::Torque_nKFPhi<Ham, Flu> Tor;
+typedef WaveformUtilities::Torque_KFPhi<Flu> Tor;
 
 int main() {
   const bool WriteFiles = false;
@@ -22,6 +22,7 @@ int main() {
   const double delta=(q-1.0)/(q+1.0);
   //const double delta = 0.6;
   const double chis = 0;//-0.9900;
+  const double chia = 0;
   const double v0 = 0.144;//0.02025;
   vector<double> t, v, Phi;
   vector<double> r, prstar, pPhi;
@@ -33,12 +34,11 @@ int main() {
   
   for(double rtol=1e-3; rtol>1.01e-12; rtol/=10) {
     const Met g(delta);
-    const Ham H(delta, g);
-    const Ham Hcirc(delta, g);
+    const Ham H(delta, chis, chia, g);
     const Flu F(delta, chis);
-    const Tor T(delta, chis, Hcirc, F);
+    const Tor T(delta, chis, F);
     start = clock();
-    WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
+    WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
     end = clock();
     cout << "rtol=" << rtol << " took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << flush;
     if(WriteFiles) {

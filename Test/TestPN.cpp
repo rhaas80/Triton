@@ -25,15 +25,16 @@ int main() {
   const bool SpeedComparison = false;
   const bool WaveformOutput = true;
   
-  const double q = 1.0;
+  const double q = 9.0;
   const double delta=(q-1.0)/(q+1.0);
-  const double chis = 0.0;
+  const double chis = 0.95;
   const double chia = 0.0;
-  const double v0 = 0.14;
+  const double v0 = 0.10;
   vector<double> t, v, Phi;
   vector<double> r, prstar, pPhi;
   const int NPoints = 10000;
   const int nsave = 40;
+  const int nsaveEOB = 10;
   const bool denseish = true;
   cout << "v0 = " << v0 << "\tdelta = " << delta << "\tchis = " << chis << endl;
   
@@ -83,7 +84,7 @@ int main() {
 //     const double rtol=1.0e-8;
 //     start = clock();
 //     for(unsigned int i=0; i<N; ++i) {
-//       WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
+//       WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, v0, t, v, Phi, r, prstar, pPhi, nsaveEOB, denseish, rtol);
 //     }
 //     end = clock();
 //     cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
@@ -168,7 +169,7 @@ int main() {
       const Tor T(delta, chis, F);
       const double rtol=1.0e-9;
       start = clock();
-      WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
+      WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi, nsaveEOB, denseish, rtol);
       end = clock();
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_EOB.dat");
@@ -192,13 +193,15 @@ int main() {
       const HamS Hcirc(delta, chis, chia, g);
 //       typedef WaveformUtilities::Flux_Taylor8 Flu;
 //       typedef WaveformUtilities::Flux_Taylor Flu;
+//       typedef WaveformUtilities::Flux_Pade44LogConst Flu;
       typedef WaveformUtilities::Flux_Pade44LogFac Flu;
+//       typedef WaveformUtilities::Flux_SumAmplitudes Flu;
       const Flu F(delta, chis);
       typedef WaveformUtilities::Torque_KFPhi<Flu> TorS;
       const TorS T(delta, chis, F, Hcirc);
       const double rtol=1.0e-10;
       start = clock();
-      WaveformUtilities::EOB<MetS, HamS, TorS>(g, H, T, delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
+      WaveformUtilities::EOB<MetS, HamS, TorS>(g, H, T, delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi, nsaveEOB, denseish, rtol);
       end = clock();
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_EOBSpin.dat");

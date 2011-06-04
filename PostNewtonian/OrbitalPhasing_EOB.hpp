@@ -4,6 +4,7 @@
 #include "NumericalRecipes.hpp"
 #include "ODEIntegrator.hpp"
 #include "Fit.hpp"
+#include "Eccentricity.hpp"
 #include "VectorFunctions.hpp"
 typedef int NRerror;
 

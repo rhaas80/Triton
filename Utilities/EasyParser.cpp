@@ -65,8 +65,8 @@ int WU::StringToInt(const string& String) {
 
 bool WU::StringToBool(const string& String) {
   bool Bool;
-  if(String.compare("true") || String.compare("True") || String.compare("t") || String.compare("T") || String.compare("1")) { Bool = true; }
-  else if(String.compare("false") || String.compare("False") || String.compare("f") || String.compare("F") || String.compare("0")) { Bool = false; }
+  if(String.compare("true")==0 || String.compare("True")==0 || String.compare("t")==0 || String.compare("T")==0 || String.compare("1")==0) { Bool = true; }
+  else if(String.compare("false")==0 || String.compare("False")==0 || String.compare("f")==0 || String.compare("F")==0 || String.compare("0")==0) { Bool = false; }
   else { cerr << "Unknown boolean in '" << String << "'." << endl; exit(1); }
   return Bool;
 }

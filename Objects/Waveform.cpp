@@ -13,7 +13,7 @@
 #include "VectorFunctions.hpp"
 #include "Utilities.hpp"
 #include "Units.hpp"
-//#include "PNWaveform.hpp"
+#include "PNWaveform.hpp"
 
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
@@ -260,81 +260,104 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
   }
 }
 
-// // sum_{l=2}^{PNLMax} (2l+1) = 2*(PNLMax*(PNLMax-1)/2-1) + (PNLMax-2) = (PNLMax+3)*(PNLMax-1)
-// Waveform::Waveform(const string& Approximant, const double delta, const double chis, const double chia, const double v0,
-// 		   const double PNPhaseOrder, const double PNAmplitudeOrder, const int nsave, const bool denseish) :
-//   history(""), typeIndex(2), timeScale("(t-r*)/M"),
-//   t(0), r(0), lm((PNLMax+3)*(PNLMax-1), 2), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
-// {
-//   SetWaveformTypes();
+// sum_{l=2}^{PNLMax} (2l+1) = 2*(PNLMax*(PNLMax-1)/2-1) + (PNLMax-2) = (PNLMax+3)*(PNLMax-1)
+Waveform::Waveform(const string& Approximant, const double delta, const double chis, const double chia, const double v0,
+		   const Matrix<int> LM, const int nsave, const bool denseish, const double PNPhaseOrder, const double PNAmplitudeOrder) :
+  history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0),
+  lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
+{
+  SetWaveformTypes();
   
-//   {
-//     history << "### Code revision Rev=" << Rev << endl
-// 	    << "### Waveform("
-// 	    << Approximant << ", "
-// 	    << delta << ", "
-// 	    << chis << ", "
-// 	    << chia << ", "
-// 	    << v0 << ", "
-// 	    << PNPhaseOrder << ", "
-// 	    << PNAmplitudeOrder << ", "
-// 	    << nsave << ", "
-// 	    << denseish
-// 	    << ") // PN constructor" << endl;
-//   }
+  {
+    history << "### Code revision Rev=" << Rev << endl
+	    << "### Waveform("
+	    << Approximant << ", "
+	    << delta << ", "
+	    << chis << ", "
+	    << chia << ", "
+	    << v0 << ", "
+	    << PNPhaseOrder << ", "
+	    << PNAmplitudeOrder << ", "
+	    << LM << ", "
+	    << nsave << ", "
+	    << denseish
+	    << ") // PN constructor" << endl;
+  }
   
-//   vector<double> v(0), Phi(0);
-//   if(Approximant.compare("TaylorT1")==0) {
-//     if(nsave==-1) {
-//       TaylorT1(delta, chis, chia, v0, t, v, Phi, PNOrder);
-//     } else {
-//       TaylorT1(delta, chis, chia, v0, t, v, Phi, PNOrder, nsave, denseish);
-//     }
-//   } else if(Approximant.compare("TaylorT2")==0) {
-//     if(nsave==-1) {
-//       TaylorT2(delta, chis, chia, v0, t, v, Phi, PNOrder);
-//     } else {
-//       TaylorT2(delta, chis, chia, v0, t, v, Phi, PNOrder, nsave);
-//     }
-//   } else if(Approximant.compare("TaylorT3")==0) {
-//     if(nsave==-1) {
-//       TaylorT3(delta, chis, chia, v0, t, v, Phi, PNOrder);
-//     } else {
-//       TaylorT3(delta, chis, chia, v0, t, v, Phi, PNOrder, nsave);
-//     }
-//   } else if(Approximant.compare("TaylorT4")==0) {
-//     if(nsave==-1) {
-//       TaylorT4(delta, chis, chia, v0, t, v, Phi, PNOrder);
-//     } else {
-//       TaylorT4(delta, chis, chia, v0, t, v, Phi, PNOrder, nsave, denseish);
-//     }
+  vector<double> v(0), Phi(0);
+  if(Approximant.compare("TaylorT1")==0) {
+    if(nsave==-1) {
+      TaylorT1(delta, chis, v0, t, v, Phi);
+    } else {
+      TaylorT1(delta, chis, v0, t, v, Phi, nsave, denseish);
+    }
+  } else if(Approximant.compare("TaylorT2")==0) {
+    if(nsave==-1) {
+      TaylorT2(delta, chis, v0, t, v, Phi);
+    } else {
+      TaylorT2(delta, chis, v0, t, v, Phi, nsave);
+    }
+  } else if(Approximant.compare("TaylorT3")==0) {
+    if(nsave==-1) {
+      TaylorT3(delta, chis, v0, t, v, Phi);
+    } else {
+      TaylorT3(delta, chis, v0, t, v, Phi, nsave);
+    }
+  } else if(Approximant.compare("TaylorT4")==0) {
+    if(nsave==-1) {
+      TaylorT4(delta, chis, v0, t, v, Phi);
+    } else {
+      TaylorT4(delta, chis, v0, t, v, Phi, nsave, denseish);
+    }
 //   } else if(Approximant.compare("EOB")==0) {
 //     vector<double> r(0), prstar(0), pPhi(0);
 //     if(nsave==-1) {
-//       EOB(delta, chis, chia, v0, t, v, Phi, PNOrder, r, prstar, pPhi);
+//       EOB(delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi);
 //     } else {
-//       EOB(delta, chis, chia, v0, t, v, Phi, PNOrder, r, prstar, pPhi, nsave, denseish);
+//       EOB(delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish);
 //     }
-//   } else {
-//     cerr << "Unknown approximant '" << Approximant << "'." << endl;
-//     exit(1);
-//   }
-//   unsigned int i=0;
-//   for(int l=2; l<=PNLMax; ++l) {
-//     for(int m=-l; m<=l; ++m) {
-//       lm[i][0] = l;
-//       lm[i][1] = m;
-//       PNAmplitudes(l, m, v, Phi, delta, chia, chis, mag[i], arg[i], PNAmpOrder);
-//       ++i;
-//     }
-//   }
-//   r.resize(1, 0.0);
-// }
+  } else {
+    cerr << "Unknown approximant '" << Approximant << "'." << endl;
+    throw("Bad approximant");
+  }
+  mag.resize(lm.nrows(), t.size());
+  arg.resize(lm.nrows(), t.size());
+  WaveformAmplitudes PNAmp(delta, chis);
+  if(LM.nrows()>0) {
+    for(unsigned int m=0; m<NModes(); ++m) {
+      PNAmp.rhOverM(L(m), M(m), v, Phi, mag[m], arg[m]);
+    }
+  } else {
+    unsigned int i=0;
+    for(int l=2; l<=PNLMax; ++l) {
+      for(int m=-l; m<=l; ++m) {
+	lm[i][0] = l;
+	lm[i][1] = m;
+	PNAmp.rhOverM(l, m, v, Phi, mag[i], arg[i]);
+	++i;
+      }
+    }
+  }
+  r.resize(1, 0.0);
+}
 
 
 // Member functions
 
 // Operators
+Waveform& Waveform::operator=(const Waveform& b) {
+  history.str(b.history.str());
+  history.seekp(0, ios_base::end);
+  typeIndex = b.typeIndex;
+  timeScale = b.timeScale;
+  t = b.t;
+  r = b.r;
+  lm = b.LM();
+  mag = b.mag;
+  arg = b.arg;
+  return *this;
+}
+
 Waveform Waveform::operator/(const Waveform& b) const {
   if(b.NModes() != NModes() || b.LM().RawData() != LM().RawData()) {
     throw("Trying to divide Waveform objects with mismatched LM data");
@@ -353,17 +376,22 @@ Waveform Waveform::operator/(const Waveform& b) const {
   return c;
 }
 
-Waveform& Waveform::operator=(const Waveform& b) {
-  history.str(b.history.str());
-  history.seekp(0, ios_base::end);
-  typeIndex = b.typeIndex;
-  timeScale = b.timeScale;
-  t = b.t;
-  r = b.r;
-  lm = b.LM();
-  mag = b.mag;
-  arg = b.arg;
-  return *this;
+Waveform Waveform::operator[](const unsigned int mode) const {
+  Waveform copy;
+  copy.history.str(history.str());
+  copy.history.seekp(0, ios_base::end);
+  copy.history << "### this = this[" << mode << "]" << endl;
+  copy.typeIndex = typeIndex;
+  copy.timeScale = timeScale;
+  copy.t = t;
+  copy.r = r;
+  copy.lm.resize(1,2);
+  copy.mag.resize(1,NTimes());
+  copy.arg.resize(1,NTimes());
+  copy.lm[0] = LM(mode);
+  copy.mag[0] = Mag(mode);
+  copy.arg[0] = Arg(mode);
+  return copy;
 }
 
 // Handy description routines
@@ -1277,13 +1305,13 @@ void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
 }
 
 
-// Related function
+// Related functions
 ostream& operator<<(ostream& os, const Waveform& a) {
   os << a.HistoryStr()
      << "# [1] = " << a.TimeScale() << endl;
   for(unsigned int Mode=0; Mode<a.NModes(); ++Mode) {
-    os << "# [" << 2*Mode+2 << "] = Mag{" << Waveform::Types[a.TypeIndex()] << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl;
-    os << "# [" << 2*Mode+3 << "] = Arg{" << Waveform::Types[a.TypeIndex()] << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl;
+    os << "# [" << 2*Mode+2 << "] = Mag{" << a.Type() << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl;
+    os << "# [" << 2*Mode+3 << "] = Arg{" << a.Type() << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl;
   }
   for(unsigned int Time=0; Time<a.NTimes(); ++Time) {
     os << a.T(Time);
@@ -1296,6 +1324,32 @@ ostream& operator<<(ostream& os, const Waveform& a) {
   return os;
 }
 
+void Output(const string& FileName, const Waveform& a, const unsigned int precision) {
+  ofstream ofs(FileName.c_str(), ofstream::out);
+  ofs << setprecision(precision);
+  ofs << a;
+  ofs.close();
+  return;
+}
+
+void OutputSingleMode(ostream& os, const Waveform& a, const unsigned int Mode) {
+  os << a.HistoryStr()
+     << "# [1] = " << a.TimeScale() << endl
+     << "# [2] = Mag{" << a.Type() << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl
+     << "# [3] = Arg{" << a.Type() << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl;
+  for(unsigned int Time=0; Time<a.NTimes(); ++Time) {
+    os << a.T(Time) << " " << a.Mag(Mode, Time) << " " << a.Arg(Mode, Time) << endl;
+  }
+  return;
+}
+
+void OutputSingleMode(const string& FileName, const Waveform& a, const unsigned int Mode, const unsigned int precision) {
+  ofstream ofs(FileName.c_str(), ofstream::out);
+  ofs << setprecision(precision);
+  OutputSingleMode(ofs, a, Mode);
+  ofs.close();
+  return;
+}
 
 
 
