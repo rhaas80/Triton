@@ -4,8 +4,8 @@
 #include <iomanip>
 
 #include "WaveformAtAPointFT.hpp"
-#include "NoiseCurves.hpp";
-#include "VectorFunctions.hpp";
+#include "NoiseCurves.hpp"
+#include "VectorFunctions.hpp"
 
 using namespace WaveformUtilities;
 using namespace WaveformObjects;

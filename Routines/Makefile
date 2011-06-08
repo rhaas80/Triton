@@ -1,5 +1,5 @@
 ## Set these variables as appropriate
-SUBLIBS = ../Utilities ../PostNewtonian ../Objects
+SUBLIBS = ../Objects ../PostNewtonian ../Utilities
 SOURCES = $(wildcard *.cpp)
 EXECUTABLES = $(SOURCES:%.cpp=%)
 

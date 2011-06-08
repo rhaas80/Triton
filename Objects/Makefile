@@ -2,8 +2,7 @@ include ../MachineDefs
 
 SOURCES = $(wildcard *.cpp)
 
-# IFLAGS = -I../Utilities -I../PostNewtonian -I../DataAnalysis
-IFLAGS = -I../Utilities -I../PostNewtonian
+IFLAGS = -I../PostNewtonian -I../Utilities
 
 all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libObjects
 
