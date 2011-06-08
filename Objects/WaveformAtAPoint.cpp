@@ -60,8 +60,8 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
 std::ostream& operator<<(std::ostream& os, const WaveformAtAPoint& a) {
   os << a.HistoryStr()
      << "# [1] = " << a.TimeScale() << endl
-     << "# [2] = Re{" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Varphi() << ")}" << endl
-     << "# [3] = Im{" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Vartheta() << ")}" << endl;
+     << "# [2] = Re{" << a.Type() << "(" << a.Vartheta() << "," << a.Varphi() << ")}" << endl
+     << "# [3] = Im{" << a.Type() << "(" << a.Vartheta() << "," << a.Vartheta() << ")}" << endl;
   for(unsigned int i=0; i<a.NTimes(); ++i) {
     os << a.T(i) << " " << a.Re(i) << " " << a.Im(i) << endl;
   }

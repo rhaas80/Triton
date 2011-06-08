@@ -108,6 +108,7 @@ namespace WaveformObjects {
     Waveform& DropAfter(const double t);
     Waveform& ZeroBefore(const double t);
     Waveform& UniformTimeToPowerOfTwo();
+    Waveform& UniformTime(const unsigned int N=200);
     
     // Used in extrapolation
     Waveform& SetArealRadius(const std::string& AreaFileName);

@@ -234,7 +234,7 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
     Data.clear();
     
     //// Search for TimeScale, LM info, and Waveform Type
-    lm = vector<vector<int> > (Re.size(), vector<int>(2, 0));
+    lm.resize(Re.size(), 2);
     GetWaveformTimeScaleAndLM(DataFileName, Header, timeScale, lm);
     typeIndex = GetWaveformType(DataFileName, Header);
     string DetectedFormat = GetFileFormat(Header);
@@ -244,9 +244,9 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
       cerr << "Detected file format '" << DetectedFormat << "' does not match explicit file format '" << Format << "'.  Proceeding with detected format." << endl;
     }
     
+    mag.resize(Re.size(), Re[0].size());
+    arg.resize(Re.size(), Re[0].size());
     if(DetectedFormat.compare("ReIm") == 0) {
-      mag.resize(Re.size(), Re[0].size());
-      arg.resize(Re.size(), Re[0].size());
       //ORIENTATION!!! 3 following lines
       for(unsigned int i=0; i<Re.size(); ++i) { // Loop over components
 	MagArg(Re[i], Im[i], mag[i], arg[i]);
@@ -269,7 +269,7 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
   SetWaveformTypes();
   
   {
-    history << "### Code revision Rev=" << Rev << endl
+    history << "### Code revision Rev=" << Revision << endl
 	    << "### Waveform("
 	    << Approximant << ", "
 	    << delta << ", "
@@ -278,7 +278,7 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
 	    << v0 << ", "
 	    << PNPhaseOrder << ", "
 	    << PNAmplitudeOrder << ", "
-	    << LM << ", "
+	    << RowFormat(LM) << ", "
 	    << nsave << ", "
 	    << denseish
 	    << ") // PN constructor" << endl;
@@ -410,20 +410,25 @@ double Waveform::Peak22Time() const {
 vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
   //// Find 2,2 component
   int TwomTwo = -1;
-  //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) {
     if(L(i)==2 && M(i)==-2) { TwomTwo=i; break; }
   }
   
   //// Error if not found
   if(TwomTwo==-1) {
-    cerr << "\nlm=\n" << lm << endl;
-    throw("Bad L,M data");
+    for(unsigned int i=0; i<NModes(); ++i) {
+      if(L(i)==2 && M(i)==2) { TwomTwo=i; break; }
+    }
+    if(TwomTwo==-1) {
+      cerr << "\nlm=\n" << lm << endl;
+      throw("Bad L,M data; no (2,-2) mode.");
+    }
+    cerr << "\n(2,-2) mode not found; proceeding with (2,2) mode.\n" << endl;
   }
   
   //// Return differentiated Arg data
-  //ORIENTATION!!! following line
-  if((t1!=-1e300 && t1>t[0]) && (t2!=1e300 && t2<t[t.size()-1])) {
+  //ORIENTATION!!! following section
+  if((t1!=-1e300 && t1>t[0]) && (t2!=1e300 && t2<t.back())) {
     vector<double> NewTime(t);
     vector<double> phase(arg[TwomTwo]);
     int i=NewTime.size()-1;
@@ -443,7 +448,7 @@ vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
     NewTime.erase(NewTime.begin(), NewTime.begin()+i);
     phase.erase(phase.begin(), phase.begin()+i);
     return dydx(phase, NewTime);
-  } else if((t2!=1e300 && t2<t[t.size()-1])) {
+  } else if((t2!=1e300 && t2<t.back())) {
     vector<double> NewTime(t);
     vector<double> phase(arg[TwomTwo]);
     int i=NewTime.size()-1;
@@ -485,7 +490,7 @@ bool Waveform::HasNaNs() const {
 
 vector<double> Waveform::Flux() const {
   if(typeIndex%3!=1) {
-    cerr << "\nType = " << Waveform::Types[typeIndex] << endl;
+    cerr << "\nType = " << Type() << endl;
     throw("Can't get Flux() for Waveform of Type other than rhdot.  Maybe you should use Differentiate().");
   }
   vector<double> Flux(t.size(), 0.0);
@@ -593,7 +598,18 @@ Waveform& Waveform::UniformTimeToPowerOfTwo() {
   if(((t.size()) & (t.size()-1)) == 0) { return *this; } // Return *this if we already have a power of 2
   history << "### this->UniformTimeToPowerOfTwo()" << endl;
   unsigned int N = static_cast<unsigned int>(pow(2.0,ceil(log2(t.size()))));
-  double dt = (t[t.size()-1]-t[0])/(N-1);
+  double dt = (t.back()-t[0])/(N-1);
+  vector<double> NewTime(N, 0.0);
+  for(unsigned int i=0; i<N; ++i) {
+    NewTime[i] = t[0] + i*dt;
+  }
+  this->Interpolate(NewTime);
+  return *this;
+}
+
+Waveform& Waveform::UniformTime(const unsigned int N) {
+  history << "### this->UniformTime(" << N << ")" << endl;
+  double dt = (t.back()-t[0])/(N-1);
   vector<double> NewTime(N, 0.0);
   for(unsigned int i=0; i<N; ++i) {
     NewTime[i] = t[0] + i*dt;
@@ -688,8 +704,8 @@ Waveform& Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSol
   // See the note above Waveform::Types.  This function removes the (G*M/c^3)
   // from each type, then scales the Time into seconds, and Radius into meters.
   // It then removes the (r/c) from the amplitude of each type.
-  if((typeIndex>2 && typeIndex<6) || typeIndex>8) { throw(("Cannot SetPhysicalMass for Waveform of Type " + Waveform::Types[typeIndex]).c_str()); }
-  if(typeIndex>5) { throw(("Cannot SetPhysicalDistance for Waveform of Type " + Waveform::Types[typeIndex]).c_str()); }
+  if((typeIndex>2 && typeIndex<6) || typeIndex>8) { throw(("Cannot SetPhysicalMass for Waveform of Type " + Type()).c_str()); }
+  if(typeIndex>5) { throw(("Cannot SetPhysicalDistance for Waveform of Type " + Type()).c_str()); }
   double MassInSeconds = CurrentUnitMassInSolarMasses * SolarMass * NewtonsConstant / (SpeedOfLight*SpeedOfLight*SpeedOfLight);
   double DistanceInMeters = DistanceInMegaparsecs * OneMegaparsec;
   mag *= (ScaleMag(1.0/MassInSeconds, typeIndex) * SpeedOfLight / DistanceInMeters);
@@ -985,6 +1001,10 @@ Waveform Waveform::HybridizeWith(const Waveform& b, const double t1, const doubl
   return c;
 }
 
+inline double sign(const double x) {
+  return (x<0 ? -1.0 : 1.0);
+}
+
 Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const double t1, const double t2, const double DeltaT, const double MinStep) {
   if(omega==0.0) {
     cerr << "\nThe frequency input to AlignTo_F is exactly 0.0.  This will give you garbage" << endl;
@@ -999,8 +1019,10 @@ Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const doubl
   WaveformAligner Align(a, *this, T1, T2);
   vector<double> NewTimeA(a.T());
   vector<double> NewOmegaA(a.Omega2m2());
+  const double NewOmegaASign = sign(NewOmegaA[NewOmegaA.size()/2]);
   vector<double> NewTimeB(T());
   vector<double> NewOmegaB(Omega2m2());
+  const double NewOmegaBSign = sign(NewOmegaB[NewOmegaB.size()/2]);
   try {
     /// Make sure A only includes data before T2
     i=NewTimeA.size()-1;
@@ -1018,16 +1040,16 @@ Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const doubl
     }
     /// Make sure NewOmegaA gets up to abs(omega), but is strictly monotonically increasing before it
     i=1;
-    while(i<NewOmegaA.size() && NewOmegaA[i]<fabs(omega)) { ++i; }
-    while(i>0 && NewOmegaA[i-1]<NewOmegaA[i]) { --i; }
+    while(i<NewOmegaA.size() && NewOmegaASign*NewOmegaA[i]<fabs(omega)) { ++i; }
+    while(i>0 && NewOmegaASign*NewOmegaA[i-1]<NewOmegaASign*NewOmegaA[i]) { --i; }
     if(i!=1) {
       NewTimeA.erase(NewTimeA.begin(), NewTimeA.begin()+i);
       NewOmegaA.erase(NewOmegaA.begin(), NewOmegaA.begin()+i);
     }
     /// Make sure NewOmegaA gets past abs(omega), and is strictly monotonically increasing afterward
     i=1;
-    while(i<NewTimeA.size() && NewOmegaA[i]<fabs(omega)) { ++i; }
-    while(i<NewTimeA.size() && NewOmegaA[i]>NewOmegaA[i-1]) { ++i; }
+    while(i<NewTimeA.size() && NewOmegaASign*NewOmegaA[i]<fabs(omega)) { ++i; }
+    while(i<NewTimeA.size() && NewOmegaASign*NewOmegaA[i]>NewOmegaASign*NewOmegaA[i-1]) { ++i; }
     if(i!=1) {
       NewTimeA.erase(NewTimeA.begin()+i, NewTimeA.begin()+NewTimeA.size());
       NewOmegaA.erase(NewOmegaA.begin()+i, NewOmegaA.begin()+NewOmegaA.size());
@@ -1049,16 +1071,16 @@ Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const doubl
     }
     /// Make sure NewOmegaB gets up to fabs(omega), but is strictly monotonically increasing before it
     i=1;
-    while(i<NewOmegaB.size() && NewOmegaB[i]<fabs(omega)) { ++i; }
-    while(i>0 && NewOmegaB[i-1]<NewOmegaB[i]) { --i; }
+    while(i<NewOmegaB.size() && NewOmegaBSign*NewOmegaB[i]<fabs(omega)) { ++i; }
+    while(i>0 && NewOmegaBSign*NewOmegaB[i-1]<NewOmegaBSign*NewOmegaB[i]) { --i; }
     if(i>1) {
       NewTimeB.erase(NewTimeB.begin(), NewTimeB.begin()+i);
       NewOmegaB.erase(NewOmegaB.begin(), NewOmegaB.begin()+i);
     }
     /// Make sure NewOmegaB gets past fabs(omega), and is strictly monotonically increasing afterward
     i=1;
-    while(i<NewOmegaB.size() && NewOmegaB[i]<fabs(omega)) { ++i; }
-    while(i<NewTimeB.size() && NewOmegaB[i]>NewOmegaB[i-1]) { ++i; }
+    while(i<NewOmegaB.size() && NewOmegaBSign*NewOmegaB[i]<fabs(omega)) { ++i; }
+    while(i<NewTimeB.size() && NewOmegaBSign*NewOmegaB[i]>NewOmegaBSign*NewOmegaB[i-1]) { ++i; }
     if(i>1) {
       NewTimeB.erase(NewTimeB.begin()+i, NewTimeB.begin()+NewTimeB.size());
       NewOmegaB.erase(NewOmegaB.begin()+i, NewOmegaB.begin()+NewOmegaB.size());
@@ -1068,10 +1090,10 @@ Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const doubl
 	 << "\nThe frequency requested is probably out of range of one or both of the Waveforms, or your t1 and t2 are too restrictive.\n" << endl;
     exit(1);
   }
-  const double TA = WaveformUtilities::Interpolate(NewOmegaA, NewTimeA, fabs(omega));
+  const double TA = WaveformUtilities::Interpolate(NewOmegaA, NewTimeA, NewOmegaASign*fabs(omega));
   NewOmegaA.clear();
   NewTimeA.clear();
-  const double TB = WaveformUtilities::Interpolate(NewOmegaB, NewTimeB, fabs(omega));
+  const double TB = WaveformUtilities::Interpolate(NewOmegaB, NewTimeB, NewOmegaBSign*fabs(omega));
   NewOmegaB.clear();
   NewTimeB.clear();
   
@@ -1098,7 +1120,7 @@ Waveform Waveform::HybridizeWith_F(const Waveform& a, const double omega, const 
 // Mostly useful for getting the flux
 Waveform& Waveform::Differentiate() {
   if(typeIndex%3==0) {
-    cerr << "\nType=" << Waveform::Types[typeIndex] << endl;
+    cerr << "\nType=" << Type() << endl;
     throw("Derivative of Psi4 not supported.");
   }
   typeIndex -= 1;
@@ -1287,14 +1309,14 @@ void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
   meta << "[ht-ampphi-data]" << endl;
   for(unsigned int i=0; i<NModes(); ++i) {
     char DataFile[1000];
-    sprintf(DataFile, (Waveform::Types[typeIndex] + "_L%d_M%d.dat").c_str(), L(i), M(i));
+    sprintf(DataFile, (Type() + "_L%d_M%d.dat").c_str(), L(i), M(i));
     meta << L(i) << "," << M(i) << " \t= " << string(DataFile) << endl;
     ofstream data(DataFile, ofstream::out);
     data << setprecision(12) << flush;
     data << "# [1] = " << TimeScale() << endl;
     unsigned int Mode=i;
-    data << "# [2] = Mag{" << Waveform::Types[TypeIndex()] << "(" << L(Mode) << "," << M(Mode) << ")}" << endl;
-    data << "# [3] = Arg{" << Waveform::Types[TypeIndex()] << "(" << L(Mode) << "," << M(Mode) << ")}" << endl;
+    data << "# [2] = Mag{" << Type() << "(" << L(Mode) << "," << M(Mode) << ")}" << endl;
+    data << "# [3] = Arg{" << Type() << "(" << L(Mode) << "," << M(Mode) << ")}" << endl;
     for(unsigned int Time=0; Time<NTimes(); ++Time) {
       data << T(Time) << " " << Mag(Mode, Time) << " " << Arg(Mode, Time) << endl;
     }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <complex>
 #include <vector>
+#include <string>
 #include "Matrix.hpp"
 
 /// IO operators for vectors and matrices
@@ -11,6 +12,10 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v);
 std::ostream& operator<<(std::ostream& out, const std::vector<int>& v);
 std::ostream& operator<<(std::ostream& out, const WaveformUtilities::Matrix<double>& v);
 std::ostream& operator<<(std::ostream& out, const WaveformUtilities::Matrix<int>& v);
+std::string RowFormat(const std::vector<double>& v);
+std::string RowFormat(const std::vector<int>& v);
+std::string RowFormat(const WaveformUtilities::Matrix<double>& m);
+std::string RowFormat(const WaveformUtilities::Matrix<int>& m);
 
 /// Arithmetic operators on vectors and matrices
 std::vector<double> operator+(const std::vector<double>& a, const double& b);

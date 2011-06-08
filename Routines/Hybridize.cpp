@@ -196,7 +196,7 @@ int main (void) {
     
     /// Diff, if desired
     if( ! DiffFileName.empty() ) {
-      DiffFileName = Waveform::Types[Hybrid.TypeIndex()] + "_" + DiffFileName + ".dat";
+      DiffFileName = Hybrid.Type() + "_" + DiffFileName + ".dat";
       cout << "Writing difference to " << DiffFileName << " ..." << flush;
       ofstream ofs(DiffFileName.c_str(), ofstream::out);
       ofs << setprecision(14) << flush;

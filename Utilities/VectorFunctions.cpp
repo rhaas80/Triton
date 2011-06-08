@@ -1,6 +1,7 @@
 #include "VectorFunctions.hpp"
 #include <cmath>
 #include <limits>
+#include <sstream>
 #include "Utilities.hpp"
 namespace WU = WaveformUtilities;
 using WU::Matrix;
@@ -12,6 +13,8 @@ using std::endl;
 using std::ostream;
 using std::min;
 using std::max;
+using std::string;
+using std::stringstream;
 
 // Local to this file
 bool DimensionsAgree(const vector<double>& a, const vector<double>& b) {
@@ -37,7 +40,7 @@ ostream& operator<<(ostream& out, const vector<double>& v) {
   for(unsigned int i=0; i<v.size()-1; ++i) {
     out << v[i] << ", ";
   }
-  out << v[v.size()-1] << flush;
+  out << v.back() << flush;
   return out;
 }
 
@@ -45,7 +48,7 @@ ostream& operator<<(ostream& out, const vector<int>& v) {
   for(unsigned int i=0; i<v.size()-1; ++i) {
     out << v[i] << ", ";
   }
-  out << v[v.size()-1] << flush;
+  out << v.back() << flush;
   return out;
 }
 
@@ -61,6 +64,42 @@ ostream& operator<<(ostream& out, const Matrix<int>& M) {
     out << M[i] << endl;
   }
   return out;
+}
+
+string RowFormat(const std::vector<double>& v) {
+  stringstream RowForm("(");
+  for(unsigned int i=0; i<v.size()-1; ++i) {
+    RowForm << v[i] << ", ";
+  }
+  RowForm << v.back() << ")";
+  return RowForm.str();
+}
+
+string RowFormat(const std::vector<int>& v) {
+  stringstream RowForm("(");
+  for(unsigned int i=0; i<v.size()-1; ++i) {
+    RowForm << v[i] << ", ";
+  }
+  RowForm << v.back() << ")";
+  return RowForm.str();
+}
+
+string RowFormat(const WaveformUtilities::Matrix<double>& m) {
+  stringstream RowForm("( ");
+  for(unsigned int i=0; i<m.nrows()-1; ++i) {
+    RowForm << RowFormat(m[i]) << ", ";
+  }
+  RowForm << RowFormat(m[m.nrows()-1]) << " )";
+  return RowForm.str();
+}
+
+string RowFormat(const WaveformUtilities::Matrix<int>& m) {
+  stringstream RowForm("( ");
+  for(unsigned int i=0; i<m.nrows()-1; ++i) {
+    RowForm << RowFormat(m[i]) << ", ";
+  }
+  RowForm << RowFormat(m[m.nrows()-1]) << " )";
+  return RowForm.str();
 }
 
 
@@ -915,13 +954,18 @@ vector<double> WU::cumtrapz(const vector<double>& t, const vector<double>& f) {
 
 vector<double> WU::dydx(const vector<double>& y, const vector<double>& x) {
   if(! DimensionsAgree(y,x)) { throw("Size disagreement"); }
-  if(y.size()<2) { cerr << "\nsize=" << y.size() << endl; throw("Not enough points for a derivative"); }
+  if(y.size()<3) { cerr << "\nsize=" << y.size() << endl; throw("Not enough points for a derivative"); }
   //if(y.size()==0) { return vector<double>(0); }
   vector<double> D = y;
   const unsigned int i1 = y.size()-1;
-  D[0] = (y[1]-y[0]) / (x[1]-x[0]);
+  double hprev = x[1]-x[0];
+  D[0] = (y[1]-y[0]) / hprev;
   for(unsigned int i=1; i<i1; ++i) {
-    D[i] = (y[i+1]-y[i-1]) / (x[i+1]-x[i-1]);
+    const double hnext = x[i+1]-x[i];
+//     D[i] = (y[i+1]-y[i-1]) / (x[i+1]-x[i-1]);
+    /// Sundquist and Veronis, Tellus XXII (1970), 1
+    D[i] = (y[i+1] - y[i-1]*WU::square(hnext/hprev) - y[i]*(1-WU::square(hnext/hprev))) / (hnext*(1+hnext/hprev));
+    hprev = hnext;
   }
   D[i1] = (y[i1]-y[i1-1]) / (x[i1]-x[i1-1]);
   return D;

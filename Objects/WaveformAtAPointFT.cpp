@@ -218,8 +218,8 @@ WaveformAtAPointFT WaveformAtAPointFT::operator*(const double b) const {
 std::ostream& operator<<(std::ostream& os, const WaveformAtAPointFT& a) {
   os << a.HistoryStr()
      << "# [1] = " << a.TimeScale() << endl
-     << "# [2] = Re{F[" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Varphi() << ")]}" << endl
-     << "# [3] = Im{F[" << Waveform::Types[a.TypeIndex()] << "(" << a.Vartheta() << "," << a.Vartheta() << ")]}" << endl;
+     << "# [2] = Re{F[" << a.Type() << "(" << a.Vartheta() << "," << a.Varphi() << ")]}" << endl
+     << "# [3] = Im{F[" << a.Type() << "(" << a.Vartheta() << "," << a.Vartheta() << ")]}" << endl;
   for(unsigned int i=0; i<a.NTimes(); ++i) {
     os << a.T(i) << " " << a.Re(i) << " " << a.Im(i) << endl;
   }
