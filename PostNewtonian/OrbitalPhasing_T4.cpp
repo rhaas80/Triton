@@ -27,7 +27,7 @@ public:
       dvdt3((-113*chis)/12. + (19*chis*nu)/3. + 4*M_PI),
       dvdt4((34103 + 91854*pow(chis,2) + 122949*nu - 4536*pow(chis,2)*nu + 59472*pow(nu,2))/18144.),
       dvdt5((-63646*chis - 3024*pow(chis,3) + 186824*chis*nu + 9072*pow(chis,3)*nu - 53088*chis*pow(nu,2) - 12477*M_PI - 47628*nu*M_PI)/2016.),
-      dvdt6((49341966789 + 26714110500*pow(chis,2) - 6833756160*EulerGamma - 108182476325*nu - 34113687300*pow(chis,2)*nu + 253066275*pow(nu,2) + 8830760400*pow(chis,2)*pow(nu,2) - 906328500*pow(nu,3) - 15717240000*chis*M_PI + 10338451200*chis*nu*M_PI + 2235340800*pow(M_PI,2) + 3938041800*nu*pow(M_PI,2))/4.191264e8),
+      dvdt6((49341966789.0 + 26714110500.0*pow(chis,2) - 6833756160.0*EulerGamma - 108182476325.0*nu - 34113687300.0*pow(chis,2)*nu + 253066275*pow(nu,2) + 8830760400.0*pow(chis,2)*pow(nu,2) - 906328500*pow(nu,3) - 15717240000.0*chis*M_PI + 10338451200.0*chis*nu*M_PI + 2235340800.0*pow(M_PI,2) + 3938041800.0*nu*pow(M_PI,2))/4.191264e8),
       dvdt6Ln4v(-16.304761904761904),
       dvdt7((-10158452*chis - 6994512*pow(chis,3) + 21663778*chis*nu + 4794552*pow(chis,3)*nu - 21479310*chis*pow(nu,2) - 9072*pow(chis,3)*pow(nu,2) + 1030680*chis*pow(nu,3) - 119205*M_PI + 1306368*pow(chis,2)*M_PI + 6456150*nu*M_PI + 6587640*pow(nu,2)*M_PI)/108864.)
   {}
