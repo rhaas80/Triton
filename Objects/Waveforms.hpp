@@ -12,7 +12,7 @@ namespace WaveformObjects{
     Waveforms(const int N=0);
     Waveforms(const std::vector<double>& Radii, const std::string& DataFile,
 	      const std::string& AreaFile, const std::string& LapseFile,
-	      const double& ADMMass, const double& ChMass);
+	      const double& ADMMass, const double& ChMass, const bool ZeroEnds=false);
     ~Waveforms() { }
     
   public:  // Operators

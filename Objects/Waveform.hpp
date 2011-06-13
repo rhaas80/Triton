@@ -12,7 +12,7 @@ namespace WaveformObjects {
   public:  // Constructors and Destructor
     Waveform();
     Waveform(const Waveform& W);
-    Waveform(const std::string& DataFileName, const std::string& Format);
+    Waveform(const std::string& DataFileName, const std::string& Format, const bool ZeroEnds=false);
     Waveform(const std::string& Approximant, const double delta, const double chis, const double chia, const double v0,
 	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
 	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);

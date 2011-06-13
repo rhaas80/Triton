@@ -82,7 +82,7 @@ Waveform::Waveform(const Waveform& a) :
   t(a.t), r(a.r), lm(a.lm), mag(a.mag), arg(a.arg)
 { history.seekp(0, ios_base::end); }
 
-Waveform::Waveform(const string& DataFileName, const string& Format) :
+Waveform::Waveform(const string& DataFileName, const string& Format, const bool ZeroEnds) :
   history(""), typeIndex(0), timeScale("Time"),
   t(0), r(0), lm(0, 2), mag(0, 0), arg(0, 0)
 {
@@ -224,8 +224,12 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
     // we transpose the matrix to vectors of components, each of which is a vector through time.
     //ORIENTATION!!!  7 following lines
     vector<vector<double> > Re((Data[0].size()-1)/2, vector<double>(Data.size(), 0));
-    vector<vector<double> > Im = Re;
+    vector<vector<double> > Im(Re.size(), vector<double>(Data.size(), 0));
+    vector<double> ReEnds(Re.size(), 0.0);
+    vector<double> ImEnds(Re.size(), 0.0);
     for(unsigned int i = 0; i<Re.size(); ++i) { // Loop over components of Re
+      ReEnds[i] = (ZeroEnds ? Data[Data.size()-1][2*i+1] : 0.0);
+      ImEnds[i] = (ZeroEnds ? Data[Data.size()-1][2*i+2] : 0.0);
       for(unsigned int j = 0; j<Re[i].size(); ++j) { // Loop over time steps
 	Re[i][j] = Data[j][2*i+1];
 	Im[i][j] = Data[j][2*i+2];
@@ -248,8 +252,9 @@ Waveform::Waveform(const string& DataFileName, const string& Format) :
     arg.resize(Re.size(), Re[0].size());
     if(DetectedFormat.compare("ReIm") == 0) {
       //ORIENTATION!!! 3 following lines
+      if(ZeroEnds) std::cout << "ReEnds=" << ReEnds << "\nImEnds=" << ImEnds << std::endl;
       for(unsigned int i=0; i<Re.size(); ++i) { // Loop over components
-	MagArg(Re[i], Im[i], mag[i], arg[i]);
+	MagArg(Re[i]-ReEnds[i], Im[i]-ImEnds[i], mag[i], arg[i]);
       }
     } else if(DetectedFormat.compare("MagArg") == 0) {
       mag = Re;

@@ -140,6 +140,8 @@ namespace WaveformUtilities {
   unsigned int maxIndex(const WaveformUtilities::Matrix<double>& a);
   double max(const std::vector<double>& In);
   double min(const std::vector<double>& In);
+  int max(const std::vector<int>& In);
+  int min(const std::vector<int>& In);
   
   /// Integral, derivative, etc.
   std::vector<double> diff(const std::vector<double>& In);

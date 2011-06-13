@@ -48,6 +48,7 @@ int main () {
   vector<int> DropLMs(0);
   double DropAfter = 1e200;
   string DiffFileNameBase = "NR";
+  bool ZeroEnds = true;
   vector<string> Approximants(4);
   
   Approximants[0] = "T1";
@@ -144,7 +145,7 @@ int main () {
   
   //// Read the NR Waveform from file
   cout << "Reading " << NRFile << "... " << flush;
-  Waveform NR(NRFile, "MagArg");
+  Waveform NR(NRFile, "MagArg", ZeroEnds);
   cout << "☺" << endl;
   if(DropM0Modes) {
     NR.DropZeroMModes();

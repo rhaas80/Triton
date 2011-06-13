@@ -1,0 +1,35 @@
+## This file contains all the recognized options to the 'PNComparison' routine.
+## Commented lines are optional, and contain the default values.  The required
+## options are NRFile, t1, t2, and tmerger, which delimit the matching region.
+## In the directory with the data files, use this with the command line
+##    PNComparison < PNComparison.input |& tee PNComparison.out
+## (assuming that the PNComparison routine is on your path).
+
+## The following are the physical parameters of the system
+#delta = 0.0;  ## delta = (m1 - m2) / (m1 + m2)
+#chis = 0.0;  ## chis = (chi1 + chi2) / 2  [component along the Newtonian angular momentum]
+#chia = 0.0;  ## chia = (chi1 - chi2) / 2  [component along the Newtonian angular momentum]
+#v0 = 0.144; ## v0 = (Omega0)^(1/3).  For NINJA-2, Omega0 = 0.003, so v0=0.144.
+
+## The NR data is read from this file
+NRFile = rhOverM_ExtrapolatedN3.dat;
+#Conjugate = false;
+#ChangeToPsi4 = false;
+
+## The hybrid is made by matching and blending between times t1 and t2
+t1 = 500;
+t2 = 2000;
+
+## The PN needs to be offset roughly to the peak of the NR amplitude
+tmerger = 3950;
+
+## Ths following options allow certain modes to be dropped from the NR waveform before hybridization
+#DropM0Modes = true; ## Drop all modes with m=0
+#DropOddMModes = false; ## Drop all modes with odd m
+#DropNegativeMModes = true;
+#DropLs = ; ## This is a space-separated list of l modes to drop
+#DropLMs = ; ## This is a space-separated list of l,m modes to drop (e.g., 8 2  8 -2  8 4  8 -4)
+#DropAfter = 1e200;
+
+## The final data is output to this file
+#DiffFileNameBase = NR;

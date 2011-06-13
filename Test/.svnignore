@@ -1,0 +1,16 @@
+TestEOBEqns
+TestEOBInt
+TestEOBSpinInt
+TestFFT
+TestFitLinear
+TestFitNonlinear
+TestInterpolator
+TestIntersections
+TestMinimization
+TestODEIntegrator
+TestPN
+TestPowers
+TestRealFFT
+TestSWSHs
+TestUnions
+TestWaveformObjects

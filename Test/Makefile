@@ -12,7 +12,11 @@ IFLAGS:=$(SUBLIBS:%=-I%)
 LFLAGS:=$(SUBLIBS:%=-L%)
 lFLAGS:=$(SUBLIBS:../%=-l%)
 
-all: sublibs $(EXECUTABLES)
+all: sublibs $(EXECUTABLES) | .svnignore
+
+.svnignore:
+	@echo $(EXECUTABLES) | tr ' ' '\n' > $@
+	@svn propset svn:ignore . -F .svnignore
 
 -include $(EXECUTABLES:=.d)
 

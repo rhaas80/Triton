@@ -27,7 +27,7 @@ Waveforms::Waveforms(const int N) :
 
 Waveforms::Waveforms(const vector<double>& Radii, const string& DataFile,
 		     const string& AreaFile, const string& LapseFile,
-		     const double& ADMMass, const double& ChMass) :
+		     const double& ADMMass, const double& ChMass, const bool ZeroEnds) :
   Ws(Radii.size()), CommonTimeSet(false), PhasesAligned(false)
 {
   int BufferSize = 5000;
@@ -37,7 +37,7 @@ Waveforms::Waveforms(const vector<double>& Radii, const string& DataFile,
     sprintf(AreaFileName,  AreaFile.c_str(),  Radii[i]);
     sprintf(LapseFileName, LapseFile.c_str(), Radii[i]);
     cout << "Reading " << DataFileName << ", " << AreaFileName << ", and " << LapseFileName << "." << endl;
-    Ws[i] = Waveform(DataFileName, "ReIm");
+    Ws[i] = Waveform(DataFileName, "ReIm", ZeroEnds);
     Ws[i].SetArealRadius(AreaFileName);
     Ws[i].SetTimeFromLapseSurfaceIntegral(LapseFileName, ADMMass);
     Ws[i].TortoiseOffset(ADMMass);
