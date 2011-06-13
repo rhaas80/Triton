@@ -28,7 +28,7 @@ $(EXECUTABLES): % : sublibs %.cpp
 	@$(MAKEDEPEND) $(IFLAGS) $*.cpp > $*.d.tmp
 	@$(SED) -e 's/.o:/:/'< $*.d.tmp > $*.d
 	@$(RM) -f $*.d.tmp
-	@$(LN) $@ ../bin
+	@$(LN) -s $@ ../bin/
 
 sublibs: $(SUBLIBS)
 
