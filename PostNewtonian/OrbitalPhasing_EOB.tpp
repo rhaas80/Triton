@@ -1,4 +1,4 @@
-/// The following template is the general structure containing the EOB Hamilton equations
+/// The following template is the general structure containing the EOB Hamilton equations, with variables
 /// y[0] = r
 /// y[1] = Phi
 /// y[2] = prstar

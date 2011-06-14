@@ -1265,3 +1265,18 @@ vector<complex<double> > WU::LogGammaFunction(const vector<complex<double> >& xx
   }
   return yy;
 }
+
+  
+  /// Transition functions
+double WU::TransitionFunction_Linear(const double x) {
+  return (x<0.0 ? 0.0 : (x>1.0 ? 1.0 : x) );
+}
+double WU::TransitionFunction_Linear(const double x, const double a, const double b) {
+  return TransitionFunction_Linear((x-a)/b);
+}
+double WU::TransitionFunction_Smooth(const double x) {
+  return (x<=0.0 ? 0.0 : (x>=1.0 ? 1.0 : 1.0/(1.0+exp(1.0/(x-1.0) + 1.0/x))) );
+}
+double WU::TransitionFunction_Smooth(const double x, const double a, const double b) {
+  return TransitionFunction_Smooth((x-a)/b);
+}

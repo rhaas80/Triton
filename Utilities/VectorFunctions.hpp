@@ -184,6 +184,13 @@ namespace WaveformUtilities {
   std::complex<double> LogGammaFunction(const std::complex<double>& x);
   std::vector<std::complex<double> > LogGammaFunction(const std::vector<std::complex<double> >& x);
   
+  /// Transition functions
+  double TransitionFunction_Linear(const double x);
+  double TransitionFunction_Linear(const double x, const double a, const double b);
+  double TransitionFunction_Smooth(const double x);
+  double TransitionFunction_Smooth(const double x, const double a, const double b);
+  
+  
 } // namespace WaveformUtilities
 
 #endif // VECTORFUNCTIONS_HPP

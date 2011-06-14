@@ -28,14 +28,14 @@ namespace WaveformObjects {
     WaveformUtilities::Matrix<int> lm;
     WaveformUtilities::Matrix<double> mag;
     WaveformUtilities::Matrix<double> arg;
-    
-  public:  // Member datum
+  public:
     static std::vector<std::string> Types;
     
   public:  // Operators
     Waveform& operator=(const Waveform& b);
     Waveform operator/(const Waveform& b) const;
     Waveform operator[](const unsigned int mode) const;
+    void swap(Waveform& b);
     
   public:  // Getty access functions
     // Basic Waveform information
@@ -138,6 +138,7 @@ namespace WaveformObjects {
 			const double DeltaT=1e300, const double MinStep=0.005);
     Waveform HybridizeWith_F(const Waveform& a, const double omega, const double omegat1=-1e300, const double omegat2=1e300,
 			     const double DeltaT=10.0, const double MinStep=0.005) const;
+    Waveform& AttachQNMs(const double delta, const double chiKerr, double dt=0.0, const double TLength=500.0);
     
     // Nice, easy way of compressing and outputting to NINJA
     Waveform& MinimalGrid(const double MagTol=1.e-5, const double ArgTol=1.e-5);

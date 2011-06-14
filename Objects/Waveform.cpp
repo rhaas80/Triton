@@ -13,7 +13,7 @@
 #include "VectorFunctions.hpp"
 #include "Utilities.hpp"
 #include "Units.hpp"
-#include "PNWaveform.hpp"
+#include "PostNewtonian.hpp"
 
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
@@ -314,13 +314,12 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
     } else {
       TaylorT4(delta, chis, v0, t, v, Phi, nsave, denseish);
     }
-//   } else if(Approximant.compare("EOB")==0) {
-//     vector<double> r(0), prstar(0), pPhi(0);
-//     if(nsave==-1) {
-//       EOB(delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi);
-//     } else {
-//       EOB(delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish);
-//     }
+  } else if(Approximant.compare("EOB")==0) {
+    if(nsave==-1) {
+      EOB(delta, chis, chia, v0, t, v, Phi);
+    } else {
+      EOB(delta, chis, chia, v0, t, v, Phi, nsave, denseish);
+    }
   } else {
     cerr << "Unknown approximant '" << Approximant << "'." << endl;
     throw("Bad approximant");
@@ -351,6 +350,7 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
 
 // Operators
 Waveform& Waveform::operator=(const Waveform& b) {
+  /// This call should not be recorded in the history
   history.str(b.history.str());
   history.seekp(0, ios_base::end);
   typeIndex = b.typeIndex;
@@ -398,6 +398,22 @@ Waveform Waveform::operator[](const unsigned int mode) const {
   copy.arg[0] = Arg(mode);
   return copy;
 }
+
+void Waveform::swap(Waveform& b) {
+  /// This call should not be recorded explicitly in the history
+  { const string historyb=b.history.str(); b.history.str(history.str()); history.str(historyb); }
+  history.seekp(0, ios_base::end);
+  b.history.seekp(0, ios_base::end);
+  { const unsigned int typeIndexb = b.typeIndex; b.typeIndex=typeIndex; typeIndex=typeIndexb; }
+  timeScale.swap(b.timeScale);
+  t.swap(b.t);
+  r.swap(b.r);
+  lm.swap(b.lm);
+  mag.swap(b.mag);
+  arg.swap(b.arg);
+  return;
+}
+
 
 // Handy description routines
 double Waveform::Peak22Time() const {
@@ -1120,6 +1136,155 @@ Waveform Waveform::HybridizeWith_F(const Waveform& a, const double omega, const 
   Waveform b(*this);
   b.AlignTo_F(a, omega, omegat1, omegat2, DeltaT, MinStep);
   return b;
+}
+
+Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double dt, const double TLength) {
+  if(LM() != QNMLMs()) {
+    cerr << "LM=" << LM() << "\nQNMLMs()=" << QNMLMs() << endl;
+    throw("Bad input LMs.");
+  }
+  
+  if(dt==0.0) { dt = 2*M_PI/(4*2.0); } // 2.0 -> MAX(omegaRe of all the QNM modes)
+  history << "### this->AttachQNMs(" << chiKerr << ", " << dt << ", " << TLength << ");" << endl;
+  
+  /// Add the new times, and resize everything as appropriate
+  const unsigned int NTimesEnd = NTimes();
+  const double TEnd = T().back();
+  TRef().resize(NTimes()+floor(TLength/dt), T().back());
+  for(unsigned int i=1; i<NTimes()-NTimesEnd; ++i) {
+    TRef(i+NTimesEnd) += i*dt;
+  }
+  if(R().size()>1) { RRef().resize(NTimes(), 0.0); }
+  MagRef().resize(NModes(), NTimes(), 0.0);
+  ArgRef().resize(NModes(), NTimes(), 0.0);
+  
+  for(unsigned int mode=0; mode<NModes(); ++mode) {
+    //// If this mode should be exactly zero, let it be
+    if(delta==0.0 && !(M(mode)%2==0)) {
+      continue;
+    }
+    
+    //// Get the QNM frequency
+    double omegaRe, omegaIm;
+    QNM(L(mode), M(mode), 0, chiKerr, omegaRe, omegaIm);
+    
+    //// Extract the invertible data of the l,m mode
+    unsigned int iPeak=maxIndex(Mag(mode));
+    const double tDropBefore(T(iPeak));
+    unsigned int i=iPeak;
+    i++;
+    while(Mag(mode, i) < Mag(mode, i-1) && i<NTimesEnd) { ++i; }
+    const unsigned int iBad=i;
+    const double tDropAfter(T(iBad));
+    Waveform InspiralLM((this->operator[](mode)).DropBefore(tDropBefore).DropAfter(tDropAfter));
+    
+    //// Find the solution
+    vector<double> Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaRe));
+    vector<double> Tvec = InspiralLM.T();
+    {
+      unsigned int k=1;
+      if(Fvec[0]>0.0) {
+	while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
+	Fvec.erase(Fvec.begin(), Fvec.begin()+k);
+	Tvec.erase(Tvec.begin(), Tvec.begin()+k);
+	k=1;
+      }
+      while(Fvec[k]<Fvec[k-1]) { ++k; }
+      Fvec.erase(Fvec.begin()+k, Fvec.end());
+      Tvec.erase(Tvec.begin()+k, Tvec.end());
+    }
+    double tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
+    if((delta==deltaOFq(10.0) && chiKerr==FinalSpinApproximation(deltaOFq(10), 0.95))) {
+      cerr << "Redoing tmatch find! (tailored to q==10 && chis==0.95)" << endl;
+      iPeak = NTimesEnd-1;
+      while(T(iPeak) > -40.0 && iPeak>1) { --iPeak; }
+      InspiralLM = (this->operator[](mode)).DropBefore(T(iPeak)).DropAfter(TEnd-1.0);
+      cerr << "InspiralLM.NTimes()=" << InspiralLM.NTimes()
+	   << " InspiralLM.T(0)=" << InspiralLM.T(0)
+	   << " InspiralLM.T().back()=" << InspiralLM.T().back() << endl;
+      const double tLength = InspiralLM.T().back()-InspiralLM.T(0);
+      for(unsigned int j=0; j<InspiralLM.NTimes(); ++j) {
+	InspiralLM.MagRef(0,j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
+	MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
+      }
+      Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaRe));
+      Tvec = InspiralLM.T();
+      {
+	unsigned int k=1;
+	while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
+	Fvec.erase(Fvec.begin(), Fvec.begin()+k);
+	Tvec.erase(Tvec.begin(), Tvec.begin()+k);
+	k=1;
+	while(Fvec[k]<Fvec[k-1] && k<Fvec.size()) { ++k; }
+	Fvec.erase(Fvec.begin()+k, Fvec.end());
+	Tvec.erase(Tvec.begin()+k, Tvec.end());
+      }
+      tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
+      
+      ofstream ofs("Output/F.dat", ofstream::out);
+      for(unsigned int k=0; k<Fvec.size(); ++k) {
+	ofs << setprecision(14) << Tvec[k] << " " << Fvec[k] << " " << InspiralLM.Mag(0, k) << endl;
+      }
+      ofs.close();
+      
+    } else if(tmatch<tDropBefore || tmatch>tDropAfter) {
+      cerr << "Redoing tmatch find!" << endl;
+      InspiralLM = (this->operator[](mode)).DropBefore(tDropBefore).DropAfter(TEnd);
+      const double tLength = InspiralLM.T().back()-InspiralLM.T(0);
+      for(unsigned int j=0; j<InspiralLM.NTimes(); ++j) {
+	InspiralLM.MagRef(0, j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
+	MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
+      }
+      Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaRe));
+      Tvec = InspiralLM.T();
+      {
+	unsigned int k=1;
+	if(Fvec[0]>0.0) {
+	  while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
+	  Fvec.erase(Fvec.begin(), Fvec.begin()+k);
+	  Tvec.erase(Tvec.begin(), Tvec.begin()+k);
+	  k=1;
+	}
+	while(Fvec[k]<Fvec[k-1]) { ++k; }
+	Fvec.erase(Fvec.begin()+k, Fvec.end());
+	Tvec.erase(Tvec.begin()+k, Tvec.end());
+      }
+      tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
+      
+    }
+    InspiralLM = InspiralLM.Interpolate(tmatch);
+    const double Alm0Re = (InspiralLM.Mag(0,0))*cos(InspiralLM.Arg(0,0));
+    const double Alm0Im = (InspiralLM.Mag(0,0))*sin(InspiralLM.Arg(0,0));
+    i=iPeak;
+    while(tmatch>T(i) && i<NTimes()) { ++i; }
+    const unsigned int iMatch=i; // iMatch points at or to the right of tmatch
+    
+    //// Read data into the QNM portion of the waveform
+    const double phiPeak = Arg(mode, iPeak);
+    const double omegaPeak = (Arg(mode, iPeak+1)-Arg(mode, iPeak-1)) / (T(iPeak+1)-T(iPeak-1));
+    const double omegaQNM = omegaRe;
+    cerr << "tPeak=" << tDropBefore << " tmatch=" << tmatch << " tBad=" << tDropAfter << " omegaPeak=" << omegaPeak << " omegaQNM=" << omegaQNM << endl;
+    vector<double> omegaTransition(iMatch-iPeak, omegaPeak);
+    for(unsigned int k=1; k<omegaTransition.size(); ++k) {
+      omegaTransition[k] = omegaPeak + (omegaQNM-omegaPeak)*TransitionFunction_Linear((T(k+iPeak)-T(iPeak))/(T(iMatch-1)-T(iPeak)));
+    }
+    vector<double> phiTransition(iMatch-iPeak, phiPeak);
+    for(unsigned int k=1; k<phiTransition.size(); ++k) {
+      phiTransition[k] = phiTransition[k-1] + (T(k+iPeak)-T(k+iPeak-1))*(omegaTransition[k]+omegaTransition[k-1])/2.0;
+    }
+    for(unsigned int j=iPeak; j<iMatch; ++j) {
+      ArgRef(mode, j) = phiTransition[j-iPeak];
+    }
+    const double phiOffset = phiTransition.back() + omegaTransition.back()*(tmatch-T(iMatch-1));
+    for(unsigned int j=iMatch; j<NTimes(); ++j) {
+      const double qnmRe = Alm0Re*cos(omegaRe*(T(j)-tmatch)) - Alm0Im*sin(omegaRe*(T(j)-tmatch));
+      const double qnmIm = Alm0Im*cos(omegaRe*(T(j)-tmatch)) + Alm0Re*sin(omegaRe*(T(j)-tmatch));
+      MagRef(mode, j) = sqrt(qnmRe*qnmRe + qnmIm*qnmIm) * exp(-omegaIm*(T(j)-tmatch));
+      ArgRef(mode, j) = atan2(qnmIm, qnmRe) + phiOffset - atan2(Alm0Im, Alm0Re);
+    }
+    ArgRef(mode) = Unwrap(Arg(mode));
+  }
+  return *this;
 }
 
 // Mostly useful for getting the flux

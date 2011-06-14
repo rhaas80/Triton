@@ -29,9 +29,10 @@ namespace WaveformUtilities {
     //Matrix operator/(const Matrix& b) const; // implemented in "VectorFunctions.hpp"
     inline unsigned int nrows() const { return Data.size(); }
     inline unsigned int ncols() const { return Data.size()>0 ? Data[0].size() : 0; }
-    void resize(unsigned int newNRows, unsigned int newNCols); // resize (contents not preserved)
+    void resize(unsigned int newNRows, unsigned int newNCols, const T=T());
     void clear(); // empty contents of this Matrix
     void push_back(const std::vector<T>& NewRow); // Add new row at back of Data
+    void swap(Matrix<T>& b) { Data.swap(b.Data); } // Swap data sets
     ~Matrix() { }
   };
   
@@ -147,7 +148,7 @@ namespace WaveformUtilities {
 //   }
   
   template <class T>
-  void Matrix<T>::resize(unsigned int newNRows, unsigned int newNCols)
+  void Matrix<T>::resize(unsigned int newNRows, unsigned int newNCols, const T)
   {
     if(newNCols != ncols()) {
       for(unsigned int i=0; i<nrows(); ++i) {

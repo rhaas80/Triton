@@ -6,7 +6,7 @@
 
 #include "EasyParser.hpp"
 #include "VectorFunctions.hpp"
-#include "PNWaveform.hpp"
+#include "PostNewtonian.hpp"
 #include "Waveform.hpp"
 
 using WaveformUtilities::SplitStringToKeysAndValues;
