@@ -6,10 +6,10 @@ all:
 
 clean:
 	$(RM) bin/*
-	@for d in $(SUBDIRS); do (cd $$d; $(MAKE) clean ); done
-# 	@for d in Objects PostNewtonian Utilities Test Routines; do (cd $$d; $(MAKE) clean ); done
-# 	@-for d in Objects PostNewtonian Utilities Routines Test; do (cd $$d; $(MAKE) clean ); done
+	@for d in $(SUBDIRS); do ($(MAKE) -C $$d clean ); done
 
 realclean:
 	$(RM) bin/*
-	@for d in $(SUBDIRS); do (cd $$d; $(MAKE) clean ); done
+	@for d in $(SUBDIRS); do ($(MAKE) -C $$d realclean ); done
+
+allclean: realclean

@@ -1,26 +1,39 @@
+## Set this, with the order running from most basic to most advanced
+IFLAGS = 
+
+
+
+## This is a basic source- and library-building makefile; the lines below shouldn't need much tweaking
+THISDIR:=$(shell basename `pwd`)
 include ../MachineDefs
+
+VPATH = $(SUBLIBS)
+SUFFIXES += .d
 
 SOURCES = $(wildcard *.cpp)
 
-all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libUtilities
+.PHONY: all
+
+all: realtarget
+	@:
+
+realtarget: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
+	@($(AR) t lib$(THISDIR).a | grep -q NoiseCurves.o) || ($(AR) $(ARFLAGS) lib$(THISDIR).a NoiseCurves.o)
 
 clean:
-	-$(RM) `ls *.o | grep -v NoiseCurves` *.d libUtilities.a
+	-$(RM) `ls *.o | grep -v NoiseCurves` *.d lib$(THISDIR).a
 
 realclean:
-	-$(RM) *.o *.d libUtilities.a
+	-$(RM) *.o *.d lib$(THISDIR).a
 
-.cpp.o:
+%.o : %.cpp
 	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@
+	@$(AR) $(ARFLAGS) lib$(THISDIR).a $@
 
-%.d: %.cpp
-	@set -e; $(RM) $@; \
-	$(MAKEDEPEND) $< > $@.$$$$; \
-	$(SED) 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	$(RM) $@.$$$$
+%.d : %.cpp
+	@$(MAKEDEPEND) $(IFLAGS) -MT '$*.o $*.d' -MF $*.d $*.cpp
+
+lib$(THISDIR).a : realtarget
+	@:
 
 -include $(SOURCES:.cpp=.d)
-
-libUtilities: $(SOURCES)
-	@$(RM) $@
-	@$(AR) $(ARFLAGS) $@.a $(SOURCES:.cpp=.o)

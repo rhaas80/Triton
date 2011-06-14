@@ -1,25 +1,38 @@
+## Set this, with the order running from most basic to most advanced
+IFLAGS = -I../Utilities
+
+
+
+## This is a basic source- and library-building makefile; the lines below shouldn't need much tweaking
+THISDIR:=$(shell basename `pwd`)
 include ../MachineDefs
+
+VPATH = $(SUBLIBS)
+SUFFIXES += .d
 
 SOURCES = $(wildcard *.cpp)
 
-IFLAGS = -I../Utilities
+.PHONY: all
 
-all: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o) libPostNewtonian
+all: realtarget
+	@:
+
+realtarget: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
 
 clean:
-	-$(RM) *.o *.d libPostNewtonian.a
+	-$(RM) *.o *.d lib$(THISDIR).a
 
-.cpp.o:
+realclean:
+	-$(RM) *.o *.d lib$(THISDIR).a
+
+%.o : %.cpp
 	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@
+	@$(AR) $(ARFLAGS) lib$(THISDIR).a $@
 
-%.d: %.cpp
-	@set -e; $(RM) $@; \
-	$(MAKEDEPEND) $(IFLAGS) $< > $@.$$$$; \
-	$(SED) 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	$(RM) $@.$$$$
+%.d : %.cpp
+	@$(MAKEDEPEND) $(IFLAGS) -MT '$*.o $*.d' -MF $*.d $*.cpp
+
+lib$(THISDIR).a : realtarget
+	@:
 
 -include $(SOURCES:.cpp=.d)
-
-libPostNewtonian: $(SOURCES)
-	@$(RM) $@
-	@$(AR) $(ARFLAGS) $@.a $(SOURCES:.cpp=.o)

@@ -19,7 +19,6 @@ using namespace WaveformUtilities;
 using namespace WaveformObjects;
 using std::string;
 using std::vector;
-using std::complex;
 using std::cerr;
 using std::flush;
 using std::endl;
@@ -1178,8 +1177,8 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
     const double tDropAfter(T(iBad));
     Waveform InspiralLM((this->operator[](mode)).DropBefore(tDropBefore).DropAfter(tDropAfter));
     
-    //// Find the solution
-    vector<double> Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaRe));
+    //// Find the solution.  Most of this is dedicated to making sure the interpolation of Fvec and Tvec is well-posed
+    vector<double> Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaIm));
     vector<double> Tvec = InspiralLM.T();
     {
       unsigned int k=1;
@@ -1194,6 +1193,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
       Tvec.erase(Tvec.begin()+k, Tvec.end());
     }
     double tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
+    
     if((delta==deltaOFq(10.0) && chiKerr==FinalSpinApproximation(deltaOFq(10), 0.95))) {
       cerr << "Redoing tmatch find! (tailored to q==10 && chis==0.95)" << endl;
       iPeak = NTimesEnd-1;
@@ -1207,7 +1207,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
 	InspiralLM.MagRef(0,j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
 	MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
       }
-      Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaRe));
+      Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaIm));
       Tvec = InspiralLM.T();
       {
 	unsigned int k=1;
@@ -1220,13 +1220,6 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
 	Tvec.erase(Tvec.begin()+k, Tvec.end());
       }
       tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
-      
-      ofstream ofs("Output/F.dat", ofstream::out);
-      for(unsigned int k=0; k<Fvec.size(); ++k) {
-	ofs << setprecision(14) << Tvec[k] << " " << Fvec[k] << " " << InspiralLM.Mag(0, k) << endl;
-      }
-      ofs.close();
-      
     } else if(tmatch<tDropBefore || tmatch>tDropAfter) {
       cerr << "Redoing tmatch find!" << endl;
       InspiralLM = (this->operator[](mode)).DropBefore(tDropBefore).DropAfter(TEnd);
@@ -1235,7 +1228,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
 	InspiralLM.MagRef(0, j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
 	MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
       }
-      Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaRe));
+      Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaIm));
       Tvec = InspiralLM.T();
       {
 	unsigned int k=1;
@@ -1250,7 +1243,13 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
 	Tvec.erase(Tvec.begin()+k, Tvec.end());
       }
       tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
-      
+      //if(L(mode)==2 && M(mode)==2) {
+      //  ofstream ofs("Outputs/F.dat", ofstream::out);
+      //  for(unsigned int k=0; k<Fvec.size(); ++k) {
+      //  ofs << setprecision(14) << Tvec[k] << " " << Fvec[k] << " " << InspiralLM.Mag(0, k) << endl;
+      //}
+      //ofs.close();
+      //}
     }
     InspiralLM = InspiralLM.Interpolate(tmatch);
     const double Alm0Re = (InspiralLM.Mag(0,0))*cos(InspiralLM.Arg(0,0));
@@ -1263,7 +1262,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
     const double phiPeak = Arg(mode, iPeak);
     const double omegaPeak = (Arg(mode, iPeak+1)-Arg(mode, iPeak-1)) / (T(iPeak+1)-T(iPeak-1));
     const double omegaQNM = omegaRe;
-    cerr << "tPeak=" << tDropBefore << " tmatch=" << tmatch << " tBad=" << tDropAfter << " omegaPeak=" << omegaPeak << " omegaQNM=" << omegaQNM << endl;
+    cerr << "L=" << L(mode) << " M=" << M(mode) << setprecision(14) << " tPeak=" << tDropBefore << " tmatch=" << tmatch << " tBad=" << tDropAfter << " omegaPeak=" << omegaPeak << " omegaQNM=" << omegaQNM << endl;
     vector<double> omegaTransition(iMatch-iPeak, omegaPeak);
     for(unsigned int k=1; k<omegaTransition.size(); ++k) {
       omegaTransition[k] = omegaPeak + (omegaQNM-omegaPeak)*TransitionFunction_Linear((T(k+iPeak)-T(iPeak))/(T(iMatch-1)-T(iPeak)));

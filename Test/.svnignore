@@ -10,6 +10,7 @@ TestMinimization
 TestODEIntegrator
 TestPN
 TestPowers
+TestQNMAttachment
 TestRealFFT
 TestSWSHs
 TestUnions

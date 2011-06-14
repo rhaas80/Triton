@@ -18,7 +18,6 @@ int main() {
   const double chis = 0.0;//-0.9900;
   const double chia = 0.0;
   const double v0 = 0.12;//0.02025;
-  vector<double> t, v, Phi;
   const int nsave = 20;
   const bool denseish = true;
   cout << "v0 = " << v0 << "\tOmega0 = " << v0*v0*v0 << "\tdelta = " << delta << "\tnu = " << (1.0-delta*delta)/4.0 << "\tchis = " << chis << endl;
@@ -30,18 +29,17 @@ int main() {
     start = clock();
     Waveform W("EOB", delta, chis, chia, v0, WaveformUtilities::QNMLMs(), nsave, denseish);
     end = clock();
-    cout << "rtol=" << rtol << " took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << flush;
+    cout << "rtol=" << rtol << " took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
     start = clock();
     W.AttachQNMs(delta, WaveformUtilities::FinalSpinApproximation(delta, chis));
     end = clock();
-    cout << "QNM attachment took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << flush;
+    cout << "QNM attachment took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
     if(WriteFiles) {
       ofstream ofs("Outputs/TestQNMAttachment.dat");
       ofs << W;
       ofs.close();
     }
-    cout << "  t.size()=" << t.size();
-    cout << "  ☺\n" << endl;
+    cout << "W.NTimes()=" << W.NTimes() << "  ☺\n" << endl;
 //   }
   
   return 0;
