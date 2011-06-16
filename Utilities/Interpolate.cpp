@@ -1,6 +1,7 @@
 #include "Interpolate.hpp"
 
 #include "NumericalRecipes.hpp"
+#include "VectorFunctions.hpp"
 #include "Utilities.hpp"
 
 using namespace std;
@@ -9,6 +10,7 @@ using WU::Interpolator;
 using WU::PolynomialInterpolator;
 using WU::SplineInterpolator;
 
+#undef DEBUG
 
 vector<double> WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2) {
   if(X1.size()==0) { throw("X1.size()==0"); }
@@ -26,6 +28,22 @@ void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const v
   SplineInterpolator Spline(X1, Y1);
   if(Y2.size()!=X2.size()) { Y2.resize(X2.size()); }
   for(unsigned int i=0; i<Y2.size(); ++i) { Y2[i] = Spline.interp(X2[i]); }
+  #ifdef DEBUG
+  if(WU::hasnan(Y2)) {
+    cerr << "Y2 (the result of the interpolation) has NaNs.  I'll look for where this is coming from..." << endl;
+    cerr << "X1.size()=" << X1.size() << "  Y1.size()=" << Y1.size() << "  X2.size()=" << X2.size() << "  Y2.size()=" << Y2.size() << endl;
+    cerr << "X1[0]=" << X1[0] << "  Y1[0]=" << Y1[0] << "  X2[0]=" << X2[0] << "  Y2[0]=" << Y2[0] << endl;
+    if(WU::hasnan(X1)) { cerr << "X1 has NaNs." << endl; }
+    if(WU::hasnan(Y1)) { cerr << "Y1 has NaNs." << endl; }
+    if(WU::hasnan(X2)) { cerr << "X2 has NaNs." << endl; }
+    if(WU::hasinf(X1)) { cerr << "X1 has Infs." << endl; }
+    if(WU::hasinf(Y1)) { cerr << "Y1 has Infs." << endl; }
+    if(WU::hasinf(X2)) { cerr << "X2 has Infs." << endl; }
+    if(!WU::ismonotonic(X1)) { cerr << "X1 is not monotonic." << endl; }
+    if(!WU::ismonotonic(X2)) { cerr << "X2 is not monotonic." << endl; }
+    throw("NaNs found in Interpolate");
+  }
+  #endif
   return;
 }
 
@@ -51,6 +69,22 @@ void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const v
       Y2[i] = Spline.interp(X2[i]);
     }
   }
+  #ifdef DEBUG
+  if(WU::hasnan(Y2)) {
+    cerr << "Y2 (the result of the interpolation) has NaNs.  I'll look for where this is coming from..." << endl;
+    if(WU::isnan(ExtrapVal)) { cerr << "ExtrapVal is NaN." << endl; }
+    if(WU::isinf(ExtrapVal)) { cerr << "ExtrapVal is inf." << endl; }
+    if(WU::hasnan(X1)) { cerr << "X1 has NaNs." << endl; }
+    if(WU::hasnan(Y1)) { cerr << "Y1 has NaNs." << endl; }
+    if(WU::hasnan(X2)) { cerr << "X2 has NaNs." << endl; }
+    if(WU::hasinf(X1)) { cerr << "X1 has Infs." << endl; }
+    if(WU::hasinf(Y1)) { cerr << "Y1 has Infs." << endl; }
+    if(WU::hasinf(X2)) { cerr << "X2 has Infs." << endl; }
+    if(!WU::ismonotonic(X1)) { cerr << "X1 is not monotonic." << endl; }
+    if(!WU::ismonotonic(X2)) { cerr << "X2 is not monotonic." << endl; }
+    throw("NaNs found in Interpolate");
+  }
+  #endif
   return;
 }
 

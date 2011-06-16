@@ -15,6 +15,7 @@ using std::min;
 using std::max;
 using std::string;
 using std::stringstream;
+using std::numeric_limits;
 
 // Local to this file
 bool DimensionsAgree(const vector<double>& a, const vector<double>& b) {
@@ -66,7 +67,7 @@ ostream& operator<<(ostream& out, const Matrix<int>& M) {
   return out;
 }
 
-string RowFormat(const std::vector<double>& v) {
+string RowFormat(const vector<double>& v) {
   stringstream RowForm("(");
   for(unsigned int i=0; i<v.size()-1; ++i) {
     RowForm << v[i] << ", ";
@@ -75,7 +76,7 @@ string RowFormat(const std::vector<double>& v) {
   return RowForm.str();
 }
 
-string RowFormat(const std::vector<int>& v) {
+string RowFormat(const vector<int>& v) {
   stringstream RowForm("(");
   for(unsigned int i=0; i<v.size()-1; ++i) {
     RowForm << v[i] << ", ";
@@ -797,7 +798,7 @@ Matrix<double> fmod(const Matrix<double>& numerator, const double& denominator) 
   return y;
 }
 
-inline vector<double> WU::square(const std::vector<double>& x) {
+inline vector<double> WU::square(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=square(x[i]);
@@ -805,7 +806,7 @@ inline vector<double> WU::square(const std::vector<double>& x) {
   return y;
 }
 
-inline vector<double> WU::cube(const std::vector<double>& x) {
+inline vector<double> WU::cube(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=cube(x[i]);
@@ -813,7 +814,7 @@ inline vector<double> WU::cube(const std::vector<double>& x) {
   return y;
 }
 
-inline vector<double> WU::fourth(const std::vector<double>& x) {
+inline vector<double> WU::fourth(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=fourth(x[i]);
@@ -821,7 +822,7 @@ inline vector<double> WU::fourth(const std::vector<double>& x) {
   return y;
 }
 
-inline vector<double> WU::fifth(const std::vector<double>& x) {
+inline vector<double> WU::fifth(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=fifth(x[i]);
@@ -829,7 +830,7 @@ inline vector<double> WU::fifth(const std::vector<double>& x) {
   return y;
 }
 
-inline vector<double> WU::sixth(const std::vector<double>& x) {
+inline vector<double> WU::sixth(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=sixth(x[i]);
@@ -837,7 +838,7 @@ inline vector<double> WU::sixth(const std::vector<double>& x) {
   return y;
 }
 
-inline vector<double> WU::seventh(const std::vector<double>& x) {
+inline vector<double> WU::seventh(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=seventh(x[i]);
@@ -845,7 +846,7 @@ inline vector<double> WU::seventh(const std::vector<double>& x) {
   return y;
 }
 
-inline vector<double> WU::eighth(const std::vector<double>& x) {
+inline vector<double> WU::eighth(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
     y[i]=eighth(x[i]);
@@ -1266,17 +1267,92 @@ vector<complex<double> > WU::LogGammaFunction(const vector<complex<double> >& xx
   return yy;
 }
 
-  
-  /// Transition functions
-double WU::TransitionFunction_Linear(const double x) {
-  return (x<0.0 ? 0.0 : (x>1.0 ? 1.0 : x) );
+
+/// NaN and inf checks
+bool WU::hasnan(const vector<double>& a) {
+  for(unsigned int i=0; i<a.size(); ++i) {
+    if(isnan(a[i])) {
+      cerr << "\nNaN at i=" << i << endl;
+      return true;
+    }
+  }
+  return false;
 }
-double WU::TransitionFunction_Linear(const double x, const double a, const double b) {
-  return TransitionFunction_Linear((x-a)/b);
+bool WU::hasnan(const WaveformUtilities::Matrix<double>& a) {
+  for(unsigned int row=0; row<a.nrows(); ++row) {
+    for(unsigned int col=0; col<a.ncols(); ++col) {
+      if(isnan(a[row][col])) {
+	cerr << "\nNaN at (row,col)=(" << row << "," << col << ")" << endl;
+	return true;
+      }
+    }
+  }
+  return false;
 }
-double WU::TransitionFunction_Smooth(const double x) {
-  return (x<=0.0 ? 0.0 : (x>=1.0 ? 1.0 : 1.0/(1.0+exp(1.0/(x-1.0) + 1.0/x))) );
+bool WU::hasinf(const vector<double>& a) {
+  for(unsigned int i=0; i<a.size(); ++i) {
+    if(isinf(a[i])) {
+      cerr << "\nInf at i=" << i << endl;
+      return true;
+    }
+  }
+  return false;
 }
-double WU::TransitionFunction_Smooth(const double x, const double a, const double b) {
-  return TransitionFunction_Smooth((x-a)/b);
+bool WU::hasinf(const WaveformUtilities::Matrix<double>& a) {
+  for(unsigned int row=0; row<a.nrows(); ++row) {
+    for(unsigned int col=0; col<a.ncols(); ++col) {
+      if(isinf(a[row][col])) {
+	cerr << "\nInf at (row,col)=(" << row << "," << col << ")" << endl;
+	return true;
+      }
+    }
+  }
+  return false;
 }
+bool WU::ismonotonic(const vector<double>& a) {
+  bool Return=true;
+  if(a[1]<a[0]) { // Decreasing
+    for(unsigned int i=1; i<a.size(); ++i) {
+      if(a[i]>=a[i-1]) {
+	cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
+	Return=false;
+      }
+    }
+  } else if(a[1]>a[0]) { // Increasing
+    for(unsigned int i=1; i<a.size(); ++i) {
+      if(a[i]<=a[i-1]) {
+	cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
+	Return=false;
+      }
+    }
+  } else { // Equal
+    cerr << "\nNon-montonicity (equality): a[1]=" << a[1] << "  a[0]=" << a[0] <<  endl;
+    Return=false;
+  }
+  return Return;
+}
+
+// bool WU::ismonotonic(const vector<double>& a) {
+//   if(a[1]<a[0]) { // Decreasing
+//     for(unsigned int i=1; i<a.size(); ++i) {
+//       if(a[i]>=a[i-1]) {
+// 	cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
+// 	return false;
+//       }
+//     }
+//   } else if(a[1]>a[0]) { // Increasing
+//     for(unsigned int i=1; i<a.size(); ++i) {
+//       if(a[i]<=a[i-1]) {
+// 	cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
+// 	return false;
+//       }
+//     }
+//   } else { // Equal
+//     cerr << "\nNon-montonicity (equality): a[1]=" << a[1] << "  a[0]=" << a[0] <<  endl;
+//     return false;
+//   }
+//   return true;
+// }
+
+
+/// Transition functions

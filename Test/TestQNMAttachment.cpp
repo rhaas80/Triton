@@ -13,9 +13,9 @@ using namespace std;
 int main() {
   const bool WriteFiles = true;
   
-  const double q = 10;
+  const double q = 1;
   const double delta=(q-1.0)/(q+1.0);
-  const double chis = 0.;
+  const double chis = 0.0;
   const double chia = 0.0;
   const double v0 = 0.12;
   const int nsave = 20;

@@ -5,6 +5,7 @@
 #include <complex>
 #include <vector>
 #include <string>
+#include <limits>
 #include "Matrix.hpp"
 
 /// IO operators for vectors and matrices
@@ -192,12 +193,32 @@ namespace WaveformUtilities {
   std::complex<double> LogGammaFunction(const std::complex<double>& x);
   std::vector<std::complex<double> > LogGammaFunction(const std::vector<std::complex<double> >& x);
   
-  /// Transition functions
-  double TransitionFunction_Linear(const double x);
-  double TransitionFunction_Linear(const double x, const double a, const double b);
-  double TransitionFunction_Smooth(const double x);
-  double TransitionFunction_Smooth(const double x, const double a, const double b);
+  /// NaN, inf, and monotonicity checks
+  inline bool isnan(const double a) {
+    return (a != a);
+  }
+  bool hasnan(const std::vector<double>& a);
+  bool hasnan(const WaveformUtilities::Matrix<double>& a);
+  inline bool isinf(const double a) {
+    return (a == std::numeric_limits<double>::infinity());
+  }
+  bool hasinf(const std::vector<double>& a);
+  bool hasinf(const WaveformUtilities::Matrix<double>& a);
+  bool ismonotonic(const std::vector<double>& a);
   
+  /// Transition functions
+  inline double TransitionFunction_Linear(const double x) {
+    return (x<0.0 ? 0.0 : (x>1.0 ? 1.0 : x) );
+  }
+  inline double TransitionFunction_Linear(const double x, const double a, const double b) {
+    return TransitionFunction_Linear((x-a)/b);
+  }
+  inline double TransitionFunction_Smooth(const double x) {
+    return (x<=0.0 ? 0.0 : (x>=1.0 ? 1.0 : 1.0/(1.0+exp(1.0/(x-1.0) + 1.0/x))) );
+  }
+  inline double TransitionFunction_Smooth(const double x, const double a, const double b) {
+    return TransitionFunction_Smooth((x-a)/b);
+  }
   
 } // namespace WaveformUtilities
 

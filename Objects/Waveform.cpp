@@ -945,13 +945,13 @@ public:
   }
   
   double darg(const double dt, const unsigned int mode) const {
-    vector<double> argA = Interpolate(a.T(), a.Arg(mode), t);
-    vector<double> argB = Interpolate(b.T(), b.Arg(mode), t-dt);
+    vector<double> argA = WaveformUtilities::Interpolate(a.T(), a.Arg(mode), t);
+    vector<double> argB = WaveformUtilities::Interpolate(b.T(), b.Arg(mode), t-dt);
     return trapz(t, argA-argB) / (t.back()-t[0]);
   }
   
   double operator()(const double dt) const {
-    vector<double> argb = Interpolate(b.T(), b.Arg(LMb), t-dt);
+    vector<double> argb = WaveformUtilities::Interpolate(b.T(), b.Arg(LMb), t-dt);
     double darg = trapz(t, arga-argb) / (t.back()-t[0]);
     return trapz(t, (arga-argb-darg)*(arga-argb-darg));
   }
@@ -988,8 +988,8 @@ Waveform Waveform::HybridizeWith(const Waveform& b, const double t1, const doubl
   while(c.T(it)>b.T().back() && it>0) { --it; }
   c.t.erase(c.t.begin()+it, c.t.end());
   c.r = vector<double>(1, 0.0);
-  c.mag.resize(NModes(), NTimes());
-  c.arg.resize(NModes(), NTimes());
+  c.mag.resize(NModes(), c.NTimes());
+  c.arg.resize(NModes(), c.NTimes());
   unsigned int J01=0, J12=c.t.size()-1;
   while(c.t[J01]<t1 && J01<c.t.size()) { J01++; }
   while(c.t[J12]>t2 && J12>0) { J12--; }
@@ -1126,8 +1126,9 @@ Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const doubl
   if(DeltaT!=1e300) {
     //cerr << "\nomega=" << omega << "\tTA=" << TA << "\tt1=" << max(TA-DeltaT, max(a.t[0], t[0]))
     //     << "\tt2=" << min(TA+DeltaT, min(a.t[a.t.size()-1], t[t.size()-1])) << endl;
-    this->HybridizeWith(a, max(TA-DeltaT, max(a.t[0], t[0])), min(TA+DeltaT, min(a.T().back(), T().back())), MinStep);
+    *this = this->HybridizeWith(a, std::max(TA-DeltaT, std::max(a.t[0], t[0])), std::min(TA+DeltaT, std::min(a.T().back(), T().back())), MinStep);
   }
+  
   return *this;
 }
 
@@ -1150,8 +1151,8 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
   const unsigned int NTimesEnd = NTimes();
   const double TEnd = T().back();
   TRef().resize(NTimes()+floor(TLength/dt), T().back());
-  for(unsigned int i=1; i<NTimes()-NTimesEnd; ++i) {
-    TRef(i+NTimesEnd) += i*dt;
+  for(unsigned int i=0; i<NTimes()-NTimesEnd; ++i) {
+    TRef(i+NTimesEnd) += (i+1)*dt;
   }
   if(R().size()>1) { RRef().resize(NTimes(), 0.0); }
   MagRef().resize(NModes(), NTimes(), 0.0);

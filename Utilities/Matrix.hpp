@@ -71,7 +71,7 @@ namespace WaveformUtilities {
   
   template <class T>
   inline std::vector<T>& Matrix<T>::operator[](const unsigned int i) {
-    #ifdef _CHECKBOUNDS_
+    #ifdef DEBUG
     if (i<0 || i>=nrows()) {
       std::cerr << "\ni=" << i << "\tnrows()=" << nrows() << std::endl;
       throw("Matrix subscript out of bounds");
@@ -82,7 +82,7 @@ namespace WaveformUtilities {
   
   template <class T>
   inline const std::vector<T>& Matrix<T>::operator[](const unsigned int i) const {
-    #ifdef _CHECKBOUNDS_
+    #ifdef DEBUG
     if (i<0 || i>=nrows()) {
       std::cerr << "\ni=" << i << "\tnrows()=" << nrows() << std::endl;
       throw("Matrix subscript out of bounds");

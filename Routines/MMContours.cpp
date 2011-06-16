@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iomanip>
 #include <ctime>
+#include <algorithm>
 
 #include "EasyParser.hpp"
 #include "VectorFunctions.hpp"
@@ -51,6 +52,11 @@ using std::ios;
 /// Optionally, use 'MMContours <q> <chis> <StartWithMassNumber> <StartWithFreqNumber>' for restarts
 
 int main(int argc, char* argv[]) {
+  if(argc<3) {
+    cerr << "Expecting at least two arguments; got " << argc-1 << endl;
+    throw("Bad arguments");
+  }
+  
   const string Unique = "";
   
   // In case restart is needed:
@@ -69,29 +75,33 @@ int main(int argc, char* argv[]) {
   // Ersatz NR
   const bool DropOddMModes = false; // (q==1) ? true : false;
   const double RoughMatchT1=-5000;
-  const double RoughMatchT2=-1000;
+  const double RoughMatchT2=-2000;
   const double HybridDeltaT=10;
   
   // Boundaries and resolution of the graph
-  const double MinMass=5.0;  // Total binary mass in solar masses
+//   const double MinMass=5.0;  // Total binary mass in solar masses
+  const double MinMass=7.5;  // Total binary mass in solar masses
   const double MaxMass=51.0;
-  const double MassStep = 0.25;
+//   const double MassStep = 0.25;
+  const double MassStep = 2.5;
   const unsigned int NMasses=static_cast<unsigned int>(1.0+(MaxMass-MinMass)/MassStep);
   const double Minomega=0.005;  // Hybridization angular GW frequency (dimensionless)
   const double Maxomega=0.065;
-  const double omegaStep=0.0005;
+//   const double omegaStep=0.0005;
+  const double omegaStep=0.005;
   const unsigned int Nomegas=static_cast<unsigned int>(1.0+(Maxomega-Minomega)/omegaStep);
   
   // Detector and FFT info
   const string PSDName("AdvLIGO_ZeroDet_HighP");
   const double DetectorMinFreq=AdvLIGOSeismicWall;
   const double DetectorSamplingFreq=AdvLIGOSamplingFreq/2.0;
-  const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq;
+//   const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq/2.0;
+  const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq*2;
   const double MinMismatch=1.0e-13; // This is the smallest mismatch we would believe, remembering that the match is actually subtracted from 1.0; roughly roundoff
   
   // PN waveforms
-  const double v0=min(pow(0.4*Minomega, 1.0/3.0),
-		      pow(NewtonsConstant*MinMass*SolarMass*(0.4*WaveformMinOmega)/(SpeedOfLight*SpeedOfLight*SpeedOfLight), 1.0/3.0));
+  const double v0=std::min(pow(0.4*Minomega, 1.0/3.0),
+			   pow(NewtonsConstant*MinMass*SolarMass*(0.4*WaveformMinOmega)/(SpeedOfLight*SpeedOfLight*SpeedOfLight), 1.0/3.0));
   
   // Files
   const string MassesFileName("Output/Masses_q" + DoubleToString(q) + "_chis" + DoubleToString(chis) + Unique + ".dat");
@@ -117,6 +127,7 @@ int main(int argc, char* argv[]) {
   const unsigned int MatchDisplayWidth=MatchDisplayPrecision+5;
   
   const unsigned int nsave=20;
+  const unsigned int nsaveEOB=5;
   const bool denseish=true;
   
   
@@ -125,6 +136,7 @@ int main(int argc, char* argv[]) {
   //////////////////////////////////////////////////////////////////////////
   
   const double dt = 1.0/DetectorSamplingFreq;
+  time_t start,end;
   
   //// Initialize the Masses, omegas, and Mismatches
   vector<double> Masses(NMasses, MinMass);
@@ -139,7 +151,7 @@ int main(int argc, char* argv[]) {
   
   //// Load NR Waveform, get rid of unecessary modes, and hybridize if necessary
   cout << "Creating EOB... " << endl;
-  Waveform NRc("EOB", delta, chis, chia, v0, QNMLMs(), nsave, denseish);
+  Waveform NRc("EOB", delta, chis, chia, v0, QNMLMs(), nsaveEOB, denseish);
   NRc.AttachQNMs(delta, FinalSpinApproximation(delta, chis));
   if(DropOddMModes) { NRc.DropOddMModes(); }
   const double NRPeak22Time = NRc.Peak22Time();
@@ -151,20 +163,20 @@ int main(int argc, char* argv[]) {
   Waveforms Wsc(NWaveforms);
   Wsc[0] = Waveform("TaylorT1", delta, chis, chia, v0, NRc.LM(), nsave, denseish);
   Wsc[3] = Waveform("TaylorT4", delta, chis, chia, v0, NRc.LM(), nsave, denseish);
-  Wsc[1] = Waveform("TaylorT2", delta, chis, chia, v0, NRc.LM(), max(Wsc[0].NTimes(), Wsc[3].NTimes()));
-  Wsc[2] = Waveform("TaylorT3", delta, chis, chia, v0, NRc.LM(), max(Wsc[0].NTimes(), Wsc[3].NTimes()));
+  Wsc[1] = Waveform("TaylorT2", delta, chis, chia, v0, NRc.LM(), std::max(Wsc[0].NTimes(), Wsc[3].NTimes()));
+  Wsc[2] = Waveform("TaylorT3", delta, chis, chia, v0, NRc.LM(), std::max(Wsc[0].NTimes(), Wsc[3].NTimes()));
   //#pragma omp parallel for
   for(int n=0; n<NWaveforms; ++n) {
     Wsc[n].AddToTime(NRPeak22Time-Wsc[n].T().back());
-    Wsc[n] = Wsc[n].AlignTo(NRc, RoughMatchT1, RoughMatchT2);
+    Wsc[n].AlignTo(NRc, RoughMatchT1, RoughMatchT2);
   }
-  cout << "☺\n" << endl;
   
-  cout << "Length of TaylorT1: " << Wsc[0].T().size() << endl;
-  cout << "Length of TaylorT2: " << Wsc[1].T().size() << endl;
-  cout << "Length of TaylorT3: " << Wsc[2].T().size() << endl;
-  cout << "Length of TaylorT4: " << Wsc[3].T().size() << endl;
-  cout << "Length of EOB: " << NRc.T().size() << endl << endl;
+  // Output some nice diagnostics
+  cout << "Length of TaylorT1: " << Wsc[0].NTimes() << endl;
+  cout << "Length of TaylorT2: " << Wsc[1].NTimes() << endl;
+  cout << "Length of TaylorT3: " << Wsc[2].NTimes() << endl;
+  cout << "Length of TaylorT4: " << Wsc[3].NTimes() << endl;
+  cout << "Length of EOB: " << NRc.NTimes() << endl << endl;
   cout << "Phase extent of TaylorT1: " << Wsc[0].Arg(0).back()-Wsc[0].Arg(0,0) << endl;
   cout << "Phase extent of TaylorT2: " << Wsc[1].Arg(0).back()-Wsc[1].Arg(0,0) << endl;
   cout << "Phase extent of TaylorT3: " << Wsc[2].Arg(0).back()-Wsc[2].Arg(0,0) << endl;
@@ -236,16 +248,18 @@ int main(int argc, char* argv[]) {
     cout << "omega=" << omega << endl;
     //// Construct the hybrids
     Waveforms Ws(Wsc);
+    time (&start);
     #pragma omp parallel for
-    for(int n=0; n<NWaveforms; ++n) {
-      Ws[n] = Ws[n].AlignTo_F(NRc, omega, MinAvailableT, MaxAvailableT); // Just match
-      Ws[n] = Ws[n].AlignTo_F(NRc, omega, MinAvailableT, MaxAvailableT, HybridDeltaT); // Now hybridize
+    for(int n=0; n<NWaveforms; n++) {
+      Ws[n].AlignTo_F(NRc, omega, MinAvailableT, MaxAvailableT); // Just match
+      Ws[n].AlignTo_F(NRc, omega, MinAvailableT, MaxAvailableT, HybridDeltaT); // Now hybridize
     }
     #pragma omp barrier
+    time (&end);
+    cout << "\t\tHybridization took " << difftime(end,start) << " seconds." << endl;
     
     //// Loop over total masses
     for(unsigned int m=StartWithMassNumber; m<Masses.size(); ++m) {
-      time_t start,end;
       time (&start);
       
       const double Mass = Masses[m];

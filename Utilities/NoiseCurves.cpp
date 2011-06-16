@@ -43,7 +43,8 @@ vector<double> AdvLIGO_NSNSOptimal(const vector<double>& F, const bool Invert=fa
 
 vector<double> AdvLIGO_ZeroDet_HighP(const vector<double>& F, const bool Invert=false, const double NoiseFloor=0.0) {
   #include "AdvLIGO_ZeroDet_HighP.hpp"
-  vector<double> LogPSD(WU::Interpolate(ZERO_DET_high_PLogF, ZERO_DET_high_PLogPSD, log(fabs(F))));
+  vector<double> LogPSD;
+  LogPSD = WU::Interpolate(ZERO_DET_high_PLogF, ZERO_DET_high_PLogPSD, log(fabs(F)));
   const double MinFreq(max(NoiseFloor, WU::AdvLIGOSeismicWall));
   for(unsigned int i=0; i<LogPSD.size(); ++i) if(fabs(F[i])<MinFreq) { LogPSD[i] = 500.0; }
   if(Invert) { return exp(-1.0*LogPSD); }

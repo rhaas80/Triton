@@ -19,7 +19,7 @@ LIBDEPS:=$(SUBLIBS:../%=lib%.a)
 all: sublibs $(EXECUTABLES) | svnignore
 
 svnignore:
-	@$(ECHO) $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
+	@$(ECHO) .svnignore $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
 	@test -f .$@ \
 	  && ($(DIFF) .$@ .$@.tmp > .$@.diff; \
 	      (test -s .$@.diff && (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore) || ($(RM) .$@.tmp)); \

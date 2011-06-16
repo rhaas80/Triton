@@ -7,5 +7,10 @@ RM		= /bin/rm -f
 ECHO		= echo
 LN		= ln -sf
 SED		= sed
-C++FLAGS	= -O3 -Wall -pg -g -fopenmp
 DIFF		= diff
+
+#OPENMP		= 
+#C++FLAGS	= -O3 -Wall -pg -g ${OPENMP} -DDEBUG
+
+OPENMP		= -fopenmp
+C++FLAGS	= -O3 -Wall ${OPENMP}
