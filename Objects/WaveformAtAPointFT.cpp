@@ -33,7 +33,7 @@ WaveformAtAPointFT::WaveformAtAPointFT()
 { }
 
 WaveformAtAPointFT::WaveformAtAPointFT(const WaveformAtAPoint& W, const unsigned int WindowNCycles,
-		       const double DetectorResponseAmp, const double DetectorResponsePhase)
+				       const double DetectorResponseAmp, const double DetectorResponsePhase)
   : WaveformAtAPoint(W), Normalized(false)
 {
   // Record that this is happening

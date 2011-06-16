@@ -1,8 +1,12 @@
-SUBDIRS = Objects PostNewtonian Utilities Routines Test
+LIBDIRS:= Utilities PostNewtonian Objects
+EXECDIRS:= Routines Test
+SUBDIRS:= $(LIBDIRS) $(EXECDIRS)
 
 all:
-	@$(MAKE) -C Test
-	@$(MAKE) -C Routines
+	@for d in $(EXECDIRS); do ($(MAKE) -C $$d); done
+
+libs:
+	@for d in $(LIBDIRS); do ($(MAKE) -C $$d); done
 
 clean:
 	$(RM) bin/*

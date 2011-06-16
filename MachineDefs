@@ -7,5 +7,5 @@ RM		= /bin/rm -f
 ECHO		= echo
 LN		= ln -sf
 SED		= sed
-C++FLAGS	= -O3 -Wall -pg -g
+C++FLAGS	= -O3 -Wall -pg -g -fopenmp
 DIFF		= diff

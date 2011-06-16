@@ -142,6 +142,14 @@ namespace WaveformUtilities {
   double min(const std::vector<double>& In);
   int max(const std::vector<int>& In);
   int min(const std::vector<int>& In);
+//   template <class T>
+//   inline T min(const T a, const T b) {
+//     return (a<b ? a : b);
+//   }
+//   template <class T>
+//   inline T max(const T a, const T b) {
+//     return (a>b ? a : b);
+//   }
   
   /// Integral, derivative, etc.
   std::vector<double> diff(const std::vector<double>& In);

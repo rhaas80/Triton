@@ -13,11 +13,11 @@ using namespace std;
 int main() {
   const bool WriteFiles = true;
   
-  const double q = 1;
+  const double q = 10;
   const double delta=(q-1.0)/(q+1.0);
-  const double chis = 0.0;//-0.9900;
+  const double chis = 0.;
   const double chia = 0.0;
-  const double v0 = 0.12;//0.02025;
+  const double v0 = 0.12;
   const int nsave = 20;
   const bool denseish = true;
   cout << "v0 = " << v0 << "\tOmega0 = " << v0*v0*v0 << "\tdelta = " << delta << "\tnu = " << (1.0-delta*delta)/4.0 << "\tchis = " << chis << endl;

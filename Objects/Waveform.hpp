@@ -18,6 +18,7 @@ namespace WaveformObjects {
 	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     ~Waveform() { }
     void clear() { t.clear(); r.clear(); lm.clear(); mag.clear(); arg.clear(); }
+    void swap(Waveform& b);
     
   private:  // Member data
     std::stringstream history;
@@ -35,7 +36,6 @@ namespace WaveformObjects {
     Waveform& operator=(const Waveform& b);
     Waveform operator/(const Waveform& b) const;
     Waveform operator[](const unsigned int mode) const;
-    void swap(Waveform& b);
     
   public:  // Getty access functions
     // Basic Waveform information

@@ -1,36 +1,50 @@
-## Set these variables as appropriate
+## Set this as the full (no '~') directory with Waveforms, including trailing '/'
 BASE = /Users/boyle/Research/WaveExtrapolation/Waveforms/
-SUBLIBS = ${BASE}Waveforms ${BASE}PostNewtonian ${BASE}Utilities
+
+
+## This is a basic executables-building makefile; the lines below shouldn't need much tweaking.
+SUBLIBS = ${BASE}Utilities ${BASE}PostNewtonian ${BASE}Objects
+include ${BASE}MachineDefs
+
+VPATH = $(SUBLIBS)
+SUFFIXES += .d
 SOURCES = $(wildcard *.cpp)
 EXECUTABLES = $(SOURCES:%.cpp=%)
-
-
-## This is a basic makefile; the lines below shouldn't need much tweaking.
-.PHONY: sublibs $(SUBLIBS)
-RM = /bin/rm
-CC = g++
-OPT = -O3
-CFLAGS = -c
-WFLAGS = -Wall
 IFLAGS:=$(SUBLIBS:%=-I%)
 LFLAGS:=$(SUBLIBS:%=-L%)
 lFLAGS:=$(SUBLIBS:${BASE}%=-l%)
+LIBDEPS:=$(SUBLIBS:${BASE}%=lib%.a)
 
-all: sublibs $(EXECUTABLES)
+.PHONY: sublibs $(SUBLIBS) svnignore
 
--include $(EXECUTABLES:=.d)
+all: sublibs $(EXECUTABLES) | svnignore
+
+svnignore:
+	@$(ECHO) $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
+	@test -f .$@ \
+	  && ($(DIFF) .$@ .$@.tmp > .$@.diff; \
+	      (test -s .$@.diff && (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore) || ($(RM) .$@.tmp)); \
+	      $(RM) .$@.diff) \
+	  || (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore)
 
 clean:
-	$(RM) -f *.d $(EXECUTABLES)
+	-$(RM) *.d $(EXECUTABLES) .svnignore
 
-$(EXECUTABLES): % : %.cpp
-	$(CC) $(OPT) $(WFLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
-	@$(CC) -MM $(IFLAGS) $*.cpp > $*.d.tmp
-	@sed -e 's/.o:/:/'< $*.d.tmp > $*.d
-	@$(RM) -f $*.d.tmp
-#	@(pushd ../bin >& /dev/null && ln -sf ../Routines/$@ . ; popd >& /dev/null)
+realclean:
+	-$(RM) *.d $(EXECUTABLES) .svnignore
+
+$(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
+	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
+
+%.d : %.cpp
+	@$(MAKEDEPEND) $(IFLAGS) -MT '$* $*.d' -MF $*.d $*.cpp
 
 sublibs: $(SUBLIBS)
 
 $(SUBLIBS):
 	@$(MAKE) -C $@
+
+lib%.a:
+	@$(MAKE) -C ${BASE}$(subst lib,,$(basename $@)) $@
+
+-include $(EXECUTABLES:=.d)
