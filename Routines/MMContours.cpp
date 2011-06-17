@@ -79,24 +79,20 @@ int main(int argc, char* argv[]) {
   const double HybridDeltaT=10;
   
   // Boundaries and resolution of the graph
-//   const double MinMass=5.0;  // Total binary mass in solar masses
-  const double MinMass=7.5;  // Total binary mass in solar masses
+  const double MinMass=5.0;  // Total binary mass in solar masses
   const double MaxMass=51.0;
-//   const double MassStep = 0.25;
-  const double MassStep = 2.5;
+  const double MassStep = 0.25;
   const unsigned int NMasses=static_cast<unsigned int>(1.0+(MaxMass-MinMass)/MassStep);
   const double Minomega=0.005;  // Hybridization angular GW frequency (dimensionless)
   const double Maxomega=0.065;
-//   const double omegaStep=0.0005;
-  const double omegaStep=0.005;
+  const double omegaStep=0.0005;
   const unsigned int Nomegas=static_cast<unsigned int>(1.0+(Maxomega-Minomega)/omegaStep);
   
   // Detector and FFT info
   const string PSDName("AdvLIGO_ZeroDet_HighP");
   const double DetectorMinFreq=AdvLIGOSeismicWall;
-  const double DetectorSamplingFreq=AdvLIGOSamplingFreq/2.0;
-//   const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq/2.0;
-  const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq*2;
+  const double DetectorSamplingFreq=AdvLIGOSamplingFreq;
+  const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq*.75;
   const double MinMismatch=1.0e-13; // This is the smallest mismatch we would believe, remembering that the match is actually subtracted from 1.0; roughly roundoff
   
   // PN waveforms
