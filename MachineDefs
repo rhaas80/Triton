@@ -10,7 +10,7 @@ SED		= sed
 DIFF		= diff
 
 #OPENMP		= 
-#C++FLAGS	= -O3 -Wall -pg -g ${OPENMP} -DDEBUG
+#C++FLAGS	= -O -Wall -pg -g ${OPENMP} -DDEBUG
 
 OPENMP		= -fopenmp
 C++FLAGS	= -O3 -Wall ${OPENMP}

@@ -5,7 +5,7 @@
 
 namespace WaveformUtilities {
   
-  void TaylorT4(const double delta, const double chis, const double v0,
+  void TaylorT4(const double delta, const double chis, const double chia, const double v0,
 		std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
 		const int nsave=250, const bool denseish=true);
   

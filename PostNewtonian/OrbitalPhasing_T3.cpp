@@ -14,31 +14,29 @@ using std::endl;
 
 class T3 {
 private:
-  double delta;
   double nu;
-  double chis;
   double v0;
   bool Findv0;
   double v2, v3, v4, v5, v6, v6lntau, v7;
   double Phi2, Phi3, Phi4, Phi5lntau, Phi6, Phi6lntau, Phi7;
   
 public:
-  T3(const double idelta, const double ichis, const double iv0)
-    : delta(idelta), nu((1.0-delta*delta)/4.0), chis(ichis), v0(iv0), Findv0(true),
-      v2(0.09213789682539683 + (11*nu)/96.),
-      v3((113*chis - 76*chis*nu - 48*M_PI)/480.),
-      v4((4461199 - 10287648*pow(chis,2) + 6825672*nu + 508032*pow(chis,2)*nu + 6145776*pow(nu,2))/1.30056192e8),
-      v5((1392091*chis + 30240*pow(chis,3) - 1436744*chis*nu - 90720*pow(chis,3)*nu - 101136*chis*pow(nu,2) - 196206*M_PI + 77112*nu*M_PI)/1.93536e6),
-      v6((-260539947604339.0 - 152194575456.0*pow(chis,2) + 36738273116160.0*EulerGamma + 579139571772300.0*nu - 132350549861376.0*pow(chis,2)*nu - 7948730235600.0*pow(nu,2) + 42259050763776.0*pow(chis,2)*pow(nu,2) + 9550175342400.0*pow(nu,3) - 78457243189248.0*chis*M_PI + 54017278672896.0*chis*nu*M_PI + 22592321224704.0*pow(M_PI,2) - 21170912716800.0*nu*pow(M_PI,2) + 36738273116160.0*log(2))/2.884126113792e14),
+  T3(const double delta, const double chis, const double chia, const double iv0)
+    : nu((1.0-delta*delta)/4.0), v0(iv0), Findv0(true),
+      v2(0.09213789682539683 + 0.11458333333333333*nu),
+      v3(0.0020833333333333333*(-150.79644737231007 + 113.*chis + 113.*chia*delta - 76.*chis*nu)),
+      v4(7.688984158478207e-9*(4.461199e6 - 1.0287648e7*pow(chia,2) - 1.0287648e7*pow(chis,2) - 2.0575296e7*chia*chis*delta + 6.825672e6*nu + 4.064256e7*pow(chia,2)*nu + 508032.*pow(chis,2)*nu + 6.145776e6*pow(nu,2))),
+      v5(5.166997354497355e-7*(-18.84955592153876*(32701. - 12852.*nu) - 15120.*pow(chia,3)*delta*(-1. + nu) - 45360.*chia*pow(chis,2)*delta*(-1. + nu) - 15120.*pow(chis,3)*(-1. + 3.*nu) - 1.*chia*delta*(-1.387051e6 + 38892.*nu) - 1.*chis*(-1.387051e6 + 1.421624e6*nu + 101136.*pow(nu,2) + 45360.*pow(chia,2)*(-1. + 3.*nu)))),
+      v6(3.4672547612185274e-15*(9.108262559010062e12 + 3.7019103844749206e14*nu - 7.9487302356e12*pow(nu,2) + 9.5501753424e12*pow(nu,3) + 4.7191403182892845e10*chis*(-5223. + 3596.*nu) + 1.397088e6*pow(chis,2)*(-108937. - 9.4733152e7*nu + 3.0247952e7*pow(nu,2)) - 2.794176e6*chia*delta*(8.821230259806445e7 + chis*(108937. + 6.4068676e7*nu)) + 1.397088e6*pow(chia,2)*(3.6044288e7*pow(delta,2) + 25.*(-1.446129e6 + 4.448348e6*nu + 4.886784e6*pow(nu,2))))),
       v6lntau(-0.015922619047619047),
-      v7((4092843763.0*chis - 298232928*pow(chis,3) - 3515735036.0*chis*nu + 160211520*pow(chis,3)*nu - 2307625488.0*chis*pow(nu,2) - 339365376*pow(chis,3)*pow(nu,2) + 404760384*chis*pow(nu,3) - 185032020*M_PI + 347493888*pow(chis,2)*M_PI - 152617248*nu*M_PI - 24385536*pow(chis,2)*nu*M_PI + 59709888*pow(nu,2)*M_PI)/1.560674304e9),
-      Phi2(0.46068948412698413 + (55*nu)/96.),
-      Phi3((113*chis - 76*chis*nu - 48*M_PI)/64.),
-      Phi4((5*(1855099 - 3429216*pow(chis,2) + 3190600*nu + 169344*pow(chis,2)*nu + 2617776*pow(nu,2)))/1.4450688e7),
-      Phi5lntau((5*(147605*chis + 3024*pow(chis,3) - 138880*chis*nu - 9072*pow(chis,3)*nu - 17136*chis*pow(nu,2) - 23187*M_PI + 3276*nu*M_PI))/516096.),
-      Phi6((775925041075117.0 - 110214819348480.0*EulerGamma - 1753429845806100.0*nu + 4858670401200.0*pow(nu,2) - 38454265080000.0*pow(nu,3) - 4191264*pow(chis,2)*(8322937 - 113716448*nu + 35608048*pow(nu,2)) - 45064470528.0*chis*(-6127 + 4204*nu)*M_PI - 76429342015488.0*pow(M_PI,2) + 63512738150400.0*nu*pow(M_PI,2) - 110214819348480.0*log(2))/5.768252227584e13),
+      v7(6.407486798731838e-10*(-1.915235518786236e7*pow(chia,2)*(-57. + 224.*nu) - 37.69911184307752*(1.5419335e7 + 1.2718104e7*nu - 4.975824e6*pow(nu,2)) - 18144.*pow(chia,3)*delta*(19422. - 87455.*nu + 2856.*pow(nu,2)) - 18144.*pow(chis,3)*(19422. - 14929.*nu + 10136.*pow(nu,2)) - 1.*chia*delta*(-4.074790483e9 - 4.10784696e8*nu + 8.16654384e8*pow(nu,2)) - 18144.*pow(chis,2)*(1055.5751316061705*(-57. + 4.*nu) + chia*delta*(58266. - 39625.*nu + 8568.*pow(nu,2))) - 1.*chis*(-4.074790483e9 - 2.183368491416309e9*chia*delta + 3.478848284e9*nu + 2.255806224e9*pow(nu,2) - 4.04760384e8*pow(nu,3) + 18144.*pow(chia,2)*(13452. + 44814.*pow(delta,2) - 88271.*nu + 100072.*pow(nu,2))))),
+      Phi2(0.46068948412698413 + 0.5729166666666666*nu),
+      Phi3(0.015625*(-150.79644737231007 + 113.*chis + 113.*chia*delta - 76.*chis*nu)),
+      Phi4(3.4600428713151927e-7*(1.855099e6 - 3.429216e6*pow(chia,2) - 3.429216e6*pow(chis,2) - 6.858432e6*chia*chis*delta + 3.1906e6*nu + 1.354752e7*pow(chia,2)*nu + 169344.*pow(chis,2)*nu + 2.617776e6*pow(nu,2))),
+      Phi5lntau(-9.688120039682539e-6*(9.42477796076938*(7729. - 1092.*nu) + 1512.*pow(chia,3)*delta*(-1. + nu) + 4536.*chia*pow(chis,2)*delta*(-1. + nu) + 1512.*pow(chis,3)*(-1. + 3.*nu) - 1.*chia*delta*(147101. + 6552.*nu) + chis*(-147101. + 137368.*nu + 17136.*pow(nu,2) + 4536.*pow(chia,2)*(-1. + 3.*nu)))),
+      Phi6(1.7336273806092635e-14*(-1.18415140772865e14 - 1.1265842458316762e15*nu + 4.8586704012e12*pow(nu,2) - 3.845426508e13*pow(nu,3) - 1.4157420954867856e11*chis*(-6127. + 4204.*nu) - 4.191264e6*pow(chis,2)*(8.322937e6 - 1.13716448e8*nu + 3.5608048e7*pow(nu,2)) + 5.8677696e7*chia*delta*(1.47828773288023e7 + chis*(-1.188991e6 + 1.0786532e7*nu)) - 4.191264e6*pow(chia,2)*(4.7485312e7*pow(delta,2) + 25.*(-1.566495e6 + 4.77418e6*nu + 5.478144e6*pow(nu,2))))),
       Phi6lntau(0.23883928571428573),
-      Phi7((756*pow(chis,3)*(1163573 - 642468*nu + 1184064*pow(nu,2)) + chis*(-10820083342.0 + 8611760654.0*nu + 6449430792.0*pow(nu,2) - 898680384*pow(nu,3)) + 2286144*pow(chis,2)*(-407 + 28*nu)*M_PI + 3*(188516689 + 164245200*nu - 47634384*pow(nu,2))*M_PI)/5.20224768e8)
+      Phi7(1.9222460396195517e-9*(7.182133195448384e6*pow(chia,2)*(-407. + 1600.*nu) + 9.42477796076938*(1.88516689e8 + 1.642452e8*nu - 4.7634384e7*pow(nu,2)) + 756.*pow(chia,3)*delta*(1.350103e6 - 6.00847e6*nu + 180600.*pow(nu,2)) + 756.*pow(chis,3)*(1.350103e6 - 1.021458e6*nu + 642264.*pow(nu,2)) + 2.*chia*delta*(-5.386538891e9 - 8.84569035e8*nu + 9.80367696e8*pow(nu,2)) + 2268.*pow(chis,2)*(3166.7253948185116*(-407. + 28.*nu) + chia*delta*(1.350103e6 - 883658.*nu + 180600.*pow(nu,2))) + 2.*chis*(-5.386538891e9 - 2.9231282105474925e9*chia*delta + 4.258127587e9*nu + 3.156448596e9*pow(nu,2) - 4.49340192e8*pow(nu,3) + 1134.*pow(chia,2)*(325681. + 1.024422e6*pow(delta,2) - 2.048582e6*nu + 2.1994e6*pow(nu,2)))))
   { }
   
   void operator() (double& v, const double t, double& Phi) const {
@@ -64,7 +62,7 @@ public:
   
 };
 
-void WU::TaylorT3(const double delta, const double chis, const double v0,
+void WU::TaylorT3(const double delta, const double chis, const double chia, const double v0,
 		  vector<double>& t, vector<double>& v, vector<double>& Phi,
 		  const int NPoints)
 {
@@ -73,7 +71,7 @@ void WU::TaylorT3(const double delta, const double chis, const double v0,
   
   //// The T3 object 'd' serves as a functor, first to find the time at which v(t)=v0,
   //// then -- after d.Findv0=false is set -- to find the time at which v(t) is a maximum.
-  T3 d(delta, chis, v0);
+  T3 d(delta, chis, chia, v0);
   
   // Set up the t vector by finding the t which gives v[0]=v0,
   // then distributing points roughly evenly spaced in v by

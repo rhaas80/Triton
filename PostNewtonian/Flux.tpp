@@ -1,6 +1,6 @@
 template <class Metric, class Hamiltonian>
-Flux_SumAmplitudesResummed<Metric, Hamiltonian>::Flux_SumAmplitudesResummed(const double idelta, const double ichis, const Metric& ig, const Hamiltonian& iH)
-  : WaveformUtilities::WaveformAmplitudesResummedSumMMagSquared<Metric, Hamiltonian>(idelta, ichis, ig, iH),
+Flux_SumAmplitudesResummed<Metric, Hamiltonian>::Flux_SumAmplitudesResummed(const double delta, const double chis, const double chia, const Metric& ig, const Hamiltonian& iH)
+  : WaveformUtilities::WaveformAmplitudesResummedSumMMagSquared<Metric, Hamiltonian>(delta, chis, chia, ig, iH),
     N(1.0/(16.0*M_PI))
 { }
 
@@ -16,13 +16,13 @@ double Flux_SumAmplitudesResummed<Metric, Hamiltonian>::operator()(const double 
 
 
 template <class Flux>
-Torque_KFPhi<Flux>::Torque_KFPhi(const double delta, const double chis, const Flux& iF)
+Torque_KFPhi<Flux>::Torque_KFPhi(const double delta, const double chis, const double chia, const Flux& iF)
   : nu((1.0-delta*delta)/4.0), F(iF),
     v(0.0), r(0.0), prstar(0.0), pPhi(0.0), Torque(0.0)
 { }
 
 template <class Flux> template <class Ham>
-Torque_KFPhi<Flux>::Torque_KFPhi(const double delta, const double chis, const Flux& iF, const Ham& H)
+Torque_KFPhi<Flux>::Torque_KFPhi(const double delta, const double chis, const double chia, const Flux& iF, const Ham& H)
   : nu((1.0-delta*delta)/4.0), F(iF),
     v(0.0), r(0.0), prstar(0.0), pPhi(0.0), Torque(0.0)
 { }

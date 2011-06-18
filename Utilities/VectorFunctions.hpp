@@ -109,8 +109,9 @@ WaveformUtilities::Matrix<double> fmod(const WaveformUtilities::Matrix<double>& 
 WaveformUtilities::Matrix<double> fmod(const WaveformUtilities::Matrix<double>& numerator, const double& denominator);
 
 namespace WaveformUtilities {
-  /// NOTE!!! After optimization, the following are barely faster than pow.  It's probably not worth the effort.
-  /// Small integer powers
+  /// NOTE!!! After optimization, the following are barely faster than pow.  These are, of course, incorrectly implemented because of the 'inline's.
+  /// 
+  /// Small integer powers:
   /// To compute x^n efficiently, write n in binary, then replace each 1 with "SX" and each 0 with "S",
   /// and cross off the first SX appearing at the left.  Read from left to right, this rule tells us to
   /// square (S) or multiply by x (X) in turn.  This algorithm is the most efficient choice up to n=15.

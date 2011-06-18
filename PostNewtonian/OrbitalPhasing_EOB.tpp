@@ -214,7 +214,7 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
     ystart[2] += Multiplier*g.drdrstar * DeltarDot;
     ystart[3] += Multiplier*r0*r0 * DeltaPhiDot;
     ystartinitial = ystart;
-    //std::cout << "i: " << i << "\tEcc: " << Ecc << std::endl;
+    std::cout << "i: " << i << "\tEcc: " << Ecc << std::endl;
   }
   std::cerr << "!!! Did not achieve acceptable eccentricity reduction !!!" << std::endl
 	    << "Proceeding anyway, with e=" << BestEcc << "." << std::endl;

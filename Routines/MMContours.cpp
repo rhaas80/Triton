@@ -146,12 +146,14 @@ int main(int argc, char* argv[]) {
   cout << "Running\n\tMasses=" << Masses << "\n\tomegas=" << omegas << endl << endl;
   
   //// Load NR Waveform, get rid of unecessary modes, and hybridize if necessary
-  cout << "Creating EOB... " << endl;
+  cout << "Creating EOB with v0=" << v0 << " ... " << endl;
   Waveform NRc("EOB", delta, chis, chia, v0, QNMLMs(), nsaveEOB, denseish);
   NRc.AttachQNMs(delta, FinalSpinApproximation(delta, chis));
   if(DropOddMModes) { NRc.DropOddMModes(); }
   const double NRPeak22Time = NRc.Peak22Time();
   cout << "☺ \t(Peak time = " << NRPeak22Time << ")\n" << endl;
+  
+  return 0;
   
   //// Compute PN Waveforms and roughly match to the NR waveform
   cout << "Creating PN... " << endl;
