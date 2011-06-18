@@ -291,27 +291,27 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
   vector<double> v(0), Phi(0);
   if(Approximant.compare("TaylorT1")==0) {
     if(nsave==-1) {
-      TaylorT1(delta, chis, v0, t, v, Phi);
+      TaylorT1(delta, chis, chia, v0, t, v, Phi);
     } else {
-      TaylorT1(delta, chis, v0, t, v, Phi, nsave, denseish);
+      TaylorT1(delta, chis, chia, v0, t, v, Phi, nsave, denseish);
     }
   } else if(Approximant.compare("TaylorT2")==0) {
     if(nsave==-1) {
-      TaylorT2(delta, chis, v0, t, v, Phi);
+      TaylorT2(delta, chis, chia, v0, t, v, Phi);
     } else {
-      TaylorT2(delta, chis, v0, t, v, Phi, nsave);
+      TaylorT2(delta, chis, chia, v0, t, v, Phi, nsave);
     }
   } else if(Approximant.compare("TaylorT3")==0) {
     if(nsave==-1) {
-      TaylorT3(delta, chis, v0, t, v, Phi);
+      TaylorT3(delta, chis, chia, v0, t, v, Phi);
     } else {
-      TaylorT3(delta, chis, v0, t, v, Phi, nsave);
+      TaylorT3(delta, chis, chia, v0, t, v, Phi, nsave);
     }
   } else if(Approximant.compare("TaylorT4")==0) {
     if(nsave==-1) {
-      TaylorT4(delta, chis, v0, t, v, Phi);
+      TaylorT4(delta, chis, chia, v0, t, v, Phi);
     } else {
-      TaylorT4(delta, chis, v0, t, v, Phi, nsave, denseish);
+      TaylorT4(delta, chis, chia, v0, t, v, Phi, nsave, denseish);
     }
   } else if(Approximant.compare("EOB")==0) {
     if(nsave==-1) {
@@ -325,7 +325,7 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
   }
   mag.resize(lm.nrows(), t.size());
   arg.resize(lm.nrows(), t.size());
-  WaveformAmplitudes PNAmp(delta, chis);
+  WaveformAmplitudes PNAmp(delta, chis, chia);
   if(LM.nrows()>0) {
     for(unsigned int m=0; m<NModes(); ++m) {
       PNAmp.rhOverM(L(m), M(m), v, Phi, mag[m], arg[m]);

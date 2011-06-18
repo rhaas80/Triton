@@ -86,8 +86,8 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
       Metric g(delta, chisloc, chia);
       Hamiltonian H(delta, chisloc, chia, g);
       Hamiltonian Hcirc(delta, chisloc, chia, g);
-      typename Torque::FluxType F(delta, chisloc); /// TODO: Fix this line to work with general Flux types
-      Torque T(delta, chisloc, F, Hcirc);
+      typename Torque::FluxType F(delta, chisloc, chia); /// TODO: Fix this line to work with general Flux types
+      Torque T(delta, chisloc, chia, F, Hcirc);
       EOBHamiltonEquations<Metric, Hamiltonian, Torque> d(g, H, T);
       ystart = ReduceEccentricity(g, H, d, ystart, 1.e-10, v0);
     }
