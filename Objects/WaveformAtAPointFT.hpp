@@ -15,7 +15,7 @@ namespace WaveformObjects {
   public:  // Constructors and Destructor
     WaveformAtAPointFT();
     WaveformAtAPointFT(const WaveformAtAPoint& W, const unsigned int WindowNCycles=1,
-	       const double DetectorResponseAmp=1.0, const double DetectorResponsePhase=0.0);
+		       const double DetectorResponseAmp=1.0, const double DetectorResponsePhase=0.0);
     ~WaveformAtAPointFT() { }
     
   public: // Access functions
