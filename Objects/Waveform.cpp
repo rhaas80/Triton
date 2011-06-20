@@ -19,6 +19,7 @@ using namespace WaveformUtilities;
 using namespace WaveformObjects;
 using std::string;
 using std::vector;
+using std::cout;
 using std::cerr;
 using std::flush;
 using std::endl;

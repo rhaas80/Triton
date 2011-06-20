@@ -1,0 +1,376 @@
+\documentclass[aps, prd, amsfonts, amssymb, amsmath, %twocolumn, %
+%showpacs, showkeys, 
+nofootinbib]{revtex4}
+
+\input{UsePackages}
+\input{Preamble}
+\ifpdf \usepackage{pdfsync} \fi
+\input{Macros}
+\input{Affiliations}
+
+%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%
+
+
+\graphicspath{{Plots/}}
+
+\title{Conventions used in the Waveform code}
+
+\author{Michael Boyle} \Cornell %
+
+\date{\today}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Basic Definitions}
+\label{Sec:BasicDefinitions}
+
+Regardless of the type of data ($\Psi_{4}$, $r\,M\,\Psi_{4}$, $h$,
+\etc), it is assumed to be composed of a complex time series.  At each
+time, the complex quantity is decomposed as
+\begin{equation}
+  z(t) \equiv A(t)\, \exp \left[ \i\, \phi(t) \right]\ ,
+\end{equation}
+where $A$ and $\phi$ are the data stored by the code.  Note especially
+the sign in front of $\phi$.  (Also note that the amplitude may in the
+future change to the $\log$ of the amplitude, so that the data stored
+by the code may be defined by $z(t) \equiv \exp \left[ \chi(t) +
+  \i\,\phi(t) \right]$.)  The phase data is immediately passed through
+the \software{Matlab}/\software{Octave} function \command{unwrap},
+which basically removes jumps of $2\,\pi$ in the phase.
+
+When the data is or should be purely real (\eg, $m=0$), it is best to
+redefine the data as $z(t) \equiv A(t)$ and $\phi(t)=0$.  In
+particular, note that $A$ can be negative.  This is crucial for
+extrapolation because the phases are typically contaminated by
+numerical noise, and thus don't extrapolate well.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fourier transform conventions}
+\label{sec:FourierTransformConventions}
+
+The following conventions are chosen to be in agreement with
+Matlab/Octave, as well as with the LSC.  The data returned by using
+the function \command{Waveform/fft} is given by
+Eq.~\eqref{eq:FourierConventionDiscrete}, while the frequencies of
+those data are given by Eq.~\eqref{eq:DiscreteFrequencies}, with $j
+\in [0, N-1]$.  The command \command{InnerProduct} returns the result
+of the last expression in Eq.~\eqref{eq:InnerProductDiscretizedB} and
+\command{Overlap} returns the result of
+Eq.~\eqref{eq:OverlapDiscretizedC}.
+
+We relate a continuous time signal $s(t)$ to its continuous Fourier
+transform $\tilde{s}(f)$ by the formulas
+\begin{align}
+  \label{eq:FourierConventionContinuous}
+  \tilde{s}(f) &\coloneqq \int_{-\infty}^{\infty}\, s(t)\, \e^{-2\pi
+    \i f t}\, \d t\ ,
+  \\
+  \label{eq:FourierConventionContinuousInverse}
+  s(t) &\equiv \int_{-\infty}^{\infty}\, \tilde{s}(f)\, \e^{2 \pi \i f
+    t}\, \d f\ .
+\end{align}
+This normalization is chosen so that the transform of a pure signal
+$s(t) = \e^{2\pi\i f t}$ will simply be a Dirac $\delta$ function,
+with no additional factor.  Note that the entire range of $f$
+(including negative frequencies) is necessary for general complex
+functions.  However, if $s(t)$ is purely real, we have
+\begin{equation}
+  \label{eq:RealFourierTransformCondition}
+  \tilde{s}(-f) = \left[\tilde{s}(f)\right]^{\ast}\ ,
+\end{equation}
+so that only the positive-frequency data are needed.
+
+The notation for discretized signals involves subtleties.  Suppose the
+continuous time signal $s(t)$ is sampled at $N$ uniform intervals,
+beginning (for simplicity) at $t_{0}=0$ and separated by $\Delta t$.
+This will give rise to a frequency discretization interval of $\Delta
+f = 1/N\Delta t$.  Then, we define the quantities
+\begin{gather}
+  \label{eq:DiscreteFrequencies}
+  f_{j} \coloneqq j \Delta f\ , \\
+  \label{eq:DiscreteTimes}
+  t_{k} \coloneqq k \Delta t\ ,
+\end{gather}
+for \emph{all} integers $j$ and $k$.  We will need to assume that the
+time signal is periodic, over a time $N\Delta t$.  Under restriction
+of the range of integration to one period and discretization
+(represented by $\discretize$), the formulas for the Fourier transform
+become
+\begin{align}
+  \label{eq:FourierConventionDiscretized}
+  \tilde{s}(f_{j}) &\discretize
+  \sum_{k=-\floor{(N-1)/2}}^{\floor{N/2}}\, s(t_{k})\, \e^{-2\pi\i
+    f_{j} t_{k}}\, \Delta t \ \equiv\ \Delta t\, \sum_{k=0}^{N-1}\,
+  s(t_{k})\, \e^{-2\pi\i jk/N}\ ,
+  \\
+  \label{eq:FourierConventionDiscretizedInverse}
+  s(t_{k}) &\discretize \sum_{j=-\floor{(N-1)/2}}^{\floor{N/2}}\,
+  \tilde{s}(f_{j})\, \e^{-2\pi\i f_{j} t_{k}}\, \Delta f \ \equiv\
+  \Delta f\, \sum_{j=0}^{N-1}\, \tilde{s}(f_{j})\, \e^{-2\pi\i jk/N}\
+  .
+\end{align}
+Note that we have used the assumption that $s(t+N\Delta t) = s(t)$ in
+Eq.~\eqref{eq:FourierConventionDiscretized}.  We can also see from
+this equation that $\tilde{s}(f_{j}) \leftrightsquigarrow
+\tilde{s}(f_{j+N})$, which results from our restriction to a finite
+range.  This fact is also used in
+Eq.~\eqref{eq:FourierConventionDiscretizedInverse}.  We can transform
+to the convention that $j,k \in [0, N-1]$ using the indexing set $(0,
+\ldots, \floor{N/2}, -\floor{(N-1)/2}, \ldots, -1)$.  It is not hard
+to see that the sequence thus defined is the same as $(0, \ldots,
+N-1)$ modulo $N$.
+
+Perhaps because $\tilde{s}(f_{j})$ as given by the expression
+in~\eqref{eq:FourierConventionDiscretized} does not equal
+$\tilde{s}(f)$ as given by Eq.~\eqref{eq:FourierConventionContinuous}
+when $f=f_{j}$, there is a subtle notational distinction commonly
+employed~\cite{Brown2004}.  We define $s_{k}\coloneqq s(t_{k})$, quite
+naturally.  Using this, we write
+\begin{align}
+  \label{eq:FourierConventionDiscrete}
+  \tilde{s}_{j} & \coloneqq \sum_{k=0}^{N-1}\, s_{k}\, \e^{-2 \pi \i j
+    k / N}\ ,
+  \\
+  \label{eq:FourierConventionDiscreteInverse}
+  s_{k} &\equiv \frac{1}{N}\, \sum_{j=0}^{N-1}\, \tilde{s}_{j}\, \e^{2
+    \pi \i j k / N}\ .
+\end{align}
+Note that $\tilde{s}(f_{j}) \discretize \Delta t\, \tilde{s}_{j} =
+\tilde{s}_{j} / N\, \Delta f$; in particular, $\tilde{s}(f_{j}) \neq
+\tilde{s}_{j}$.  This normalization results in the circumstance that
+the transform of a pure signal will be $\tilde{s}_{j} = N$ for the
+relevant frequency and $\tilde{s}_{j} = 0$ for $j \in [0,
+N-1]$---which is roughly the discrete version of the $\delta$
+function.  Of course, this means that $\tilde{s}_{j}$ depends on the
+sampling frequency; for a given signal, $\tilde{s}_{j}$ will typically
+scale as $N$.  This notation and choice of normalization agree with
+the standard conventions of LIGO~\cite{AndersonEtAl2001} and the
+\software{FFTW} and \software{Matlab}/\software{Octave} software
+packages.  In particular, \software{Matlab}/\software{Octave} returns
+$\tilde{s}_{j}$ as the result of the command \command{fft}.  As a
+result, Waveform objects returned by \command{Waveform/fft} also use
+this convention.
+
+The assumption that the time-domain signal is periodic, and the
+restriction of the Fourier
+transform---Eq.~\eqref{eq:FourierConventionContinuous}---to a finite
+range make the frequency-domain signal periodic on the scale of the
+sampling frequency
+\begin{equation}
+  \label{eq:SamplingFrequency}
+  \fsamp \coloneqq \frac{1}{\Delta t}\ .
+\end{equation}
+Any frequency $f \geq \fsamp$ will be \emph{aliased} to a lower
+frequency, meaning that power will appear at a frequency $f-\fsamp$.
+In fact, any continuous signal at frequency $f$ will be represented in
+the discretized case by a Fourier transform with nonzero values at
+$f+n\fsamp$, for \emph{all} integers $n$.  That is, what was a
+$\delta$ function in the continuous case has been made into a
+frequency ``comb'' (with infinitely many finitely large teeth) in the
+discrete case.
+
+More stringent than the cutoff of the sampling frequency, there is an
+upper limit to the frequencies that can be unambiguously represented
+on a given discrete grid: the Nyquist frequency
+\begin{equation}
+  \label{eq:NyquistFrequency}
+  \fNy \coloneqq \frac{1}{2\Delta t} = \frac{\fsamp}{2}\ .
+\end{equation}
+The ``comb'' effect combines with the negative-frequency effect to
+produce this limit.  [Note that $\sin(2 \pi \fNy t)$ cannot be
+represented on the discrete set of points because it is zero at each
+$t_{k}$, but $\cos(2 \pi \fNy t)$ can be.]  Typically, we restrict
+attention to frequencies $f \in (-\fNy, \fNy]$ or $f \in [0, 2\fNy)$,
+so that only one ``tooth'' is present in the data for each component
+of a signal.  When $f \in [0, 2\fNy)$, we make use of the fact that
+$\tilde{s}_{k} = \tilde{s}_{k \bmod N}$ to wrap negative frequencies
+onto frequencies greater than $\fNy$.  In particular, note that
+$\tilde{s}_{-\floor{(N-1)/2}} = \tilde{s}_{\floor{(N+1)/2}}$ and
+$\tilde{s}_{-1} = \tilde{s}_{N-1}$.
+
+
+\subsection{Inner products and overlaps}
+\label{sec:InnerProductsAndOverlaps}
+
+Current searches for gravitational waves from binary black hole
+coalescence use matched filtering to search for a waveform buried in
+noise.  The matched filter is the optimal filter for detecting a
+signal in stationary Gaussian noise.  Suppose that $n(t)$ is a
+stationary Gaussian noise process with one-sided power spectral
+density $S_n(f)$ given by $\langle \tilde{n}(f) \tilde{n}^\ast(f')
+\rangle=\frac{1}{2} S_n(|f|)\delta(f-f')$.  For long integration
+times, the data stream $s(t)$ output by the detector will always be
+dominated by the noise.  Thus, we can simply approximate $n \approx s$
+to calculate $S_{n}(f)$.
+
+Using this power spectral density (PSD), we can define the inner
+product between two real-valued signals---the data stream $s$ and the
+filter template $h$---by
+\begin{subequations}
+  \label{eq:InnerProduct}
+  \begin{align}
+    \InnerProduct{s|h} &\coloneqq 2\, \Re \int_{-\infty}^{\infty}\,
+    \frac{\tilde{s}(f)\, \tilde{h}^{\ast}(f)}{S_{n}(\abs{f})}\, \d f
+    \\ &= 4\, \Re \int_{0}^{\infty}\, \frac{\tilde{s}(f)\,
+      \tilde{h}^{\ast}(f)}{S_{n}(f)}\, \d f\ .
+  \end{align}
+\end{subequations}
+For simplicity of presentation, we will assume that the signals are
+normalized, so that $\InnerProduct{s|s}=1$ and $\InnerProduct{h|h}=1$.
+Obviously, this condition can always be imposed, if necessary, by
+taking
+\begin{equation}
+  \label{eq:NormalizedWaveforms}
+  s \to \frac{s}{\sqrt{\InnerProduct{s|s}}} \quad \text{and} \quad h
+  \to \frac{h}{\sqrt{\InnerProduct{h|h}}}\ .
+\end{equation}
+
+Discretization of the above equation is not entirely straightforward.
+In real detectors (\eg, LIGO), the data has a sampling frequency---and
+an associated Nyquist frequency---where the assumption is that no
+signal of interest occurs at higher frequencies.  Thus, we assume that
+the Fourier transforms are zero for $f \notin (-\fNy, \fNy]$.  Using
+this fact, we can limit the range of the integrals and discretize, to
+find
+\begin{subequations}
+  \label{eq:InnerProductDiscretized}
+  \begin{align}
+    \label{eq:InnerProductDiscretizedA}
+    \InnerProduct{s|h} &\discretize 2\, \Delta f\, \Re\,
+    \sum_{j=-\floor{(N-1)/2}}^{\floor{N/2}}\, \frac{\tilde{s}(f_{j})\,
+      \tilde{h}^{\ast}(f_{j})}{S_{n}(\abs{f_{j}})} = \frac{2}{N^{2}
+      \Delta f}\, \Re\, \sum_{j=-\floor{(N-1)/2}}^{\floor{N/2}}\,
+    \frac{\tilde{s}_{j}\, \tilde{h}^{\ast}_{j}}{S_{n}(\abs{f_{j}})} =
+    \frac{2}{N^{2} \Delta f}\, \Re\, \sum_{j=0}^{N-1}\,
+    \frac{\tilde{s}_{j}\, \tilde{h}^{\ast}_{j}}{S_{n}(\abs{f_{j}})}
+    \\
+    \label{eq:InnerProductDiscretizedB}
+    &\discretize 4\, \Delta f\, \Re \sum_{j=0}^{\floor{N/2}}\,
+    \frac{\tilde{s}(f_{j})\, \tilde{h}^{\ast}(f_{j})} {S_{n}(f_{j})} =
+    \frac{4}{N^{2} \Delta f}\, \Re \sum_{j=0}^{\floor{N/2}}\,
+    \frac{\tilde{s}_{j}\, \tilde{h}^{\ast}_{j}} {S_{n}(f_{j})}\ .
+  \end{align}
+\end{subequations}
+Note the apparent discrepancy here between
+Eqs.~\eqref{eq:InnerProductDiscretizedA}
+and~\eqref{eq:InnerProductDiscretizedB}: the $j=0$ term is counted
+twice in Eq.~\eqref{eq:InnerProductDiscretizedB} as compared to the
+previous one, as is the $N/2$ term when $N$ is even.  Of course, $j=0$
+corresponds to the $f=0$ part of the signal; for this value, the noise
+is effectively infinite, and no physical signal is expected to be
+discernible, so such a term should be ignored in any case.  Similarly,
+the noise is quite large (though certainly finite) and the signal
+small when $j=N/2$.  Moreover, $\fNy$ is typically chosen in the hope
+that there is no signal of interest at that frequency, so
+$\tilde{s}_{N/2}$ should be effectively zero.  Thus, while there is a
+formal difference between the two versions of the discretization,
+there should be no practical difference.
+
+The filter template includes arbitrary time and phase offsets, encoded
+by the arrival time and phase, $\ta$ and $\phia$.  Under a change of
+these quantities, the Fourier transform behaves as
+\begin{equation}
+  \label{eq:EffectOfTimeAndPhaseOffset}
+  \tilde{h}(f) \to \tilde{h}(f)\, \e^{-2\pi\i f \ta - \i \phia}\ .
+\end{equation}
+The matched-filter output---the \emph{overlap} between the two
+waveforms---is then defined as the (normalized) inner product of the
+signals, maximized over these two variables:
+\begin{subequations}
+  \begin{align}
+    \label{eq:OverlapDefinition}
+    \Overlap{s|h} &\coloneqq \max_{\ta, \phia}\, \InnerProduct{s|h} \\
+    &= \max_{\ta, \phia}\, 2\, \Re \int_{-\infty}^{\infty}\,
+    \frac{\tilde{s}(f)\, \tilde{h}^{\ast}(f)}{S_{n}(f)}\, \e^{2\pi \i
+      f\ta + \i \phia}\, \d f
+    \\
+    & = 2 \max_{\ta}\, \abs{\int_{-\infty}^{\infty}\,
+      \frac{\tilde{s}(f)\, \tilde{h}^{\ast}(f)}{S_{n}(f)}\, \e^{2\pi
+        \i f\ta}\, \d f }\ .
+  \end{align}
+\end{subequations}
+This integral is just the (inverse) Fourier transform of the quantity
+$\tilde{s}(f)\, \tilde{h}^{\ast}(f) / S_{n}(f)$ evaluated at $\ta$,
+which allows for fast computation, using FFTs.  In the discrete case,
+finding the maximum over $\ta$ involves taking the Fourier transform
+and selecting the largest element of the finite set that results from
+discretization:
+\begin{subequations}
+  \label{eq:OverlapDiscretized}
+  \begin{align}
+    \label{eq:OverlapDiscretizedA}
+    \Overlap{s|h} &\discretize 2 \Delta f\, \max_{\ta}\,
+    \abs{\sum_{j=-\floor{(N-1)/2}}^{\floor{N/2}}\,
+      \frac{\tilde{s}(f_{j})\,
+        \tilde{h}^{\ast}(f_{j})}{S_{n}(\abs{f_{j}})}\, \e^{2\pi \i
+        f_{j} \ta}}
+    \\
+    \label{eq:OverlapDiscretizedB}
+    &= \frac{2}{N \Delta f}\, \max_{k}\, \abs{\frac{1}{N}\,
+      \sum_{j=0}^{N-1}\, \frac{\tilde{s}_{j}\,
+        \tilde{h}^{\ast}_{j}}{S_{n}(\abs{f_{j}})}\, \e^{2\pi \i j k /
+        N}}
+    \\
+    \label{eq:OverlapDiscretizedC}
+    &= \frac{2}{N \Delta f}\, \max\, \abs{\ifft \left[
+        \frac{\tilde{s}_{j}\,
+          \tilde{h}^{\ast}_{j}}{S_{n}(\abs{f_{j}})} \right]}\ .
+  \end{align}
+\end{subequations}
+Note, however, that the maximum may occur for any of the $N$ values of
+time.  Therefore, the full transform---including all $N$
+frequencies---must be performed.
+
+For \emph{non-normalized} real data $s(t)$ and a \emph{normalized}
+optimal template $h(t)$, the signal-to-noise ratio (SNR) is defined as
+\begin{equation}
+  \label{eq:SNR}
+  \rho_{s,\, h} \coloneqq \Overlap{s|h}\ .
+\end{equation}
+Because we assume $h$ approximates $s$ very well, we can approximate
+the SNR by simply substituting the normalized $s$ for $h$:
+\begin{equation}
+  \label{eq:ApproxSNR}
+  \rho_{s,\,h}\approx\frac{\Overlap{s|s}}{\sqrt{\InnerProduct{s|s}}} =
+  \sqrt{\InnerProduct{s|s}}\ .
+\end{equation}
+Note that the scaling of $s$ is inverse with respect to the distance
+to the source, $R$.  Thus, the SNR of the signal varies inversely as
+the distance.  If we set a threshold SNR, then, the distance to which
+the signal can be ``seen'' (exceeds that threshold) is inversely
+proportional to the SNR.  Because the event rate is roughly
+proportional to the volume, $R^{3}$, ``seen'' by the detector, the
+event rate is roughly proportional to the SNR.  Thus, if we improve
+the SNR of a given signal (\eg, by decreasing the noise) by a factor
+of 2, the event rate goes up by roughly $2^{3}=8$.
+
+
+\subsection{Power Spectral Densities (PSDs)}
+\label{sec:PowerSpectralDensities}
+
+bla
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliography{References}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%
+\end{document}
+%%%%%%%%%%%%%%%%
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

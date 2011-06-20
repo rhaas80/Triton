@@ -1,0 +1,276 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 7.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     11028,        267]
+NotebookOptionsPosition[     10741,        253]
+NotebookOutlinePosition[     11115,        269]
+CellTagsIndexPosition[     11072,        266]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+  "SetDirectory", "[", 
+   "\"\</Users/boyle/Research/WaveExtrapolation/WaveformClass/Utilities/\
+SWSHNotes/\>\"", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"LMax", " ", "=", " ", "12"}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"OutFile", " ", "=", " ", 
+   RowBox[{"OpenWrite", "[", "\"\<SWSHCalculatorOutput.cpp\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"Y", "[", 
+     RowBox[{"s_", ",", "l_", ",", "m_", ",", "\[Theta]_", ",", "\[Phi]_"}], 
+     "]"}], ":=", 
+    RowBox[{
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"-", "1"}], ")"}], "m"], 
+     RowBox[{"Simplify", "[", 
+      RowBox[{
+       RowBox[{
+        SqrtBox[
+         FractionBox[
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"l", "+", "m"}], ")"}], "!"}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"l", "-", "m"}], ")"}], "!"}], 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"2", "l"}], "+", "1"}], ")"}]}], 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"l", "+", "s"}], ")"}], "!"}], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"l", "-", "s"}], ")"}], "!"}], "4", "\[Pi]"}]]], 
+        RowBox[{
+         SubsuperscriptBox["\[Sum]", 
+          RowBox[{"r", "=", "0"}], 
+          RowBox[{"l", "-", "s"}]], 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"Binomial", "[", 
+            RowBox[{
+             RowBox[{"l", "-", "s"}], ",", "r"}], "]"}], 
+           RowBox[{"Binomial", "[", 
+            RowBox[{
+             RowBox[{"l", "+", "s"}], ",", 
+             RowBox[{"r", "+", "s", "-", "m"}]}], "]"}], 
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{"-", "1"}], ")"}], 
+            RowBox[{"l", "-", "r", "-", "s"}]], 
+           SuperscriptBox["\[ExponentialE]", 
+            RowBox[{"\[ImaginaryI]", " ", "m", " ", "\[Phi]"}]], 
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{"Sin", "[", 
+              FractionBox["\[Theta]", "2"], "]"}], ")"}], 
+            RowBox[{
+             RowBox[{"2", "l"}], "-", 
+             RowBox[{"2", "r"}], "-", "s", "+", "m"}]], 
+           SuperscriptBox[
+            RowBox[{"(", 
+             RowBox[{"Cos", "[", 
+              FractionBox["\[Theta]", "2"], "]"}], ")"}], 
+            RowBox[{
+             RowBox[{"2", "r"}], "+", "s", "-", "m"}]]}], ")"}]}]}], ",", 
+       RowBox[{"Assumptions", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"\[Phi]", "\[Element]", "Reals"}], ",", 
+          RowBox[{"\[Theta]", "\[Element]", "Reals"}]}], "}"}]}]}], "]"}]}]}],
+    ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"s", "=", 
+    RowBox[{"-", "2"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"WriteString", "[", 
+   RowBox[{
+   "OutFile", ",", " ", 
+    "\"\<#include \\\"SWSHs.hpp\\\"\n#include <cstdlib>\n#include <cmath>\n\n\
+void SWSH(const int L, const int M, const double& vartheta, const double& \
+varphi, double& Amp, double& Phi) {\n  if(L<2) { throw(\\\"l<2 unsupported.\\\
+\"); }\n  if(labs(M)>L) { throw(\\\"abs(m)>l unsupported for s=-2 \
+spin-weighted spherical harmonics.\\\"); }\\n\>\""}], "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"WriteString", "[", 
+   RowBox[{"OutFile", ",", " ", 
+    RowBox[{"StringForm", "[", 
+     RowBox[{
+     "\"\<  if(L>``) { throw(\\\"l>`` unsupported.\\\"); }\\n\>\"", ",", " ", 
+      "LMax", ",", " ", "LMax"}], "]"}]}], "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"WriteString", "[", 
+   RowBox[{"OutFile", ",", " ", "\"\<  \\n  switch(L) {\\n\>\""}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"For", "[", 
+  RowBox[{
+   RowBox[{"l", "=", "2"}], ",", 
+   RowBox[{"l", "\[LessEqual]", "LMax"}], ",", 
+   RowBox[{"l", "++"}], ",", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{"OutFile", ",", " ", 
+      RowBox[{"StringForm", "[", 
+       RowBox[{"\"\<  case ``:\\n\>\"", ",", "l"}], "]"}]}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"WriteString", "[", 
+     RowBox[{"OutFile", ",", " ", "\"\<    switch(M) {\\n\>\""}], "]"}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"For", "[", 
+     RowBox[{
+      RowBox[{"m", "=", 
+       RowBox[{"-", "l"}]}], ",", " ", 
+      RowBox[{"m", "\[LessEqual]", "l"}], ",", 
+      RowBox[{"m", "++"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"WriteString", "[", 
+        RowBox[{"OutFile", ",", " ", 
+         RowBox[{"StringForm", "[", 
+          RowBox[{"\"\<    case ``:\\n\>\"", ",", "m"}], "]"}]}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"WriteString", "[", 
+        RowBox[{"OutFile", ",", " ", 
+         RowBox[{"StringForm", "[", 
+          RowBox[{"\"\<      Amp = ``;\\n\>\"", ",", 
+           RowBox[{"ToString", "[", 
+            RowBox[{
+             RowBox[{"CForm", "[", 
+              RowBox[{"TrigFactor", "[", 
+               RowBox[{"FullSimplify", "[", 
+                RowBox[{
+                 RowBox[{"Y", "[", 
+                  RowBox[{
+                  "s", ",", "l", ",", "m", ",", "vartheta", ",", "0"}], "]"}],
+                  ",", 
+                 RowBox[{"Assumptions", "\[Rule]", 
+                  RowBox[{"{", 
+                   RowBox[{
+                    RowBox[{"varphi", "\[Element]", "Reals"}], ",", 
+                    RowBox[{"vartheta", "\[Element]", "Reals"}]}], "}"}]}]}], 
+                "]"}], "]"}], "]"}], ",", "OutputForm"}], "]"}]}], "]"}]}], 
+        "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"WriteString", "[", 
+        RowBox[{"OutFile", ",", " ", 
+         RowBox[{"StringForm", "[", 
+          RowBox[{"\"\<      Phi = ``*varphi;\\n\>\"", ",", "m"}], "]"}]}], 
+        "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"WriteString", "[", 
+        RowBox[{"OutFile", ",", " ", "\"\<      break;\\n\>\""}], "]"}], 
+       ";"}]}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"WriteString", "[", 
+     RowBox[{"OutFile", ",", " ", "\"\<    } // switch(M)\\n\>\""}], "]"}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"WriteString", "[", 
+     RowBox[{"OutFile", ",", " ", "\"\<    \\n\>\""}], "]"}], ";"}]}], 
+  "\[IndentingNewLine]", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"WriteString", "[", 
+   RowBox[{"OutFile", ",", " ", "\"\<  } // switch(L)\\n\>\""}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"WriteString", "[", 
+    RowBox[{"OutFile", ",", " ", "\"\<\n  return;\n}\n\>\""}], "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"WriteString", "[", 
+    RowBox[{
+    "OutFile", ",", " ", 
+     "\"\<\n\nvoid SWSH(const std::vector<std::vector<int> >& LM, const \
+double& vartheta, const double& varphi, std::vector<double>& amp, \
+std::vector<double>& phi) {\n  amp = std::vector<double>(LM.size(), 0.0);\n  \
+phi = std::vector<double>(LM.size(), 0.0);\n  for(unsigned int i=0; \
+i<LM.size(); ++i) {\n    SWSH(LM[i][0], LM[i][1], vartheta, varphi, amp[i], \
+phi[i]);\n  }\n  return;\n}\n\>\""}], "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"s", "=."}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Close", "[", "OutFile", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.480436652466482*^9, 3.48043676975611*^9}, {
+   3.480436894626369*^9, 3.480436902346025*^9}, {3.480437036527961*^9, 
+   3.480437050284767*^9}, {3.480440289992544*^9, 3.480440290910379*^9}, {
+   3.480440515453279*^9, 3.480440713789363*^9}, {3.4804407439875317`*^9, 
+   3.480440830025978*^9}, {3.4804409251469183`*^9, 3.4804409393082027`*^9}, {
+   3.4804409796001253`*^9, 3.48044098493557*^9}, {3.480441035701542*^9, 
+   3.480441175186801*^9}, {3.480441217534281*^9, 3.480441229860642*^9}, {
+   3.480441329340805*^9, 3.480441411069336*^9}, {3.480441475953123*^9, 
+   3.480441491475521*^9}, {3.4804426531471577`*^9, 3.4804426551040783`*^9}, {
+   3.480442715889998*^9, 3.480442716128187*^9}, {3.4804430904525223`*^9, 
+   3.48044312573732*^9}, {3.480443206769958*^9, 3.4804432468272877`*^9}, {
+   3.480443370273614*^9, 3.48044339277614*^9}, {3.4805253537294188`*^9, 
+   3.480525361703085*^9}, {3.480596049662876*^9, 3.480596054791945*^9}, {
+   3.4805965695991077`*^9, 3.4805965714305897`*^9}, {3.480596716547039*^9, 
+   3.480596716697537*^9}, {3.4805971626963863`*^9, 3.480597163654153*^9}, {
+   3.480597868187834*^9, 3.480597884229074*^9}, {3.480598116370447*^9, 
+   3.4805981166345587`*^9}, {3.4805986119587193`*^9, 
+   3.4805987453592987`*^9}, {3.480598897920361*^9, 3.480598935889349*^9}, {
+   3.4805990634315453`*^9, 3.4805991926251497`*^9}, {3.480599504786902*^9, 
+   3.480599551920086*^9}, {3.4805999804117317`*^9, 3.48059998597123*^9}, {
+   3.480600156951119*^9, 3.4806001664688883`*^9}, {3.4806004572496223`*^9, 
+   3.48060048313024*^9}, {3.4837952743590307`*^9, 3.483795298285386*^9}, {
+   3.4837956212886667`*^9, 3.483795734817326*^9}, {3.483795784511438*^9, 
+   3.483795923150445*^9}, {3.483795971312171*^9, 3.483796026332273*^9}, {
+   3.4837960708920307`*^9, 3.483796071071804*^9}, {3.483796110310789*^9, 
+   3.48379611047399*^9}, {3.4837961486372757`*^9, 3.4837961624338818`*^9}, {
+   3.4837962099055843`*^9, 3.483796258343753*^9}, {3.4837963017430468`*^9, 
+   3.4837963371768017`*^9}, {3.483796389395434*^9, 3.483796407170352*^9}, {
+   3.4837964924147587`*^9, 3.483796500843048*^9}, {3.4837965460798283`*^9, 
+   3.483796584159127*^9}, 3.4837969077072563`*^9, {3.483797342551546*^9, 
+   3.483797389601056*^9}, {3.483797551136319*^9, 3.483797560292535*^9}, {
+   3.483798328530135*^9, 3.483798355729298*^9}, {3.483798386383808*^9, 
+   3.4837984132162437`*^9}, {3.4837984467822247`*^9, 3.483798533511669*^9}, {
+   3.483798591153821*^9, 3.4837986379758177`*^9}, {3.4837986847205687`*^9, 
+   3.48379868506048*^9}, {3.483799299662395*^9, 3.483799309382625*^9}, 
+   3.483799392261701*^9}]
+},
+AutoGeneratedPackage->Automatic,
+WindowSize->{1759, 709},
+WindowMargins->{{Automatic, 57}, {21, Automatic}},
+FrontEndVersion->"7.0 for Mac OS X x86 (32-bit) (February 18, 2009)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[545, 20, 10192, 231, 853, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)

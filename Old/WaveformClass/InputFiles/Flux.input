@@ -1,0 +1,33 @@
+## This file contains all the recognized options to the 'Flux' routine.
+## All lines are optional, and contain the default values commented below.
+## In the directory with the data files, use this with the command line
+##    Flux < Flux.input |& tee Flux.out
+## (assuming that the Flux routine is on your path).  There will be
+## a set of files named FluxN*.dat output with columns of 
+##    Time  -M*Omega(2,2)  Flux  PNFlux  Flux/PNFlux
+## and a set of files named FluxConvergence_N[A]-N[B].dat with convergence
+## tests in columns of
+##    Time  -M*Omega(2,2)[A]  FluxA-FluxB  (FluxA-FluxB)/PNFluxA
+
+## Assuming you want to compute flux for various extrapolation orders, 
+## this is a space-separated list of those orders.
+#ExtrapolationOrders = -1 2 3 4 5 6;
+
+## This is the symmetric mass ratio nu = m1*m2/(m1+m2)^2 = q/(1+q)^2
+#MassRatio = 0.25;
+
+## The following options are printf-formatted strings
+#DataFiles = rhOverM_ExtrapolatedN%d.dat;       # Input data files
+#FluxFiles = FluxN%d.dat;                       # Output flux files
+#DifferenceFiles = FluxConvergence_N%d-N%d.dat; # Output convergence files
+
+## These options allow the data to be trimmed, dropping early junk or
+## late noise, for example.
+#DropBefore = -3e300;
+#DropAfter = 3e300;
+
+## Compute Omega using Savitzky-Golay smoothing and differentiation
+#Smooth = false;
+#SmoothingNLeft = 32;
+#SmoothingNRight = 32;
+#SmoothingPolyOrder = 4;

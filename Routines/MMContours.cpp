@@ -216,6 +216,8 @@ int main(int argc, char* argv[]) {
   cout << "Maximum mutually available time: "  << MaxAvailableT << "." << endl;
   cout << "Minimum mutually available time: "  << MinAvailableT << ".\n" << endl;
   
+  return 0;
+  
   //// Clear the output files
   if(StartWithMassNumber==0 && StartWithFreqNumber==0) {
     ofstream ofsm(MassesFileName.c_str(), ofstream::out);

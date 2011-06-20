@@ -1,0 +1,7 @@
+*.o
+*.d
+Extrapolate
+LevConvergence
+TestFFT
+TestWaveformFT
+TestParsing
