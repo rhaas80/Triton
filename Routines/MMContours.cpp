@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
   const double Maxomega=0.065;
   const double omegaStep=0.0005;
   const unsigned int Nomegas=static_cast<unsigned int>(1.0+(Maxomega-Minomega)/omegaStep);
-  const unsigned int EndBeforeFreqNumber = argc>3 ? StringToInt(argv[5]) : Nomegas-StartWithFreqNumber;
+  const unsigned int EndBeforeFreqNumber = argc>3 ? StringToInt(argv[5]) : Nomegas;
   
   // Detector and FFT info
   const string PSDName("AdvLIGO_ZeroDet_HighP");
@@ -102,9 +102,9 @@ int main(int argc, char* argv[]) {
   // Files
   const string Unique = "_q" + DoubleToString(q) + "_chis" + DoubleToString(chis)
     + "_o" + DoubleToString(StartWithFreqNumber) + "-" + DoubleToString(EndBeforeFreqNumber) + "_m" + DoubleToString(StartWithMassNumber);
-  const string MassesFileName("Output/Masses_" + Unique + ".dat");
-  const string FrequenciesFileName("Output/Frequencies_" + Unique + ".dat");
-  const string MismatchesMaxFileName("Output/MismatchesMax_" + Unique + ".dat");
+  const string MassesFileName("Output/Masses" + Unique + ".dat");
+  const string FrequenciesFileName("Output/Frequencies" + Unique + ".dat");
+  const string MismatchesMaxFileName("Output/MismatchesMax" + Unique + ".dat");
   vector<string> ApproximantNames(5,"");
   ApproximantNames[0] = "T1";
   ApproximantNames[1] = "T2";
@@ -371,7 +371,7 @@ int main(int argc, char* argv[]) {
       }
       
       //// Note that we've finished this step
-      ofstream ofs(("FinishedStep_" + Unique).c_str(), ofstream::out);
+      ofstream ofs(("FinishedStep" + Unique).c_str(), ofstream::out);
       if(m==Masses.size()-1) {
 	if(o==omegas.size()-1) {
 	  ofs << 0 << " " << 0 << flush;

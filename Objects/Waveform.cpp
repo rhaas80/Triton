@@ -1150,7 +1150,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
   /// Add the new times, and resize everything as appropriate
   const unsigned int NTimesEnd = NTimes();
   const double TEnd = T().back();
-  TRef().resize(NTimes()+floor(TLength/dt), T().back());
+  TRef().resize(NTimes()+int(floor(TLength/dt)), T().back());
   for(unsigned int i=0; i<NTimes()-NTimesEnd; ++i) {
     TRef(i+NTimesEnd) += (i+1)*dt;
   }
