@@ -3,7 +3,7 @@ SUBLIBS = ../Objects ../PostNewtonian ../Utilities
 
 
 ## This is a basic executables makefile; the lines below shouldn't need much tweaking.
-include ../MachineDefs
+include ../MachineDef
 
 VPATH = $(SUBLIBS)
 SUFFIXES += .d

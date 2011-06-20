@@ -5,7 +5,7 @@ IFLAGS = -I../Utilities -I../PostNewtonian
 
 ## This is a basic source- and library-building makefile; the lines below shouldn't need much tweaking
 THISDIR:=$(shell basename `pwd`)
-include ../MachineDefs
+include ../MachineDef
 
 VPATH = $(SUBLIBS)
 SUFFIXES += .d
