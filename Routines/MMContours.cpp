@@ -92,12 +92,13 @@ int main(int argc, char* argv[]) {
   const string PSDName("AdvLIGO_ZeroDet_HighP");
   const double DetectorMinFreq=AdvLIGOSeismicWall;
   const double DetectorSamplingFreq=AdvLIGOSamplingFreq;
-  const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq;
+  const double SafetyFactor=0.8; // To ensure that Gibbs effects don't cause problems
+  const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq*SafetyFactor;
   const double MinMismatch=1.0e-13; // This is the smallest mismatch we would believe, remembering that the match is actually subtracted from 1.0; roughly roundoff
   
   // PN waveforms
-  const double v0=std::min(pow(0.4*Minomega, 1.0/3.0),
-			   pow(NewtonsConstant*MinMass*SolarMass*(0.4*WaveformMinOmega)/(SpeedOfLight*SpeedOfLight*SpeedOfLight), 1.0/3.0));
+  const double v0=std::min(pow(0.5*Minomega, 1.0/3.0),
+			   pow(NewtonsConstant*MinMass*SolarMass*(0.5*WaveformMinOmega)/(SpeedOfLight*SpeedOfLight*SpeedOfLight), 1.0/3.0));
   
   // Files
   const string Unique = "_q" + DoubleToString(q) + "_chis" + DoubleToString(chis)
@@ -123,8 +124,8 @@ int main(int argc, char* argv[]) {
   const unsigned int MatchDisplayPrecision=4;
   const unsigned int MatchDisplayWidth=MatchDisplayPrecision+5;
   
-  const unsigned int nsave=20;
-  const unsigned int nsaveEOB=5;
+  const unsigned int nsave=100;
+  const unsigned int nsaveEOB=20;
   const bool denseish=true;
   
   
@@ -153,8 +154,6 @@ int main(int argc, char* argv[]) {
   if(DropOddMModes) { NRc.DropOddMModes(); }
   const double NRPeak22Time = NRc.Peak22Time();
   cout << "☺ \t(Peak time = " << NRPeak22Time << ")\n" << endl;
-  
-  return 0;
   
   //// Compute PN Waveforms and roughly match to the NR waveform
   cout << "Creating PN... " << endl;
