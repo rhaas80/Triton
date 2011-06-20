@@ -1196,11 +1196,11 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
     double tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
     
     if((delta==deltaOFq(10.0) && chiKerr==FinalSpinApproximation(deltaOFq(10), 0.95))) {
-      cerr << "Redoing tmatch find! (tailored to q==10 && chis==0.95)" << endl;
+      cout << "Redoing tmatch find! (tailored to q==10 && chis==0.95)" << endl;
       iPeak = NTimesEnd-1;
       while(T(iPeak) > -40.0 && iPeak>1) { --iPeak; }
       InspiralLM = (this->operator[](mode)).DropBefore(T(iPeak)).DropAfter(TEnd-1.0);
-      cerr << "InspiralLM.NTimes()=" << InspiralLM.NTimes()
+      cout << "InspiralLM.NTimes()=" << InspiralLM.NTimes()
 	   << " InspiralLM.T(0)=" << InspiralLM.T(0)
 	   << " InspiralLM.T().back()=" << InspiralLM.T().back() << endl;
       const double tLength = InspiralLM.T().back()-InspiralLM.T(0);
@@ -1222,7 +1222,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
       }
       tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
     } else if(tmatch<tDropBefore || tmatch>tDropAfter) {
-      cerr << "Redoing tmatch find!" << endl;
+      cout << "Redoing tmatch find!" << endl;
       InspiralLM = (this->operator[](mode)).DropBefore(tDropBefore).DropAfter(TEnd);
       const double tLength = InspiralLM.T().back()-InspiralLM.T(0);
       for(unsigned int j=0; j<InspiralLM.NTimes(); ++j) {
@@ -1263,7 +1263,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
     const double phiPeak = Arg(mode, iPeak);
     const double omegaPeak = (Arg(mode, iPeak+1)-Arg(mode, iPeak-1)) / (T(iPeak+1)-T(iPeak-1));
     const double omegaQNM = omegaRe;
-    cerr << "L=" << L(mode) << " M=" << M(mode) << setprecision(14) << " tPeak=" << tDropBefore << " tmatch=" << tmatch << " tBad=" << tDropAfter << " omegaPeak=" << omegaPeak << " omegaQNM=" << omegaQNM << endl;
+    cout << "L=" << L(mode) << " M=" << M(mode) << setprecision(14) << " tPeak=" << tDropBefore << " tmatch=" << tmatch << " tBad=" << tDropAfter << " omegaPeak=" << omegaPeak << " omegaQNM=" << omegaQNM << endl;
     vector<double> omegaTransition(iMatch-iPeak, omegaPeak);
     for(unsigned int k=1; k<omegaTransition.size(); ++k) {
       omegaTransition[k] = omegaPeak + (omegaQNM-omegaPeak)*TransitionFunction_Linear((T(k+iPeak)-T(iPeak))/(T(iMatch-1)-T(iPeak)));
