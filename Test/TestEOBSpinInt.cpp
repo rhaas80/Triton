@@ -9,6 +9,7 @@
 #include "Flux.hpp"
 #include "EasyParser.hpp"
 using namespace std;
+using WaveformUtilities::EOBParameters;
 
 typedef WaveformUtilities::EOBMetricWithSpin Met;
 typedef WaveformUtilities::EOBHamiltonianWithSpin Ham;
@@ -32,10 +33,10 @@ int main() {
   clock_t start,end;
   
   for(double rtol=1e-5; rtol>1.01e-10; rtol/=10) {
-    const Met g(delta, chis, chia);
-    const Ham H(delta, chis, chia, g);
-    const Flu F(delta, chis);
-    const Tor T(delta, chis, F);
+    const Met g(EOBParameters(delta, chis, chia));
+    const Ham H(EOBParameters(delta, chis, chia), g);
+    const Flu F(delta, chis, chia);
+    const Tor T(delta, chis, chia, F);
     start = clock();
     WaveformUtilities::EOB<Met, Ham, Tor>(g, H, T, delta, chis, chia, v0, t, v, Phi, r, prstar, pPhi, nsave, denseish, rtol);
     end = clock();

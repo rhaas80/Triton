@@ -4,8 +4,8 @@ void WaveformUtilities::EOB(const double delta, const double chis, const double 
 			    std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
 			    const int nsave, const bool denseish, const double rtol)
 {
-  const EOBMetricWithSpin g(delta, chis, chia);
-  const EOBHamiltonianWithSpin H(delta, chis, chia, g);
+  const EOBMetricWithSpin g(WaveformUtilities::EOBParameters(delta, chis, chia));
+  const EOBHamiltonianWithSpin H(WaveformUtilities::EOBParameters(delta, chis, chia), g);
   const Flux_Pade44LogFac F(delta, chis, chia);
   const Torque_KFPhi<Flux_Pade44LogFac> T(delta, chis, chia, F);
   std::vector<double> r, prstar, pPhi;

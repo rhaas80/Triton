@@ -83,9 +83,9 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
     if(fabs(chis)>chismax) {
       double chisloc = (chis>0 ? chismax : -chismax);
       //std::cout << "Reducing eccentricity with chis=" << chisloc << " ... " << std::flush;
-      Metric g(delta, chisloc, chia);
-      Hamiltonian H(delta, chisloc, chia, g);
-      Hamiltonian Hcirc(delta, chisloc, chia, g);
+      Metric g(EOBParameters(delta, chisloc, chia));
+      Hamiltonian H(EOBParameters(delta, chisloc, chia), g);
+      Hamiltonian Hcirc(EOBParameters(delta, chisloc, chia), g);
       typename Torque::FluxType F(delta, chisloc, chia); /// TODO: Fix this line to work with general Flux types
       Torque T(delta, chisloc, chia, F, Hcirc);
       EOBHamiltonEquations<Metric, Hamiltonian, Torque> d(g, H, T);

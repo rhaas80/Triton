@@ -50,14 +50,13 @@ using std::ios;
 
 /// Call this program with 'MMContours <q> <chis>', where <q> is the mass ratio and <chis> is the symmetric spin parameter
 /// Optionally, use 'MMContours <q> <chis> <StartWithMassNumber> <StartWithFreqNumber>' for restarts
+///          or use 'MMContours <q> <chis> <StartWithMassNumber> <StartWithFreqNumber> <EndWithFreqNumber>' for a restricted range
 
 int main(int argc, char* argv[]) {
   if(argc<3) {
     cerr << "Expecting at least two arguments; got " << argc-1 << endl;
     throw("Bad arguments");
   }
-  
-  const string Unique = "";
   
   // In case restart is needed:
   unsigned int StartWithMassNumber = argc>3 ? StringToInt(argv[3]) : 0;
@@ -87,12 +86,13 @@ int main(int argc, char* argv[]) {
   const double Maxomega=0.065;
   const double omegaStep=0.0005;
   const unsigned int Nomegas=static_cast<unsigned int>(1.0+(Maxomega-Minomega)/omegaStep);
+  const unsigned int EndBeforeFreqNumber = argc>3 ? StringToInt(argv[5]) : Nomegas-StartWithFreqNumber;
   
   // Detector and FFT info
   const string PSDName("AdvLIGO_ZeroDet_HighP");
   const double DetectorMinFreq=AdvLIGOSeismicWall;
   const double DetectorSamplingFreq=AdvLIGOSamplingFreq;
-  const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq*.75;
+  const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq;
   const double MinMismatch=1.0e-13; // This is the smallest mismatch we would believe, remembering that the match is actually subtracted from 1.0; roughly roundoff
   
   // PN waveforms
@@ -100,9 +100,11 @@ int main(int argc, char* argv[]) {
 			   pow(NewtonsConstant*MinMass*SolarMass*(0.4*WaveformMinOmega)/(SpeedOfLight*SpeedOfLight*SpeedOfLight), 1.0/3.0));
   
   // Files
-  const string MassesFileName("Output/Masses_q" + DoubleToString(q) + "_chis" + DoubleToString(chis) + Unique + ".dat");
-  const string FrequenciesFileName("Output/Frequencies_q" + DoubleToString(q) + "_chis" + DoubleToString(chis) + Unique + ".dat");
-  const string MismatchesMaxFileName("Output/MismatchesMax_q" + DoubleToString(q) + "_chis" + DoubleToString(chis) + Unique + ".dat");
+  const string Unique = "_q" + DoubleToString(q) + "_chis" + DoubleToString(chis)
+    + "_o" + DoubleToString(StartWithFreqNumber) + "-" + DoubleToString(EndBeforeFreqNumber) + "_m" + DoubleToString(StartWithMassNumber);
+  const string MassesFileName("Output/Masses_" + Unique + ".dat");
+  const string FrequenciesFileName("Output/Frequencies_" + Unique + ".dat");
+  const string MismatchesMaxFileName("Output/MismatchesMax_" + Unique + ".dat");
   vector<string> ApproximantNames(5,"");
   ApproximantNames[0] = "T1";
   ApproximantNames[1] = "T2";
@@ -112,8 +114,7 @@ int main(int argc, char* argv[]) {
   vector<string> MismatchesFileNames(0,"");
   for(unsigned int i=0; i<ApproximantNames.size(); ++i) {
     for(unsigned int j=i+1; j<ApproximantNames.size(); ++j) {
-      MismatchesFileNames.push_back("Output/Mismatches" + ApproximantNames[i] + "-" + ApproximantNames[j]
-				    +"_q" + DoubleToString(q) + "_chis" + DoubleToString(chis) + Unique + ".dat");
+      MismatchesFileNames.push_back("Output/Mismatches" + ApproximantNames[i] + "-" + ApproximantNames[j] + Unique + ".dat");
     }
   }
   const unsigned int FilePrecision=14;
@@ -241,7 +242,7 @@ int main(int argc, char* argv[]) {
   
   
   //// Loop over matching frequencies
-  for(unsigned int o=StartWithFreqNumber; o<omegas.size(); ++o) {
+  for(unsigned int o=StartWithFreqNumber; o<omegas.size()&&o<EndBeforeFreqNumber; ++o) {
     const double omega = omegas[o];
     cout << "omega=" << omega << endl;
     //// Construct the hybrids
@@ -370,7 +371,7 @@ int main(int argc, char* argv[]) {
       }
       
       //// Note that we've finished this step
-      ofstream ofs(("FinishedStep_q" + DoubleToString(q) + "_chis" + DoubleToString(chis) + Unique).c_str(), ofstream::out);
+      ofstream ofs(("FinishedStep_" + Unique).c_str(), ofstream::out);
       if(m==Masses.size()-1) {
 	if(o==omegas.size()-1) {
 	  ofs << 0 << " " << 0 << flush;
