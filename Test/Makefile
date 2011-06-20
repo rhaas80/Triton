@@ -1,5 +1,5 @@
-## Set this, with the order running from most basic to most advanced
-SUBLIBS = ../Utilities ../PostNewtonian ../Objects
+## Set this, with the order running from most advanced to most basic
+SUBLIBS = ../Objects ../PostNewtonian ../Utilities
 
 
 ## This is a basic executables makefile; the lines below shouldn't need much tweaking.
