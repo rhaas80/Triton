@@ -74,10 +74,12 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
   const double dpPhi0dr = (-8*pow(g.Dt,2) + 7*g.dDtdr*g.Dt*r0 - 2*pow(g.dDtdr,2)*pow(r0,2))/(pow(4*g.Dt - g.dDtdr*r0,1.5)*sqrt(-2*g.Dt + g.dDtdr*r0));
   ystart[2] = nu * g.drstardr * T.Torque / dpPhi0dr;
   if(ystart[2]>0.0) ystart[2] *= -1;
+  //std::cout << ystart << std::endl;
   
   //// If spin is too large, build up to the goal gradually, reducing eccentricity at each step
   std::vector<double> chisMax(10);
-  chisMax[0] = 0.1; chisMax[1] = 0.2; chisMax[2] = 0.3; chisMax[3] = 0.4; chisMax[4] = 0.45; chisMax[5] = 0.5; chisMax[6] = 0.6; chisMax[7] = 0.7; chisMax[8] = 0.8; chisMax[9] = 0.9;
+  chisMax[0] = 0.1; chisMax[1] = 0.2; chisMax[2] = 0.3; chisMax[3] = 0.4; chisMax[4] = 0.45;
+  chisMax[5] = 0.5; chisMax[6] = 0.6; chisMax[7] = 0.7; chisMax[8] = 0.8; chisMax[9] = 0.9;
   for(unsigned int i=0; i<chisMax.size(); ++i) {
     const double chismax = chisMax[i];
     if(fabs(chis)>chismax) {
@@ -94,7 +96,7 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
   }
   
   //// Now reduce eccentricity with the real parameters
-  //std::cout << "Reducing eccentricity ... " << std::flush;
+  std::cout << "Reducing eccentricity ... " << std::flush;
   start = clock();
   ystart = ReduceEccentricity(g, H, d, ystart, AcceptableEcc, v0);
   end = clock();
@@ -122,6 +124,7 @@ void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d,
   
   /// First pass, integrating until tLength or the 'Early' integration test fails
   Odeint<StepperBS<HamiltonEquations> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, &HamiltonEquations::ContinueIntegratingEarly);
+  //Odeint<StepperDopr853<HamiltonEquations> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, &HamiltonEquations::ContinueIntegratingEarly);
   try {
     odeA.integrate();
   } catch(NRerror err) { }
@@ -176,7 +179,8 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
   const unsigned int NMaxIterations=1000;
   const double Omega0 = v0*v0*v0;
   const double r0 = 1.0/(v0*v0);
-  const double rtol=1.0e-11, GuessedLength=2*(2.0*M_PI/Omega0);
+  double rtol=1.0e-10;
+  const double GuessedLength=2*(2.0*M_PI/Omega0);
   const int nsave=1000;
   const bool denseish=false;
   const double h1=2*(2.0*M_PI/Omega0)/double(nsave);
@@ -191,6 +195,13 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
   for(unsigned int i=0; i<NMaxIterations; ++i) {
     double DeltarDot=666, DeltaPhiDot=-666;
     EOBIntegration(H, d, ystart, GuessedLength, rtol, h1, nsave, denseish, t, v, Phi, r, prstar, pPhi);
+    while(t.size()<3 && rtol<1.0e-5) {
+      rtol *= 10.0;
+      EOBIntegration(H, d, ystart, GuessedLength, rtol, h1, nsave, denseish, t, v, Phi, r, prstar, pPhi);
+    }
+    if(rtol >= 1.0e-5) {
+      throw("Couldn't integrate the guessed EOB initial conditions.  Check the tolerances and reasonableness of inputs.");
+    }
     g(ystartinitial[0]);
     H(ystartinitial[0], ystartinitial[2], ystartinitial[3]);
     double Ecc = Eccentricity_rDot(t, prstar, ystartinitial[0], H.dHdpPhi, DeltarDot, DeltaPhiDot);
@@ -204,7 +215,7 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
       }
     }
     if(fabs(BestEcc)<AcceptableEcc) {
-      std::cout << "Achieved acceptable eccentricity of e=" << std::setprecision(14) << BestEcc << " in " << i << " iterations." << std::endl;
+      //std::cout << "Achieved acceptable eccentricity of e=" << std::setprecision(14) << BestEcc << " in " << i << " iterations." << std::endl;
       return Bestystart;
     }
     ystart = ystartinitial;

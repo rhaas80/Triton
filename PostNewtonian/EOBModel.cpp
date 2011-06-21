@@ -23,8 +23,8 @@ WaveformUtilities::EOBParameters::EOBParameters(const double idelta, const doubl
   : delta(idelta), nu((1.0-delta*delta)/4.0), chis(ichis), chia(ichia),
     chi((1-2*nu)*chis + delta*chia), chistar(2*nu*chis), chiKerr(chis + delta*chia)
 {
-  string Ref = (PaperRef.compare("default")==0 ? "Pan:2011gk" : PaperRef);
-  if(Ref.compare("Pan:2011gk")==0) {
+  string Ref = (PaperRef.compare("default")==0 ? "Pan:2011gk:Early" : PaperRef);
+  if(Ref.compare("Pan:2011gk:Early")==0) {
     a4 = (((94.0/3.0)-(41.0/32.0)*M_PI*M_PI)*nu);
     a5 = (nu*(-82.5384+508.681*nu-787.826*nu*nu)); // Eq. (27) of Pan et al. 2011
     a6 = (nu*(500.0-1800.0*nu)); // Eq. (28) of Pan et al. 2011
@@ -32,7 +32,7 @@ WaveformUtilities::EOBParameters::EOBParameters(const double idelta, const doubl
     a = (0.0); /// calibrated; PRD 81, 084041
     b = (-1.65); /// calibrated; PRD 81, 084041 p. 10
     aSS = (1.5*nu*chiKerr*chistar); /// calibrated; PRD 81, 084041 Eq. (19) and p. 10
-  } else if(Ref.compare("Pan:2011gk:Early")==0) {
+  } else if(Ref.compare("Pan:2011gk")==0) {
     a4 = (((94./3.) - M_PI*M_PI*41./32.)*nu); // Eq. (9) of Pan et al., 2011
     a5 = ((-5.828-143.5*nu+447*nu*nu)*nu); // Eq. (35a) of Pan et al., 2011
     a6 = (184*nu); // Eq. (35b) of Pan et al., 2011

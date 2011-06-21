@@ -1149,15 +1149,30 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
   history << "### this->AttachQNMs(" << chiKerr << ", " << dt << ", " << TLength << ");" << endl;
   
   /// Add the new times, and resize everything as appropriate
-  const unsigned int NTimesEnd = NTimes();
+  const double TPeak = Peak22Time();
   const double TEnd = T().back();
-  TRef().resize(NTimes()+int(floor(TLength/dt)), T().back());
-  for(unsigned int i=0; i<NTimes()-NTimesEnd; ++i) {
-    TRef(i+NTimesEnd) += (i+1)*dt;
+  unsigned int QNMi1=0;
+  while(T(QNMi1)<TPeak) { ++QNMi1; }
+  {
+    const double ExtrapVal = 0.0;
+    vector<double> NewTimes(int(floor(TLength/dt)), TPeak);
+    for(unsigned int i=1; i<NewTimes.size(); ++i) {
+      NewTimes[i] += i*dt;
+    }
+    NewTimes = Union(T(), NewTimes, dt/2.0);
+    cout << "NewTimes[0]=" << NewTimes[0] << "\tNewTimes.back()=" << NewTimes.back() << endl;
+    cout << "T(0)=" << T(0) << "\tT().back()=" << T().back() << endl;
+    this->Interpolate(NewTimes, ExtrapVal);
   }
-  if(R().size()>1) { RRef().resize(NTimes(), 0.0); }
-  MagRef().resize(NModes(), NTimes(), 0.0);
-  ArgRef().resize(NModes(), NTimes(), 0.0);
+  
+//   const unsigned int NTimesEnd = NTimes();
+//   TRef().resize(NTimes()+int(floor(TLength/dt)), T().back());
+//   for(unsigned int i=0; i<NTimes()-NTimesEnd; ++i) {
+//     TRef(i+NTimesEnd) += (i+1)*dt;
+//   }
+//   if(R().size()>1) { RRef().resize(NTimes(), 0.0); }
+//   MagRef().resize(NModes(), NTimes(), 0.0);
+//   ArgRef().resize(NModes(), NTimes(), 0.0);
   
   for(unsigned int mode=0; mode<NModes(); ++mode) {
     //// If this mode should be exactly zero, let it be
@@ -1174,7 +1189,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
     const double tDropBefore(T(iPeak));
     unsigned int i=iPeak;
     i++;
-    while(Mag(mode, i) < Mag(mode, i-1) && i<NTimesEnd) { ++i; }
+    while(Mag(mode, i) < Mag(mode, i-1) && T(i)<TEnd) { ++i; }
     const unsigned int iBad=i;
     const double tDropAfter(T(iBad));
     Waveform InspiralLM((this->operator[](mode)).DropBefore(tDropBefore).DropAfter(tDropAfter));
@@ -1197,13 +1212,14 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
     double tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
     
     if((delta==deltaOFq(10.0) && chiKerr==FinalSpinApproximation(deltaOFq(10), 0.95))) {
-      cout << "Redoing tmatch find! (tailored to q==10 && chis==0.95)" << endl;
-      iPeak = NTimesEnd-1;
+      //cout << "Redoing tmatch find! (tailored to q==10 && chis==0.95)" << endl;
+      iPeak = NTimes()-1;
       while(T(iPeak) > -40.0 && iPeak>1) { --iPeak; }
+      QNMi1 = iPeak;
       InspiralLM = (this->operator[](mode)).DropBefore(T(iPeak)).DropAfter(TEnd-1.0);
-      cout << "InspiralLM.NTimes()=" << InspiralLM.NTimes()
-	   << " InspiralLM.T(0)=" << InspiralLM.T(0)
-	   << " InspiralLM.T().back()=" << InspiralLM.T().back() << endl;
+      //cout << "InspiralLM.NTimes()=" << InspiralLM.NTimes()
+      //     << " InspiralLM.T(0)=" << InspiralLM.T(0)
+      //     << " InspiralLM.T().back()=" << InspiralLM.T().back() << endl;
       const double tLength = InspiralLM.T().back()-InspiralLM.T(0);
       for(unsigned int j=0; j<InspiralLM.NTimes(); ++j) {
 	InspiralLM.MagRef(0,j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
@@ -1223,9 +1239,10 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
       }
       tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
     } else if(tmatch<tDropBefore || tmatch>tDropAfter) {
-      cout << "Redoing tmatch find!" << endl;
+      //cout << "Redoing tmatch find!" << endl;
       InspiralLM = (this->operator[](mode)).DropBefore(tDropBefore).DropAfter(TEnd);
-      const double tLength = InspiralLM.T().back()-InspiralLM.T(0);
+      const double tFakeRingdown = std::min(InspiralLM.T(0)+50.0, InspiralLM.T().back());
+      const double tLength = tFakeRingdown-InspiralLM.T(0);
       for(unsigned int j=0; j<InspiralLM.NTimes(); ++j) {
 	InspiralLM.MagRef(0, j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
 	MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
@@ -1264,7 +1281,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
     const double phiPeak = Arg(mode, iPeak);
     const double omegaPeak = (Arg(mode, iPeak+1)-Arg(mode, iPeak-1)) / (T(iPeak+1)-T(iPeak-1));
     const double omegaQNM = omegaRe;
-    cout << "L=" << L(mode) << " M=" << M(mode) << setprecision(14) << " tPeak=" << tDropBefore << " tmatch=" << tmatch << " tBad=" << tDropAfter << " omegaPeak=" << omegaPeak << " omegaQNM=" << omegaQNM << endl;
+    //cout << "L=" << L(mode) << " M=" << M(mode) << setprecision(14) << " tPeak=" << tDropBefore << " tmatch=" << tmatch << " tBad=" << tDropAfter << " omegaPeak=" << omegaPeak << " omegaQNM=" << omegaQNM << endl;
     vector<double> omegaTransition(iMatch-iPeak, omegaPeak);
     for(unsigned int k=1; k<omegaTransition.size(); ++k) {
       omegaTransition[k] = omegaPeak + (omegaQNM-omegaPeak)*TransitionFunction_Linear((T(k+iPeak)-T(iPeak))/(T(iMatch-1)-T(iPeak)));
@@ -1283,7 +1300,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
       MagRef(mode, j) = sqrt(qnmRe*qnmRe + qnmIm*qnmIm) * exp(-omegaIm*(T(j)-tmatch));
       ArgRef(mode, j) = atan2(qnmIm, qnmRe) + phiOffset - atan2(Alm0Im, Alm0Re);
     }
-    ArgRef(mode) = Unwrap(Arg(mode));
+    Unwrap(ArgRef(mode), QNMi1-10, NTimes()); // Unwrap just the new part of the data
   }
   return *this;
 }

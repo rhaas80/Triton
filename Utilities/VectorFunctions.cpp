@@ -1107,7 +1107,7 @@ vector<double> WU::Unwrap(const vector<double>& In) {
   // CumCorr will contain the incremental phase corrections
   for(unsigned int i=1; i<In.size(); ++i) {
     Dp = In[i]-In[i-1];
-    // C++'s fmod is unlike Matlab's negative 'a' values, so:
+    // C++'s fmod is unlike Matlab's for negative values, so:
     if(Dp+M_PI<0) {
       Dps = M_PI - fmod(-Dp-M_PI, 2.0*M_PI);
     } else {
@@ -1119,6 +1119,33 @@ vector<double> WU::Unwrap(const vector<double>& In) {
   }
   
   return Out;
+}
+
+vector<double>& WU::Unwrap(vector<double>& Vec, const double i1, const double i2) {
+  // Compare Matlab's unwrap.m file
+  double Dp = 0.0;
+  double Dps = 0.0;
+  double CumCorr = 0.0;
+  unsigned int i=0;
+  
+  // Dp will contain the incremental phase variations;
+  // Dps will contain the equivalents, confined to [-pi,pi)
+  // CumCorr will contain the incremental phase corrections
+  for(i=(i1<1?1:i1); i<Vec.size()&&i<i2; ++i) {
+    Dp = Vec[i]-Vec[i-1];
+    Vec[i-1] += CumCorr;
+    // C++'s fmod is unlike Matlab's for negative values, so:
+    if(Dp+M_PI<0) {
+      Dps = M_PI - fmod(-Dp-M_PI, 2.0*M_PI);
+    } else {
+      Dps = fmod(Dp+M_PI, 2.0*M_PI) - M_PI;
+    }
+    if(Dps==-M_PI && Dp>0) { Dps = M_PI; }
+    CumCorr += Dps - Dp;
+  }
+  Vec[i-1] += CumCorr;
+  
+  return Vec;
 }
 
 void WU::MagArg(const vector<double>& Re, const vector<double>& Im,

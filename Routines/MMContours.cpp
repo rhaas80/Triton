@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
   const unsigned int MatchDisplayWidth=MatchDisplayPrecision+5;
   
   const unsigned int nsave=100;
-  const unsigned int nsaveEOB=20;
+  const unsigned int nsaveEOB=2;
   const bool denseish=true;
   
   
@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
   NRc.AttachQNMs(delta, FinalSpinApproximation(delta, chis));
   if(DropOddMModes) { NRc.DropOddMModes(); }
   const double NRPeak22Time = NRc.Peak22Time();
-  cout << "☺ \t(Peak time = " << NRPeak22Time << ")\n" << endl;
+  cout << "☺ \t(Size = " << NRc.NTimes() << "; Peak time = " << NRPeak22Time << ")\n" << endl;
   
   //// Compute PN Waveforms and roughly match to the NR waveform
   cout << "Creating PN... " << endl;
@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
   //#pragma omp parallel for
   for(int n=0; n<NWaveforms; ++n) {
     Wsc[n].AddToTime(NRPeak22Time-Wsc[n].T().back());
-    Wsc[n].AlignTo(NRc, RoughMatchT1, RoughMatchT2);
+    Wsc[n].AlignTo(NRc, RoughMatchT1+NRPeak22Time, RoughMatchT2+NRPeak22Time);
   }
   
   // Output some nice diagnostics
@@ -216,7 +216,14 @@ int main(int argc, char* argv[]) {
   cout << "Maximum mutually available time: "  << MaxAvailableT << "." << endl;
   cout << "Minimum mutually available time: "  << MinAvailableT << ".\n" << endl;
   
-  return 0;
+  if(true) {
+    Output("Output/rhOverM_T1.dat", Wsc[0]);
+    Output("Output/rhOverM_T2.dat", Wsc[1]);
+    Output("Output/rhOverM_T3.dat", Wsc[2]);
+    Output("Output/rhOverM_T4.dat", Wsc[3]);
+    Output("Output/rhOverM_EOB.dat", NRc);
+    return 0;
+  }
   
   //// Clear the output files
   if(StartWithMassNumber==0 && StartWithFreqNumber==0) {
@@ -339,7 +346,7 @@ int main(int argc, char* argv[]) {
       }
       const double MaxMismatch = max(Mismatches);
       cout << setw(MatchDisplayWidth) << setprecision(MatchDisplayPrecision) << Mismatches << "  max(Mismatches)=" << MaxMismatch << endl;
-      cout << "\t\tComputation took " << difftime(end,start) << " seconds." << endl;
+      //cout << "\t\tComputation took " << difftime(end,start) << " seconds." << endl;
       
       //// Output data to Masses and Frequencies files
       ofstream ofsm(MassesFileName.c_str(), ofstream::app);

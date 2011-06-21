@@ -168,20 +168,32 @@ namespace WaveformUtilities {
       } else {
 	out.save(x,y);
       }
-      if ((x-x2)*(x2-x1) >= 0.0
-	  ||(ContinueIntegration!=NULL && !(derivs.*ContinueIntegration)(x, y, dydx)) // <added />
-	  ) {
+      if ((x-x2)*(x2-x1) >= 0.0) {
 	for (Int i=0;i<nvar;i++) ystart[i]=y[i];
 	if (out.kmax > 0 && std::abs(out.xsave[out.count-1]-x2) > 100.0*std::abs(x2)*EPS)
 	  out.save(x,y);
+	#ifdef DEBUG
+	std::cout << "\nODE returning, having finished." << std::endl;
+	#endif
 	return;
       }
+      if ((ContinueIntegration!=NULL && !(derivs.*ContinueIntegration)(x, y, dydx))) { // <added>
+	for (Int i=0;i<nvar;i++) ystart[i]=y[i];
+	if (out.kmax > 0 && std::abs(out.xsave[out.count-1]-x2) > 100.0*std::abs(x2)*EPS)
+	  out.save(x,y);
+	#ifdef DEBUG
+	std::cout << "\nODE returning, having been asked to:  " << std::setprecision(16) << x << " \t " << y << " \t " << dydx << std::endl;
+	#endif
+	return;
+      } // </ added>
       if (std::abs(s.hnext) <= hmin) {
 	for (Int i=0;i<nvar;i++) ystart[i]=y[i];
 	if (out.kmax > 0 && std::abs(out.xsave[out.count-1]-x2) > 100.0*std::abs(x2)*EPS)
 	  out.save(x,y); /// Save last step
-// 	std::cerr << "\nstd::abs(s.hnext)=" << std::abs(s.hnext) << "\thmin=" << hmin << std::endl; // <added />
-// 	throw("Step size too small in Odeint");
+	#ifdef DEBUG
+	std::cerr << "\nODE returning with small step size:  std::abs(s.hnext)=" << std::abs(s.hnext) << "\thmin=" << hmin << std::endl; // <added />
+ 	//throw("Step size too small in Odeint");
+	#endif
 	return;
       }
       h=s.hnext;
