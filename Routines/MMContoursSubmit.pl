@@ -20,9 +20,12 @@ for $seg (1..$NSegments) {
     # Look for this segment's FinishedStep
     $FinishedStep = "FinishedStep_q${q}_chis${chis}_o${OrigStartFreq}-${OrigEndFreq}_m0";
     if ( -e ${FinishedStep} ) {
-	my($StartFreq, $StartMass) = split(' ', `cat ${FinishedStep}`);
+	($StartMass, $StartFreq) = split(' ', `cat ${FinishedStep}`);
 	# If it is '0 0', this segment is done; skip to the next one
-	if($StartFreq==0 && $StartMass==0) { next; }
+	if($StartFreq==0 && $StartMass==0) {
+	    print "Skipping ${FinishedStep}; it appears to be done\n";
+	    next;
+	}
 	# If it is not '0 0', those are the new starting conditions
     } else {
 	# If it does not exist, start with '0 ${OrigStarFreq}'
