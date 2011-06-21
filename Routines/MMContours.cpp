@@ -50,7 +50,7 @@ using std::ios;
 
 /// Call this program with 'MMContours <q> <chis>', where <q> is the mass ratio and <chis> is the symmetric spin parameter
 /// Optionally, use 'MMContours <q> <chis> <StartWithMassNumber> <StartWithFreqNumber>' for restarts
-///          or use 'MMContours <q> <chis> <StartWithMassNumber> <StartWithFreqNumber> <EndWithFreqNumber>' for a restricted range
+///          or use 'MMContours <q> <chis> <StartWithMassNumber> <StartWithFreqNumber> <OrigStartWithFreqNumber> <EndWithFreqNumber>' for a restricted range
 
 int main(int argc, char* argv[]) {
   if(argc<3) {
@@ -79,20 +79,21 @@ int main(int argc, char* argv[]) {
   
   // Boundaries and resolution of the graph
   const double MinMass=5.0;  // Total binary mass in solar masses
-  const double MaxMass=51.0;
-  const double MassStep = 0.25;
+  const double MaxMass=50.0;
+  const double MassStep = 0.75;
   const unsigned int NMasses=static_cast<unsigned int>(1.0+(MaxMass-MinMass)/MassStep);
   const double Minomega=0.005;  // Hybridization angular GW frequency (dimensionless)
   const double Maxomega=0.065;
-  const double omegaStep=0.0005;
+  const double omegaStep=0.001;
   const unsigned int Nomegas=static_cast<unsigned int>(1.0+(Maxomega-Minomega)/omegaStep);
-  const unsigned int EndBeforeFreqNumber = argc>3 ? StringToInt(argv[5]) : Nomegas;
+  const unsigned int OrigStartWithFreqNumber = argc>3 ? StringToInt(argv[5]) : Nomegas;
+  const unsigned int EndBeforeFreqNumber = argc>3 ? StringToInt(argv[6]) : Nomegas;
   
   // Detector and FFT info
   const string PSDName("AdvLIGO_ZeroDet_HighP");
   const double DetectorMinFreq=AdvLIGOSeismicWall;
   const double DetectorSamplingFreq=AdvLIGOSamplingFreq;
-  const double SafetyFactor=0.8; // To ensure that Gibbs effects don't cause problems
+  const double SafetyFactor=1.0; // To ensure that Gibbs effects don't cause problems
   const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq*SafetyFactor;
   const double MinMismatch=1.0e-13; // This is the smallest mismatch we would believe, remembering that the match is actually subtracted from 1.0; roughly roundoff
   
@@ -102,7 +103,7 @@ int main(int argc, char* argv[]) {
   
   // Files
   const string Unique = "_q" + DoubleToString(q) + "_chis" + DoubleToString(chis)
-    + "_o" + DoubleToString(StartWithFreqNumber) + "-" + DoubleToString(EndBeforeFreqNumber) + "_m" + DoubleToString(StartWithMassNumber);
+    + "_o" + DoubleToString(OrigStartWithFreqNumber) + "-" + DoubleToString(EndBeforeFreqNumber);
   const string MassesFileName("Output/Masses" + Unique + ".dat");
   const string FrequenciesFileName("Output/Frequencies" + Unique + ".dat");
   const string MismatchesMaxFileName("Output/MismatchesMax" + Unique + ".dat");
@@ -124,8 +125,8 @@ int main(int argc, char* argv[]) {
   const unsigned int MatchDisplayPrecision=4;
   const unsigned int MatchDisplayWidth=MatchDisplayPrecision+5;
   
-  const unsigned int nsave=100;
-  const unsigned int nsaveEOB=2;
+  const unsigned int nsave=150;
+  const unsigned int nsaveEOB=3;
   const bool denseish=true;
   
   
@@ -150,7 +151,7 @@ int main(int argc, char* argv[]) {
   //// Load NR Waveform, get rid of unecessary modes, and hybridize if necessary
   cout << "Creating EOB with v0=" << v0 << " ... " << endl;
   Waveform NRc("EOB", delta, chis, chia, v0, QNMLMs(), nsaveEOB, denseish);
-  NRc.AttachQNMs(delta, FinalSpinApproximation(delta, chis));
+  NRc.AttachQNMs(delta, FinalSpinApproximation(delta, chis), 0.0, 5000);
   if(DropOddMModes) { NRc.DropOddMModes(); }
   const double NRPeak22Time = NRc.Peak22Time();
   cout << "☺ \t(Size = " << NRc.NTimes() << "; Peak time = " << NRPeak22Time << ")\n" << endl;
@@ -216,7 +217,7 @@ int main(int argc, char* argv[]) {
   cout << "Maximum mutually available time: "  << MaxAvailableT << "." << endl;
   cout << "Minimum mutually available time: "  << MinAvailableT << ".\n" << endl;
   
-  if(true) {
+  if(false) {
     Output("Output/rhOverM_T1.dat", Wsc[0]);
     Output("Output/rhOverM_T2.dat", Wsc[1]);
     Output("Output/rhOverM_T3.dat", Wsc[2]);
@@ -285,12 +286,11 @@ int main(int argc, char* argv[]) {
       Hs.SetCommonTime(dt/4.0, -1.e300);
       
       //// Cut off the Waveforms below the detector's minimum frequency
-      double DropBeforeTime(Hs[NFs-1].T(0));
       {
 	vector<double> Omega = Hs[NFs-1].Omega2m2();
 	unsigned int i=0;
 	while(i<Omega.size() && Omega[i]<WaveformMinOmega) { ++i; }
-	DropBeforeTime = Hs[NFs-1].T(i);
+	const double DropBeforeTime = Hs[NFs-1].T(i);
 	//#pragma omp parallel for
 	for(int n=0; n<NFs; ++n) {
 	  Hs[n].DropBefore(DropBeforeTime);

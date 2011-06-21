@@ -34,5 +34,6 @@ for $seg (1..$NSegments) {
     }
     # Do the qsub
     
-    print "echo \"${Command} $q $chis $StartMass $StartFreq $OrigEndFreq\" | qsub -l nodes=1,walltime=11:59:00 -d /home/boyle/${Command} -e q${q}_chis${chis}_${OrigStartFreq}-${OrigEndFreq}.err -o q${q}_chis${chis}_${OrigStartFreq}-${OrigEndFreq}.out -\n";
+    print `echo \"${Command} $q $chis $StartMass $StartFreq $OrigEndFreq\" | qsub -l nodes=1,walltime=11:59:00 -d /home/boyle/${Command} -e q${q}_chis${chis}_${OrigStartFreq}-${OrigEndFreq}.err -o q${q}_chis${chis}_${OrigStartFreq}-${OrigEndFreq}.out -N q${q}_chis${chis}_${seg} -`;
+    print "\n";
 }
