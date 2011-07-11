@@ -1,9 +1,9 @@
-## This file contains all the recognized options to the 'PNComparison' routine.
+## This file contains all the recognized options to the 'Hybridize' routine.
 ## Commented lines are optional, and contain the default values.  The required
-## options are NRFile, t1, t2, and tmerger, which delimit the matching region.
+## options are t1, t2, and tmerger, which delimit the matching/blending phase.
 ## In the directory with the data files, use this with the command line
 ##    PNComparison < PNComparison.input |& tee PNComparison.out
-## (assuming that the PNComparison routine is on your path).
+## (assuming that the Hybridize routine is on your path).
 
 ## The following are the physical parameters of the system
 #delta = 0.0;  ## delta = (m1 - m2) / (m1 + m2)
@@ -17,6 +17,7 @@ NRFile = rhOverM_ExtrapolatedN3.dat;
 #ChangeToPsi4 = false;
 
 ## The hybrid is made by matching and blending between times t1 and t2
+#omegaAlign = 0.0; ## If this is non-zero, align by matching at a particular frequency
 t1 = 500;
 t2 = 2000;
 
@@ -31,5 +32,8 @@ tmerger = 3950;
 #DropLMs = ; ## This is a space-separated list of l,m modes to drop (e.g., 8 2  8 -2  8 4  8 -4)
 #DropAfter = 1e200;
 
+## If this is >1, interpolate the final output 'UniformTime' uniform steps in time before outputting
+#UniformTime = -1; ## integer-valued
+
 ## The final data is output to this file
-#DiffFileNameBase = NR;
+#DiffFileNameBase = ;
