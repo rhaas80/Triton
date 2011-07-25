@@ -5,6 +5,7 @@
 ## (assuming that the LevConvergence routine is on your path).
 
 ## Space-separated list of relative directory names
+LevList = <LevsGoHere>;
 #LevList = ../Lev4 ../Lev5 ../Lev6;
 
 ## The following are sprintf-formatted strings for the relevant file names.

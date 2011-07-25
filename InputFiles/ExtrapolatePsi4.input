@@ -8,7 +8,8 @@
 
 
 ## This is a space-separated list of the radii for which you have extracted data.
-Radii = 0100 0102 0105 0108 0111 0114 0117 0121 0125 0129 0133 0137 0142 0148 0153 0160 0166 0173 0181 0190 0200 0210 0222 0235 0250 0266 0285 0307 0333 0363 0400;
+Radii = <RadiiGoHere>;
+#Radii = 0100 0102 0105 0108 0111 0114 0117 0121 0125 0129 0133 0137 0142 0148 0153 0160 0166 0173 0181 0190 0200 0210 0222 0235 0250 0266 0285 0307 0333 0363 0400;
 
 ## This is a space-separated list of the extrapolation orders you want.
 ## Negative orders output retarded, scaled extracted data; N=-1 represents
@@ -21,8 +22,8 @@ Radii = 0100 0102 0105 0108 0111 0114 0117 0121 0125 0129 0133 0137 0142 0148 01
 #LapseFile = LapseSurfaceIntegral_R%04.0fm.dat;
 
 ## These are the ADM and Christodoulou masses in the units of the input data
-ADMMass = 2.0623092789589207; # default: 1.0; note that either ADMMass or ChMass (or both) should probably be included
-ChMass  = 2.0780981114180; # default: 1.0
+ADMMass = <ADMMassGoesHere>; # default: 1.0; note that either ADMMass or ChMass (or both) should probably be included
+ChMass  = <ChMassGoesHere>; # default: 1.0
 
 ## These are the printf-formatted filename templates for the output data files
 #ExtrapolatedFiles = ExtrapolatedN%d.dat;
