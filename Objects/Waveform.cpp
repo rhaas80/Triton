@@ -959,13 +959,14 @@ public:
 };
 
 Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2) {
+  history << "### this->AlignTo(a, " << t1 << ", " << t2 << ")\n#" << flush;
   WaveformAligner Align(a, *this, t1, t2);
   Brent Minimizer;
   Minimizer.ax = max(t1-t2, t[0]-t1);
   Minimizer.bx = 0.0;
   Minimizer.cx = min(t2-t1, t.back()-t2);
   double dt = Minimizer.minimize(Align);
-  t += dt;
+  this->AddToTime(dt);
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
     arg[mode] += Align.darg(dt, mode);
   }
@@ -1145,7 +1146,7 @@ Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double 
     throw("Bad input LMs.");
   }
   
-  if(dt==0.0) { dt = 2*M_PI/(4*2.0); } // 2.0 -> MAX(omegaRe of all the QNM modes)
+  if(dt==0.0) { dt = 2*M_PI/(4*2.07); } // 2.07 -> MAX(omegaRe of all the QNM modes)
   history << "### this->AttachQNMs(" << chiKerr << ", " << dt << ", " << TLength << ");" << endl;
   
   /// Add the new times, and resize everything as appropriate

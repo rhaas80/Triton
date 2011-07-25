@@ -1,5 +1,5 @@
 ## Set this as the full (no '~') directory with Waveforms, including trailing '/'
-BASE = /Users/boyle/Research/WaveExtrapolation/Waveforms/
+BASE = /Users/boyle/Research/Waveforms/
 
 
 ## This is a basic executables-building makefile; the lines below shouldn't need much tweaking.
@@ -15,23 +15,15 @@ LFLAGS:=$(SUBLIBS:%=-L%)
 lFLAGS:=$(SUBLIBS:${BASE}%=-l%)
 LIBDEPS:=$(SUBLIBS:${BASE}%=lib%.a)
 
-.PHONY: sublibs $(SUBLIBS) svnignore
+.PHONY: sublibs $(SUBLIBS)
 
-all: sublibs $(EXECUTABLES) | svnignore
-
-svnignore:
-	@$(ECHO) .svnignore $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
-	@test -f .$@ \
-	  && ($(DIFF) .$@ .$@.tmp > .$@.diff; \
-	      (test -s .$@.diff && (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore) || ($(RM) .$@.tmp)); \
-	      $(RM) .$@.diff) \
-	  || (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore)
+all: sublibs $(EXECUTABLES)
 
 clean:
-	-$(RM) *.d $(EXECUTABLES) .svnignore
+	-$(RM) *.d $(EXECUTABLES)
 
 realclean:
-	-$(RM) *.d $(EXECUTABLES) .svnignore
+	-$(RM) *.d $(EXECUTABLES)
 
 $(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
 	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@

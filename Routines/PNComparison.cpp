@@ -177,7 +177,7 @@ int main () {
     
     //// Construct the PN Waveform
     Waveform PN("Taylor"+Approximant, delta, chis, chia, v0, NR.LM());
-    PN.AddToTime(tmerger);
+    PN.AddToTime(tmerger-PN.T().back());
     if(NR.TypeIndex()%3 == 0) { PN = PN.Differentiate().Differentiate(); }
     
     //// Match

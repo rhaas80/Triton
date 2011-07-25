@@ -8,12 +8,12 @@
 
 
 ## This is a space-separated list of the radii for which you have extracted data.
-Radii = 0075 0077 0080 0082 0085 0088 0091 0094 0097 0100 0105 0110 0115 0120 0125 0135 0140 0150 0160 0170 0180 0190 0207 0225;
+Radii = 0100 0102 0105 0108 0111 0114 0117 0121 0125 0129 0133 0137 0142 0148 0153 0160 0166 0173 0181 0190 0200 0210 0222 0235 0250 0266 0285 0307 0333 0363 0400;
 
 ## This is a space-separated list of the extrapolation orders you want.
 ## Negative orders output retarded, scaled extracted data; N=-1 represents
 ## the outermost extracted data.  N=1 should probably never be used.
-#ExtrapolationOrders = -1 2 3 4 5 6;
+#ExtrapolationOrders = -1 2 3 4 5 6 7 8;
 
 ## These are the printf-formatted filename templates for the input data
 DataFile = rh_R%04.0fm.dat; # default: rPsi4_R%04.0fm_U8+.dat
@@ -27,5 +27,5 @@ ChMass  = 2.0780981114180; # default: 1.0
 ## These are the printf-formatted filename templates for the output data files
 #ExtrapolatedFiles = ExtrapolatedN%d.dat;
 #DifferenceFiles = ExtrapConvergence_N%d-N%d.dat;
-#ConvergenceMatchingT1 = 3.0e300; ## Before doing convergence tests, match over this time range.
-#ConvergenceMatchingT2 = 3.0e300; ## Ranges with either end at 3.0e300 will not do any matching.
+#ConvergenceAlignmentT1 = 3.0e300; ## Before doing convergence tests, match over this time range.
+#ConvergenceAlignmentT2 = 3.0e300; ## Ranges with either end at 3.0e300 will not do any matching.

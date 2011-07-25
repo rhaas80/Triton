@@ -35,12 +35,12 @@ int BufferSize = 1000;
 int main () {
   //// Set up input parameters
   vector<double> Radii(0);
-  vector<int> ExtrapolationOrders(StringToVectorInt("-1 2 3 4 5 6"));
+  vector<int> ExtrapolationOrders(StringToVectorInt("-1 2 3 4 5 6 7 8"));
   string DataFile = "rPsi4_R%04.0fm_U8+.dat";
   string AreaFile = "SurfaceArea_R%04.0fm.dat";
   string LapseFile = "LapseSurfaceIntegral_R%04.0fm.dat";
-  double ADMMass = 1.0;//2.062309278958920800; // in KiPS, for 0093g
-  double ChMass  = 1.0;//2.078098111419127480; // in KiPS, for 0093g
+  double ADMMass = 1.0;
+  double ChMass  = 1.0;
   string ExtrapolatedFiles = "ExtrapolatedN%d.dat";
   string DifferenceFiles = "ExtrapConvergence_N%d-N%d.dat";
   double ConvergenceMatchingT1=3.0e300;
@@ -126,11 +126,7 @@ int main () {
       sprintf(ExtrapolatedFile, (Extrap.Type() + "_" + ExtrapolatedFiles).c_str(), ExtrapolationOrders[i]);
       cout << "Finished N=" << ExtrapolationOrders[i] << " in " << setprecision(3) << difftime(end, start) << " seconds." << endl;
       cout << "Writing " << string(ExtrapolatedFile) << "... " << flush;
-      //Output(Extrap, string(ExtrapolatedFile), "AmpPhi", "(t-r*)/ChMass");
-      ofstream ofs(ExtrapolatedFile, ofstream::out);
-      ofs << setprecision(14) << flush;
-      ofs << Extrap;
-      ofs.close();
+      Output(string(ExtrapolatedFile), Extrap);
       cout << "☺" << endl;
       
       //// Compare to the last one
@@ -139,16 +135,12 @@ int main () {
 	if(ConvergenceMatchingT1!=3.0e300 && ConvergenceMatchingT1!=3.0e300) {
 	  Diff = Extrap / (Last.AlignTo(Extrap, ConvergenceMatchingT1, ConvergenceMatchingT2));
 	} else {
-	  Diff = Extrap/Last; // Extrap.L2NormalizedDifference(Last);
+	  Diff = Extrap/Last;
 	}
 	char DifferenceFile[BufferSize];
 	sprintf(DifferenceFile, (Extrap.Type() + "_" + DifferenceFiles).c_str(), ExtrapolationOrders[i], ExtrapolationOrders[i-1]);
 	cout << "Writing " << string(DifferenceFile) << "... " << flush;
-	//Output(Diff, string(DifferenceFile), "AmpPhi", "(t-r*)/ChMass");
-	ofstream ofs(DifferenceFile, ofstream::out);
-	ofs << setprecision(14) << flush;
-	ofs << Diff;
-	ofs.close();
+	Output(string(DifferenceFile), Diff);
 	cout << "☺" << endl;
       }
       Last = Extrap;

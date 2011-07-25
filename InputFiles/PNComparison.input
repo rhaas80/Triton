@@ -35,5 +35,5 @@ tmerger = 3950;
 ## If this is >1, interpolate the final output 'UniformTime' uniform steps in time before outputting
 #UniformTime = -1; ## integer-valued
 
-## The final data is output to this file
-#DiffFileNameBase = ;
+## The final data is output to "[NR.Type()]_[DiffFileNameBase]-[Approximant].dat"
+#DiffFileNameBase = NR;
