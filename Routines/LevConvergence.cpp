@@ -41,7 +41,7 @@ int main() {
   string LevList = "../Lev4 ../Lev5 ../Lev6";
   string Psi4Files = "rMPsi4_ExtrapolatedN%d.dat";
   string RWZFiles  = "rhOverM_ExtrapolatedN%d.dat";
-  string FluxFiles = "FluxN%d.dat";
+  string FluxFiles = "";//FluxN%d.dat";
   vector<int> ExtrapolationOrders(StringToVectorInt("-1 2 3 4 5 6 7 8"));
   string DifferenceFiles = "%s-%s_N%d.dat";
   double ConvergenceAlignmentT1=3.0e300;
