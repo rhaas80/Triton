@@ -11,7 +11,7 @@ LevList = <LevsGoHere>;
 ## The following are sprintf-formatted strings for the relevant file names.
 ## The '%d' will be replaced by the ExtrapolationOrders given below.
 ## An empty name skips that type of data
-#Psi4Files = rMPsi4_ExtrapolatedN%d.dat;
+#Psi4Files = ;#rMPsi4_ExtrapolatedN%d.dat;  # Only include this if you have extrapolated Psi4
 #RWZFiles  = rhOverM_ExtrapolatedN%d.dat;
 #FluxFiles = ;#FluxN%d.dat;  # Only include this if you have run the Flux routine
 
