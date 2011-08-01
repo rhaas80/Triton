@@ -18,8 +18,9 @@ LevList = <LevsGoHere>;
 ## The list of extrapolation orders to compare
 #ExtrapolationOrders = -1 2 3 4 5 6 7 8;
 
-## This is the basic format for the convergence file names.  Results will 
-## look like rMPsi4_Lev5-Lev4_N3.dat, rhOverM_Lev4-Lev3_N-1.dat, or
+## This is the basic format for the convergence file names.  The data
+## type will be prepended to this name.  Results will look like
+## rMPsi4_Lev5-Lev4_N3.dat, rhOverM_Lev4-Lev3_N-1.dat, or
 ## Flux_Lev6-Lev5_N2.dat, for example.
 #DifferenceFiles = %s-%s_N%d.dat;
 #ConvergenceAlignmentT1 = 3.0e300; ## Before doing convergence tests, align over this time range.
