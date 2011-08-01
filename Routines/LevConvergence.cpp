@@ -39,7 +39,7 @@ void ReadFluxFile(const string& InFileName, string& Header, vector<double>& T, v
 int main() {
   //// Set up input parameters
   string LevList = "../Lev4 ../Lev5 ../Lev6";
-  string Psi4Files = "rMPsi4_ExtrapolatedN%d.dat";
+  string Psi4Files = "";//rMPsi4_ExtrapolatedN%d.dat";
   string RWZFiles  = "rhOverM_ExtrapolatedN%d.dat";
   string FluxFiles = "";//FluxN%d.dat";
   vector<int> ExtrapolationOrders(StringToVectorInt("-1 2 3 4 5 6 7 8"));
