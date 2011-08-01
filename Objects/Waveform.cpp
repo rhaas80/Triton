@@ -14,6 +14,7 @@
 #include "Utilities.hpp"
 #include "Units.hpp"
 #include "PostNewtonian.hpp"
+#include "WignerDMatrix.hpp"
 
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
@@ -283,7 +284,7 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
 	    << v0 << ", "
 	    << PNPhaseOrder << ", "
 	    << PNAmplitudeOrder << ", "
-	    << RowFormat(LM) << ", "
+	    << RowFormat(lm) << ", "
 	    << nsave << ", "
 	    << denseish
 	    << ") // PN constructor" << endl;
@@ -1322,6 +1323,77 @@ Waveform& Waveform::Differentiate() {
     mag[iMode] = sqrt(magdot*magdot + Mag(iMode)*Mag(iMode)*argdot*argdot);
     arg[iMode] = Arg(iMode) + Unwrap(atan2(Mag(iMode)*argdot, magdot));
   }
+  return *this;
+}
+
+// Rotate all modes by the given Euler angles
+Waveform& Waveform::Rotate(const double alpha, const double beta, const double gamma) {
+  // Make sure the ordering is as expected (could program something to make this unecessary...)
+  {
+    unsigned int mode=0;
+    for(int l=2; ; ++l) {
+      if(mode>=NModes()) { break; }
+      for(int m=-l; m<=l; ++m) {
+	if(mode>=NModes()) { break; }
+	if(L(mode)!=l) {
+	  std::cerr << "\nmode=" << mode << "  L(mode)=" << L(mode) << "  l=" << l << std::endl;
+	  throw("Unrecognized mode ordering in this Waveform.");
+	}
+	if(M(mode)!=m) {
+	  std::cerr << "\nmode=" << mode << "  M(mode)=" << M(mode) << "  m=" << m << std::endl;
+	  throw("Unrecognized mode ordering in this Waveform.");
+	}
+	mode++;
+      }
+    }
+  }
+  
+  // Loop through each mode and do the rotation
+  {
+    unsigned int mode=1;
+    for(int l=2; l<int(NModes()); ++l) {
+      if(NModes()<mode) { break; }
+      // Construct the D matrices
+      Matrix<double> DRe(2*l+1, 2*l+1);
+      Matrix<double> DIm(2*l+1, 2*l+1);
+      for(int m=-l; m<=l; ++m) {
+	for(int mp=-l; mp<=l; ++mp) {
+	  double mag, arg;
+	  WignerD(l, mp, m, alpha, beta, gamma, mag, arg);
+	  DRe[mp+l][m+l] = mag*cos(arg);
+	  DIm[mp+l][m+l] = mag*sin(arg);
+	}
+      }
+      // Loop through each time step
+      for(unsigned int t=0; t<NTimes(); ++t) {
+	vector<double> ReData(2*l+1);
+	vector<double> ImData(2*l+1);
+	for(int mp=-l; mp<=l; ++mp) {
+	  // Save the data at this time step
+	  ReData[mp+l] = Mag((l*l-4)+(mp+l), t)*cos(Arg((l*l-4)+(mp+l), t));
+	  ImData[mp+l] = Mag((l*l-4)+(mp+l), t)*sin(Arg((l*l-4)+(mp+l), t));
+	}
+	for(int m=-l; m<=l; ++m) {
+	  MagRef((l*l-4)+(m+l), t) = 0.0;
+	  ArgRef((l*l-4)+(m+l), t) = 0.0;
+	  for(int mp=-l; mp<=l; ++mp) {
+	    // Save the data at this time step
+	    // NB: Mag and Arg are temporarily storing Re and Im data!
+	    MagRef((l*l-4)+(m+l), t) += DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
+	    ArgRef((l*l-4)+(m+l), t) += DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
+	  }
+	}
+      }
+      mode += 2*l+1;
+    }
+    // Convert back to MagArg form
+    for(unsigned int mode=0; mode<NModes(); ++mode) {
+      vector<double> Re = Mag(mode);
+      vector<double> Im = Arg(mode);
+      MagArg(Re, Im, MagRef(mode), ArgRef(mode));
+    }
+  }
+  
   return *this;
 }
 

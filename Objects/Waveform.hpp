@@ -147,6 +147,9 @@ namespace WaveformObjects {
     // Mostly useful for getting the flux
     Waveform& Differentiate();
     
+    // Rotate all modes by the given Euler angles
+    Waveform& Rotate(const double alpha, const double beta, const double gamma);
+    
   }; // class Waveform
   
 } // namespace WaveformObjects

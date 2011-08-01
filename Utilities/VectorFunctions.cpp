@@ -68,7 +68,8 @@ ostream& operator<<(ostream& out, const Matrix<int>& M) {
 }
 
 string RowFormat(const vector<double>& v) {
-  stringstream RowForm("(");
+  stringstream RowForm("");
+  RowForm << "(";
   for(unsigned int i=0; i<v.size()-1; ++i) {
     RowForm << v[i] << ", ";
   }
@@ -77,7 +78,8 @@ string RowFormat(const vector<double>& v) {
 }
 
 string RowFormat(const vector<int>& v) {
-  stringstream RowForm("(");
+  stringstream RowForm("");
+  RowForm << "(";
   for(unsigned int i=0; i<v.size()-1; ++i) {
     RowForm << v[i] << ", ";
   }
@@ -86,7 +88,8 @@ string RowFormat(const vector<int>& v) {
 }
 
 string RowFormat(const WaveformUtilities::Matrix<double>& m) {
-  stringstream RowForm("( ");
+  stringstream RowForm("");
+  RowForm << "( ";
   for(unsigned int i=0; i<m.nrows()-1; ++i) {
     RowForm << RowFormat(m[i]) << ", ";
   }
@@ -95,7 +98,8 @@ string RowFormat(const WaveformUtilities::Matrix<double>& m) {
 }
 
 string RowFormat(const WaveformUtilities::Matrix<int>& m) {
-  stringstream RowForm("( ");
+  stringstream RowForm("");
+  RowForm << "( ";
   for(unsigned int i=0; i<m.nrows()-1; ++i) {
     RowForm << RowFormat(m[i]) << ", ";
   }

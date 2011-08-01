@@ -4,24 +4,19 @@
 #include <cmath>
 #include "Utilities.hpp"
 
-#define Power pow;
-using std::pow;
+void WaveformUtilities::WignerD(const int L, const int MP, const int M, const double alpha, const double beta, const double gamma, double& mag, double& arg) {
+  WaveformUtilities::WignerDMatrix::WignerDMatrix D(L, MP, M, alpha, beta, gamma);
+  D.Value(mag, arg);
+  return;
+}
 
 #include "WignerDMatrix.ipp" // This is a huge list of functions to be pointed to by WignerDMatrix::Calculator
 
-WaveformUtilities::WignerDMatrix::WignerDMatrix(const int iL, const int iMP, const int iM)
+WaveformUtilities::WignerDMatrix::WignerDMatrix(const int iL, const int iMP, const int iM, const double ialpha, const double ibeta, const double igamma)
   : L(iL), MP(iMP), M(iM), Calculator(&WignerDMatrixLocal::Uninitialized),
-    alpha(0.0), beta(0.0), gamma(0.0), sinbetaovertwo(0.0), cosbetaovertwo(1.0)
-{ }
-
-void WaveformUtilities::WignerDMatrix::Angles(const double ialpha, const double ibeta, const double igamma) {
-  if(alpha==ialpha && beta==ibeta && gamma==igamma) { return; }
-  alpha=ialpha;
-  beta=ibeta;
-  gamma=igamma;
-  sinbetaovertwo = sin(beta/2.0);
-  cosbetaovertwo = cos(beta/2.0);
-  return;
+    alpha(ialpha), beta(ibeta), gamma(igamma), sinbetaovertwo(sin(beta/2.0)), cosbetaovertwo(cos(beta/2.0))
+{
+  SetElement(L, MP, M);
 }
 
 void WaveformUtilities::WignerDMatrix::Value(double& Mag, double& Arg) {
@@ -34,7 +29,35 @@ void WaveformUtilities::WignerDMatrix::Value(double& Mag, double& Arg) {
   return;
 }
 
-void WaveformUtilities::WignerDMatrix::Element(const int L, const int MP, const int M) {
+void WaveformUtilities::WignerDMatrix::ValueReIm(double& Re, double& Im) {
+  double Mag, Arg;
+  Value(Mag, Arg);
+  Re = Mag*cos(Arg);
+  Im = Mag*sin(Arg);
+  return;
+}
+
+void WaveformUtilities::WignerDMatrix::SetAngles(const double ialpha, const double ibeta, const double igamma) {
+  if(alpha==ialpha && beta==ibeta && gamma==igamma) { return; }
+  alpha=ialpha;
+  beta=ibeta;
+  gamma=igamma;
+  sinbetaovertwo = sin(beta/2.0);
+  cosbetaovertwo = cos(beta/2.0);
+  return;
+}
+
+void WaveformUtilities::WignerDMatrix::SetElement(const int L, const int MP, const int M) {
+  if(L<0) {
+    Calculator = &WignerDMatrixLocal::Uninitialized;
+    return;
+  }
+  
+  if(L>8) {
+    std::cerr << "\nL=" << L << std::endl;
+    throw("This L value not yet implemented for Wigner D matrices.");
+  }
+  
   if(abs(MP)>L || abs(M)>L) {
     std::cerr << "\nL=" << L << "  MP=" << MP << "  M=" << M << std::endl;
     throw("Bad MP or M, out of range for Wigner D matrix.");
