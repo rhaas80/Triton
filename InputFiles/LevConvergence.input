@@ -13,7 +13,7 @@ LevList = <LevsGoHere>;
 ## An empty name skips that type of data
 #Psi4Files = rMPsi4_ExtrapolatedN%d.dat;
 #RWZFiles  = rhOverM_ExtrapolatedN%d.dat;
-#FluxFiles = FluxN%d.dat;
+#FluxFiles = ;#FluxN%d.dat;  # Only include this if you have run the Flux routine
 
 ## The list of extrapolation orders to compare
 #ExtrapolationOrders = -1 2 3 4 5 6 7 8;
