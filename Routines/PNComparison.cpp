@@ -33,21 +33,22 @@ int main () {
   double chis = 0.0;
   double chia = 0.0;
   double v0 = 0.144;
-  string NRFile = "";
+  string NRFile = "rhOverM_ExtrapolatedN5.dat";
   bool Conjugate = false;
   bool ChangeToPsi4 = false;
   int UniformTime = -1;
   double omegaAlign = 0.0;
   double t1 = 500;
   double t2 = 2000;
-  double tmerger = 3000;
-  bool DropM0Modes = true;
+  double tmerger = 3950;
+  bool DropM0Modes = false;
   bool DropOddMModes = false;
-  bool DropNegativeMModes = true;
+  bool DropNegativeMModes = false;
   vector<int> DropLs(0);
   vector<int> DropLMs(0);
   double DropAfter = 1e200;
   string DiffFileNameBase = "NR";
+  string HybridFileNameBase = "Hybrid";
   bool ZeroEnds = true;
   vector<string> Approximants(4);
   
@@ -104,6 +105,8 @@ int main () {
       }
     } else if(Keys[i].compare("DropAfter")==0) {
       DropAfter = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("HybridFileNameBase")==0) {
+      HybridFileNameBase = Values[i];
     } else if(Keys[i].compare("DiffFileNameBase")==0) {
       DiffFileNameBase = Values[i];
     } else {
@@ -195,6 +198,17 @@ int main () {
       Output(DiffFileName, Diff.UniformTime(UniformTime));
     } else {
       Output(DiffFileName, PN/NR);
+    }
+    cout << " ☺" << endl;
+    
+    /// Output Hybrid
+    const string HybridFileName = NR.Type() + "_" + HybridFileNameBase + "_" + Approximant + ".dat";
+    PN.HybridizeWith(NR, t1, t2);
+    cout << "Writing difference to " << HybridFileName << " ..." << flush;
+    if(UniformTime>1) {
+      Output(HybridFileName, PN.UniformTime(UniformTime));
+    } else {
+      Output(HybridFileName, PN);
     }
     cout << " ☺" << endl;
   }

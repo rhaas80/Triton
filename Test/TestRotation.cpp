@@ -74,10 +74,15 @@ public:
 
 
 int main() {
-  vector<double> BetaGamma(2, 0.0);
-  BetaGamma[0] = M_PI/7.0;
-  BetaGamma[1] = 0*M_PI/17.0;
-  vector<double> BetaGamma0 = BetaGamma;
+  vector<double> AlphaBetaGammaA(3, 0.0);
+  AlphaBetaGammaA[0] = M_PI/17.0;
+  AlphaBetaGammaA[1] = M_PI/7.0;
+  AlphaBetaGammaA[2] = M_PI/23.0;
+  vector<double> AlphaBetaGamma0 = AlphaBetaGammaA;
+  vector<double> AlphaBetaGammaB(3, 0.0);
+  AlphaBetaGammaB[0] = -AlphaBetaGammaA[2];
+  AlphaBetaGammaB[1] = -AlphaBetaGammaA[1];
+  AlphaBetaGammaB[2] = -AlphaBetaGammaA[0];
   
   string Approximant = "TaylorT4";
   const double delta = 0.05;
@@ -93,36 +98,37 @@ int main() {
   W.DropLMode(6);
   W.DropLMode(5);
   W.DropLMode(4);
+  W.DropLMode(3);
 //   W.MagRef(1) *= 0.0;
 //   W.MagRef(2) *= 0.0;
 //   W.MagRef(3) *= 0.0;
   const Waveform WIni = W;
-//   unsigned int i=0;
+  unsigned int i=0;
   unsigned int j=0;
 //   cout << "Writing Ini" << flush;
 //   Output("Outputs/TestRotation_Ini.dat", W);
-  cout << "\nRotating " << j++ << flush;
-  W.Rotate(0, 0, 0);
+//   cout << "\nRotating " << j++ << flush;
+//   W.Rotate(0, 0, 0);
 //   cout << "\nWriting " << i++ << flush;
 //   Output("Outputs/TestRotation_0.dat", W);
 //   Output("Outputs/TestRotation_0-Ini.dat", W/WIni);
-  cout << "\nRotating " << j++ << flush;
-  W.Rotate(M_PI/7.0, 0, 0);
+//   cout << "\nRotating " << j++ << flush;
+//   W.Rotate(M_PI/7.0, 0, 0);
 //   cout << "\nWriting " << i++ << flush;
 //   Output("Outputs/TestRotation_1.dat", W);
 //   Output("Outputs/TestRotation_1-Ini.dat", W/WIni);
-  W = WIni;
-  cout << "\nRotating " << j++ << flush;
-  W.Rotate(-M_PI/7.0, 0, M_PI/7.0);
+//   W = WIni;
+//   cout << "\nRotating " << j++ << flush;
+//   W.Rotate(-M_PI/7.0, 0, M_PI/7.0);
 //   cout << "\nWriting " << i++ << flush;
 //   Output("Outputs/TestRotation_2.dat", W);
 //   Output("Outputs/TestRotation_2-Ini.dat", W/WIni);
   cout << "\nRotating " << j++ << flush;
   W = WIni;
-  W.Rotate(-BetaGamma[1], -BetaGamma[0], 0);
-//   cout << "\nWriting " << i++ << flush;
-//   Output("Outputs/TestRotation_3.dat", W);
-//   Output("Outputs/TestRotation_3-Ini.dat", W/WIni);
+  W.Rotate(AlphaBetaGammaA[0], AlphaBetaGammaA[1], AlphaBetaGammaA[2]);
+  cout << "\nWriting " << i++ << flush;
+  Output("Outputs/TestRotation_3.dat", W);
+  Output("Outputs/TestRotation_3-Ini.dat", W/WIni);
   cout << endl << "Done" << endl;
   
   WaveformAmplitudes Amp(delta, chis, chia);
@@ -130,26 +136,29 @@ int main() {
   Amp.rhOverM(2, 2, v0, 0.0, hMag, hArg);
   const unsigned int Prec = 18;
   const double Tolerance = 2.0e-15;
-  int Iterations=0;
+  int Iterations1=0, Iterations2=0;
   MaximizeMagDiff Minimizer(W);
 //   MaximizeMagSum Minimizer(W);
 //   MaximizeMag22 Minimizer(W);
 //   MaximizeMag2Neg2 Minimizer(W);
 //   MinimizeMag20 Minimizer(W);
   double Mag22=0;
-  BetaGamma *= 3.41;
+  vector<double> BetaGamma(2, 0.0);
+  BetaGamma[0] = AlphaBetaGammaB[1];
+  BetaGamma[1] = AlphaBetaGammaB[2];
+  BetaGamma = BetaGamma + M_PI/2.0;
   try {
-    WaveformUtilities::dfpmin(BetaGamma, Tolerance, Iterations, Mag22, Minimizer);
+    WaveformUtilities::dfpmin(BetaGamma, Tolerance, Iterations1, Mag22, Minimizer);
   } catch(int) { }
   try {
-    WaveformUtilities::dfpmin(BetaGamma, Tolerance, Iterations, Mag22, Minimizer);
+    WaveformUtilities::dfpmin(BetaGamma, Tolerance, Iterations2, Mag22, Minimizer);
   } catch(int) { }
   
   cout << "Exact:" << endl;
-  cout << "xmin=" << setprecision(Prec) << BetaGamma0 << "\tfmin=" << setprecision(Prec) << -hMag*hMag << "=" << -0.060432566507885*0.060432566507885 << endl;
+  cout << "xmin=" << setprecision(Prec) << -AlphaBetaGamma0 << "\tfmin=" << setprecision(Prec) << -hMag*hMag << "=" << -0.060432566507885*0.060432566507885 << endl;
   cout << "Numerical:" << endl;
-  cout << "xmin=" << setprecision(Prec) << fmod(BetaGamma, M_PI/2.) << "\tfmin=" << setprecision(Prec) << Mag22 << endl;
-  cout << "Iterations=" << Iterations << endl;
+  cout << "xmin=" << setprecision(Prec) << fmod(BetaGamma, M_PI) << " or " << fmod(BetaGamma, M_PI)-M_PI << "\tfmin=" << setprecision(Prec) << Mag22 << endl;
+  cout << "Iterations=" << Iterations1+Iterations2 << endl;
   
   return 0;
 }

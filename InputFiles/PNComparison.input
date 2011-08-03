@@ -9,10 +9,10 @@
 #delta = 0.0;  ## delta = (m1 - m2) / (m1 + m2)
 #chis = 0.0;  ## chis = (chi1 + chi2) / 2  [component along the Newtonian angular momentum]
 #chia = 0.0;  ## chia = (chi1 - chi2) / 2  [component along the Newtonian angular momentum]
-#v0 = 0.144; ## v0 = (Omega0)^(1/3).  For NINJA-2, Omega0 = 0.003, so v0=0.144.
+#v0 = 0.144; ## v0 = (Omega0)^(1/3).  For NINJA-2, Omega0 = 0.003, so v0=0.144
 
 ## The NR data is read from this file
-NRFile = rhOverM_ExtrapolatedN3.dat;
+NRFile = rhOverM_ExtrapolatedN5.dat;
 #Conjugate = false;
 #ChangeToPsi4 = false;
 
@@ -35,5 +35,8 @@ tmerger = 3950;
 ## If this is >1, interpolate the final output 'UniformTime' uniform steps in time before outputting
 #UniformTime = -1; ## integer-valued
 
-## The final data is output to "[NR.Type()]_[DiffFileNameBase]-[Approximant].dat"
+## The difference data is output to "[NR.Type()]_[DiffFileNameBase]-[Approximant].dat"
 #DiffFileNameBase = NR;
+
+## The hybrid data is output to "[NR.Type()]_[HybridFileNameBase]_[Approximant].dat"
+#HybridFileNameBase = NR;
