@@ -1,5 +1,5 @@
 LIBDIRS:= Utilities PostNewtonian Objects
-EXECDIRS:= Routines Test
+EXECDIRS:= Routines
 SUBDIRS:= $(LIBDIRS) $(EXECDIRS)
 
 all:
