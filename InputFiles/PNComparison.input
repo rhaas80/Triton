@@ -3,7 +3,7 @@
 ## options are t1, t2, and tmerger, which delimit the matching/blending phase.
 ## In the directory with the data files, use this with the command line
 ##    PNComparison < PNComparison.input |& tee PNComparison.out
-## (assuming that the Hybridize routine is on your path).
+## (assuming that the Hybridize routine is on your path and that you use tcsh).
 
 ## The following are the physical parameters of the system
 #delta = 0.0;  ## delta = (m1 - m2) / (m1 + m2)
@@ -12,7 +12,7 @@
 #v0 = 0.144; ## v0 = (Omega0)^(1/3).  For NINJA-2, Omega0 = 0.003, so v0=0.144
 
 ## The NR data is read from this file
-NRFile = rhOverM_ExtrapolatedN5.dat;
+#NRFile = rhOverM_ExtrapolatedN5.dat;
 #Conjugate = false;
 #ChangeToPsi4 = false;
 
@@ -24,13 +24,13 @@ t2 = 2000;
 ## The PN needs to be offset roughly to the peak of the NR amplitude
 tmerger = 3950;
 
-## Ths following options allow certain modes to be dropped from the NR waveform before hybridization
-#DropM0Modes = true; ## Drop all modes with m=0
+## Ths following options allow certain modes and times to be dropped from the NR waveform before hybridization
+#DropM0Modes = false; ## Drop all modes with m=0
 #DropOddMModes = false; ## Drop all modes with odd m
-#DropNegativeMModes = true;
+#DropNegativeMModes = false;
 #DropLs = ; ## This is a space-separated list of l modes to drop
 #DropLMs = ; ## This is a space-separated list of l,m modes to drop (e.g., 8 2  8 -2  8 4  8 -4)
-#DropAfter = 1e200;
+#DropAfter = 1e200; ## This is the time after which data will be dropped.  You probably don't want to change this
 
 ## If this is >1, interpolate the final output 'UniformTime' uniform steps in time before outputting
 #UniformTime = -1; ## integer-valued
@@ -39,4 +39,4 @@ tmerger = 3950;
 #DiffFileNameBase = NR;
 
 ## The hybrid data is output to "[NR.Type()]_[HybridFileNameBase]_[Approximant].dat"
-#HybridFileNameBase = NR;
+#HybridFileNameBase = Hybrid;
