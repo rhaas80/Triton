@@ -127,8 +127,8 @@ int main () {
     }
   }
   std::stringstream Parameters;
-  Parameters << "####Using the following parameters:\n"
-	     << "\n###delta = " << delta
+  cout << "Using the following parameters:" << endl;
+  Parameters << "\n###delta = " << delta
 	     << ";\n###chis = " << chis
 	     << ";\n###chia = " << chia
 	     << ";\n###v0 = " << v0
