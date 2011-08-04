@@ -153,9 +153,9 @@ int main(int argc, char* argv[]) {
   
   //// Load NR Waveform, get rid of unecessary modes, and hybridize if necessary
   cout << "Reading NR... " << flush;
-  Waveform NRc(NRFileName, "AmpPhi");
+  Waveform NRc(NRFileName, "MagArg");
   {
-    Waveform NRRaw(NRFileName, "AmpPhi");
+    Waveform NRRaw(NRFileName, "MagArg");
     NRRaw.DropLMode(8);
     NRRaw.DropLMode(7);
     NRRaw.DropLMode(6);

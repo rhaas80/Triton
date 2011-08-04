@@ -1125,7 +1125,7 @@ vector<double> WU::Unwrap(const vector<double>& In) {
   return Out;
 }
 
-vector<double>& WU::Unwrap(vector<double>& Vec, const double i1, const double i2) {
+vector<double>& WU::Unwrap(vector<double>& Vec, const unsigned int i1, const unsigned int i2) {
   // Compare Matlab's unwrap.m file
   double Dp = 0.0;
   double Dps = 0.0;

@@ -181,7 +181,7 @@ namespace WaveformUtilities {
   
   /// Phase-conversion functions
   std::vector<double> Unwrap(const std::vector<double>& a);
-  std::vector<double>& Unwrap(std::vector<double>& a, const double i1, const double i2);
+  std::vector<double>& Unwrap(std::vector<double>& a, const unsigned int i1, const unsigned int i2); // Unwrap between two indices
   void MagArg(const std::vector<double>& Re, const std::vector<double>& Im,
 	      std::vector<double>& mag, std::vector<double>& arg);
   void ReIm(const std::vector<std::vector<double> >& mag, const std::vector<std::vector<double> >& arg,

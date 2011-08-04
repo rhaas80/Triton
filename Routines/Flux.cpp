@@ -92,7 +92,7 @@ int main (void) {
     // Get flux and omega
     sprintf(FileName, DataFiles.c_str(), ExtrapolationOrders[i]);
     cout << "Reading " << FileName << "... " << flush;
-    W = Waveform(FileName, "AmpPhi").DropBefore(DropBefore).DropAfter(DropAfter).Differentiate();
+    W = Waveform(FileName, "MagArg").DropBefore(DropBefore).DropAfter(DropAfter).Differentiate();
     cout << "☺\nComputing omega, flux, PN flux, and normalized flux... " << flush;
     if(Smooth) {
       cerr << "\nSmoothing requested, but not yet implemented.  Continuing without it." << endl;

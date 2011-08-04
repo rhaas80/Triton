@@ -90,8 +90,8 @@ int main() {
 	sprintf(LastFile, (LastLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i]);
 	sprintf(NextFile, (NextLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i]);
 	cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
-	Diff[0] = Waveform(LastFile, "AmpPhi");
-	Diff[1] = Waveform(NextFile, "AmpPhi");
+	Diff[0] = Waveform(LastFile, "MagArg");
+	Diff[1] = Waveform(NextFile, "MagArg");
 	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
 	  Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
 	}
@@ -109,8 +109,8 @@ int main() {
 	sprintf(LastFile, (LastLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
 	sprintf(NextFile, (NextLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
 	cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
-	Diff[0] = Waveform(LastFile, "AmpPhi");
-	Diff[1] = Waveform(NextFile, "AmpPhi");
+	Diff[0] = Waveform(LastFile, "MagArg");
+	Diff[1] = Waveform(NextFile, "MagArg");
 	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
 	  Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
 	}
