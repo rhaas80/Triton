@@ -14,6 +14,7 @@ using WaveformUtilities::StringToDouble;
 using WaveformUtilities::StringToBool;
 using WaveformUtilities::StringToInt;
 using WaveformUtilities::StringToVectorInt;
+using WaveformUtilities::DoubleToString;
 using WaveformObjects::Waveform;
 using std::vector;
 using std::string;
@@ -228,9 +229,9 @@ int main () {
       Hybrid.Interpolate(HybridDt);
     }
     if(MinimalGrid) {
-      for(unsigned int i=0; i<NModes(); ++i) {
+      for(unsigned int mode=0; mode<Hybrid.NModes(); ++mode) {
 	const string HybridFileName = NR.Type() + "_" + HybridFileNameBase + "_" + Approximant
-	  + "_L" + DoubleToString(Hybrid.L(i)) + "_M" + DoubleToString(Hybrid.M(i)) + ".dat";
+	  + "_L" + DoubleToString(Hybrid.L(mode)) + "_M" + DoubleToString(Hybrid.M(mode)) + ".dat";
 	Waveform Mode = Hybrid[mode];
 	Mode.MinimalGrid(MagTol, ArgTol);
 	Output(HybridFileName, Mode);
