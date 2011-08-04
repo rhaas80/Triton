@@ -228,9 +228,16 @@ int main () {
       Hybrid.Interpolate(HybridDt);
     }
     if(MinimalGrid) {
-      Hybrid.MinimalGrid(MagTol, ArgTol);
+      for(unsigned int i=0; i<NModes(); ++i) {
+	const string HybridFileName = NR.Type() + "_" + HybridFileNameBase + "_" + Approximant
+	  + "_L" + DoubleToString(Hybrid.L(i)) + "_M" + DoubleToString(Hybrid.M(i)) + ".dat";
+	Waveform Mode = Hybrid[mode];
+	Mode.MinimalGrid(MagTol, ArgTol);
+	Output(HybridFileName, Mode);
+      }
+    } else {
+      Output(HybridFileName, Hybrid);
     }
-    Output(HybridFileName, Hybrid);
     cout << " ☺" << endl;
   }
   
