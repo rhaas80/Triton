@@ -125,42 +125,44 @@ int main () {
       throw(("Unknown key " + Keys[i] + ".\n").c_str());
     }
   }
-  cout << "####Using the following parameters:\n"
-       << "\n###delta = " << delta
-       << ";\n###chis = " << chis
-       << ";\n###chia = " << chia
-       << ";\n###v0 = " << v0
-       << ";\n###NRFile = " << NRFile
-       << ";\n###Conjugate = " << (Conjugate ? "true" : "false")
-       << ";\n###ChangeToPsi4 = " << (ChangeToPsi4 ? "true" : "false")
-       << ";\n###omegaAlign = " << omegaAlign
-       << ";\n###t1 = " << t1
-       << ";\n###t2 = " << t2
-       << ";\n###tmerger = " << tmerger
-       << ";\n###DropM0Modes = " << (DropM0Modes ? "true" : "false")
-       << ";\n###DropOddMModes = " << (DropOddMModes ? "true" : "false")
-       << ";\n###DropNegativeMModes = " << (DropNegativeMModes ? "true" : "false")
-       << ";\n###DropLs = (" << flush;
+  std::stringstream Parameters;
+  Parameters << "####Using the following parameters:\n"
+	     << "\n###delta = " << delta
+	     << ";\n###chis = " << chis
+	     << ";\n###chia = " << chia
+	     << ";\n###v0 = " << v0
+	     << ";\n###NRFile = " << NRFile
+	     << ";\n###Conjugate = " << (Conjugate ? "true" : "false")
+	     << ";\n###ChangeToPsi4 = " << (ChangeToPsi4 ? "true" : "false")
+	     << ";\n###omegaAlign = " << omegaAlign
+	     << ";\n###t1 = " << t1
+	     << ";\n###t2 = " << t2
+	     << ";\n###tmerger = " << tmerger
+	     << ";\n###DropM0Modes = " << (DropM0Modes ? "true" : "false")
+	     << ";\n###DropOddMModes = " << (DropOddMModes ? "true" : "false")
+	     << ";\n###DropNegativeMModes = " << (DropNegativeMModes ? "true" : "false")
+	     << ";\n###DropLs = (" << flush;
   if(DropLs.size()>0) {
     for(unsigned int i=0; i<DropLs.size()-1; ++i) {
-      cout << DropLs[i] << ", ";
+      Parameters << DropLs[i] << ", ";
     }
-    cout << DropLs[DropLs.size()-1];
+    Parameters << DropLs[DropLs.size()-1];
   }
-  cout << ");\n###DropLMs = (" << flush;
+  Parameters << ");\n###DropLMs = (" << flush;
   if(DropLMs.size()>0) {
     for(unsigned int i=0; i<DropLMs.size()-2; i+=2) {
-      cout << "(" << DropLMs[i] << ", " << DropLMs[i+1] << "), ";
+      Parameters << "(" << DropLMs[i] << ", " << DropLMs[i+1] << "), ";
     }
-    cout << "(" << DropLMs[DropLMs.size()-2] << ", " << DropLMs[DropLMs.size()-1] << ")";
+    Parameters << "(" << DropLMs[DropLMs.size()-2] << ", " << DropLMs[DropLMs.size()-1] << ")";
   }
-  cout << ");\n###DropAfter = " << DropAfter
-       << ";\n###DiffFileNameBase = " << DiffFileNameBase
-       << ";\n###UniformTime_Diff = " << UniformTime_Diff
-       << ";\n###HybridDt = " << HybridDt
-       << ";\n###MinimalGrid = " << (MinimalGrid ? "true" : "false")
-       << ";\n###MagTol = " << MagTol
-       << ";\n###ArgTol = " << ArgTol << ";\n" << endl;
+  Parameters << ");\n###DropAfter = " << DropAfter
+	     << ";\n###DiffFileNameBase = " << DiffFileNameBase
+	     << ";\n###UniformTime_Diff = " << UniformTime_Diff
+	     << ";\n###HybridDt = " << HybridDt
+	     << ";\n###MinimalGrid = " << (MinimalGrid ? "true" : "false")
+	     << ";\n###MagTol = " << MagTol
+	     << ";\n###ArgTol = " << ArgTol << ";\n";
+  cout << Parameters << endl;
   
   //// Read the NR Waveform from file
   cout << "Reading " << NRFile << "... " << flush;
@@ -220,6 +222,7 @@ int main () {
     /// Output Hybrid
     const string HybridFileName = NR.Type() + "_" + HybridFileNameBase + "_" + Approximant + ".dat";
     Waveform Hybrid = PN.HybridizeWith(NR, t1, t2);
+    Hybrid.History() << "#### PNComparison.input: \n" << Parameters << "#### End PNComparison.input" << endl;
     cout << "Writing difference to " << HybridFileName << " ..." << flush;
     if(HybridDt>0.0) {
       Hybrid.Interpolate(HybridDt);
