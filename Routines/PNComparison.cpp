@@ -36,7 +36,11 @@ int main () {
   string NRFile = "rhOverM_ExtrapolatedN5.dat";
   bool Conjugate = false;
   bool ChangeToPsi4 = false;
-  int UniformTime = -1;
+  int UniformTime_Diff = -1;
+  double HybridDt = 0.0;
+  bool MinimalGrid = false;
+  double MagTol = 1.e-5;
+  double ArgTol = MagTol;
   double omegaAlign = 0.0;
   double t1 = 500;
   double t2 = 2000;
@@ -79,8 +83,16 @@ int main () {
       Conjugate = StringToBool(Values[i]);
     } else if(Keys[i].compare("ChangeToPsi4")==0) {
       ChangeToPsi4 = StringToBool(Values[i]);
-    } else if(Keys[i].compare("UniformTime")==0) {
-      UniformTime = StringToInt(Values[i]);
+    } else if(Keys[i].compare("UniformTime_Diff")==0 || Keys[i].compare("UniformTime")==0) {
+      UniformTime_Diff = StringToInt(Values[i]);
+    } else if(Keys[i].compare("HybridDt")==0) {
+      HybridDt = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("MinimalGrid")==0) {
+      MinimalGrid = StringToBool(Values[i]);
+    } else if(Keys[i].compare("MagTol")==0) {
+      MagTol = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("ArgTol")==0) {
+      ArgTol = StringToDouble(Values[i]);
     } else if(Keys[i].compare("omegaAlign")==0) {
       omegaAlign = StringToDouble(Values[i]);
     } else if(Keys[i].compare("t1")==0) {
@@ -113,38 +125,42 @@ int main () {
       throw(("Unknown key " + Keys[i] + ".\n").c_str());
     }
   }
-  cout << "##Using the following parameters:\n"
-       << "\ndelta = " << delta
-       << ";\nchis = " << chis
-       << ";\nchia = " << chia
-       << ";\nv0 = " << v0
-       << ";\nNRFile = " << NRFile
-       << ";\nConjugate = " << (Conjugate ? "true" : "false")
-       << ";\nChangeToPsi4 = " << (ChangeToPsi4 ? "true" : "false")
-       << ";\nUniformTime = " << UniformTime
-       << ";\nomegaAlign = " << omegaAlign
-       << ";\nt1 = " << t1
-       << ";\nt2 = " << t2
-       << ";\ntmerger = " << tmerger
-       << ";\nDropM0Modes = " << (DropM0Modes ? "true" : "false")
-       << ";\nDropOddMModes = " << (DropOddMModes ? "true" : "false")
-       << ";\nDropNegativeMModes = " << (DropNegativeMModes ? "true" : "false")
-       << ";\nDropLs = (" << flush;
+  cout << "####Using the following parameters:\n"
+       << "\n###delta = " << delta
+       << ";\n###chis = " << chis
+       << ";\n###chia = " << chia
+       << ";\n###v0 = " << v0
+       << ";\n###NRFile = " << NRFile
+       << ";\n###Conjugate = " << (Conjugate ? "true" : "false")
+       << ";\n###ChangeToPsi4 = " << (ChangeToPsi4 ? "true" : "false")
+       << ";\n###omegaAlign = " << omegaAlign
+       << ";\n###t1 = " << t1
+       << ";\n###t2 = " << t2
+       << ";\n###tmerger = " << tmerger
+       << ";\n###DropM0Modes = " << (DropM0Modes ? "true" : "false")
+       << ";\n###DropOddMModes = " << (DropOddMModes ? "true" : "false")
+       << ";\n###DropNegativeMModes = " << (DropNegativeMModes ? "true" : "false")
+       << ";\n###DropLs = (" << flush;
   if(DropLs.size()>0) {
     for(unsigned int i=0; i<DropLs.size()-1; ++i) {
       cout << DropLs[i] << ", ";
     }
     cout << DropLs[DropLs.size()-1];
   }
-  cout << ");\nDropLMs = (" << flush;
+  cout << ");\n###DropLMs = (" << flush;
   if(DropLMs.size()>0) {
     for(unsigned int i=0; i<DropLMs.size()-2; i+=2) {
       cout << "(" << DropLMs[i] << ", " << DropLMs[i+1] << "), ";
     }
     cout << "(" << DropLMs[DropLMs.size()-2] << ", " << DropLMs[DropLMs.size()-1] << ")";
   }
-  cout << ");\nDropAfter = " << DropAfter
-       << ";\nDiffFileNameBase = " << DiffFileNameBase << ";\n" << endl;
+  cout << ");\n###DropAfter = " << DropAfter
+       << ";\n###DiffFileNameBase = " << DiffFileNameBase
+       << ";\n###UniformTime_Diff = " << UniformTime_Diff
+       << ";\n###HybridDt = " << HybridDt
+       << ";\n###MinimalGrid = " << (MinimalGrid ? "true" : "false")
+       << ";\n###MagTol = " << MagTol
+       << ";\n###ArgTol = " << ArgTol << ";\n" << endl;
   
   //// Read the NR Waveform from file
   cout << "Reading " << NRFile << "... " << flush;
@@ -193,9 +209,9 @@ int main () {
     /// Output difference
     const string DiffFileName = NR.Type() + "_" + DiffFileNameBase + "-" + Approximant + ".dat";
     cout << "Writing difference to " << DiffFileName << " ..." << flush;
-    if(UniformTime>1) {
+    if(UniformTime_Diff>1) {
       Waveform Diff = PN/NR;
-      Output(DiffFileName, Diff.UniformTime(UniformTime));
+      Output(DiffFileName, Diff.UniformTime(UniformTime_Diff));
     } else {
       Output(DiffFileName, PN/NR);
     }
@@ -203,13 +219,15 @@ int main () {
     
     /// Output Hybrid
     const string HybridFileName = NR.Type() + "_" + HybridFileNameBase + "_" + Approximant + ".dat";
-    PN.HybridizeWith(NR, t1, t2);
+    Waveform Hybrid = PN.HybridizeWith(NR, t1, t2);
     cout << "Writing difference to " << HybridFileName << " ..." << flush;
-    if(UniformTime>1) {
-      Output(HybridFileName, PN.UniformTime(UniformTime));
-    } else {
-      Output(HybridFileName, PN);
+    if(HybridDt>0.0) {
+      Hybrid.Interpolate(HybridDt);
     }
+    if(MinimalGrid) {
+      Hybrid.MinimalGrid(MagTol, ArgTol);
+    }
+    Output(HybridFileName, Hybrid);
     cout << " ☺" << endl;
   }
   
