@@ -162,7 +162,7 @@ int main () {
 	     << ";\n###MinimalGrid = " << (MinimalGrid ? "true" : "false")
 	     << ";\n###MagTol = " << MagTol
 	     << ";\n###ArgTol = " << ArgTol << ";\n";
-  cout << Parameters << endl;
+  cout << Parameters.str() << endl;
   
   //// Read the NR Waveform from file
   cout << "Reading " << NRFile << "... " << flush;
@@ -222,7 +222,7 @@ int main () {
     /// Output Hybrid
     const string HybridFileName = NR.Type() + "_" + HybridFileNameBase + "_" + Approximant + ".dat";
     Waveform Hybrid = PN.HybridizeWith(NR, t1, t2);
-    Hybrid.History() << "#### PNComparison.input: \n" << Parameters << "#### End PNComparison.input" << endl;
+    Hybrid.History() << "#### PNComparison.input: \n" << Parameters.str() << "#### End PNComparison.input" << endl;
     cout << "Writing difference to " << HybridFileName << " ..." << flush;
     if(HybridDt>0.0) {
       Hybrid.Interpolate(HybridDt);
