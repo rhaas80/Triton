@@ -25,13 +25,13 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
   TypeIndexRef() = W.TypeIndex();
   TimeScaleRef() = W.TimeScale();
   
-  // Store the vartheta, varphi data instead of l,m data
+  // Set L,M data to something impossible, to denote that we're doing things at a point
   LMRef() = Matrix<int>(1, 2);
-  LRef(0) = vartheta;
-  MRef(0) = varphi;
+  LRef(0) = 0;
+  MRef(0) = 0;
   
   // Construct a grid with even spacing dt whose size is the next power of 2
-  const unsigned int N1 = floor((W.T().back()-W.T(0))/dt);
+  const unsigned int N1 = (unsigned int)(floor((W.T().back()-W.T(0))/dt));
   const unsigned int N2 = (unsigned int)(pow(2.0,ceil(log2(N1))));
   vector<double> NewTime(N2);
   for(unsigned int i=0; i<N2; ++i) {

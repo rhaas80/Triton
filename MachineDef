@@ -13,4 +13,4 @@ DIFF		= diff
 # C++FLAGS	= -Wall -pg -g ${OPENMP} -DDEBUG
 
 OPENMP		= -fopenmp
-C++FLAGS	= -O3 -Wall ${OPENMP}
+C++FLAGS	= -O3 ${OPENMP}
