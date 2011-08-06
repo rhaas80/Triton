@@ -1678,7 +1678,7 @@ string GetFileFormat(const vector<string>& Header) {
   
   //// Look for the info in the Header
   for(unsigned int j=0; j<Header.size(); ++j) {
-    if(tolower(Header[j]).find(tolower("Mag{")) != string::npos || tolower(Header[j]).find(tolower("Abs{")) != string::npos) {
+    if(tolower(Header[j]).find(tolower("Mag{")) != string::npos || tolower(Header[j]).find(tolower("Abs{")) != string::npos || tolower(Header[j]).find(tolower("Amp{")) != string::npos) {
       DetectedFormat = "MagArg";
       break;
     } else if(tolower(Header[j]).find(tolower("r*Re")) != string::npos) {
