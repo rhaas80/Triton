@@ -43,8 +43,8 @@ int main () {
   double ChMass  = 1.0;
   string ExtrapolatedFiles = "ExtrapolatedN%d.dat";
   string DifferenceFiles = "ExtrapConvergence_N%d-N%d.dat";
-  double ConvergenceMatchingT1=3.0e300;
-  double ConvergenceMatchingT2=3.0e300;
+  double ConvergenceAlignmentT1=3.0e300;
+  double ConvergenceAlignmentT2=3.0e300;
   bool ZeroEnd = false;
   
   //// Parse the input options
@@ -73,10 +73,10 @@ int main () {
       ExtrapolatedFiles = Values[i];
     } else if(Keys[i].compare("DifferenceFiles")==0) {
       DifferenceFiles = Values[i];
-    } else if(Keys[i].compare("ConvergenceMatchingT1")==0) {
-      ConvergenceMatchingT1 = StringToDouble(Values[i]);
-    } else if(Keys[i].compare("ConvergenceMatchingT2")==0) {
-      ConvergenceMatchingT2 = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("ConvergenceAlignmentT1")==0 || Keys[i].compare("ConvergenceMatchingT1")==0) {
+      ConvergenceAlignmentT1 = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("ConvergenceAlignmentT2")==0 || Keys[i].compare("ConvergenceMatchingT2")==0) {
+      ConvergenceAlignmentT2 = StringToDouble(Values[i]);
     } else if(Keys[i].compare("ZeroEnd")==0) {
       ZeroEnd = StringToBool(Values[i]);
     } else {
@@ -132,8 +132,8 @@ int main () {
       //// Compare to the last one
       if(i>0) {
 	Waveform Diff;
-	if(ConvergenceMatchingT1!=3.0e300 && ConvergenceMatchingT1!=3.0e300) {
-	  Diff = Extrap / (Last.AlignTo(Extrap, ConvergenceMatchingT1, ConvergenceMatchingT2));
+	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
+	  Diff = Extrap / (Last.AlignTo(Extrap, ConvergenceAlignmentT1, ConvergenceAlignmentT2));
 	} else {
 	  Diff = Extrap/Last;
 	}

@@ -202,7 +202,7 @@ int main () {
     PN.AddToTime(tmerger-PN.T().back());
     if(NR.TypeIndex()%3 == 0) { PN = PN.Differentiate().Differentiate(); }
     
-    //// Match
+    //// Align waveforms
     if(omegaAlign!=0.0) {
       PN = PN.AlignTo_F(NR, omegaAlign, t1, t2);
     } else {
