@@ -8,8 +8,10 @@ $Command = "MMContours";
 # Divide up into segments
 use POSIX;
 #$FreqsPerSegment = 20; # By hand
-$FreqsPerSegment = (60.0/($NSegments-0.0)); # Inefficent but obvious
+$FreqsPerSegment = (121.0/($NSegments-0.0)); # Inefficent but obvious
 # $FreqsPerSegment = ceil(121.0/($NSegments-0.0)); # Efficient but weird file ranges
+
+`cp /home/boyle/Waveforms/Routines/MMContours /home/boyle/MMContours/`;
 
 for $seg (1..$NSegments) {
     # Determine the original frequency range
@@ -33,7 +35,7 @@ for $seg (1..$NSegments) {
     }
     
     # Do the qsub
-    $command = "echo \"${Command} $q $chis $StartMass $StartFreq $OrigStartFreq $OrigEndFreq\" | qsub -l nodes=1,walltime=11:59:00 -d /home/boyle/${Command} -e q${q}_chis${chis}_${OrigStartFreq}-${OrigEndFreq}.err -o q${q}_chis${chis}_${OrigStartFreq}-${OrigEndFreq}.out -N q${q}_chis${chis}_${OrigStartFreq} -";
+    $command = "echo \"${Command} $q $chis $StartMass $StartFreq $OrigStartFreq $OrigEndFreq\" | qsub -l nodes=1,walltime=5:59:00 -d /home/boyle/${Command} -e q${q}_chis${chis}_${OrigStartFreq}-${OrigEndFreq}.err -o q${q}_chis${chis}_${OrigStartFreq}-${OrigEndFreq}.out -N q${q}_chis${chis}_${OrigStartFreq} -";
     print "> $command\n";
     print `$command`;
 }

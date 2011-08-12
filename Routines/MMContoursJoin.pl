@@ -14,6 +14,7 @@ sub o1 {
   $x;
 }
 
+system("/bin/rm -f Data_${System}.zip");
 
 foreach $FileGroup (@FileGroups) {
     $FileGroup .= $System;
@@ -21,4 +22,5 @@ foreach $FileGroup (@FileGroups) {
     @Files = sort { o1($a) <=> o1($b) } @Files;
     print "Joining '@{Files}'\n";
     system("cat @{Files} > ${FileGroup}.dat");
+    system("zip Data_${System}.zip ${FileGroup}.dat");
 }

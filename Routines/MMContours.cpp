@@ -73,18 +73,18 @@ int main(int argc, char* argv[]) {
   
   // Ersatz NR
   const bool DropOddMModes = false; // (q==1) ? true : false;
-  const double RoughMatchT1=-5000;
+  const double RoughMatchT1=-15000;
   const double RoughMatchT2=-2000;
   const double HybridDeltaT=10;
   
   // Boundaries and resolution of the graph
   const double MinMass=5.0;  // Total binary mass in solar masses
   const double MaxMass=50.0;
-  const double MassStep = 0.75;
+  const double MassStep = 0.25; // 0.75;
   const unsigned int NMasses=static_cast<unsigned int>(1.0+(MaxMass-MinMass)/MassStep);
   const double Minomega=0.005;  // Hybridization angular GW frequency (dimensionless)
   const double Maxomega=0.065;
-  const double omegaStep=0.001;
+  const double omegaStep=0.0005; //0.002
   const unsigned int Nomegas=static_cast<unsigned int>(1.0+(Maxomega-Minomega)/omegaStep);
   const unsigned int OrigStartWithFreqNumber = argc>3 ? StringToInt(argv[5]) : Nomegas;
   const unsigned int EndBeforeFreqNumber = argc>3 ? StringToInt(argv[6]) : Nomegas;
@@ -92,13 +92,14 @@ int main(int argc, char* argv[]) {
   // Detector and FFT info
   const string PSDName("AdvLIGO_ZeroDet_HighP");
   const double DetectorMinFreq=AdvLIGOSeismicWall;
-  const double DetectorSamplingFreq=AdvLIGOSamplingFreq;
-  const double SafetyFactor=1.0; // To ensure that Gibbs effects don't cause problems
+  const double DetectorSamplingFreq=AdvLIGOSamplingFreq/2.0;
+//  const double DetectorSamplingFreq=AdvLIGOSamplingFreq;
+  const double SafetyFactor=0.8; // To ensure that Gibbs effects don't cause problems
   const double WaveformMinOmega=2.0*M_PI*DetectorMinFreq*SafetyFactor;
   const double MinMismatch=1.0e-13; // This is the smallest mismatch we would believe, remembering that the match is actually subtracted from 1.0; roughly roundoff
   
   // PN waveforms
-  const double v0=std::min(pow(0.5*Minomega, 1.0/3.0),
+  const double v0=std::min(pow(0.5*Minomega*SafetyFactor, 1.0/3.0),
 			   pow(NewtonsConstant*MinMass*SolarMass*(0.5*WaveformMinOmega)/(SpeedOfLight*SpeedOfLight*SpeedOfLight), 1.0/3.0));
   
   // Files
@@ -125,8 +126,8 @@ int main(int argc, char* argv[]) {
   const unsigned int MatchDisplayPrecision=4;
   const unsigned int MatchDisplayWidth=MatchDisplayPrecision+5;
   
-  const unsigned int nsave=150;
-  const unsigned int nsaveEOB=3;
+  const unsigned int nsave=200;
+  const unsigned int nsaveEOB=5;
   const bool denseish=true;
   
   
@@ -304,7 +305,22 @@ int main(int argc, char* argv[]) {
       {
 	#pragma omp for
 	for(int n=0; n<NFs; ++n) {
-	  Fs[n] = WaveformAtAPointFT(WaveformAtAPoint(Hs[n], dt, vartheta, varphi));
+	  // This version is new, reproducing the old stuff
+	  WaveformAtAPoint WAAP(Hs[n], dt, vartheta, varphi);
+	  unsigned int WindowNCycles = 1;
+	  unsigned int i=0;
+	  const double Sign = WAAP.Re(0) / abs(WAAP.Re(0));
+	  while(WAAP.Re(i++)*Sign>0) { }
+	  // Now find the following 2*N zero crossings
+	  const unsigned int i0 = i;
+	  while(i-i0<512) {
+	    while(WAAP.Re(i++)*Sign<0) { }
+	    while(WAAP.Re(i++)*Sign>0) { }
+	    WindowNCycles++;
+	  }
+ 	  Fs[n] = WaveformAtAPointFT(WAAP, WindowNCycles);
+
+// 	  Fs[n] = WaveformAtAPointFT(WaveformAtAPoint(Hs[n], dt, vartheta, varphi));
 	  //Hs[n].clear(); /// Clear some memory
 	}
 	#pragma omp barrier /// I think this is implied, but just in case...
