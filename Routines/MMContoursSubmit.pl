@@ -19,7 +19,7 @@ for $seg (1..$NSegments) {
     $OrigEndFreq = ceil(${seg}*${FreqsPerSegment});
     
     # Look for this segment's FinishedStep
-    $FinishedStep = "FinishedStep_q${q}_chis${chis}_o${OrigStartFreq}-${OrigEndFreq}_m0";
+    $FinishedStep = "FinishedStep_q${q}_chis${chis}_o${OrigStartFreq}-${OrigEndFreq}";
     if ( -e ${FinishedStep} ) {
 	($StartMass, $StartFreq) = split(' ', `cat ${FinishedStep}`);
 	# If it is '0 0', this segment is done; skip to the next one

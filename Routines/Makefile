@@ -37,7 +37,6 @@ realclean:
 $(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
 	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
 	@$(LN) ../Routines/$@ ../bin/
-# 	@pushd ../bin && ( $(LN) ../Routines/$@ ; popd )
 
 %.d : %.cpp
 	@$(MAKEDEPEND) $(IFLAGS) -MT '$* $*.d' -MF $*.d $*.cpp
