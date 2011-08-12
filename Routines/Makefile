@@ -28,13 +28,16 @@ svnignore:
 
 clean:
 	-$(RM) *.d $(EXECUTABLES) .svnignore
+	-$(RM) ../bin/*
 
 realclean:
 	-$(RM) *.d $(EXECUTABLES) .svnignore
+	-$(RM) ../bin/*
 
 $(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
 	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
-	@pushd ../bin && ( $(LN) ../Routines/$@ ; popd )
+	@$(LN) ../Routines/$@ ../bin/
+# 	@pushd ../bin && ( $(LN) ../Routines/$@ ; popd )
 
 %.d : %.cpp
 	@$(MAKEDEPEND) $(IFLAGS) -MT '$* $*.d' -MF $*.d $*.cpp
