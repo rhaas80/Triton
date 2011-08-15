@@ -1564,22 +1564,24 @@ Waveform& Waveform::MinimalGrid(const double magTol, const double argTol) {
   return *this;
 }
 
-void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
+void Waveform::OutputToNINJAFormat(const string& MetadataFileName, const string& Subdir) const {
+  size_t found = MetadataFileName.find_last_of("/\\");
+  const string Dir = (found!=string::npos ? MetadataFileName.substr(0,found) : "./");
+  cerr << "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!\nDir=" << Dir << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n" << endl;
   ofstream meta(MetadataFileName.c_str(), ofstream::app);
-  meta << history;
+  meta << history << endl;
   meta << "[ht-ampphi-data]" << endl;
-  for(unsigned int i=0; i<NModes(); ++i) {
+  for(unsigned int mode=0; mode<NModes(); ++mode) {
     char DataFile[1000];
-    sprintf(DataFile, (Type() + "_L%d_M%d.dat").c_str(), L(i), M(i));
-    meta << L(i) << "," << M(i) << " \t= " << string(DataFile) << endl;
+    sprintf(DataFile, (Dir + Subdir + "/" + Type() + "_L%d_M%d.dat").c_str(), L(mode), M(mode));
+    meta << L(mode) << "," << M(mode) << " \t= " << string(DataFile) << endl;
     ofstream data(DataFile, ofstream::out);
     data << setprecision(12) << flush;
     data << "# [1] = " << TimeScale() << endl;
-    unsigned int Mode=i;
-    data << "# [2] = Mag{" << Type() << "(" << L(Mode) << "," << M(Mode) << ")}" << endl;
-    data << "# [3] = Arg{" << Type() << "(" << L(Mode) << "," << M(Mode) << ")}" << endl;
+    data << "# [2] = Mag{" << Type() << "(" << L(mode) << "," << M(mode) << ")}" << endl;
+    data << "# [3] = Arg{" << Type() << "(" << L(mode) << "," << M(mode) << ")}" << endl;
     for(unsigned int Time=0; Time<NTimes(); ++Time) {
-      data << T(Time) << " " << Mag(Mode, Time) << " " << Arg(Mode, Time) << endl;
+      data << T(Time) << " " << Mag(mode, Time) << " " << Arg(mode, Time) << endl;
     }
     data.close();
   }
@@ -1651,8 +1653,7 @@ int GetWaveformType(const string& FullPath, const vector<string>& Header) {
   string FileName = FullPath;
   
   //// Look for the info at the beginning of the file name
-  size_t found;
-  found=FileName.find_last_of("/\\");
+  size_t found=FileName.find_last_of("/\\");
   if (found!=string::npos) { FileName = FileName.substr(found+1); }
   for(unsigned int i=0; i<Waveform::Types.size(); ++i) {
     if(tolower(FileName).find(tolower(Waveform::Types[i])) != string::npos &&
