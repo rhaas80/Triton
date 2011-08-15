@@ -1564,18 +1564,17 @@ Waveform& Waveform::MinimalGrid(const double magTol, const double argTol) {
   return *this;
 }
 
-void Waveform::OutputToNINJAFormat(const string& MetadataFileName, const string& Subdir) const {
+void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
   size_t found = MetadataFileName.find_last_of("/\\");
-  const string Dir = (found!=string::npos ? MetadataFileName.substr(0,found) : "./");
-  cerr << "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!\nDir=" << Dir << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n" << endl;
+  const string Dir = (found!=string::npos ? MetadataFileName.substr(0,found) : ".");
   ofstream meta(MetadataFileName.c_str(), ofstream::app);
-  meta << history << endl;
+  meta << "\n##### Waveform header:\n" << history.str() << endl;
   meta << "[ht-ampphi-data]" << endl;
   for(unsigned int mode=0; mode<NModes(); ++mode) {
     char DataFile[1000];
-    sprintf(DataFile, (Dir + Subdir + "/" + Type() + "_L%d_M%d.dat").c_str(), L(mode), M(mode));
+    sprintf(DataFile, (Type() + "_L%d_M%d.dat").c_str(), L(mode), M(mode));
     meta << L(mode) << "," << M(mode) << " \t= " << string(DataFile) << endl;
-    ofstream data(DataFile, ofstream::out);
+    ofstream data((Dir + "/" + DataFile).c_str(), ofstream::out);
     data << setprecision(12) << flush;
     data << "# [1] = " << TimeScale() << endl;
     data << "# [2] = Mag{" << Type() << "(" << L(mode) << "," << M(mode) << ")}" << endl;

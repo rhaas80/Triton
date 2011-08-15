@@ -142,7 +142,7 @@ namespace WaveformObjects {
     
     // Nice, easy way of compressing and outputting to NINJA
     Waveform& MinimalGrid(const double MagTol=1.e-5, const double ArgTol=1.e-5);
-    void OutputToNINJAFormat(const std::string& MetadataFileName, const std::string& Subdir="./") const;
+    void OutputToNINJAFormat(const std::string& MetadataFileName) const;
     
     // Mostly useful for getting the flux
     Waveform& Differentiate();
