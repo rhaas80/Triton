@@ -1,5 +1,8 @@
 #! /bin/bash
 
+## Use this script to convert SpEC-format waveforms to NINJA-format,
+## and append a given metadata file appropriately.
+
 ##################################
 ## ADJUST THE FOLLOWING VARIABLES:
 ##################################
@@ -28,33 +31,38 @@ ExtrapN=( "2" "3" "4" "5" )
 #########################################
 for lev in "${Levs[@]}"
 do
+    # Create the directory and copy the metadata file
+    subdir=${KrakenRepos}/${lev}
+    mkdir -p ${subdir}
+    cp ${BBHFile} ${subdir}/
+    
     # Loop over finite-radius waveforms
     for radius in "${Radii[@]}"
     do
-	# Create the subdirectory in $KrakenRepos
-	subdir=${lev}/R${radius}m
-	mkdir -p ${KrakenRepos}/${subdir};
+# 	# Create the subdirectory in $KrakenRepos
+# 	subdir=${lev}/R${radius}m
+# 	mkdir -p ${KrakenRepos}/${subdir};
 	
-	# Copy the metadata file and adjust what needs adjusting
-	cp ${BBHFile} ${KrakenRepos}/${subdir}/${BBHFile};
-	perl -p -i -e "s/extraction-radius = finite-radii/extraction-radius = ${radius} # Units of total Christodoulou mass/" ${KrakenRepos}/${subdir}/${BBHFile}
+# 	# Copy the metadata file and adjust what needs adjusting
+# 	cp ${BBHFile} ${KrakenRepos}/${subdir}/${BBHFile};
+# 	perl -p -i -e "s/extraction-radius = finite-radii/extraction-radius = ${radius} # Units of total Christodoulou mass/" ${KrakenRepos}/${subdir}/${BBHFile}
 	
 	# Run the routine to convert to NINJA format and append the metadata file
-	${Waveforms}/OutputToNINJA ${lev}/rh_R${radius}m.dat ${KrakenRepos}/${subdir}/${BBHFile} ReIm;
+	${Waveforms}/OutputToNINJA ${lev}/rh_R${radius}m.dat ${subdir}/${BBHFile} ReIm ${radius} R${radius}m
     done
     
     # Loop over extrapolated waveforms
     for N in "${ExtrapN[@]}"
     do
-	# Create the subdirectory in $KrakenRepos
-	subdir=${lev}/ExtrapolatedN${N}
-	mkdir -p ${KrakenRepos}/${subdir}
+# 	# Create the subdirectory in $KrakenRepos
+# 	subdir=${lev}/ExtrapolatedN${N}
+# 	mkdir -p ${KrakenRepos}/${subdir}
 	
-	# Copy the metadata file and adjust what needs adjusting
-	cp ${BBHFile} ${KrakenRepos}/${subdir}/${BBHFile}
-	perl -p -i -e "s/extraction-radius = finite-radii/extraction-radius = extrapolated # N=${N}/" ${KrakenRepos}/${subdir}/${BBHFile}
+# 	# Copy the metadata file and adjust what needs adjusting
+# 	cp ${BBHFile} ${KrakenRepos}/${subdir}/${BBHFile}
+# 	perl -p -i -e "s/extraction-radius = finite-radii/extraction-radius = extrapolated # N=${N}/" ${KrakenRepos}/${subdir}/${BBHFile}
 	
 	# Run the routine to convert to NINJA format and append the metadata file
-	${Waveforms}/OutputToNINJA ${lev}/rhOverM_ExtrapolatedN${N}.dat ${KrakenRepos}/${subdir}/${BBHFile} MagArg
+	${Waveforms}/OutputToNINJA ${lev}/rhOverM_ExtrapolatedN${N}.dat ${subdir}/${BBHFile} MagArg "extrapolated # N=${N}" ExtrapolatedN${N}
     done
 done

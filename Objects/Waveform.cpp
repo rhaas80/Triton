@@ -1564,15 +1564,16 @@ Waveform& Waveform::MinimalGrid(const double magTol, const double argTol) {
   return *this;
 }
 
-void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
+void Waveform::OutputToNINJAFormat(const string& MetadataFileName, const string ExtractionRadiusString, const string WaveformIdentifier) const {
   size_t found = MetadataFileName.find_last_of("/\\");
   const string Dir = (found!=string::npos ? MetadataFileName.substr(0,found) : ".");
   ofstream meta(MetadataFileName.c_str(), ofstream::app);
   meta << "\n##### Waveform header:\n" << history.str() << endl;
   meta << "[ht-ampphi-data]" << endl;
+  if(!ExtractionRadiusString.empty()) { meta << ExtractionRadiusString << endl; }
   for(unsigned int mode=0; mode<NModes(); ++mode) {
     char DataFile[1000];
-    sprintf(DataFile, (Type() + "_L%d_M%d.dat").c_str(), L(mode), M(mode));
+    sprintf(DataFile, (Type() + (WaveformIdentifier.empty() ? "" : "_"+WaveformIdentifier) + "_L%d_M%d.dat").c_str(), L(mode), M(mode));
     meta << L(mode) << "," << M(mode) << " \t= " << string(DataFile) << ".gz" << endl;
     ofstream data((Dir + "/" + DataFile).c_str(), ofstream::out);
     data << setprecision(12) << flush;
