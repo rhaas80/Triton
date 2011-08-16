@@ -1142,10 +1142,10 @@ Waveform Waveform::HybridizeWith_F(const Waveform& a, const double omega, const 
 }
 
 Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double dt, const double TLength) {
-  if(LM() != QNMLMs()) {
-    cerr << "LM=" << LM() << "\nQNMLMs()=" << QNMLMs() << endl;
-    throw("Bad input LMs.");
-  }
+//   if(LM() != QNMLMs()) {
+//     cerr << "LM=" << LM() << "\nQNMLMs()=" << QNMLMs() << endl;
+//     throw("Bad input LMs.");
+//   }
   
   if(dt==0.0) { dt = 2*M_PI/(4*2.07); } // 2.07 -> MAX(omegaRe of all the QNM modes)
   history << "### this->AttachQNMs(" << chiKerr << ", " << dt << ", " << TLength << ");" << endl;
