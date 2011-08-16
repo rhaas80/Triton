@@ -1568,9 +1568,8 @@ void Waveform::OutputToNINJAFormat(const string& MetadataFileName, const string 
   size_t found = MetadataFileName.find_last_of("/\\");
   const string Dir = (found!=string::npos ? MetadataFileName.substr(0,found) : ".");
   ofstream meta(MetadataFileName.c_str(), ofstream::app);
-  meta << "\n##### Waveform header:\n" << history.str() << endl;
-  meta << "[ht-ampphi-data]" << endl;
-  if(!ExtractionRadiusString.empty()) { meta << ExtractionRadiusString << endl; }
+  meta << "\n##### Waveform header:\n" << history.str() << "[ht-ampphi-data]" << endl;
+  if(!ExtractionRadiusString.empty()) { meta << "extraction-radius = " << ExtractionRadiusString << endl; }
   for(unsigned int mode=0; mode<NModes(); ++mode) {
     char DataFile[1000];
     sprintf(DataFile, (Type() + (WaveformIdentifier.empty() ? "" : "_"+WaveformIdentifier) + "_L%d_M%d.dat").c_str(), L(mode), M(mode));
