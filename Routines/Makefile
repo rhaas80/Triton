@@ -9,6 +9,7 @@ VPATH = $(SUBLIBS)
 SUFFIXES += .d
 SOURCES = $(wildcard *.cpp)
 EXECUTABLES = $(SOURCES:%.cpp=%)
+BINEXECUTABLES = $(SOURCES:%.cpp=../bin/%)
 IFLAGS:=$(SUBLIBS:%=-I%)
 LFLAGS:=$(SUBLIBS:%=-L%)
 lFLAGS:=$(SUBLIBS:../%=-l%)
@@ -24,15 +25,13 @@ svnignore:
 	  && ($(DIFF) .$@ .$@.tmp > .$@.diff; \
 	      (test -s .$@.diff && (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore) || ($(RM) .$@.tmp)); \
 	      $(RM) .$@.diff) \
-	  || (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore)
+	  || (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore; svn propset svn:ignore ../bin -F .svnignore)
 
 clean:
-	-$(RM) *.d $(EXECUTABLES) .svnignore
-	-$(RM) ../bin/*
+	-$(RM) *.d $(EXECUTABLES) $(BINEXECUTABLES) .svnignore
 
 realclean:
-	-$(RM) *.d $(EXECUTABLES) .svnignore
-	-$(RM) ../bin/*
+	-$(RM) *.d $(EXECUTABLES) $(BINEXECUTABLES) .svnignore
 
 $(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
 	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
