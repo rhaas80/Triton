@@ -1,6 +1,6 @@
-## Set this, with the order running from most basic to most advanced
-IFLAGS = 
-
+### This directory is the basic directory, with no dependencies
+# ## Set this, with the order running from most basic to most advanced
+# #IFLAGS = 
 
 
 ## This is a basic source- and library-building makefile; the lines below shouldn't need much tweaking
@@ -27,7 +27,8 @@ realclean:
 	-$(RM) *.o *.d lib$(THISDIR).a
 
 %.o : %.cpp
-	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@
+# 	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@ ### This directory is the basic directory, with no dependencies
+	$(C++) $(C++FLAGS) -c $< -o $@
 	@$(AR) $(ARFLAGS) lib$(THISDIR).a $@
 
 %.d : %.cpp
