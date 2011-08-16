@@ -1583,7 +1583,7 @@ void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
       data << T(Time) << " " << Mag(mode, Time) << " " << Arg(mode, Time) << endl;
     }
     data.close();
-    system(("gzip " + string(DataFile)).c_str());
+    system(("gzip " + Dir + "/" + DataFile).c_str());
   }
   meta.close();
   return;
