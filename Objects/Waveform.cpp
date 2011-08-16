@@ -1573,7 +1573,7 @@ void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
   for(unsigned int mode=0; mode<NModes(); ++mode) {
     char DataFile[1000];
     sprintf(DataFile, (Type() + "_L%d_M%d.dat").c_str(), L(mode), M(mode));
-    meta << L(mode) << "," << M(mode) << " \t= " << string(DataFile) << endl;
+    meta << L(mode) << "," << M(mode) << " \t= " << string(DataFile) << ".gz" << endl;
     ofstream data((Dir + "/" + DataFile).c_str(), ofstream::out);
     data << setprecision(12) << flush;
     data << "# [1] = " << TimeScale() << endl;
@@ -1583,6 +1583,7 @@ void Waveform::OutputToNINJAFormat(const string& MetadataFileName) const {
       data << T(Time) << " " << Mag(mode, Time) << " " << Arg(mode, Time) << endl;
     }
     data.close();
+    system(("gzip " + string(DataFile)).c_str());
   }
   meta.close();
   return;
