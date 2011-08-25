@@ -899,7 +899,7 @@ public:
       throw("Different number of modes");
     }
     if(a.LM() != b.LM()) {
-      cerr << "\nTrying to Align Waveforms with different LM data." << endl;
+      cerr << "\nTrying to Align Waveforms with mismatched LM data." << endl;
       cerr << "a.LM()=" << a.LM() << "\nb.LM()=" << b.LM() << endl;
       throw("Different modes");
     }
@@ -926,14 +926,14 @@ public:
     }
     if(LMa==-1) {
       cerr << "\na.LM()=" << a.LM() << endl;
-      throw("Can't find the 2,2 component of the Waveform a!");
+      throw("Can't find the 2,2 component of Waveform a!");
     }
     for(i=0; i<b.NModes(); ++i) {
       if(b.L(i)==2 && b.M(i)==2) { LMb=i; break; }
     }
     if(LMb==-1) {
       cerr << "\nb.LM()=" << b.LM() << endl;
-      throw("Can't find the 2,2 component of the Waveform b!");
+      throw("Can't find the 2,2 component of Waveform b!");
     }
     arga = a.Arg(LMa);
     i=t.size()-1;
@@ -945,6 +945,8 @@ public:
     t.erase(t.begin(), t.begin()+i);
     arga.erase(arga.begin(), arga.begin()+i);
   }
+  
+  double LM_a() { return LMa; }
   
   double darg(const double dt, const unsigned int mode) const {
     vector<double> argA = WaveformUtilities::Interpolate(a.T(), a.Arg(mode), t);
@@ -967,9 +969,25 @@ Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2)
   Minimizer.bx = 0.0;
   Minimizer.cx = min(t2-t1, t.back()-t2);
   double dt = Minimizer.minimize(Align);
+  const double darg22 = Align.darg(dt, Align.LM_a());
   this->AddToTime(dt);
+  int Ia=0;
+  int Ithis=0;
+  {
+    const vector<double> tIntersection = Intersection(a.T(), T(), 1.0, -3e300);
+    const double tMid = tIntersection.back();
+    while(a.T(Ia)<tMid && Ia<a.NTimes()) { Ia++; }
+    while(T(Ithis)<tMid && Ithis<NTimes()) { Ithis++; }
+  }
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
-    arg[mode] += Align.darg(dt, mode);
+//     arg[mode] += Align.darg(dt, mode);
+    arg[mode] += M(mode)*darg22/2.0;
+//     const double darg = Align.darg(dt, mode);
+//     if(L(mode)==3 && M(mode)==2) {
+//       cerr << "\n\ndarg = " << darg << "\tfmod(darg, 2*M_PI)=" << fmod(darg, 2*M_PI) << endl;
+//     }
+//     arg[mode] += (darg - fmod(darg, 2*M_PI));
+    arg[mode] += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis))/(2.0*M_PI)));
   }
   return *this;
 }
@@ -1454,6 +1472,7 @@ int MinimalGrid_Hunt(const vector<double>& t, const vector<double>& arg,
   }
   
   // Now use bisection between I1lo and I1hi
+  if(I1hi==I1lo) { I1hi++; }
   while(I1hi-I1lo != 1) {
     int I1m=((I1hi+I1lo)>>1);
     if( MinimalGrid_Check(t, arg, I0, I1m, argTol) ) {
@@ -1526,9 +1545,10 @@ Waveform& Waveform::MinimalGrid(const double magTol, const double argTol) {
   unsigned int i=1;
   while(i<NTimes()) {
     if(i>I1) { // This could happen below
-      while(i>I1) { ++I1; }
+      //while(i>I1) { ++I1; } WHAT???
+      I1 = i;
       I0 = i;
-      while(!Tbool[I0]) { --I0; }
+      while(!Tbool[I0] && I0>0) { --I0; }
     }
     while(!Tbool[I1]) { ++I1; }
     if(i != I0 && i != I1) {

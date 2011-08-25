@@ -1,9 +1,11 @@
-## This file contains all the recognized options to the 'Hybridize' routine.
-## Commented lines are optional, and contain the default values.  The required
-## options are t1, t2, and tmerger, which delimit the matching/blending phase.
-## In the directory with the data files, use this with the command line
+## This file contains all the recognized options to the 'PNComparison'
+## routine.  Commented lines are optional, and contain the default
+## values.  The required options are t1, t2, and tmerger, which
+## delimit the matching/blending phase.  In the directory with the
+## data files, use this with the command line
 ##    PNComparison < PNComparison.input |& tee PNComparison.out
-## (assuming that the Hybridize routine is on your path and that you use tcsh).
+## (assuming that the PNComparison routine is on your path and that
+## you use tcsh).
 
 ## The following are the physical parameters of the system
 #delta = 0.0;  ## delta = (m1 - m2) / (m1 + m2)
@@ -38,7 +40,7 @@ tmerger = 3950;
 
 ## The hybrid data is output to "[NR.Type()]_[HybridFileNameBase]_[Approximant].dat"
 #HybridFileNameBase = Hybrid;
-#HybridDt = 0.0; # Time step to interpolate the hybrid to; 0 corresponds to no change
+#HybridNTimes = 0; # Number of uniform time steps to interpolate the hybrid to; 0 corresponds to no change
 #MinimalGrid = false; # Prune unecessary data points (after HybridDt interpolation, if applicable)
 #MagTol = 1.e-5; # Precision to which the final waveform
 #ArgTol = 1.e-5; #   will be pruned if MinimalGrid is true

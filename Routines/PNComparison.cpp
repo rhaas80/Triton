@@ -38,7 +38,7 @@ int main () {
   bool Conjugate = false;
   bool ChangeToPsi4 = false;
   int UniformTime_Diff = -1;
-  double HybridDt = 0.0;
+  double HybridNTimes = 0.0;
   bool MinimalGrid = false;
   double MagTol = 1.e-5;
   double ArgTol = MagTol;
@@ -86,8 +86,8 @@ int main () {
       ChangeToPsi4 = StringToBool(Values[i]);
     } else if(Keys[i].compare("UniformTime_Diff")==0 || Keys[i].compare("UniformTime")==0) {
       UniformTime_Diff = StringToInt(Values[i]);
-    } else if(Keys[i].compare("HybridDt")==0) {
-      HybridDt = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("HybridNTimes")==0) {
+      HybridNTimes = StringToDouble(Values[i]);
     } else if(Keys[i].compare("MinimalGrid")==0) {
       MinimalGrid = StringToBool(Values[i]);
     } else if(Keys[i].compare("MagTol")==0) {
@@ -159,7 +159,7 @@ int main () {
   Parameters << ");\n###DropAfter = " << DropAfter
 	     << ";\n###DiffFileNameBase = " << DiffFileNameBase
 	     << ";\n###UniformTime_Diff = " << UniformTime_Diff
-	     << ";\n###HybridDt = " << HybridDt
+	     << ";\n###HybridNTimes = " << HybridNTimes
 	     << ";\n###MinimalGrid = " << (MinimalGrid ? "true" : "false")
 	     << ";\n###MagTol = " << MagTol
 	     << ";\n###ArgTol = " << ArgTol << ";\n";
@@ -195,7 +195,7 @@ int main () {
   // If desired, create the PN approximant and hybridize
   for(unsigned int app=0; app<Approximants.size(); ++app) {
     const string Approximant = Approximants[app];
-    cout << "Working on PN approximant Taylor" << Approximant << " ..." << endl;
+    cout << "\nWorking on PN approximant Taylor" << Approximant << " ..." << endl;
     
     //// Construct the PN Waveform
     Waveform PN("Taylor"+Approximant, delta, chis, chia, v0, NR.LM());
@@ -203,11 +203,13 @@ int main () {
     if(NR.TypeIndex()%3 == 0) { PN = PN.Differentiate().Differentiate(); }
     
     //// Align waveforms
+    cerr << "Trying alignment ... " << flush;
     if(omegaAlign!=0.0) {
       PN = PN.AlignTo_F(NR, omegaAlign, t1, t2);
     } else {
       PN = PN.AlignTo(NR, t1, t2);
     }
+    cout << " ☺" << endl;
     
     /// Output difference
     const string DiffFileName = NR.Type() + "_" + DiffFileNameBase + "-" + Approximant + ".dat";
@@ -224,9 +226,9 @@ int main () {
     const string HybridFileName = NR.Type() + "_" + HybridFileNameBase + "_" + Approximant + ".dat";
     Waveform Hybrid = PN.HybridizeWith(NR, t1, t2);
     Hybrid.History() << "#### PNComparison.input: \n" << Parameters.str() << "#### End PNComparison.input" << endl;
-    cout << "Writing difference to " << HybridFileName << " ..." << flush;
-    if(HybridDt>0.0) {
-      Hybrid.Interpolate(HybridDt);
+    cout << "Writing hybrid to " << HybridFileName << " ..." << flush;
+    if(HybridNTimes>0) {
+      Hybrid.UniformTime(HybridNTimes);
     }
     if(MinimalGrid) {
       for(unsigned int mode=0; mode<Hybrid.NModes(); ++mode) {
