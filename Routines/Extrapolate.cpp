@@ -43,8 +43,6 @@ int main () {
   double ChMass  = 1.0;
   string ExtrapolatedFiles = "ExtrapolatedN%d.dat";
   string DifferenceFiles = "ExtrapConvergence_N%d-N%d.dat";
-  double ConvergenceAlignmentT1=3.0e300;
-  double ConvergenceAlignmentT2=3.0e300;
   bool ZeroEnd = false;
   
   //// Parse the input options
@@ -74,9 +72,19 @@ int main () {
     } else if(Keys[i].compare("DifferenceFiles")==0) {
       DifferenceFiles = Values[i];
     } else if(Keys[i].compare("ConvergenceAlignmentT1")==0 || Keys[i].compare("ConvergenceMatchingT1")==0) {
-      ConvergenceAlignmentT1 = StringToDouble(Values[i]);
+      const double ConvergenceAlignmentT1 = StringToDouble(Values[i]);
+      cerr << "\nCannot use ConvergenceAlignmentT1=" << ConvergenceAlignmentT1 << ".  This is a deprecated option.\n"
+	   << "Use the 'Convergence' routine if you want this functionality." << endl;
+      if(ConvergenceAlignmentT1 != 3.0e300) {
+	throw("Old option input to the 'Extrapolate' routine.");
+      }
     } else if(Keys[i].compare("ConvergenceAlignmentT2")==0 || Keys[i].compare("ConvergenceMatchingT2")==0) {
-      ConvergenceAlignmentT2 = StringToDouble(Values[i]);
+      const double ConvergenceAlignmentT2 = StringToDouble(Values[i]);
+      cerr << "\nCannot use ConvergenceAlignmentT2=" << ConvergenceAlignmentT2 << ".  This is a deprecated option.\n"
+	   << "Use the 'Convergence' routine if you want this functionality." << endl;
+      if(ConvergenceAlignmentT2 != 3.0e300) {
+	throw("Old option input to the 'Extrapolate' routine.");
+      }
     } else if(Keys[i].compare("ZeroEnd")==0) {
       ZeroEnd = StringToBool(Values[i]);
     } else {
@@ -131,12 +139,7 @@ int main () {
       
       //// Compare to the last one
       if(i>0) {
-	Waveform Diff;
-	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
-	  Diff = Extrap / (Last.AlignTo(Extrap, ConvergenceAlignmentT1, ConvergenceAlignmentT2));
-	} else {
-	  Diff = Extrap/Last;
-	}
+	Waveform Diff = Extrap/Last;
 	char DifferenceFile[BufferSize];
 	sprintf(DifferenceFile, (Extrap.Type() + "_" + DifferenceFiles).c_str(), ExtrapolationOrders[i], ExtrapolationOrders[i-1]);
 	cout << "Writing " << string(DifferenceFile) << "... " << flush;

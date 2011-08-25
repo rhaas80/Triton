@@ -1,0 +1,33 @@
+## This file contains all the recognized options to the 'Convergence'
+## routine.  All lines are optional, and contain the default values
+## commented below.  It is recommended to make a separate directory
+## (e.g., 'Convergence') near the extrapolation output directories,
+## and run this from within that directory.  Use a command line like
+##    Convergence < Convergence.input |& tee Convergence.out
+## (assuming that the Convergence routine is on your path).
+
+## Space-separated list of relative directory names
+LevList = <LevsGoHere>;
+#LevList = ../Lev4 ../Lev5 ../Lev6;
+
+## This is the directory in which the best extrapolated waves will be compared
+BestLev = <BestLevGoesHere>;
+#BestLev = ../Lev6;
+
+## The following are sprintf-formatted strings for the relevant file names.
+## The '%d' will be replaced by the ExtrapolationOrders given below.
+## An empty name skips that type of data
+#Psi4Files = ;#rMPsi4_ExtrapolatedN%d.dat;  # Only include this if you have extrapolated Psi4
+#RWZFiles  = rhOverM_ExtrapolatedN%d.dat;
+#FluxFiles = ;#FluxN%d.dat;  # Only include this if you have run the Flux routine
+
+## The list of extrapolation orders to compare
+#ExtrapolationOrders = -1 2 3 4 5 6 7 8;
+
+## This is the basic format for the convergence file names.  The data
+## type will be prepended to this name.  Results will look like
+## rMPsi4_Lev5-Lev4_N3.dat, rhOverM_Lev4-Lev3_N-1.dat,
+## Flux_Lev6-Lev5_N2.dat, or rhOverM_N5-N4_Lev6.dat, for example.
+#DifferenceFiles = %s-%s_%s.dat;
+#ConvergenceAlignmentT1 = 3.0e300; ## Before doing convergence tests, align over this time range.
+#ConvergenceAlignmentT2 = 3.0e300; ## Ranges with either end at 3.0e300 will not attempt to align
