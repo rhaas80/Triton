@@ -279,7 +279,7 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
     break;
   } // switch(L)
   
-  /// h_{l,-m} = (-1)^l h_{l,m}^\ast
+  /// Hhat_{l,-m} = (-1)^l Hhat_{l,m}^\ast
   if(M<0) {
     if(L%2==0) {
       Im *= -1.0;
