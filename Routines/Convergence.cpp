@@ -48,6 +48,7 @@ int main() {
   string DifferenceFiles = "%s-%s_%s.dat";
   double ConvergenceAlignmentT1=3.0e300;
   double ConvergenceAlignmentT2=3.0e300;
+  unsigned int OutputNSamplesPerCycle22=0;
   
   //// Parse the input options
   string Option(""), Options("");
@@ -75,6 +76,8 @@ int main() {
       ConvergenceAlignmentT1 = StringToDouble(Values[i]);
     } else if(Keys[i].compare("ConvergenceAlignmentT2")==0) {
       ConvergenceAlignmentT2 = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("OutputNSamplesPerCycle22")==0) {
+      OutputNSamplesPerCycle22 = StringToInt(Values[i]);
     } else {
       throw(("Unknown key " + Keys[i] + ".\n").c_str());
     }
@@ -106,9 +109,11 @@ int main() {
 		NextLev.substr(NextLev.rfind("/")+1).c_str(),
 		("N"+DoubleToString(ExtrapolationOrders[i])).c_str());
 	cout << "and printing " << DiffFile << "... " << flush;
+	Diff[0] = Diff[0]/Diff[1];
+	if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
 	ofstream ofs(DiffFile, ofstream::out);
 	ofs << setprecision(14) << flush;
-	ofs << Diff[0]/Diff[1];
+	ofs << Diff[0];
 	ofs.close();
 	cout << "☺" << endl;
       }
@@ -128,9 +133,11 @@ int main() {
 		NextLev.substr(NextLev.rfind("/")+1).c_str(),
 		("N"+DoubleToString(ExtrapolationOrders[i])).c_str());
 	cout << "and printing " << DiffFile << "... " << flush;
+	Diff[0] = Diff[0]/Diff[1];
+	if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
 	ofstream ofs(DiffFile, ofstream::out);
 	ofs << setprecision(14) << flush;
-	ofs << Diff[0]/Diff[1];
+	ofs << Diff[0];
 	ofs.close();
 	cout << "☺" << endl;
       }
@@ -183,9 +190,11 @@ int main() {
 	      ("N"+DoubleToString(ExtrapolationOrders[i-1])).c_str(),
 	      BestLev.c_str());
       cout << "and printing " << DiffFile << "... " << flush;
+      Diff[0] = Diff[0]/Diff[1];
+      if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
       ofstream ofs(DiffFile, ofstream::out);
       ofs << setprecision(14) << flush;
-      ofs << Diff[0]/Diff[1];
+      ofs << Diff[0];
       ofs.close();
       cout << "☺" << endl;
     }
@@ -205,9 +214,11 @@ int main() {
 	      ("N"+DoubleToString(ExtrapolationOrders[i-1])).c_str(),
 	      BestLev.c_str());
       cout << "and printing " << DiffFile << "... " << flush;
+      Diff[0] = Diff[0]/Diff[1];
+      if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
       ofstream ofs(DiffFile, ofstream::out);
       ofs << setprecision(14) << flush;
-      ofs << Diff[0]/Diff[1];
+      ofs << Diff[0];
       ofs.close();
       cout << "☺" << endl;
     }

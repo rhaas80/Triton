@@ -375,7 +375,9 @@ Waveform Waveform::operator/(const Waveform& b) const {
 	    << d.history.str()
 	    << "###### End b.history:" << endl;
   vector<double> NewTime = Intersection(c.t, d.t, 0.005, -1e300);
+  c.history << "#";
   c.Interpolate(NewTime);
+  c.history << "#";
   d.Interpolate(NewTime);
   c.mag = (c.mag - d.mag) / d.mag;
   c.arg = c.arg-d.arg;
@@ -554,19 +556,19 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime, const double Extr
 }
 
 Waveform& Waveform::Interpolate(const double NewTime) {
-  history << "### this->Interpolate(" << setprecision(16) << NewTime << ")" << endl;
+  history << "### this->Interpolate(" << setprecision(16) << NewTime << ")" << endl << "#";
   this->Interpolate(vector<double>(1, NewTime));
   return *this;
 }
 
 Waveform& Waveform::Interpolate(const Waveform& b) {
-  history << "### this->Interpolate(const Waveform& b)" << endl;
+  history << "### this->Interpolate(const Waveform& b)" << endl << "#";
   this->Interpolate(b.t);
   return *this;
 }
 
 Waveform& Waveform::Interpolate(const Waveform& b, const double ExtrapVal) {
-  history << "### this->Interpolate(const Waveform& b, " << ExtrapVal << ")" << endl;
+  history << "### this->Interpolate(const Waveform& b, " << ExtrapVal << ")" << endl << "#";
   this->Interpolate(b.t, ExtrapVal);
   return *this;
 }
@@ -618,7 +620,7 @@ Waveform& Waveform::ZeroBefore(const double time) {
 
 Waveform& Waveform::UniformTimeToPowerOfTwo() {
   if(((t.size()) & (t.size()-1)) == 0) { return *this; } // Return *this if we already have a power of 2
-  history << "### this->UniformTimeToPowerOfTwo()" << endl;
+  history << "### this->UniformTimeToPowerOfTwo()" << endl << "#";
   unsigned int N = static_cast<unsigned int>(pow(2.0,ceil(log2(t.size()))));
   double dt = (t.back()-t[0])/(N-1);
   vector<double> NewTime(N, 0.0);
@@ -630,12 +632,34 @@ Waveform& Waveform::UniformTimeToPowerOfTwo() {
 }
 
 Waveform& Waveform::UniformTime(const unsigned int N) {
-  history << "### this->UniformTime(" << N << ")" << endl;
+  history << "### this->UniformTime(" << N << ")" << endl << "#";
   double dt = (t.back()-t[0])/(N-1);
   vector<double> NewTime(N, 0.0);
   for(unsigned int i=0; i<N; ++i) {
     NewTime[i] = t[0] + i*dt;
   }
+  this->Interpolate(NewTime);
+  return *this;
+}
+
+Waveform& Waveform::NSamplesPerCycle22(const unsigned int N) {
+  history << "### this->NSamplesPerCycle22(" << N << ")" << endl << "#";
+  vector<double> NewTime(t.size());
+  vector<double> omega22s = Omega2m2();
+  NewTime[0] = t[0];
+  unsigned int iNew=1;
+  for(unsigned int iOld=1; iNew<t.size() && iOld<t.size(); iNew++) {
+    const double omega22 = omega22s[iOld];
+    const double dt_Data = t[iOld]-t[iOld-1];
+    const double dt_Samples = (fabs(omega22)==0.0 ? 0.0 : 2*M_PI / (N*fabs(omega22)));
+    const double tNew = NewTime[iNew-1] + max(dt_Data, dt_Samples);
+//     cout << iNew << " " << iOld << ":\tomega22 = " << omega22 << "\tdt_Data="
+// 	 << dt_Data << "\tdt_Samples=" << dt_Samples << "\ttNew=" << tNew << endl;
+    if(tNew>t.back()) { break; }
+    while(t[iOld]<tNew && iOld<t.size()) { iOld++; }
+    NewTime[iNew] = tNew;
+  }
+  NewTime.erase(NewTime.begin()+iNew, NewTime.end());
   this->Interpolate(NewTime);
   return *this;
 }
