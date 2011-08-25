@@ -973,21 +973,10 @@ Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2)
   this->AddToTime(dt);
   int Ia=0;
   int Ithis=0;
-  {
-    const vector<double> tIntersection = Intersection(a.T(), T(), 1.0, -3e300);
-    const double tMid = tIntersection.back();
-    while(a.T(Ia)<tMid && Ia<a.NTimes()) { Ia++; }
-    while(T(Ithis)<tMid && Ithis<NTimes()) { Ithis++; }
-  }
+  while(a.T(Ia)<t2 && Ia<a.NTimes()) { Ia++; }
+  while(T(Ithis)<t2 && Ithis<NTimes()) { Ithis++; }
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
-//     arg[mode] += Align.darg(dt, mode);
-    arg[mode] += M(mode)*darg22/2.0;
-//     const double darg = Align.darg(dt, mode);
-//     if(L(mode)==3 && M(mode)==2) {
-//       cerr << "\n\ndarg = " << darg << "\tfmod(darg, 2*M_PI)=" << fmod(darg, 2*M_PI) << endl;
-//     }
-//     arg[mode] += (darg - fmod(darg, 2*M_PI));
-    arg[mode] += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis))/(2.0*M_PI)));
+    arg[mode] += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis)-M(mode)*darg22/2.0)/(2.0*M_PI))) + M(mode)*darg22/2.0;
   }
   return *this;
 }
