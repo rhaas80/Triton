@@ -973,7 +973,7 @@ public:
     arga.erase(arga.begin(), arga.begin()+i);
   }
   
-  double LM_a() { return LMa; }
+  int LM_a() { return LMa; }
   
   double darg(const double dt, const unsigned int mode) const {
     vector<double> argA = WaveformUtilities::Interpolate(a.T(), a.Arg(mode), t);

@@ -38,7 +38,7 @@ int main () {
   bool Conjugate = false;
   bool ChangeToPsi4 = false;
   int UniformTime_Diff = -1;
-  double HybridNTimes = 0.0;
+  int HybridNTimes = 0;
   bool MinimalGrid = false;
   double MagTol = 1.e-5;
   double ArgTol = MagTol;
@@ -87,7 +87,7 @@ int main () {
     } else if(Keys[i].compare("UniformTime_Diff")==0 || Keys[i].compare("UniformTime")==0) {
       UniformTime_Diff = StringToInt(Values[i]);
     } else if(Keys[i].compare("HybridNTimes")==0) {
-      HybridNTimes = StringToDouble(Values[i]);
+      HybridNTimes = StringToInt(Values[i]);
     } else if(Keys[i].compare("MinimalGrid")==0) {
       MinimalGrid = StringToBool(Values[i]);
     } else if(Keys[i].compare("MagTol")==0) {
