@@ -188,7 +188,7 @@ int main() {
       sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
 	      ("N"+DoubleToString(ExtrapolationOrders[i])).c_str(),
 	      ("N"+DoubleToString(ExtrapolationOrders[i-1])).c_str(),
-	      BestLev.c_str());
+	      (BestLev.substr(BestLev.rfind("/")+1)).c_str());
       cout << "and printing " << DiffFile << "... " << flush;
       Diff[0] = Diff[0]/Diff[1];
       if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
@@ -212,7 +212,7 @@ int main() {
       sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
 	      ("N"+DoubleToString(ExtrapolationOrders[i])).c_str(),
 	      ("N"+DoubleToString(ExtrapolationOrders[i-1])).c_str(),
-	      BestLev.c_str());
+	      (BestLev.substr(BestLev.rfind("/")+1)).c_str());
       cout << "and printing " << DiffFile << "... " << flush;
       Diff[0] = Diff[0]/Diff[1];
       if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
