@@ -110,7 +110,8 @@ int main() {
 		("N"+DoubleToString(ExtrapolationOrders[i])).c_str());
 	cout << "and printing " << DiffFile << "... " << flush;
 	Diff[0] = Diff[0]/Diff[1];
-	if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
+	Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
+	if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
 	ofstream ofs(DiffFile, ofstream::out);
 	ofs << setprecision(14) << flush;
 	ofs << Diff[0];
@@ -134,7 +135,8 @@ int main() {
 		("N"+DoubleToString(ExtrapolationOrders[i])).c_str());
 	cout << "and printing " << DiffFile << "... " << flush;
 	Diff[0] = Diff[0]/Diff[1];
-	if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
+	Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
+	if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
 	ofstream ofs(DiffFile, ofstream::out);
 	ofs << setprecision(14) << flush;
 	ofs << Diff[0];
@@ -191,7 +193,8 @@ int main() {
 	      (BestLev.substr(BestLev.rfind("/")+1)).c_str());
       cout << "and printing " << DiffFile << "... " << flush;
       Diff[0] = Diff[0]/Diff[1];
-      if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
+      Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
+      if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
       ofstream ofs(DiffFile, ofstream::out);
       ofs << setprecision(14) << flush;
       ofs << Diff[0];
@@ -215,7 +218,8 @@ int main() {
 	      (BestLev.substr(BestLev.rfind("/")+1)).c_str());
       cout << "and printing " << DiffFile << "... " << flush;
       Diff[0] = Diff[0]/Diff[1];
-      if(OutputNSamplesPerCycle22!=0) { Diff[0].NSamplesPerCycle22(OutputNSamplesPerCycle22); }
+      Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
+      if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
       ofstream ofs(DiffFile, ofstream::out);
       ofs << setprecision(14) << flush;
       ofs << Diff[0];
