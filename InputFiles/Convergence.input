@@ -6,13 +6,24 @@
 ##    Convergence < Convergence.input |& tee Convergence.out
 ## (assuming that the Convergence routine is on your path).
 
+
+# FOR LEV CONVERGENCE:
+
 ## Space-separated list of relative directory names
 LevList = <LevsGoHere>;
 #LevList = ../Lev4 ../Lev5 ../Lev6;
 
-## This is the directory in which the best extrapolated waves will be compared
+
+# FOR EXTRAPOLATION CONVERGENCE:
+
+## This is the directory in which the best extrapolated waves will be
+## compared.  Note that you can also set this empt (equal to a
+## semicolon) if you don't want to measure extrapolation convergence.
 BestLev = <BestLevGoesHere>;
 #BestLev = ../Lev6;
+
+
+# FOR BOTH:
 
 ## The following are sprintf-formatted strings for the relevant file names.
 ## The '%d' will be replaced by the ExtrapolationOrders given below.

@@ -176,7 +176,7 @@ int main() {
   }
   
   // Do the extrapolation convergence
-  if(!Psi4Files.empty()) for(unsigned int i=1; i<ExtrapolationOrders.size(); ++i) {
+  if(!Psi4Files.empty() && !BestLev.empty()) for(unsigned int i=1; i<ExtrapolationOrders.size(); ++i) {
       char Higher[5000], Lower[5000], DiffFile[5000];
       sprintf(Higher, (BestLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i]);
       sprintf(Lower,  (BestLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i-1]);
@@ -201,7 +201,7 @@ int main() {
       ofs.close();
       cout << "☺" << endl;
     }
-  if(!RWZFiles.empty()) for(unsigned int i=1; i<ExtrapolationOrders.size(); ++i) {
+  if(!RWZFiles.empty() && !BestLev.empty()) for(unsigned int i=1; i<ExtrapolationOrders.size(); ++i) {
       char Higher[1000], Lower[1000], DiffFile[1000];
       sprintf(Higher, (BestLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
       sprintf(Lower,  (BestLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i-1]);
