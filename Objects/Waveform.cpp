@@ -648,16 +648,19 @@ Waveform& Waveform::NSamplesPerCycle22(const unsigned int N) {
   vector<double> omega22s = Omega2m2();
   NewTime[0] = t[0];
   unsigned int iNew=1;
+  double dt_Last = t[1]-t[0];
   for(unsigned int iOld=1; iNew<t.size() && iOld<t.size(); iNew++) {
     const double omega22 = omega22s[iOld];
     const double dt_Data = t[iOld]-t[iOld-1];
     const double dt_Samples = (fabs(omega22)==0.0 ? 0.0 : 2*M_PI / (N*fabs(omega22)));
-    const double tNew = NewTime[iNew-1] + max(dt_Data, dt_Samples);
+    const double dt_New = max(dt_Data, min(dt_Samples, 1.1*dt_Last));
+    const double t_New = NewTime[iNew-1] + dt_New;
 //     cout << iNew << " " << iOld << ":\tomega22 = " << omega22 << "\tdt_Data="
 // 	 << dt_Data << "\tdt_Samples=" << dt_Samples << "\ttNew=" << tNew << endl;
-    if(tNew>t.back()) { break; }
-    while(t[iOld]<tNew && iOld<t.size()) { iOld++; }
-    NewTime[iNew] = tNew;
+    if(t_New>t.back()) { break; }
+    while(t[iOld]<t_New && iOld<t.size()) { iOld++; }
+    NewTime[iNew] = t_New;
+    dt_Last = dt_New;
   }
   NewTime.erase(NewTime.begin()+iNew, NewTime.end());
   this->Interpolate(NewTime);
