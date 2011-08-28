@@ -49,6 +49,8 @@ int main() {
   double ConvergenceAlignmentT1=3.0e300;
   double ConvergenceAlignmentT2=3.0e300;
   unsigned int OutputNSamplesPerCycle22=0;
+  double DropBeforeTime=-3.0e300;
+  double DropAfterTime=3.0e300;
   
   //// Parse the input options
   string Option(""), Options("");
@@ -78,6 +80,10 @@ int main() {
       ConvergenceAlignmentT2 = StringToDouble(Values[i]);
     } else if(Keys[i].compare("OutputNSamplesPerCycle22")==0) {
       OutputNSamplesPerCycle22 = StringToInt(Values[i]);
+    } else if(Keys[i].compare("DropBeforeTime")==0) {
+      DropBeforeTime = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("DropAfterTime")==0) {
+      DropAfterTime = StringToDouble(Values[i]);
     } else {
       throw(("Unknown key " + Keys[i] + ".\n").c_str());
     }
@@ -112,6 +118,8 @@ int main() {
 	Diff[0] = Diff[0]/Diff[1];
 	Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
 	if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
+	if(DropBeforeTime!=-3.0e300) { Diff[0].DropBefore(DropBeforeTime); }
+	if(DropAfterTime!=3.0e300) { Diff[0].DropAfter(DropAfterTime); }
 	ofstream ofs(DiffFile, ofstream::out);
 	ofs << setprecision(14) << flush;
 	ofs << Diff[0];
@@ -137,6 +145,8 @@ int main() {
 	Diff[0] = Diff[0]/Diff[1];
 	Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
 	if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
+	if(DropBeforeTime!=-3.0e300) { Diff[0].DropBefore(DropBeforeTime); }
+	if(DropAfterTime!=3.0e300) { Diff[0].DropAfter(DropAfterTime); }
 	ofstream ofs(DiffFile, ofstream::out);
 	ofs << setprecision(14) << flush;
 	ofs << Diff[0];
@@ -195,6 +205,8 @@ int main() {
       Diff[0] = Diff[0]/Diff[1];
       Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
       if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
+      if(DropBeforeTime!=-3.0e300) { Diff[0].DropBefore(DropBeforeTime); }
+      if(DropAfterTime!=3.0e300) { Diff[0].DropAfter(DropAfterTime); }
       ofstream ofs(DiffFile, ofstream::out);
       ofs << setprecision(14) << flush;
       ofs << Diff[0];
@@ -220,6 +232,8 @@ int main() {
       Diff[0] = Diff[0]/Diff[1];
       Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
       if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
+      if(DropBeforeTime!=-3.0e300) { Diff[0].DropBefore(DropBeforeTime); }
+      if(DropAfterTime!=3.0e300) { Diff[0].DropAfter(DropAfterTime); }
       ofstream ofs(DiffFile, ofstream::out);
       ofs << setprecision(14) << flush;
       ofs << Diff[0];

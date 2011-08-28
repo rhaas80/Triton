@@ -46,3 +46,8 @@ BestLev = <BestLevGoesHere>;
 ## If this is set to something greater than 0, all outputs will only
 ## contain (roughly) this many samples per cycle of the (2,2) mode.
 #OutputNSamplesPerCycle22 = 0;
+
+## If these are set to something other than the defaults, don't output
+## data before or after these numbers
+#DropBefore = -3.0e300;
+#DropAfter = 3.0e300;
