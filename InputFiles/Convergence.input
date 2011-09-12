@@ -48,6 +48,6 @@ BestLev = <BestLevGoesHere>;
 #OutputNSamplesPerCycle22 = 0;
 
 ## If these are set to something other than the defaults, don't output
-## data before or after these numbers
+## data before or after (respectively) these numbers
 #DropBefore = -3.0e300;
 #DropAfter = 3.0e300;

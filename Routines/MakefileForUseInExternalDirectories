@@ -1,5 +1,5 @@
-## Set this as the full (no '~') directory with Waveforms, including trailing '/'
-BASE = /Users/boyle/Research/Waveforms/
+## Set this as the directory with Waveforms, including trailing '/'
+BASE = $(wildcard ~/Research/Waveforms/)
 
 
 ## This is a basic executables-building makefile; the lines below shouldn't need much tweaking.

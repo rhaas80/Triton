@@ -19,18 +19,21 @@ BBHFile=SpEC_Case1.bbh
 Levs=( "GW-Lev1.1.1" "GW-Lev2.2.2" "GW-Lev3.3.3" )
 
 # Files with names of "rh_R${radius}m.dat" will be extracted in each subdirectory of $Levs
-Radii=( "0400" "0100" )
+#Radii=( "0400" "0100" )
+Radii=`ls rh_R* | perl -ne 's/rh_R// ; s/m.dat// ; chomp ; print "\$_ "' ;`
 
 # Files with names of "rhOverM_ExtrapolatedN${radius}.dat" will be extracted in each subdirectory of $Levs
-ExtrapN=( "2" "3" "4" "5" )
-
+#ExtrapN=( "2" "3" "4" "5" )
+ExtrapN=( )
 
 
 #########################################
 ## (PROBABLY) DON'T ADJUST THE FOLLOWING:
 #########################################
-for lev in "${Levs[@]}"
+#for lev in "${Levs[@]}"
+for i in {1..${#Levs[@]}}
 do
+    $lev = ${Levs[$i]}
     # Create the directory and copy the metadata file
     subdir=${KrakenRepos}/${lev}
     mkdir -p ${subdir}

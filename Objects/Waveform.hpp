@@ -134,6 +134,7 @@ namespace WaveformObjects {
     
     // Align and hybridize waveforms
     Waveform& AlignTo(const Waveform& a, const double t1, const double t2);
+    Waveform& AlignWithIntermediate(const Waveform& a, Waveform Intermediate, const double t1, const double t2);
     Waveform HybridizeWith(const Waveform& b, const double t1, const double t2, const double MinStep=0.005) const;
     Waveform& AlignTo_F(const Waveform& a, const double omega, const double omegat1=-1e300, const double omegat2=1e300,
 			const double DeltaT=1e300, const double MinStep=0.005);
@@ -149,7 +150,10 @@ namespace WaveformObjects {
     Waveform& Differentiate();
     
     // Rotate all modes by the given Euler angles
-    Waveform& Rotate(const double alpha, const double beta, const double gamma);
+    Waveform& RotatePhysicalSystem(const double alpha, const double beta, const double gamma);
+    Waveform& RotatePhysicalSystem(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
+    Waveform& RotateCoordinates(const double alpha, const double beta, const double gamma);
+    Waveform& RotateCoordinates(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
     
   }; // class Waveform
   
