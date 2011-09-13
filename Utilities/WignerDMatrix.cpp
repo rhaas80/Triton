@@ -21,7 +21,7 @@ WaveformUtilities::WignerDMatrix::WignerDMatrix(const int iL, const int iMP, con
 
 void WaveformUtilities::WignerDMatrix::Value(double& Mag, double& Arg) {
   (*Calculator)(sinbetaovertwo, cosbetaovertwo, Mag);
-  Arg = MP*alpha+M*gamma;
+  Arg = M*alpha+MP*gamma;
   if(Mag<0.0) {
     Mag *= -1.0;
     Arg += M_PI;

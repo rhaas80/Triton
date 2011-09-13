@@ -11,20 +11,26 @@ namespace WaveformUtilities {
   
   /// These functions return the axis of the Schmidt frame (the third
   /// Euler angle to find that frame is zero).  More explicitly, the
-  /// physical system should be rotated by (0, beta, gamma) in order
-  /// to align the radiation axis with the z axis.  Note that there is
-  /// an ambiguity in the direction of the radiation axis; it could be
-  /// either along (beta, gamma) or opposite it.  Also note that the
-  /// coordinates could be rotated by (-gamma, -beta, 0) to align the
-  /// z axis with the radiation axis.
-  void RadiationAxis(const WaveformObjects::Waveform& W, const unsigned int tStep, double& beta, double& gamma);
-  void RadiationAxis(const WaveformObjects::Waveform& W, std::vector<double>& beta, std::vector<double>& gamma);
+  /// *coordinates* should be rotated by (alpha, beta, 0) in order to
+  /// maximize the quantity |h_{2,2}|^2 + |h_{2,-2}|^2 in the new
+  /// frame.  Alternatively, it is possible to rotate the *physical
+  /// system* by (0, -beta, -alpha).
+  /// 
+  /// Note that there is an ambiguity in the direction of the
+  /// radiation axis; it could be either along (beta, gamma) or
+  /// opposite to it.  Also, whenever beta is close to 0 or pi, gamma
+  /// will be inaccurate because that is the singularity of Euler
+  /// rotations.
+  void RadiationAxis(const WaveformObjects::Waveform& W, const unsigned int tStep, double& alpha, double& beta);
+  void RadiationAxis(const WaveformObjects::Waveform& W, std::vector<double>& alpha, std::vector<double>& beta);
   
   /// This function finds the Owen frame, given the Schmidt frame
-  void YawFreeFrame(std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
+  void YawFreeFrame(const std::vector<double>& alpha, const std::vector<double>& beta, std::vector<double>& gamma, const std::vector<double>& t);
   
   /// This function finds the Owen frame directly from the Waveform,
-  /// all in one go
+  /// all in one go.  To produce the simplified waveform, do
+  ///   W.RotateCoordinates(alpha, beta, gamma);
+  /// with the result after calling this function.
   void YawFreeFrame(const WaveformObjects::Waveform& W, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma);
   
 }
