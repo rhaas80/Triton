@@ -6,6 +6,8 @@
 #include "Utilities.hpp"
 #include "Minimize_MultiDim.hpp"
 #include "Quaternions.hpp"
+// #include "Interpolate.hpp"
+// #include "ODEIntegrator.hpp"
 
 using namespace std;
 
@@ -108,6 +110,18 @@ void WaveformUtilities::RadiationAxis(const Waveform& W, vector<double>& alpha, 
   return;
 }
 
+// class GammaRHS {
+// private:
+//   WaveformUtilities::SplineInterpolator spline;
+// public:
+//   GammaRHS(const std::vector<double>& t, const std::vector<double>& gammaDot)
+//     : spline(t, gammaDot) { }
+//   void operator() (const double x, const std::vector<double>& y, std::vector<double>& dydx) {
+//     dydx[0] = spline.interp(x);
+//     return;
+//   }
+// };
+
 void WaveformUtilities::YawFreeFrame(const vector<double>& alpha, const vector<double>& beta, vector<double>& gamma, const vector<double>& t) {
   if(alpha.size() != beta.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << endl;
@@ -116,13 +130,30 @@ void WaveformUtilities::YawFreeFrame(const vector<double>& alpha, const vector<d
   
   /// This form uses the Euler angles directly
   //vector<double> gammaDot = -dydx(alpha, t)*cos(beta);
-
-  /// This form uses the quaternions, which might be smoother
+  
+  /// This form uses the quaternions, which might be smoother near
+  /// singularities of the Euler angles.
   Quaternion Z(0, 0, 0, 1);
   vector<Quaternion> Q_S = Quaternions(alpha, beta, vector<double>(beta.size(), 0));
   vector<double> gammaDot = 2*Re( dQdt(Q_S, t) * (Z * Conjugate(Q_S)) );
   
+  /// This integrates gammaDot as naively as possible
   gamma = cumtrapz(t, gammaDot);
+  
+//   /// This integrates gammaDot using spline interpolation and ODE integration
+//   /// NOTE: This is a lot slower, and hasn't made any difference in basic tests
+//   GammaRHS RHS(t, gammaDot);
+//   const int nvar=1;
+//   const double atol=0.0, rtol=1.0e-10, h1=0.01, hmin=0.0, x1=t[0], x2=t.back();
+//   std::vector<double> ystart(nvar);
+//   ystart[0]=0.0;
+//   WaveformUtilities::Output out(20);
+//   WaveformUtilities::Odeint< WaveformUtilities::StepperDopr853<GammaRHS> > ode(ystart,x1,x2,atol,rtol,h1,hmin,out,RHS,true);
+//   ode.integrate();
+//   out.xsave.resize(out.count);
+//   out.ysave[0].resize(out.count);
+//   gamma = WaveformUtilities::Interpolate(out.xsave, out.ysave[0], t);
+  
   return;
 }
 

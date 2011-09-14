@@ -41,16 +41,16 @@ int main() {
   vector<double> alpha(W.NTimes());
   vector<double> beta(W.NTimes());
   vector<double> gamma(W.NTimes());
-  for(unsigned int t=0; t<W.NTimes(); ++t) {
-    alpha[t] = M_PI*(0.134 + (W.T(t)-W.T(0))/3000.0);
-    beta[t] = M_PI/2.0;
-    gamma[t] = 0.0;
-  }
 //   for(unsigned int t=0; t<W.NTimes(); ++t) {
 //     alpha[t] = M_PI*(0.134 + (W.T(t)-W.T(0))/3000.0);
-//     beta[t] = M_PI*(0.012 + (W.T(t)-W.T(0))/(W.T().back()-W.T(0)));
-//     gamma[t] = M_PI*(0.034 + (W.T(t)-W.T(0))/2000.0);
+//     beta[t] = M_PI/2.0;
+//     gamma[t] = 0.0;
 //   }
+  for(unsigned int t=0; t<W.NTimes(); ++t) {
+    alpha[t] = M_PI*(0.134 + (W.T(t)-W.T(0))/3000.0);
+    beta[t] = M_PI*(0.012 + (W.T(t)-W.T(0))/(W.T().back()-W.T(0)));
+    gamma[t] = M_PI*(0.034 + (W.T(t)-W.T(0))/2000.0);
+  }
   
   // Add the time-dependent rotation to the Waveform
   const Waveform WIni = W;
