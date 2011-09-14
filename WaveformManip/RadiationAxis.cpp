@@ -113,10 +113,16 @@ void WaveformUtilities::YawFreeFrame(const vector<double>& alpha, const vector<d
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << endl;
     throw("Size mismatch in YawFreeFrame.");
   }
-  gamma.resize(beta.size());
-  Quaternion NegativeTwoZ(0, 0, 0, -2);
+  
+  /// This form uses the Euler angles directly
+  //vector<double> gammaDot = -dydx(alpha, t)*cos(beta);
+
+  /// This form uses the quaternions, which might be smoother
+  Quaternion Z(0, 0, 0, 1);
   vector<Quaternion> Q_S = Quaternions(alpha, beta, vector<double>(beta.size(), 0));
-  gamma = cumtrapz(t, Re( dQdt(Q_S, t) * (NegativeTwoZ * Conjugate(Q_S)) ) );
+  vector<double> gammaDot = 2*Re( dQdt(Q_S, t) * (Z * Conjugate(Q_S)) );
+  
+  gamma = cumtrapz(t, gammaDot);
   return;
 }
 
