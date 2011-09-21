@@ -41,7 +41,7 @@ Waveforms::Waveforms(const vector<double>& Radii, const string& DataFile,
     Ws[i].SetArealRadius(AreaFileName);
     Ws[i].SetTimeFromLapseSurfaceIntegral(LapseFileName, ADMMass);
     Ws[i].TortoiseOffset(ADMMass);
-    Ws[i].SetTotalMassToOne(ChMass);
+    if(ChMass != 1.0) { Ws[i].SetTotalMassToOne(ChMass); }
     cout << "\tRead " << Ws[i].NModes() << " components and " << Ws[i].NTimes() << " time steps." << endl;
   }
 }
