@@ -47,6 +47,23 @@ double& Quaternion::operator[](const unsigned int i) {
   throw("We shouldn't have gotten here!");
 }
 
+vector<double> Quaternion::Components() const {
+  vector<double> v(4, 0.0);
+  v[0] = q0;
+  v[1] = q1;
+  v[2] = q2;
+  v[3] = q3;
+  return v;
+}
+
+vector<double> Quaternion::Vector() const {
+  vector<double> v(3, 0.0);
+  v[0] = q1;
+  v[1] = q2;
+  v[2] = q3;
+  return v;
+}
+
 double Quaternion::NormSquared() const {
   return q0*q0+q1*q1+q2*q2+q3*q3;
 }
@@ -72,6 +89,14 @@ Quaternion Quaternion::operator*(const Quaternion& Q) const {
 		    q0*Q.q1 + q1*Q.q0 + q2*Q.q3 - q3*Q.q2,
 		    q0*Q.q2 - q1*Q.q3 + q2*Q.q0 + q3*Q.q1,
 		    q0*Q.q3 + q1*Q.q2 - q2*Q.q1 + q3*Q.q0);
+}
+
+Quaternion Quaternion::operator+(const Quaternion& Q) const {
+  return Quaternion(q0+Q.q0,q1+Q.q1,q2+Q.q2,q3+Q.q3);
+}
+
+Quaternion Quaternion::operator-(const Quaternion& Q) const {
+  return Quaternion(q0-Q.q0,q1-Q.q1,q2-Q.q2,q3-Q.q3);
 }
 
 Quaternion Quaternion::Conjugate() const {
@@ -109,15 +134,19 @@ vector<double> Quaternion::EulerAnglesZYZ() const {
   Quaternion Q = Normalized();
   AlphaBetaGamma[1] = acos(1-2*q1*q1-2*q2*q2);
   if(AlphaBetaGamma[1]==0.0) { return AlphaBetaGamma; }
-  AlphaBetaGamma[0] = acos((2*q0*q2 + 2*q1*q3)/sin(AlphaBetaGamma[1]));
-  AlphaBetaGamma[2] = acos((2*q0*q2 - 2*q1*q3)/sin(AlphaBetaGamma[1]));
+//   AlphaBetaGamma[0] = asin((-2*q0*q1 + 2*q2*q3)/sin(AlphaBetaGamma[1]));
+//   AlphaBetaGamma[2] = asin((2*q0*q1 + 2*q2*q3)/sin(AlphaBetaGamma[1]));
+//   AlphaBetaGamma[0] = acos((2*q0*q2 + 2*q1*q3)/sin(AlphaBetaGamma[1]));
+//   AlphaBetaGamma[2] = acos((2*q0*q2 - 2*q1*q3)/sin(AlphaBetaGamma[1]));
+  AlphaBetaGamma[0] = atan2((-2*q0*q1 + 2*q2*q3), (2*q0*q2 + 2*q1*q3));
+  AlphaBetaGamma[2] = atan2((2*q0*q1 + 2*q2*q3), (2*q0*q2 - 2*q1*q3));
   return AlphaBetaGamma;
 }
 
 
 
 //// Useful other functions
-vector<Quaternion> Quaternions(const vector<double>& alpha, const vector<double>& beta, const vector<double>& gamma) {
+vector<Quaternion> WaveformUtilities::Quaternions(const vector<double>& alpha, const vector<double>& beta, const vector<double>& gamma) {
   if(alpha.size() != beta.size() || alpha.size() != gamma.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tgamma.size()=" << gamma.size() << endl;
     throw("vector size mismatch");
@@ -129,7 +158,7 @@ vector<Quaternion> Quaternions(const vector<double>& alpha, const vector<double>
   return Qs;
 }
 
-vector<Quaternion> Conjugate(const vector<Quaternion>& Q) {
+vector<Quaternion> WaveformUtilities::Conjugate(const vector<Quaternion>& Q) {
   vector<Quaternion> P(Q.size());
   for(unsigned int i=0; i<Q.size(); ++i) {
     P[i] = Q[i].Conjugate();
@@ -137,7 +166,7 @@ vector<Quaternion> Conjugate(const vector<Quaternion>& Q) {
   return P;
 }
 
-vector<Quaternion> dQdt(const vector<Quaternion>& Q, const vector<double>& t) {
+vector<Quaternion> WaveformUtilities::dQdt(const vector<Quaternion>& Q, const vector<double>& t) {
   if(Q.size() != t.size()) {
     cerr << "\nQ.size()=" << Q.size() << "\tt.size()=" << t.size() << endl;
     throw("vector size mismatch");
@@ -164,6 +193,14 @@ vector<Quaternion> operator*(const Quaternion& P, const vector<Quaternion>& Q) {
   return PQ;
 }
 
+vector<Quaternion> operator*(const vector<Quaternion>& Q, const Quaternion& P) {
+  vector<Quaternion> QP(Q.size());
+  for(unsigned int i=0; i<Q.size(); ++i) {
+    QP[i] = Q[i]*P;
+  }
+  return QP;
+}
+
 vector<Quaternion> operator*(const vector<Quaternion>& P, const vector<Quaternion>& Q) {
   if(P.size() != Q.size()) {
     cerr << "\nP.size()=" << P.size() << "\tQ.size()=" << Q.size() << endl;
@@ -176,7 +213,7 @@ vector<Quaternion> operator*(const vector<Quaternion>& P, const vector<Quaternio
   return PQ;
 }
 
-vector<double> Re(const vector<Quaternion>& Q) {
+vector<double> WaveformUtilities::Re(const vector<Quaternion>& Q) {
   vector<double> re(Q.size());
   for(unsigned int i=0; i<Q.size(); ++i) {
     re[i] = Q[i].Re();

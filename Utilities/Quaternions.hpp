@@ -16,7 +16,9 @@ namespace WaveformUtilities {
   public:
     const double& operator[](const unsigned int i) const;
     double& operator[](const unsigned int i);
+    std::vector<double> Components() const;
     const double& Re() const { return q0; }
+    std::vector<double> Vector() const;
   public:
     double NormSquared() const;
     double Norm() const;
@@ -24,6 +26,8 @@ namespace WaveformUtilities {
     Quaternion operator/(const double x) const;
     Quaternion operator/(const Quaternion& Q) const;
     Quaternion operator*(const Quaternion& Q) const;
+    Quaternion operator+(const Quaternion& Q) const;
+    Quaternion operator-(const Quaternion& Q) const;
     Quaternion Conjugate() const;
     Quaternion Inverse() const;
     Quaternion Normalized() const;
@@ -31,15 +35,17 @@ namespace WaveformUtilities {
     std::vector<double> Axis() const;
     std::vector<double> EulerAnglesZYZ() const;
   };
+
+  std::vector<WaveformUtilities::Quaternion> Quaternions(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
+  std::vector<WaveformUtilities::Quaternion> Conjugate(const std::vector<WaveformUtilities::Quaternion>& Q);
+  std::vector<WaveformUtilities::Quaternion> dQdt(const std::vector<WaveformUtilities::Quaternion>& Q, const std::vector<double>& t);
+  std::vector<double> Re(const std::vector<WaveformUtilities::Quaternion>& Q);
   
 }
 
-std::vector<WaveformUtilities::Quaternion> Quaternions(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
-std::vector<WaveformUtilities::Quaternion> Conjugate(const std::vector<WaveformUtilities::Quaternion>& Q);
-std::vector<WaveformUtilities::Quaternion> dQdt(const std::vector<WaveformUtilities::Quaternion>& Q, const std::vector<double>& t);
 std::vector<WaveformUtilities::Quaternion> operator*(const WaveformUtilities::Quaternion& P, const std::vector<WaveformUtilities::Quaternion>& Q);
+std::vector<WaveformUtilities::Quaternion> operator*(const std::vector<WaveformUtilities::Quaternion>& Q, const WaveformUtilities::Quaternion& P);
 std::vector<WaveformUtilities::Quaternion> operator*(const std::vector<WaveformUtilities::Quaternion>& P, const std::vector<WaveformUtilities::Quaternion>& Q);
-std::vector<double> Re(const std::vector<WaveformUtilities::Quaternion>& Q);
 std::vector<WaveformUtilities::Quaternion> operator-(const std::vector<WaveformUtilities::Quaternion>& Q);
 
 #endif // QUATERNIONS_HPP

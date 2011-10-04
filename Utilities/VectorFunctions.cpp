@@ -802,6 +802,41 @@ Matrix<double> fmod(const Matrix<double>& numerator, const double& denominator) 
   return y;
 }
 
+double WU::dot(const vector<double>& x, const vector<double>& y) {
+  if(x.size()!=3 || y.size()!=3) {
+    cerr << "\nx.size()=" << x.size() << "\ty.size()=" << y.size() << endl;
+    throw("The dot product is only defined for 3-vectors");
+  }
+  return x[0]*y[0] + x[1]*y[1] + x[2]*y[2];
+}
+
+vector<double> WU::dot(const vector<vector<double> >& x, const vector<vector<double> >& y) {
+  if(x.size()!=3 || y.size()!=3) {
+    cerr << "\nx.size()=" << x.size() << "\ty.size()=" << y.size() << endl;
+    throw("The dot product is only defined for 3-vectors");
+  }
+  return x[0]*y[0] + x[1]*y[1] + x[2]*y[2];
+}
+
+vector<double> WU::cross(const vector<double>& x, const vector<double>& y) {
+  if(x.size()!=3 || y.size()!=3) {
+    cerr << "\nx.size()=" << x.size() << "\ty.size()=" << y.size() << endl;
+    throw("The cross product is only defined for 3-vectors");
+  }
+  vector<double> z(3, 0.0);
+  z[0] = x[1]*y[2] - x[2]*y[1];
+  z[1] = x[2]*y[0] - x[0]*y[2];
+  z[2] = x[0]*y[1] - x[1]*y[0];
+  return z;
+}
+
+double WU::norm(const vector<double>& x) {
+  if(x.size()==0) { return 0.0; }
+  double b=0.0;
+  for(unsigned int i=0; i<x.size(); ++i) { b += x[i]*x[i]; }
+  return sqrt(b);
+}
+
 inline vector<double> WU::square(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {

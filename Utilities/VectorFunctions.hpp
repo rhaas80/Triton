@@ -109,6 +109,12 @@ WaveformUtilities::Matrix<double> fmod(const WaveformUtilities::Matrix<double>& 
 WaveformUtilities::Matrix<double> fmod(const WaveformUtilities::Matrix<double>& numerator, const double& denominator);
 
 namespace WaveformUtilities {
+  /// 3-vector operations
+  double dot(const std::vector<double>& x, const std::vector<double>& y);
+  std::vector<double> dot(const std::vector<std::vector<double> >& x, const std::vector<std::vector<double> >& y);
+  std::vector<double> cross(const std::vector<double>& x, const std::vector<double>& y);
+  double norm(const std::vector<double>& x);
+  
   /// NOTE!!! After optimization, the following are barely faster than pow.  These are, of course, incorrectly implemented because of the 'inline's.
   /// 
   /// Small integer powers:
@@ -133,7 +139,7 @@ namespace WaveformUtilities {
   inline std::vector<double> seventh(const std::vector<double>& x);
   inline std::vector<double> eighth(const std::vector<double>& x);
   
-  /// Max functions
+  /// Max-type functions
   double maxfabs(const std::vector<double>& x);
   double maxmag(const std::vector<double>& Re, const std::vector<double>& Im);
   double maxfabs(const WaveformUtilities::Matrix<double>& x);

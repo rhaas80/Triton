@@ -12,7 +12,7 @@
 ## This is a space-separated list of the radii for which you have
 ## extracted data.  You might copy and past the output of something
 ## like
-##   ls rh* | perl -ne 's/rh_R// ; s/m.dat// ; chomp ; print "\$_ "' ; echo
+##   ls rh* | perl -ne 's/rh_R// ; s/m.dat// ; chomp ; print "$_ "' ; echo
 Radii = <RadiiGoHere>;
 #Radii = 0100 0102 0105 0108 0111 0114 0117 0121 0125 0129 0133 0137 0142 0148 0153 0160 0166 0173 0181 0190 0200 0210 0222 0235 0250 0266 0285 0307 0333 0363 0400;
 

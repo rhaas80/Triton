@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+#include "Quaternions.hpp"
 #include "Matrix.hpp"
 
 namespace WaveformObjects {
@@ -133,6 +134,7 @@ namespace WaveformObjects {
     Waveform& UnfixNonOscillatingData();
     
     // Align and hybridize waveforms
+    Waveform& AlignPhasesToTwoPi(const Waveform& a, const double t);
     Waveform& AlignTo(const Waveform& a, const double t1, const double t2);
     Waveform& AlignWithIntermediate(const Waveform& a, Waveform Intermediate, const double t1, const double t2);
     Waveform HybridizeWith(const Waveform& b, const double t1, const double t2, const double MinStep=0.005) const;
@@ -146,14 +148,16 @@ namespace WaveformObjects {
     Waveform& MinimalGrid(const double MagTol=1.e-5, const double ArgTol=1.e-5);
     void OutputToNINJAFormat(const std::string& MetadataFileName, const std::string ExtractionRadiusString="", const std::string WaveformIdentifier="") const;
     
-    // Mostly useful for getting the flux
+    // Useful to compare h to Psi4
     Waveform& Differentiate();
     
-    // Rotate all modes by the given Euler angles
+    // Rotate by the given Euler angles or Quaternion
     Waveform& RotatePhysicalSystem(const double alpha, const double beta, const double gamma);
     Waveform& RotatePhysicalSystem(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
     Waveform& RotateCoordinates(const double alpha, const double beta, const double gamma);
     Waveform& RotateCoordinates(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
+    Waveform& RotatePhysicalSystem(const std::vector<WaveformUtilities::Quaternion>& Q);
+    Waveform& RotateCoordinates(const std::vector<WaveformUtilities::Quaternion>& Q);
     
   }; // class Waveform
   

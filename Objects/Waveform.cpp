@@ -15,6 +15,7 @@
 #include "Units.hpp"
 #include "PostNewtonian.hpp"
 #include "WignerDMatrix.hpp"
+#include "Quaternions.hpp"
 
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
@@ -988,6 +989,18 @@ public:
   }
 };
 
+Waveform& Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
+  history << "### this->AlignPhasesToTwoPi(a, " << t << ")\n#" << flush;
+  int Ia=0;
+  int Ithis=0;
+  while(a.T(Ia)<t && Ia<a.NTimes()) { Ia++; }
+  while(T(Ithis)<t && Ithis<NTimes()) { Ithis++; }
+  for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
+    arg[mode] += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis))/(2.0*M_PI)));
+  }
+  return *this;
+}
+
 Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2) {
   history << "### this->AlignTo(a, " << t1 << ", " << t2 << ")\n#" << flush;
   WaveformAligner Align(a, *this, t1, t2);
@@ -1536,6 +1549,29 @@ Waveform& Waveform::RotatePhysicalSystem(const vector<double>& alpha, const vect
 Waveform& Waveform::RotateCoordinates(const vector<double>& alpha, const vector<double>& beta, const vector<double>& gamma) {
   history << "### this->RotateCoordinates(alpha, beta, gamma);\n#";
   RotatePhysicalSystem(-gamma, -beta, -alpha);
+  return *this;
+}
+
+// Rotate all modes by the given Euler angles
+Waveform& Waveform::RotatePhysicalSystem(const vector<Quaternion>& Q) {
+  if(Q.size()!=NTimes()) {
+    cerr << "\nQ.size()=" << Q.size() << "  NTimes()=" << NTimes() << endl;
+    throw("Mismatched sizes of vectors to Rotate.");
+  }
+  vector<double> alpha(NTimes()), beta(NTimes()), gamma(NTimes());
+  for(unsigned int t=0; t<NTimes(); ++t) {
+    const vector<double> ABC = Q[t].EulerAnglesZYZ();
+    alpha[t] = ABC[0];
+    beta[t] = ABC[1];
+    gamma[t] = ABC[2];
+  }
+  
+  return this -> RotatePhysicalSystem(alpha, beta, gamma);
+}
+
+Waveform& Waveform::RotateCoordinates(const vector<Quaternion>& Q) {
+  history << "### this->RotateCoordinates(Q);\n#";
+  RotatePhysicalSystem(WaveformUtilities::Conjugate(Q));
   return *this;
 }
 

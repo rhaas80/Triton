@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "VectorFunctions.hpp"
+#include "Quaternions.hpp"
 #include "Utilities.hpp"
 #include "RadiationAxis.hpp"
 
@@ -14,8 +15,34 @@ using namespace std;
 
 using WaveformUtilities::Matrix;
 using WaveformUtilities::RadiationAxis;
-using WaveformUtilities::YawFreeFrame;
+using WaveformUtilities::MinimalRotation;
+using WaveformUtilities::Quaternion;
 using WaveformObjects::Waveform;
+
+
+/// This tests the Schmidt technique (implemented as "RadiationAxis")
+/// for finding the radiation axis of an arbitrary waveform.
+/// More-or-less random functions alpha(t), beta(t), and gamma(t) are
+/// chosen.  The physical system is then rotated by this amount.  The
+/// resulting waveform is input to the RadiationAxis function, which
+/// spits out its best guess for alpha(t) and beta(t).  The function
+/// gamma(t) is not guessed, because this does not affect the
+/// radiation axis.
+/// 
+/// The first output of this test is TestRadiationAxis.dat, which
+/// gives columns of the angles input, the angles found, and the
+/// error.  In each case, gamma can be safely ignored.  The error in
+/// alpha and beta should be <~1e-8, except where the input beta is
+/// close to 0 or pi.
+/// 
+/// The second output is a series of waveforms,
+/// rhOverM_TestRadiationAxis{1,2,3,4}.dat.  Here, 1 is the original
+/// waveform; 2 is the waveform when the physical system is rotated; 3
+/// is the waveform when the coordinates are rotated by the angles
+/// found by RadiationAxis; and 4 is the waveform when the coordinates
+/// are rotated by the input angles.  Plotting the magnitudes of the
+/// waveforms, 1, 3, and 4 should lie on top of each other, while 2
+/// should look ugly.
 
 
 int main() {
@@ -67,20 +94,24 @@ int main() {
        << "# [2] = alphaIn\n"
        << "# [3] = betaIn\n"
        << "# [4] = gammaIn\n"
-       << "# [5] = betaOut\n"
-       << "# [6] = gammaOut\n"
-       << "# [7] = betaErr\n"
-       << "# [8] = gammaErr\n"
+       << "# [5] = alphaOut\n"
+       << "# [6] = betaOut\n"
+       << "# [7] = gammaOut\n"
+       << "# [8] = alphaErr\n"
+       << "# [9] = betaErr\n"
+       << "# [10] = gammaErr\n"
        << setprecision(16);
   for(unsigned int t=0; t<W.NTimes(); ++t) {
     file << W.T(t) << " "
 	 << alpha[t] << " "
 	 << beta[t] << " "
 	 << gamma[t] << " "
+	 << alphaOut[t] << " "
 	 << betaOut[t] << " "
 	 << gammaOut[t] << " "
-	 << beta[t]+betaOut[t] << " "
-	 << gamma[t]+gammaOut[t] << endl;
+	 << alpha[t]-alphaOut[t] << " "
+	 << beta[t]-betaOut[t] << " "
+	 << gamma[t]-gammaOut[t] << endl;
   }
   file.close();
   
@@ -92,10 +123,39 @@ int main() {
   Waveform W4 = W;
   Output("rhOverM_TestRadiationAxis4.dat", W4.RotateCoordinates(alpha, beta, gamma));
   
-//   // Test the YawFree version
-//   YawFreeFrame(W, alphaOut, betaOut, gammaOut);
-//   Waveform W4 = W;
-//   Output("rhOverM_TestRadiationAxis4.dat", W4.RotateCoordinates(alphaOut, betaOut, gammaOut));
+  
+  
+  // Find the radiation axis
+  vector<Quaternion> Q;
+  RadiationAxis(W, Q);
+  Quaternion Z(0,0,0,1);
+  
+  // Write the results to files
+  ofstream file2("TestRadiationAxis2.dat");
+  file2 << "# [1] = t\n"
+       << "# [2] = xIn\n"
+       << "# [3] = yIn\n"
+       << "# [4] = zIn\n"
+       << "# [5] = xOut\n"
+       << "# [6] = yOut\n"
+       << "# [7] = zOut\n"
+       << "# [8] = xOut2\n"
+       << "# [9] = yOut2\n"
+       << "# [10] = zOut2\n"
+       << setprecision(16);
+  for(unsigned int t=0; t<W.NTimes(); ++t) {
+    vector<double> AlphaBetaGamma = Q[t].EulerAnglesZYZ();
+    file2 << W.T(t) << " "
+	  << sin(beta[t])*cos(alpha[t]) << " "
+	  << sin(beta[t])*sin(alpha[t]) << " "
+	  << cos(beta[t]) << " "
+	  << (Q[t]*Z*(Q[t].Conjugate())).Axis() << " "
+	  << sin(AlphaBetaGamma[1])*cos(AlphaBetaGamma[0]) << " "
+	  << sin(AlphaBetaGamma[1])*sin(AlphaBetaGamma[0]) << " "
+	  << cos(AlphaBetaGamma[1])
+	  << endl;
+  }
+  file2.close();
   
   return 0;
 }

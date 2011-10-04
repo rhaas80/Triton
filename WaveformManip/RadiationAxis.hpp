@@ -5,6 +5,7 @@
 /// instant, or as a function of time.
 
 #include "Waveform.hpp"
+#include "Quaternions.hpp"
 #include <vector>
 
 namespace WaveformUtilities {
@@ -22,16 +23,20 @@ namespace WaveformUtilities {
   /// will be inaccurate because that is the singularity of Euler
   /// rotations.
   void RadiationAxis(const WaveformObjects::Waveform& W, const unsigned int tStep, double& alpha, double& beta);
-  void RadiationAxis(const WaveformObjects::Waveform& W, std::vector<double>& alpha, std::vector<double>& beta);
+  void RadiationAxis(const WaveformObjects::Waveform& W, std::vector<double>& alpha, std::vector<double>& beta,
+		     const double alphaGuess=0.0, const double betaGuess=0.0);
+  void RadiationAxis(const WaveformObjects::Waveform& W, std::vector<WaveformUtilities::Quaternion>& Q);
   
   /// This function finds the Owen frame, given the Schmidt frame
-  void YawFreeFrame(const std::vector<double>& alpha, const std::vector<double>& beta, std::vector<double>& gamma, const std::vector<double>& t);
+  void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta, std::vector<double>& gamma, const std::vector<double>& t);
   
   /// This function finds the Owen frame directly from the Waveform,
   /// all in one go.  To produce the simplified waveform, do
   ///   W.RotateCoordinates(alpha, beta, gamma);
   /// with the result after calling this function.
-  void YawFreeFrame(const WaveformObjects::Waveform& W, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma);
+  void MinimalRotation(const WaveformObjects::Waveform& W, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+		       const double alphaGuess=0.0, const double betaGuess=0.0);
+  void MinimalRotation(const WaveformObjects::Waveform& W, std::vector<WaveformUtilities::Quaternion>& Q);
   
 }
 
