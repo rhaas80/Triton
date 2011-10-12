@@ -117,7 +117,7 @@ void WaveformUtilities::RadiationAxis(const Waveform& W, vector<double>& alpha, 
     alpha[tStep] = AlphaBeta[0];
     beta[tStep] = AlphaBeta[1];
   }
-  cerr << "Tolerance=" << Tolerance << "\tAvgIterations=" << Iterations/double(W.NTimes()) << endl;
+  //cerr << "Tolerance=" << Tolerance << "\tAvgIterations=" << Iterations/double(W.NTimes()) << endl;
   return;
 }
 
@@ -149,7 +149,7 @@ void WaveformUtilities::RadiationAxis(const Waveform& W, vector<Quaternion>& Q) 
     Axis[1] = cos(AlphaBeta[0]);
     Q[tStep] = Quaternion(AlphaBeta[1], Axis);
   }
-  cerr << "Tolerance=" << Tolerance << "\tAvgIterations=" << Iterations/double(W.NTimes()) << endl;
+  //cerr << "Tolerance=" << Tolerance << "\tAvgIterations=" << Iterations/double(W.NTimes()) << endl;
   return;
 }
 
@@ -173,13 +173,13 @@ void WaveformUtilities::MinimalRotation(const vector<double>& alpha, const vecto
   
   /// This form uses the Euler angles directly
   vector<double> gammaDot = -dydx(alpha, t)*cos(beta);
-  gamma = cumtrapz(t, gammaDot);
+//   gamma = cumtrapz(t, gammaDot);
 //   gamma = -alpha*cos(beta) + cumtrapz(t, dydx(cos(beta), t)*alpha);
-//   gamma = -alpha*cos(beta) + cumtrapz(t, -sin(beta)*dydx(beta,t)*alpha);
+  gamma = -alpha*cos(beta) + cumtrapz(t, -sin(beta)*dydx(beta,t)*alpha);
   
 //   /// This form uses the quaternions, which might be smoother near
 //   /// singularities of the Euler angles.
-  Quaternion Z(0, 0, 0, 1);
+//   Quaternion Z(0, 0, 0, 1);
 //   vector<Quaternion> Q_S = Quaternions(alpha, beta, vector<double>(beta.size(), 0));
 //   vector<double> gammaDot = 2*Re( dQdt(Q_S, t) * (Z * Conjugate(Q_S)) );
   
@@ -200,10 +200,10 @@ void WaveformUtilities::MinimalRotation(const vector<double>& alpha, const vecto
 //   out.ysave[0].resize(out.count);
 //   gamma = WaveformUtilities::Interpolate(out.xsave, out.ysave[0], t);
   
-  // Check the result
-  vector<Quaternion> Q = Quaternions(alpha, beta, gamma);
-  vector<double> gammaErr = 2*Re( dQdt(Q, t) * (Z * Conjugate(Q)) );
-  cout << "MinimalRotation: avg(|gammaDot|)=" << avg(fabs(gammaErr)) << "  max(|gammaDot|)=" << maxfabs(gammaErr) << endl;
+//   // Check the result
+//   vector<Quaternion> Q = Quaternions(alpha, beta, gamma);
+//   vector<double> gammaErr = 2*Re( dQdt(Q, t) * (Z * Conjugate(Q)) );
+//   cout << "MinimalRotation: avg(|gammaDot|)=" << avg(fabs(gammaErr)) << "  max(|gammaDot|)=" << maxfabs(gammaErr) << endl;
   
   return;
 }
@@ -221,6 +221,88 @@ void WaveformUtilities::MinimalRotation(const Waveform& W, vector<Quaternion>& Q
   Q.resize(W.NTimes());
   for(unsigned int i=0; i<Q.size(); ++i) {
     Q[i] = Quaternion(cos(beta[i]/2.0), -sin(beta[i]/2.0)*sin(alpha[i]), sin(beta[i]/2.0)*cos(alpha[i]), 0);
+  }
+  return;
+}
+
+inline double SQR(const double x) { return x*x; }
+#include <complex>
+const complex<double> I(0.0, 1.0);
+
+// vector<double> WaveformUtilities::AngularMomentumVector(const Waveform& W, const unsigned int tIndex) {
+//   vector<double> L(3, 0.0);
+//   const int ell=2;
+//   unsigned int lm=0;
+//   for(int m=-ell; m<=ell; ++m) {
+//     if(W.L(lm) != ell || W.M(lm) != m) {
+//       cerr << "\nlm=" << lm << "\tell=" << ell << "\tm=" << m << "\tW.L(lm)=" << W.L(lm) << "\tW.M(lm)=" << W.M(lm) << endl;
+//       throw("Unknown ordering in W.LM()");
+//     }
+//     unsigned int lmp=0;
+//     for(int mp=-ell; mp<=ell; ++mp) {
+//       if(W.L(lmp) != ell || W.M(lmp) != mp) {
+// 	cerr << "\nlmp=" << lmp << "\tell=" << ell << "\tmp=" << mp << "\tW.L(lmp)=" << W.L(lmp) << "\tW.M(lmp)=" << W.M(lmp) << endl;
+// 	throw("Unknown ordering in W.LM()");
+//       }
+//       complex<double> Lplus =
+// 	(m+1==mp
+// 	 ? sqrt((ell-m)*(ell+m+1))*W.Mag(lm, tIndex)*exp(I*W.Arg(lm, tIndex))*W.Mag(lmp, tIndex)*exp(-I*W.Arg(lmp, tIndex))
+// 	 : complex<double>(0.0, 0.0));
+//       complex<double> Lminus =
+// 	(m-1==mp
+// 	 ? sqrt((ell+m)*(ell-m+1))*W.Mag(lm, tIndex)*exp(I*W.Arg(lm, tIndex))*W.Mag(lmp, tIndex)*exp(-I*W.Arg(lmp, tIndex))
+// 	 : complex<double>(0.0, 0.0));
+//       L[0] += real(0.5*(Lplus + Lminus));
+//       L[1] += real(0.5*(Lplus - Lminus)/I);
+//       lmp++;
+//     }
+//     L[2] += SQR(m*W.Mag(lm, tIndex));
+//     lm++;
+//   }
+//   return L/WaveformUtilities::norm(L);
+// }
+
+void WaveformUtilities::AngularMomentumVector(const Waveform& W, vector<vector<double> >& l) {
+  l.resize(W.NTimes(), vector<double>(3, 0.0));
+  for(unsigned int tIndex=0; tIndex<W.NTimes(); ++tIndex) {
+    cerr << "\nt=" << W.T(tIndex) << endl;
+    vector<complex<double> > L(3, 0.0);
+    const int ell=2;
+    unsigned int lm=0;
+    for(int m=-ell; m<=ell; ++m) {
+      cerr << "\tm=" << m << endl;
+      if(W.L(lm) != ell || W.M(lm) != m) {
+	cerr << "\nlm=" << lm << "\tell=" << ell << "\tm=" << m << "\tW.L(lm)=" << W.L(lm) << "\tW.M(lm)=" << W.M(lm) << endl;
+	throw("Unknown ordering in W.LM()");
+      }
+      unsigned int lmp=0;
+      for(int mp=-ell; mp<=ell; ++mp) {
+	if(W.L(lmp) != ell || W.M(lmp) != mp) {
+	  cerr << "\nlmp=" << lmp << "\tell=" << ell << "\tmp=" << mp << "\tW.L(lmp)=" << W.L(lmp) << "\tW.M(lmp)=" << W.M(lmp) << endl;
+	  throw("Unknown ordering in W.LM()");
+	}
+	complex<double> Lplus =
+	  (m+1==mp
+  	   ? sqrt((ell-m)*(ell+m+1))*W.Mag(lm, tIndex)*exp(I*W.Arg(lm, tIndex))*W.Mag(lmp, tIndex)*exp(I*W.Arg(lmp, tIndex))
+	   : complex<double>(0.0, 0.0));
+	complex<double> Lminus =
+	  (m-1==mp
+  	   ? sqrt((ell+m)*(ell-m+1))*W.Mag(lm, tIndex)*exp(I*W.Arg(lm, tIndex))*W.Mag(lmp, tIndex)*exp(I*W.Arg(lmp, tIndex))
+	   : complex<double>(0.0, 0.0));
+	L[0] += (0.5*(Lplus + Lminus));
+	L[1] += (0.5*(Lplus - Lminus)/I);
+	cerr << "\t\tmp=" << mp << "\tLplus=" << Lplus << "\tLminus=" << Lminus << endl;
+	lmp++;
+      }
+      cerr << "\t\tLz=" << m*SQR(W.Mag(lm, tIndex)) << endl;
+      L[2] += m*SQR(W.Mag(lm, tIndex));
+      lm++;
+    }
+    //cerr << W.T(tIndex) << ": " << L[0] << ", " << L[1] << ", " << L[2] << endl;
+    l[tIndex][0] = real(L[0]);
+    l[tIndex][1] = real(L[1]);
+    l[tIndex][2] = real(L[2]);
+    //l[tIndex] = l[tIndex]/WaveformUtilities::norm(l[tIndex]);
   }
   return;
 }

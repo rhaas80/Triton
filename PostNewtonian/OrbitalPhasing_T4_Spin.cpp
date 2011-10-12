@@ -16,7 +16,7 @@ using std::vector;
 inline double SQR(const double x) { return x*x; }
 inline double CUB(const double x) { return x*x*x; }
 
-namespace Local {
+namespace T4SpinLocal {
   
   void cross(double& x, double& y, double& z, const vector<double>& a, const vector<double>& b) {
     vector<double> c = WaveformUtilities::cross(a, b);
@@ -36,13 +36,13 @@ namespace Local {
   }
 }
 
-class T4 {
+class T4Spin {
 private:
   double delta, nu, chis, chia;
   double dvdt2, dvdt3, dvdt4, dvdt5, dvdt6, dvdt6Ln4v, dvdt7;
   
 public:
-  T4(const double idelta, const vector<double>& chi1, const vector<double>& chi2)
+  T4Spin(const double idelta, const vector<double>& chi1, const vector<double>& chi2)
     : delta(idelta),
       nu((1.0-delta*delta)/4.0),
       chis(0.5*(chi1[2]+chi2[2])),
@@ -76,8 +76,8 @@ public:
     dydt[1]=CUB(v);
     const double Omega1 = dydt[1]*v*v*(0.75*(1-delta)+nu/2);
     const double Omega2 = dydt[1]*v*v*(0.75*(1+delta)+nu/2);
-    Local::cross(dydt[2], dydt[3], dydt[4], Omega1*LN, S1);
-    Local::cross(dydt[5], dydt[6], dydt[7], Omega2*LN, S2);
+    T4SpinLocal::cross(dydt[2], dydt[3], dydt[4], Omega1*LN, S1);
+    T4SpinLocal::cross(dydt[5], dydt[6], dydt[7], Omega2*LN, S2);
     dydt[8] = (-v/nu)*(dydt[2]+dydt[5]); // LNx
     dydt[9] = (-v/nu)*(dydt[3]+dydt[6]); // LNy
     dydt[10] = (-v/nu)*(dydt[4]+dydt[7]); // LNz
@@ -100,7 +100,7 @@ public:
   
 };
 
-typedef bool (T4::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
+typedef bool (T4Spin::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
 
 void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vector<double>& chi2, const double v0,
 		      vector<double>& t, vector<double>& v, vector<double>& Phi,
@@ -122,11 +122,11 @@ void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vect
   ystart[8] = 0.0;
   ystart[9] = 0.0;
   ystart[10] = 1;
-  std::cerr << "Initial conditions: " << ystart << std::endl;
+  //std::cerr << "Initial conditions: " << ystart << std::endl;
   Output out(nsave);
-  T4 d(delta, chi1, chi2);
-  ContinueTest test = &T4::ContinueIntegrating;
-  Odeint<StepperDopr853<T4> > ode(ystart,t0,t1,atol,rtol,h1,hmin,out,d,denseish,test);
+  T4Spin d(delta, chi1, chi2);
+  ContinueTest test = &T4Spin::ContinueIntegrating;
+  Odeint<StepperDopr853<T4Spin> > ode(ystart,t0,t1,atol,rtol,h1,hmin,out,d,denseish,test);
   try {
     ode.integrate();
   } catch(NRerror err) { }
@@ -144,8 +144,8 @@ void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vect
   out.ysave[5] *= 2/SQR(1-delta);
   out.ysave[6] *= 2/SQR(1-delta);
   out.ysave[7] *= 2/SQR(1-delta);
-  chis = Local::dot(out.ysave[8], out.ysave[9], out.ysave[10], out.ysave[2]+out.ysave[5], out.ysave[3]+out.ysave[6], out.ysave[4]+out.ysave[7]);
-  chia = Local::dot(out.ysave[8], out.ysave[9], out.ysave[10], out.ysave[2]-out.ysave[5], out.ysave[3]-out.ysave[6], out.ysave[4]-out.ysave[7]);
+  chis = T4SpinLocal::dot(out.ysave[8], out.ysave[9], out.ysave[10], out.ysave[2]+out.ysave[5], out.ysave[3]+out.ysave[6], out.ysave[4]+out.ysave[7]);
+  chia = T4SpinLocal::dot(out.ysave[8], out.ysave[9], out.ysave[10], out.ysave[2]-out.ysave[5], out.ysave[3]-out.ysave[6], out.ysave[4]-out.ysave[7]);
   
   alpha = WaveformUtilities::Unwrap(atan2(out.ysave[9], out.ysave[8]));
   beta = WaveformUtilities::Unwrap(acos(out.ysave[10]));

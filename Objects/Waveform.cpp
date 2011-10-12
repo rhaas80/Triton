@@ -347,6 +347,66 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
   r.resize(1, 0.0);
 }
 
+// sum_{l=2}^{PNLMax} (2l+1) = 2*(PNLMax*(PNLMax-1)/2-1) + (PNLMax-2) = (PNLMax+3)*(PNLMax-1)
+Waveform::Waveform(const string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
+		   const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+		   const Matrix<int> LM, const int nsave, const bool denseish, const double PNPhaseOrder, const double PNAmplitudeOrder) :
+  history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0),
+  lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
+{
+  SetWaveformTypes();
+  
+  {
+    history << "### Code revision Rev=" << Revision << endl
+	    << "### Waveform("
+	    << Approximant << ", "
+	    << delta << ", ("
+	    << chi1 << "), ("
+	    << chi2 << "), "
+	    << v0 << ", alpha, beta, gamma, "
+	    << PNPhaseOrder << ", "
+	    << PNAmplitudeOrder << ", "
+	    << RowFormat(lm) << ", "
+	    << nsave << ", "
+	    << denseish
+	    << ") // PN constructor" << endl;
+  }
+  
+  vector<double> v(0), Phi(0), chis(0), chia(0);
+  if(Approximant.compare("TaylorT4Spin")==0) {
+    if(nsave==-1) {
+      TaylorT4Spin(delta, chi1, chi2, v0, t, v, Phi,
+		   chis, chia, alpha, beta, gamma);
+    } else {
+      TaylorT4Spin(delta, chi1, chi2, v0, t, v, Phi,
+		   chis, chia, alpha, beta, gamma,
+		   nsave, denseish);
+    }
+  } else {
+    cerr << "Unknown approximant '" << Approximant << "'." << endl;
+    throw("Bad approximant");
+  }
+  mag.resize(lm.nrows(), t.size());
+  arg.resize(lm.nrows(), t.size());
+  WaveformAmplitudes PNAmp(delta, chis[0], chia[0]);
+  if(LM.nrows()>0) {
+    for(unsigned int m=0; m<NModes(); ++m) {
+      PNAmp.rhOverM(L(m), M(m), v, Phi, chis, chia, mag[m], arg[m]);
+    }
+  } else {
+    unsigned int i=0;
+    for(int l=2; l<=PNLMax; ++l) {
+      for(int m=-l; m<=l; ++m) {
+	lm[i][0] = l;
+	lm[i][1] = m;
+	PNAmp.rhOverM(l, m, v, Phi, chis, chia, mag[i], arg[i]);
+	++i;
+      }
+    }
+  }
+  r.resize(1, 0.0);
+}
+
 
 // Member functions
 

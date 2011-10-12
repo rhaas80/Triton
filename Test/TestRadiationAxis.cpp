@@ -15,6 +15,7 @@ using namespace std;
 
 using WaveformUtilities::Matrix;
 using WaveformUtilities::RadiationAxis;
+using WaveformUtilities::AngularMomentumVector;
 using WaveformUtilities::MinimalRotation;
 using WaveformUtilities::Quaternion;
 using WaveformObjects::Waveform;
@@ -62,22 +63,25 @@ int main() {
   W.DropLMode(5);
 //   W.DropLMode(4);
 //   W.DropLMode(3);
+  //W.MagRef(1) *= 0.0;
+  W.MagRef(2) *= 0.0;
+  //W.MagRef(3) *= 0.0;
   cout << "Created Waveform with " << W.NTimes() << " steps." << endl;
   
   // Construct the time-dependent precession angles
   vector<double> alpha(W.NTimes());
   vector<double> beta(W.NTimes());
   vector<double> gamma(W.NTimes());
+  for(unsigned int t=0; t<W.NTimes(); ++t) {
+    alpha[t] = M_PI*(0 + (W.T(t)-W.T(0))/3000.0);
+    beta[t] = M_PI/7.0;
+    gamma[t] = 0.0;
+  }
 //   for(unsigned int t=0; t<W.NTimes(); ++t) {
 //     alpha[t] = M_PI*(0.134 + (W.T(t)-W.T(0))/3000.0);
-//     beta[t] = M_PI/2.0;
-//     gamma[t] = 0.0;
+//     beta[t] = M_PI*(0.012 + (W.T(t)-W.T(0))/(W.T().back()-W.T(0)));
+//     gamma[t] = M_PI*(0.034 + (W.T(t)-W.T(0))/2000.0);
 //   }
-  for(unsigned int t=0; t<W.NTimes(); ++t) {
-    alpha[t] = M_PI*(0.134 + (W.T(t)-W.T(0))/3000.0);
-    beta[t] = M_PI*(0.012 + (W.T(t)-W.T(0))/(W.T().back()-W.T(0)));
-    gamma[t] = M_PI*(0.034 + (W.T(t)-W.T(0))/2000.0);
-  }
   
   // Add the time-dependent rotation to the Waveform
   const Waveform WIni = W;
@@ -85,8 +89,35 @@ int main() {
   
   // Find the radiation axis
   vector<double> alphaOut, betaOut, gammaOut;
+  vector<vector<double> > L(W.NTimes(), vector<double>(3, 0.0));
   RadiationAxis(W, alphaOut, betaOut);
+  AngularMomentumVector(W, L);
   gammaOut.resize(betaOut.size());
+  
+  // Write the results to files
+  ofstream file1("TestRadiationAxis.dat");
+  file1 << "# [1] = t\n"
+       << "# [2] = x\n"
+       << "# [3] = y\n"
+       << "# [4] = z\n"
+       << "# [5] = xIn\n"
+       << "# [6] = yIn\n"
+       << "# [7] = zIn\n"
+       << setprecision(16);
+  for(unsigned int t=0; t<W.NTimes(); ++t) {
+    file1 << W.T(t) << " "
+	  << L[t][0] << " "
+	  << L[t][1] << " "
+	  << L[t][2] << " "
+	  << sin(beta[t])*cos(alpha[t]) << " "
+	  << sin(beta[t])*sin(alpha[t]) << " "
+	  << cos(beta[t])
+	  << endl;
+  }
+  file1.close();
+  return 0;
+  
+  
   
   // Write the results to files
   ofstream file("TestRadiationAxis.dat");
@@ -100,8 +131,14 @@ int main() {
        << "# [8] = alphaErr\n"
        << "# [9] = betaErr\n"
        << "# [10] = gammaErr\n"
+       << "# [11] = alphaL\n"
+       << "# [12] = betaL\n"
+       << "# [13] = gammaL\n"
        << setprecision(16);
   for(unsigned int t=0; t<W.NTimes(); ++t) {
+    const double alphaL = atan2(L[t][1], L[t][0]);
+    const double betaL = acos(L[t][2]);
+    const double gammaL = 0.0;
     file << W.T(t) << " "
 	 << alpha[t] << " "
 	 << beta[t] << " "
@@ -111,7 +148,11 @@ int main() {
 	 << gammaOut[t] << " "
 	 << alpha[t]-alphaOut[t] << " "
 	 << beta[t]-betaOut[t] << " "
-	 << gamma[t]-gammaOut[t] << endl;
+	 << gamma[t]-gammaOut[t] << " "
+	 << alphaL << " "
+	 << betaL << " "
+	 << gammaL
+	 << endl;
   }
   file.close();
   

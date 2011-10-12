@@ -28,9 +28,12 @@ namespace WaveformUtilities {
     
   public:
     WaveformAmplitudes(const double idelta, const double ichis, const double ichia);
+    void SetParameters(const double idelta, const double ichis, const double ichia);
     void Hhat(const int L, const int M, const double v, double& Re, double& Im) const;
     void rhOverM(const int L, const int M, const double v, const double psi, double& Mag, double& Arg) const;
     void rhOverM(const int L, const int M, const std::vector<double>& v, const std::vector<double>& psi, std::vector<double>& Mag, std::vector<double>& Arg) const;
+    void rhOverM(const int L, const int M, const std::vector<double>& v, const std::vector<double>& psi,
+		 const std::vector<double>& chis, const std::vector<double>& chia, std::vector<double>& Mag, std::vector<double>& Arg);
   };
   
   class WaveformAmplitudesSumMMagSquared {

@@ -110,7 +110,10 @@ WaveformUtilities::WaveformAmplitudes::WaveformAmplitudes(const double idelta, c
     Hhat_L8_M2_Re_v6(0.000012039652448587866*(1. - 7.*nu + 14.*Power(nu,2) - 7.*Power(nu,3)))
 { }
 
-
+void WaveformUtilities::WaveformAmplitudes::SetParameters(const double idelta, const double ichis, const double ichia) {
+  *this = WaveformAmplitudes(idelta, ichis, ichia);
+  return;
+}
 
 void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const double v, double& Re, double& Im) const {
   Re = 0.0;
@@ -302,6 +305,18 @@ void WaveformUtilities::WaveformAmplitudes::rhOverM(const int L, const int M, co
 void WaveformUtilities::WaveformAmplitudes::rhOverM(const int L, const int M, const vector<double>& v, const vector<double>& psi, vector<double>& Mag, vector<double>& Arg) const {
   vector<double> Re(v.size()), Im(v.size());
   for(unsigned int i=0; i<v.size(); ++i) {
+    Hhat(L, M, v[i], Re[i], Im[i]);
+  }
+  Mag = NormalizationFactor*v*v*sqrt(Re*Re+Im*Im);
+  Arg = Unwrap(atan2(Im, Re)) - M*psi;
+  return;
+}
+
+void WaveformUtilities::WaveformAmplitudes::rhOverM(const int L, const int M, const vector<double>& v, const vector<double>& psi,
+						    const vector<double>& ichis, const vector<double>& ichia, vector<double>& Mag, vector<double>& Arg) {
+  vector<double> Re(v.size()), Im(v.size());
+  for(unsigned int i=0; i<v.size(); ++i) {
+    SetParameters(delta, ichis[i], ichia[i]);
     Hhat(L, M, v[i], Re[i], Im[i]);
   }
   Mag = NormalizationFactor*v*v*sqrt(Re*Re+Im*Im);

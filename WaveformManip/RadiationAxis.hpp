@@ -27,6 +27,9 @@ namespace WaveformUtilities {
 		     const double alphaGuess=0.0, const double betaGuess=0.0);
   void RadiationAxis(const WaveformObjects::Waveform& W, std::vector<WaveformUtilities::Quaternion>& Q);
   
+  std::vector<double> AngularMomentumVector(const WaveformObjects::Waveform& W, const unsigned int tIndex);
+  void AngularMomentumVector(const WaveformObjects::Waveform& W, std::vector<std::vector<double> >& L);
+  
   /// This function finds the Owen frame, given the Schmidt frame
   void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta, std::vector<double>& gamma, const std::vector<double>& t);
   

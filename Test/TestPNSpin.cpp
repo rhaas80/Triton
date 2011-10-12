@@ -4,11 +4,12 @@
 #include <iomanip>
 #include <ctime>
 
-// #include "OrbitalPhasing_T1.hpp"
-// #include "OrbitalPhasing_T2.hpp"
-// #include "OrbitalPhasing_T3.hpp"
-// #include "OrbitalPhasing_T4.hpp"
+#include "OrbitalPhasing_T1.hpp"
+#include "OrbitalPhasing_T2.hpp"
+#include "OrbitalPhasing_T3.hpp"
+#include "OrbitalPhasing_T4.hpp"
 #include "OrbitalPhasing_T4_Spin.hpp"
+#include "Waveform.hpp"
 #include "VectorFunctions.hpp"
 using namespace std;
 
@@ -46,6 +47,11 @@ int main() {
 				  t, v, Phi,
 				  chis, chia, alpha, beta, gamma,
 				  nsave, denseish);
+  end = clock();
+  cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
+  cout << "Calculating TaylorT4Spin Waveform ... " << flush;
+  start = clock();
+  WaveformObjects::Waveform W("TaylorT4Spin", delta, chi1, chi2, v0, alpha, beta, gamma);
   end = clock();
   cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
   ofstream ofs("Outputs/TestPNSpin_T4Spin.dat");

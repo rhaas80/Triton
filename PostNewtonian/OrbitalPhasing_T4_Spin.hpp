@@ -1,5 +1,5 @@
-#ifndef ORBITALPHASING_T4_HPP
-#define ORBITALPHASING_T4_HPP
+#ifndef ORBITALPHASING_T4SPIN_HPP
+#define ORBITALPHASING_T4SPIN_HPP
 
 #include <vector>
 
@@ -12,4 +12,4 @@ namespace WaveformUtilities {
   
 }
 
-#endif // ORBITALPHASING_T4_HPP
+#endif // ORBITALPHASING_T4SPIN_HPP
