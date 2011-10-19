@@ -73,7 +73,7 @@ void SetWaveformTypes() {
 
 // Constructors
 Waveform::Waveform() :
-  history("### Waveform() // empty constructor\n"), typeIndex(0), timeScale("Time"),
+  history("### Waveform(); // empty constructor\n"), typeIndex(0), timeScale("Time"),
   t(0), r(0), lm(0, 2), mag(0, 0), arg(0, 0)
 {
   SetWaveformTypes();
@@ -105,7 +105,7 @@ Waveform::Waveform(const string& DataFileName, const string& Format, const bool 
   history << "### Code revision Rev = " << Revision << endl
 	  << "### pwd = " << pwd << endl
 	  << "### hostname = " << hostname << endl
-	  << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\") // constructor from data file" << endl;
+	  << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\"); // constructor from data file" << endl;
   
   if(tolower(Format).find("ninja") != string::npos
      || (DataFileName.size()>4 && DataFileName.compare(DataFileName.size()-4,4,".bbh")==0)
@@ -288,7 +288,7 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
 	    << RowFormat(lm) << ", "
 	    << nsave << ", "
 	    << denseish
-	    << ") // PN constructor" << endl;
+	    << "); // PN constructor" << endl;
   }
   
   vector<double> v(0), Phi(0);
@@ -435,7 +435,7 @@ Waveform Waveform::operator/(const Waveform& b) const {
 	    << "###### Begin b.history:" << endl
 	    << d.history.str()
 	    << "###### End b.history:" << endl;
-  vector<double> NewTime = Intersection(c.t, d.t, 0.005, -1e300);
+  vector<double> NewTime = Intersection(c.t, d.t, 5e-8, -1e300);
   c.history << "#";
   c.Interpolate(NewTime);
   c.history << "#";
@@ -449,7 +449,7 @@ Waveform Waveform::operator[](const unsigned int mode) const {
   Waveform copy;
   copy.history.str(history.str());
   copy.history.seekp(0, ios_base::end);
-  copy.history << "### this = this[" << mode << "]" << endl;
+  copy.history << "### this = this[" << mode << "];" << endl;
   copy.typeIndex = typeIndex;
   copy.timeScale = timeScale;
   copy.t = t;
@@ -589,7 +589,7 @@ vector<double> Waveform::Flux() const {
 
 // Interpolation routines
 Waveform& Waveform::Interpolate(const vector<double>& NewTime) {
-  history << "### this->Interpolate(const vector<double>& NewTime)" << endl;
+  history << "### this->Interpolate(const vector<double>& NewTime);" << endl;
   if(r.size()==t.size()) {
     r = WaveformUtilities::Interpolate(t, r, NewTime);
   }
@@ -603,7 +603,7 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime) {
 }
 
 Waveform& Waveform::Interpolate(const vector<double>& NewTime, const double ExtrapVal) {
-  history << "### this->Interpolate(const vector<double>& NewTime, " << ExtrapVal << ")" << endl;
+  history << "### this->Interpolate(const vector<double>& NewTime, " << ExtrapVal << ");" << endl;
   if(r.size()==t.size()) {
     r = WaveformUtilities::Interpolate(t, r, NewTime, r.back());
   }
@@ -617,32 +617,32 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime, const double Extr
 }
 
 Waveform& Waveform::Interpolate(const double NewTime) {
-  history << "### this->Interpolate(" << setprecision(16) << NewTime << ")" << endl << "#";
+  history << "### this->Interpolate(" << setprecision(16) << NewTime << ");" << endl << "#";
   this->Interpolate(vector<double>(1, NewTime));
   return *this;
 }
 
 Waveform& Waveform::Interpolate(const Waveform& b) {
-  history << "### this->Interpolate(const Waveform& b)" << endl << "#";
+  history << "### this->Interpolate(const Waveform& b);" << endl << "#";
   this->Interpolate(b.t);
   return *this;
 }
 
 Waveform& Waveform::Interpolate(const Waveform& b, const double ExtrapVal) {
-  history << "### this->Interpolate(const Waveform& b, " << ExtrapVal << ")" << endl << "#";
+  history << "### this->Interpolate(const Waveform& b, " << ExtrapVal << ");" << endl << "#";
   this->Interpolate(b.t, ExtrapVal);
   return *this;
 }
 
 // Trim or adjust time axis
 Waveform& Waveform::AddToTime(const double time) {
-  history << "### this->AddToTime(" << setprecision(16) << time << ")" << endl;
+  history << "### this->AddToTime(" << setprecision(16) << time << ");" << endl;
   t += time;
   return *this;
 }
 
 Waveform& Waveform::DropBefore(const double time) {
-  history << "### this->DropBefore(" << setprecision(16) << time << ")" << endl;
+  history << "### this->DropBefore(" << setprecision(16) << time << ");" << endl;
   unsigned int i=0;
   while(i<t.size()-1 && t[i+1]<=time) { ++i; }
   if(r.size()==t.size()) { r.erase(r.begin(), r.begin()+i); }
@@ -655,7 +655,7 @@ Waveform& Waveform::DropBefore(const double time) {
 }
 
 Waveform& Waveform::DropAfter(const double time) {
-  history << "### this->DropAfter(" << setprecision(16) << time << ")" << endl;
+  history << "### this->DropAfter(" << setprecision(16) << time << ");" << endl;
   unsigned int i=t.size()-1;
   while(i>0 && t[i]>time) { --i; }
   if(r.size()==t.size()) { r.erase(r.begin()+i, r.end()); }
@@ -668,7 +668,7 @@ Waveform& Waveform::DropAfter(const double time) {
 }
 
 Waveform& Waveform::ZeroBefore(const double time) {
-  history << "### this->ZeroBefore(" << setprecision(16) << time << ")" << endl;
+  history << "### this->ZeroBefore(" << setprecision(16) << time << ");" << endl;
   unsigned int i=0;
   while(i<t.size()-1 && t[i+1]<=time) { ++i; }
   for(unsigned int j=0; j<NModes(); ++j) {
@@ -681,7 +681,7 @@ Waveform& Waveform::ZeroBefore(const double time) {
 
 Waveform& Waveform::UniformTimeToPowerOfTwo() {
   if(((t.size()) & (t.size()-1)) == 0) { return *this; } // Return *this if we already have a power of 2
-  history << "### this->UniformTimeToPowerOfTwo()" << endl << "#";
+  history << "### this->UniformTimeToPowerOfTwo();" << endl << "#";
   unsigned int N = static_cast<unsigned int>(pow(2.0,ceil(log2(t.size()))));
   double dt = (t.back()-t[0])/(N-1);
   vector<double> NewTime(N, 0.0);
@@ -693,7 +693,7 @@ Waveform& Waveform::UniformTimeToPowerOfTwo() {
 }
 
 Waveform& Waveform::UniformTime(const unsigned int N) {
-  history << "### this->UniformTime(" << N << ")" << endl << "#";
+  history << "### this->UniformTime(" << N << ");" << endl << "#";
   double dt = (t.back()-t[0])/(N-1);
   vector<double> NewTime(N, 0.0);
   for(unsigned int i=0; i<N; ++i) {
@@ -704,7 +704,7 @@ Waveform& Waveform::UniformTime(const unsigned int N) {
 }
 
 Waveform& Waveform::NSamplesPerCycle22(const unsigned int N) {
-  history << "### this->NSamplesPerCycle22(" << N << ")" << endl << "#";
+  history << "### this->NSamplesPerCycle22(" << N << ");" << endl << "#";
   vector<double> NewTime(t.size());
   vector<double> omega22s = Omega2m2();
   NewTime[0] = t[0];
@@ -748,7 +748,7 @@ double ScaleMag(const double S, const unsigned int typeIndex) {
 
 // Used in extrapolation
 Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
-  history << "### this->SetArealRadius(\"" << AreaFileName << "\")" << endl;
+  history << "### this->SetArealRadius(\"" << AreaFileName << "\");" << endl;
   //// Read data files
   vector<vector<double> > Area;
   vector<string> Header;
@@ -762,7 +762,7 @@ Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
 
 Waveform& Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName, const double ADMMass) {
   if(r.size()==0) { throw("Bad size for r data."); }
-  history << "### this->SetTimeFromLapseSurfaceIntegral(\"" << LapseFileName << "\", " << setprecision(16) << ADMMass << ")" << endl;
+  history << "### this->SetTimeFromLapseSurfaceIntegral(\"" << LapseFileName << "\", " << setprecision(16) << ADMMass << ");" << endl;
   //// Read data files
   vector<vector<double> > LapseData;
   vector<string> Header;
@@ -787,7 +787,7 @@ Waveform& Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName,
 }
 
 Waveform& Waveform::TortoiseOffset(const double ADMMass) {
-  history << "### this->TortoiseOffset(" << setprecision(16) << ADMMass << ")" << endl;
+  history << "### this->TortoiseOffset(" << setprecision(16) << ADMMass << ");" << endl;
   timeScale = "(t-r*)";
   if(r.size()==1) {
     t = t - (r[0] + (2.0*ADMMass)*log((r[0]/(2.0*ADMMass))-1.0));
@@ -798,7 +798,7 @@ Waveform& Waveform::TortoiseOffset(const double ADMMass) {
 }
 
 Waveform& Waveform::SetTotalMassToOne(const double TotalMassInCurrentUnits) {
-  history << "### this->SetTotalMassToOne(" << setprecision(16) << TotalMassInCurrentUnits << ")" << endl;
+  history << "### this->SetTotalMassToOne(" << setprecision(16) << TotalMassInCurrentUnits << ");" << endl;
   mag *= ScaleMag(TotalMassInCurrentUnits, typeIndex);
   t = t / TotalMassInCurrentUnits;
   r = r / TotalMassInCurrentUnits;
@@ -810,7 +810,7 @@ Waveform& Waveform::SetTotalMassToOne(const double TotalMassInCurrentUnits) {
 Waveform& Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSolarMasses, const double DistanceInMegaparsecs) {
   history << "### this->SetPhysicalMassAndDistance(" << setprecision(16)
 	  << CurrentUnitMassInSolarMasses << ", "
-	  << DistanceInMegaparsecs << ")" << endl;
+	  << DistanceInMegaparsecs << ");" << endl;
   // See the note above Waveform::Types.  This function removes the (G*M/c^3)
   // from each type, then scales the Time into seconds, and Radius into meters.
   // It then removes the (r/c) from the amplitude of each type.
@@ -827,7 +827,7 @@ Waveform& Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSol
 }
 
 Waveform& Waveform::DropLMode(const int L) {
-  history << "### this->DropLMode(" << L << ")" << endl;
+  history << "### this->DropLMode(" << L << ");" << endl;
   vector<vector<double> >::iterator magrit=mag.RawData().end();
   vector<vector<double> >::iterator argrit=arg.RawData().end();
   vector<vector<int> >::iterator LMrit=lm.RawData().end();
@@ -849,7 +849,7 @@ Waveform& Waveform::DropLMode(const int L) {
 }
 
 Waveform& Waveform::DropLMMode(const int L, const int M) {
-  history << "### this->DropLMMode(" << L << ", " << M << ")" << endl;
+  history << "### this->DropLMMode(" << L << ", " << M << ");" << endl;
   vector<vector<double> >::iterator magrit=mag.RawData().end();
   vector<vector<double> >::iterator argrit=arg.RawData().end();
   vector<vector<int> >::iterator LMrit=lm.RawData().end();
@@ -871,7 +871,7 @@ Waveform& Waveform::DropLMMode(const int L, const int M) {
 }
 
 Waveform& Waveform::DropOddMModes() {
-  history << "### this->DropOddMModes()" << endl;
+  history << "### this->DropOddMModes();" << endl;
   vector<vector<double> >::iterator magrit=mag.RawData().end();
   vector<vector<double> >::iterator argrit=arg.RawData().end();
   vector<vector<int> >::iterator LMrit=lm.RawData().end();
@@ -893,7 +893,7 @@ Waveform& Waveform::DropOddMModes() {
 }
 
 Waveform& Waveform::DropZeroMModes() {
-  history << "### this->DropZeroMModes()" << endl;
+  history << "### this->DropZeroMModes();" << endl;
   vector<vector<double> >::iterator magrit=mag.RawData().end();
   vector<vector<double> >::iterator argrit=arg.RawData().end();
   vector<vector<int> >::iterator LMrit=lm.RawData().end();
@@ -915,7 +915,7 @@ Waveform& Waveform::DropZeroMModes() {
 }
 
 Waveform& Waveform::DropNegativeMModes() {
-  history << "### this->DropNegativeMModes()" << endl;
+  history << "### this->DropNegativeMModes();" << endl;
   vector<vector<double> >::iterator magrit=mag.RawData().end();
   vector<vector<double> >::iterator argrit=arg.RawData().end();
   vector<vector<int> >::iterator LMrit=lm.RawData().end();
@@ -941,10 +941,21 @@ Waveform& Waveform::Conjugate() {
   return *this;
 }
 
+Waveform& Waveform::HackOddLPlusM() {
+  history << "### this->HackOddLPlusM();" << endl;
+  cerr << "\n\nWARNING!  Hacking modes with odd l+m to fix bad RWZ extraction.\n" << endl;
+  for(unsigned int mode=0; mode<NModes(); ++mode) {
+    if((L(mode)+M(mode)) % 2 != 0) {
+      ArgRef(mode) += M_PI;
+    }
+  }
+  return *this;
+}
+
 
 // Convert (mag,arg) to (re,im) for, e.g., m=0 modes
 Waveform& Waveform::FixNonOscillatingData() {
-  history << "### this->FixNonOscillatingData()" << endl;
+  history << "### this->FixNonOscillatingData();" << endl;
   //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) { // Loop over components
     if(M(i)==0) {
@@ -957,7 +968,7 @@ Waveform& Waveform::FixNonOscillatingData() {
 }
 
 Waveform& Waveform::UnfixNonOscillatingData() {
-  history << "### this->UnfixNonOscillatingData()" << endl;
+  history << "### this->UnfixNonOscillatingData();" << endl;
   //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) { // Loop over components
     if(M(i)==0) {
@@ -1050,7 +1061,7 @@ public:
 };
 
 Waveform& Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
-  history << "### this->AlignPhasesToTwoPi(a, " << t << ")\n#" << flush;
+  history << "### this->AlignPhasesToTwoPi(a, " << t << ");\n#" << flush;
   int Ia=0;
   int Ithis=0;
   while(a.T(Ia)<t && Ia<a.NTimes()) { Ia++; }
@@ -1062,7 +1073,7 @@ Waveform& Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
 }
 
 Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2) {
-  history << "### this->AlignTo(a, " << t1 << ", " << t2 << ")\n#" << flush;
+  history << "### this->AlignTo(a, " << t1 << ", " << t2 << ");\n#" << flush;
   WaveformAligner Align(a, *this, t1, t2);
   Brent Minimizer;
   Minimizer.ax = max(t1-t2, t[0]-t1);
@@ -1082,7 +1093,7 @@ Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2)
 }
 
 Waveform& Waveform::AlignWithIntermediate(const Waveform& a, Waveform Intermediate, const double t1, const double t2) {
-  history << "### this->AlignWithIntermediate(a, b, "  << t1 << ", " << t2 << ")\n#" << flush;
+  history << "### this->AlignWithIntermediate(a, b, "  << t1 << ", " << t2 << ");\n#" << flush;
   Intermediate.AlignTo(a, t1, t2);
   history << "#" << flush;
   this->AlignTo(Intermediate, t1, t2);

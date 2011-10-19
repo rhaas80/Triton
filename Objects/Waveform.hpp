@@ -133,6 +133,9 @@ namespace WaveformObjects {
     Waveform& DropNegativeMModes();
     Waveform& Conjugate();
     
+    // Hack to fix RWZ extraction
+    Waveform& HackOddLPlusM(); // Change sign of mode if l+m is odd
+    
     // Convert (mag,arg) to (re,im) for, e.g., m=0 modes
     Waveform& FixNonOscillatingData();
     Waveform& UnfixNonOscillatingData();
