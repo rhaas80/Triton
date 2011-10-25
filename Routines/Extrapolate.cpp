@@ -36,6 +36,8 @@ int main () {
   //// Set up input parameters
   vector<double> Radii(0);
   vector<int> ExtrapolationOrders(StringToVectorInt("-1 2 3 4 5 6 7 8"));
+  string InputDirectory = "";
+  string OutputDirectory = "";
   string DataFile = "rPsi4_R%04.0fm_U8+.dat";
   string AreaFile = "SurfaceArea_R%04.0fm.dat";
   string LapseFile = "LapseSurfaceIntegral_R%04.0fm.dat";
@@ -57,6 +59,12 @@ int main () {
       Radii = StringToVectorDouble(Values[i]);
     } else if(Keys[i].compare("ExtrapolationOrders")==0) {
       ExtrapolationOrders = StringToVectorInt(Values[i]);
+    } else if(Keys[i].compare("InputDirectory")==0) {
+      InputDirectory = Values[i];
+      if(InputDirectory.length()>0 && InputDirectory[InputDirectory.length()-1]!='/') { InputDirectory += "/"; }
+    } else if(Keys[i].compare("OutputDirectory")==0) {
+      OutputDirectory = Values[i];
+      if(OutputDirectory.length()>0 && OutputDirectory[OutputDirectory.length()-1]!='/') { OutputDirectory += "/"; }
     } else if(Keys[i].compare("DataFile")==0) {
       DataFile = Values[i];
     } else if(Keys[i].compare("AreaFile")==0) {
@@ -112,7 +120,7 @@ int main () {
   }
   
   //// Read in the Waveforms and set things up nicely
-  Waveforms Ws(Radii, DataFile, AreaFile, LapseFile, ADMMass, ChMass, ZeroEnd);
+  Waveforms Ws(Radii, InputDirectory+DataFile, InputDirectory+AreaFile, InputDirectory+LapseFile, ADMMass, ChMass, ZeroEnd);
   Ws.SetCommonTime();
   Ws.FixNonOscillatingData();
   
@@ -134,7 +142,7 @@ int main () {
       sprintf(ExtrapolatedFile, (Extrap.Type() + "_" + ExtrapolatedFiles).c_str(), ExtrapolationOrders[i]);
       cout << "Finished N=" << ExtrapolationOrders[i] << " in " << setprecision(3) << difftime(end, start) << " seconds." << endl;
       cout << "Writing " << string(ExtrapolatedFile) << "... " << flush;
-      Output(string(ExtrapolatedFile), Extrap);
+      Output(OutputDirectory+string(ExtrapolatedFile), Extrap);
       cout << "☺" << endl;
       
       //// Compare to the last one
@@ -143,7 +151,7 @@ int main () {
 	char DifferenceFile[BufferSize];
 	sprintf(DifferenceFile, (Extrap.Type() + "_" + DifferenceFiles).c_str(), ExtrapolationOrders[i], ExtrapolationOrders[i-1]);
 	cout << "Writing " << string(DifferenceFile) << "... " << flush;
-	Output(string(DifferenceFile), Diff);
+	Output(OutputDirectory+string(DifferenceFile), Diff);
 	cout << "☺" << endl;
       }
       Last = Extrap;

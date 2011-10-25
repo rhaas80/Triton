@@ -9,6 +9,10 @@
 ## orders, and a set of files with convergence tests
 
 
+## These are the strings to prepend to the input and output data file names
+#InputDirectory = ;
+#OutputDirectory = ;
+
 ## This is a space-separated list of the radii for which you have
 ## extracted data.  You might copy and past the output of something
 ## like
