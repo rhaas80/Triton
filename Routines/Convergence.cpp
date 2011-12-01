@@ -43,6 +43,7 @@ int main() {
   string BestLev = "../Lev6";
   string Psi4Files = "";//rMPsi4_ExtrapolatedN%d.dat";
   string RWZFiles  = "rhOverM_ExtrapolatedN%d.dat";
+  string WaveformFormat = "MagArg";
   string FluxFiles = "";//FluxN%d.dat";
   vector<int> ExtrapolationOrders(StringToVectorInt("-1 2 3 4 5 6 7 8"));
   string DifferenceFiles = "%s-%s_%s.dat";
@@ -68,6 +69,8 @@ int main() {
       Psi4Files = Values[i];
     } else if(Keys[i].compare("RWZFiles")==0) {
       RWZFiles = Values[i];
+    } else if(Keys[i].compare("WaveformFormat")==0) {
+      WaveformFormat = Values[i];
     } else if(Keys[i].compare("FluxFiles")==0) {
       FluxFiles = Values[i];
     } else if(Keys[i].compare("ExtrapolationOrders")==0) {
@@ -104,8 +107,8 @@ int main() {
 	sprintf(LastFile, (LastLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i]);
 	sprintf(NextFile, (NextLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i]);
 	cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
-	Diff[0] = Waveform(LastFile, "MagArg");
-	Diff[1] = Waveform(NextFile, "MagArg");
+	Diff[0] = Waveform(LastFile, WaveformFormat);
+	Diff[1] = Waveform(NextFile, WaveformFormat);
 	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
 	  Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
 	}
@@ -131,8 +134,8 @@ int main() {
 	sprintf(LastFile, (LastLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
 	sprintf(NextFile, (NextLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
 	cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
-	Diff[0] = Waveform(LastFile, "MagArg");
-	Diff[1] = Waveform(NextFile, "MagArg");
+	Diff[0] = Waveform(LastFile, WaveformFormat);
+	Diff[1] = Waveform(NextFile, WaveformFormat);
 	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
 	  Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
 	}
@@ -191,8 +194,8 @@ int main() {
       sprintf(Higher, (BestLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i]);
       sprintf(Lower,  (BestLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i-1]);
       cout << "Computing " << Higher << " - " << Lower << "... " << flush;
-      Diff[0] = Waveform(Higher, "MagArg");
-      Diff[1] = Waveform(Lower, "MagArg");
+      Diff[0] = Waveform(Higher, WaveformFormat);
+      Diff[1] = Waveform(Lower, WaveformFormat);
       if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
 	Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
       }
@@ -218,8 +221,8 @@ int main() {
       sprintf(Higher, (BestLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
       sprintf(Lower,  (BestLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i-1]);
       cout << "Computing " << Higher << " - " << Lower << "... " << flush;
-      Diff[0] = Waveform(Higher, "MagArg");
-      Diff[1] = Waveform(Lower, "MagArg");
+      Diff[0] = Waveform(Higher, WaveformFormat);
+      Diff[1] = Waveform(Lower, WaveformFormat);
       if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
 	Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
       }

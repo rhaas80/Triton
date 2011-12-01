@@ -17,7 +17,7 @@ LevList = <LevsGoHere>;
 # FOR EXTRAPOLATION CONVERGENCE:
 
 ## This is the directory in which the best extrapolated waves will be
-## compared.  Note that you can also set this empt (equal to a
+## compared.  Note that you can also set this empty (equal to a
 ## semicolon) if you don't want to measure extrapolation convergence.
 BestLev = <BestLevGoesHere>;
 #BestLev = ../Lev6;
@@ -30,6 +30,7 @@ BestLev = <BestLevGoesHere>;
 ## An empty name skips that type of data
 #Psi4Files = ;#rMPsi4_ExtrapolatedN%d.dat;  # Only include this if you have extrapolated Psi4
 #RWZFiles  = rhOverM_ExtrapolatedN%d.dat;
+#WaveformFormat = MagArg; # Format of the preceding data files (ReIm|MagArg)
 #FluxFiles = ;#FluxN%d.dat;  # Only include this if you have run the Flux routine
 
 ## The list of extrapolation orders to compare
