@@ -17,7 +17,7 @@ private:
   double nu;
   double Phi0;
   double t2, t3, t4, t5, t6, t6Lnv, t7;
-  double Phi2, Phi3, Phi4, Phi5Lnv, Phi6, Phi6Lnv, Phi7;
+  double Phi2, Phi3, Phi4, Phi5, Phi5Lnv, Phi6, Phi6Lnv, Phi7;
   
 public:
   T2(const double delta, const double chis, const double chia, const double v0)
@@ -32,6 +32,7 @@ public:
       Phi2(3.685515873015873 + 4.583333333333333*nu),
       Phi3(-0.20833333333333334*(150.79644737231007 - 113.*chia*delta) + chis*(23.541666666666668 - 15.833333333333334*nu)),
       Phi4(4.920949861426052e-6*(3.058673e6 - 5.143824e6*pow(chia,2)) - 50.625*chia*chis*delta + 4.920949861426052e-6*(5.472432e6 + 2.032128e7*pow(chia,2))*nu + 21.42361111111111*pow(nu,2) + pow(chis,2)*(-25.3125 + 1.25*nu)),
+      Phi5(0.0),
       Phi5Lnv(0.00248015873015873*(72844.10885878654 - 147101.*chia*delta - 1512.*pow(chia,3)*delta) + 0.00248015873015873*(-10291.857533160162 - 6552.*chia*delta + 1512.*pow(chia,3)*delta)*nu + pow(chis,3)*(-3.75 + 11.25*nu) + pow(chis,2)*(-11.25*chia*delta + 11.25*chia*delta*nu) + chis*(0.00248015873015873*(-147101. - 4536.*pow(chia,2)) + 0.00248015873015873*(137368. + 13608.*pow(chia,2))*nu + 42.5*pow(nu,2))),
       Phi6(5.325703313231658e-11*(-5.4079776044257227e11 + 2.1921358536e12*pow(chia,2) + 1.1158800544288205e13*chia*delta - 2.4312125376e12*pow(chia,2)*pow(delta,2)) + 5.325703313231658e-11*(-1.5529970189366336e13 - 6.7107724992e12*pow(chia,2))*nu + 5.325703313231658e-11*(2.066079708e11 - 7.5420398592e12*pow(chia,2))*pow(nu,2) - 24.657600308641975*pow(nu,3) + chis*(5.325703313231658e-11*(1.1158800544288205e13 - 4.78153368e11*chia*delta) + 5.325703313231658e-11*(-7.668603017220088e12 + 8.1249049728e12*chia*delta)*nu) + pow(chis,2)*(-12.732514880952381 + 323.1175595238095*nu - 102.08333333333333*pow(nu,2))),
       Phi6Lnv(-81.52380952380952),
@@ -55,7 +56,7 @@ public:
     const double vFifth = fifth(v);
     const double vEighth = vFifth*v*v*v;
     t = (-5/(256.*nu*vEighth))*(1.0 + v*v*(t2 + v*(t3 + v*(t4 + v*(t5 + v*(t6 + t6Lnv*lnv + v*(t7) ) ) ) ) ) );
-    Phi = Phi0-(1/(32.*nu*vFifth))*(1.0 + v*v*(Phi2 + v*(Phi3 + v*(Phi4 + v*(Phi5Lnv*lnv + v*(Phi6 + Phi6Lnv*lnv + v*(Phi7) ) ) ) ) ) );
+    Phi = Phi0-(1/(32.*nu*vFifth))*(1.0 + v*v*(Phi2 + v*(Phi3 + v*(Phi4 + v*(Phi5 + Phi5Lnv*lnv + v*(Phi6 + Phi6Lnv*lnv + v*(Phi7) ) ) ) ) ) );
   }
 };
 

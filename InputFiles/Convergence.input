@@ -50,5 +50,16 @@ BestLev = <BestLevGoesHere>;
 
 ## If these are set to something other than the defaults, don't output
 ## data before or after (respectively) these numbers
-#DropBefore = -3.0e300;
-#DropAfter = 3.0e300;
+#DropBeforeTime = -3.0e300;
+#DropAfterTime = 3.0e300;
+
+## If the following variable is set, align the given PN waveform to
+## the first input waveform, then align the second to the PN waveform.
+## This can be useful for ensuring that the alignment procedure
+## doesn't simply lock on to oscillations in the waveforms.
+#MutualAlignmentApproximant = ; # (TaylorT1|TaylorT2|TaylorT3|TaylorT4)
+## If the above is non-empty, these are the physical parameters used
+#delta = 0.0;  ## delta = (m1 - m2) / (m1 + m2) = (q-1)/(q+1)
+#chis = 0.0;   ## chis = (chi1 + chi2) / 2  [component along the Newtonian angular momentum]
+#chia = 0.0;   ## chia = (chi1 - chi2) / 2  [component along the Newtonian angular momentum]
+#v0 = 0.14;    ## v0 = (Omega0)^(1/3).  For NINJA-2, Omega0 = 0.003, so v0=0.144

@@ -41,10 +41,10 @@ int main() {
   //// Set up input parameters
   string LevList = "../Lev4 ../Lev5 ../Lev6";
   string BestLev = "../Lev6";
-  string Psi4Files = "";//rMPsi4_ExtrapolatedN%d.dat";
+  string Psi4Files = "";//"rMPsi4_ExtrapolatedN%d.dat";
   string RWZFiles  = "rhOverM_ExtrapolatedN%d.dat";
   string WaveformFormat = "MagArg";
-  string FluxFiles = "";//FluxN%d.dat";
+  string FluxFiles = "";//"FluxN%d.dat";
   vector<int> ExtrapolationOrders(StringToVectorInt("-1 2 3 4 5 6 7 8"));
   string DifferenceFiles = "%s-%s_%s.dat";
   double ConvergenceAlignmentT1=3.0e300;
@@ -52,6 +52,11 @@ int main() {
   unsigned int OutputNSamplesPerCycle22=0;
   double DropBeforeTime=-3.0e300;
   double DropAfterTime=3.0e300;
+  string MutualAlignmentApproximant = ""; // "TaylorT4"
+  double delta = 0.0;
+  double chis = 0.0;
+  double chia = 0.0;
+  double v0 = 0.144;
   
   //// Parse the input options
   string Option(""), Options("");
@@ -87,6 +92,16 @@ int main() {
       DropBeforeTime = StringToDouble(Values[i]);
     } else if(Keys[i].compare("DropAfterTime")==0) {
       DropAfterTime = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("MutualAlignmentApproximant")==0) {
+      MutualAlignmentApproximant = Values[i];
+    } else if(Keys[i].compare("delta")==0) {
+      delta = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("chis")==0) {
+      chis = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("chia")==0) {
+      chia = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("v0")==0) {
+      v0 = StringToDouble(Values[i]);
     } else {
       throw(("Unknown key " + Keys[i] + ".\n").c_str());
     }
@@ -110,7 +125,14 @@ int main() {
 	Diff[0] = Waveform(LastFile, WaveformFormat);
 	Diff[1] = Waveform(NextFile, WaveformFormat);
 	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
-	  Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	  if( ! MutualAlignmentApproximant.empty()) {
+	    Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
+	    PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
+	    PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	    Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	  } else {
+	    Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	  }
 	}
 	Diff.AlignPhases();
 	sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
@@ -137,7 +159,14 @@ int main() {
 	Diff[0] = Waveform(LastFile, WaveformFormat);
 	Diff[1] = Waveform(NextFile, WaveformFormat);
 	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
-	  Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	  if( ! MutualAlignmentApproximant.empty()) {
+	    Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
+	    PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
+	    PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	    Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	  } else {
+	    Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	  }
 	}
 	Diff.AlignPhases();
 	sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
@@ -197,7 +226,14 @@ int main() {
       Diff[0] = Waveform(Higher, WaveformFormat);
       Diff[1] = Waveform(Lower, WaveformFormat);
       if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
-	Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	if( ! MutualAlignmentApproximant.empty()) {
+	  Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
+	  PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
+	  PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	  Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	} else {
+	  Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	}
       }
       Diff.AlignPhases();
       sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
@@ -224,7 +260,14 @@ int main() {
       Diff[0] = Waveform(Higher, WaveformFormat);
       Diff[1] = Waveform(Lower, WaveformFormat);
       if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
-	Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	if( ! MutualAlignmentApproximant.empty()) {
+	  Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
+	  PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
+	  PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	  Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	} else {
+	  Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+	}
       }
       Diff.AlignPhases();
       sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),

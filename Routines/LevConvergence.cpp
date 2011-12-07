@@ -37,6 +37,14 @@ void ReadFluxFile(const string& InFileName, string& Header, vector<double>& T, v
 		  vector<double>& Flux, vector<double>& PNFlux, vector<double>& NormalizedFlux);
 
 int main() {
+  cerr << "\n\n\n"
+       << "=========================================================================="
+       << "NOTE: This routine has mostly been deprecated in favor of Convergence.    "
+       << "      You may want to switch now, before this routine disappears suddenly."
+       << "=========================================================================="
+       << "\n\n"
+       << endl;
+  
   //// Set up input parameters
   string LevList = "../Lev4 ../Lev5 ../Lev6";
   string Psi4Files = "";//rMPsi4_ExtrapolatedN%d.dat";
