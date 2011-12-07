@@ -593,11 +593,15 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime) {
   if(r.size()==t.size()) {
     r = WaveformUtilities::Interpolate(t, r, NewTime);
   }
+  WaveformUtilities::Matrix<double> Newmag(NModes(), NewTime.size());
+  WaveformUtilities::Matrix<double> Newarg(NModes(), NewTime.size());
   //ORIENTATION!!! 4 following lines
   for(unsigned int i=0; i<NModes(); ++i) {
-    mag[i] = WaveformUtilities::Interpolate(t, mag[i], NewTime);
-    arg[i] = WaveformUtilities::Interpolate(t, arg[i], NewTime);
+    Newmag[i] = WaveformUtilities::Interpolate(t, mag[i], NewTime);
+    Newarg[i] = WaveformUtilities::Interpolate(t, arg[i], NewTime);
   }
+  Newmag.swap(mag);
+  Newarg.swap(arg);
   t = NewTime;
   return *this;
 }
@@ -607,11 +611,15 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime, const double Extr
   if(r.size()==t.size()) {
     r = WaveformUtilities::Interpolate(t, r, NewTime, r.back());
   }
+  WaveformUtilities::Matrix<double> Newmag(NModes(), NewTime.size());
+  WaveformUtilities::Matrix<double> Newarg(NModes(), NewTime.size());
   //ORIENTATION!!! 4 following lines
   for(unsigned int i=0; i<NModes(); ++i) {
-    mag[i] = WaveformUtilities::Interpolate(t, mag[i], NewTime, ExtrapVal);
-    arg[i] = WaveformUtilities::Interpolate(t, arg[i], NewTime, arg[i].back());
+    Newmag[i] = WaveformUtilities::Interpolate(t, mag[i], NewTime, ExtrapVal);
+    Newarg[i] = WaveformUtilities::Interpolate(t, arg[i], NewTime, arg[i].back());
   }
+  Newmag.swap(mag);
+  Newarg.swap(arg);
   t = NewTime;
   return *this;
 }
