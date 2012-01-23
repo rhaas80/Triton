@@ -13,7 +13,7 @@ BINEXECUTABLES = $(SOURCES:%.cpp=../bin/%)
 IFLAGS:=$(SUBLIBS:%=-I%)
 LFLAGS:=$(SUBLIBS:%=-L%)
 lFLAGS:=$(SUBLIBS:../%=-l%)
-LIBDEPS:=$(SUBLIBS:../%=lib%.a)
+LIBDEPS:=$(SUBLIBS:../%=lib%.so)
 
 .PHONY: sublibs $(SUBLIBS) svnignore
 
@@ -45,7 +45,7 @@ sublibs: $(SUBLIBS)
 $(SUBLIBS):
 	@$(MAKE) -C $@
 
-lib%.a:
+lib%.so:
 	@$(MAKE) -C ../$(subst lib,,$(basename $@)) $@
 
 -include $(EXECUTABLES:=.d)

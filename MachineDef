@@ -1,6 +1,8 @@
 C++		= g++
 C++LINK		= g++
 MAKEDEPEND	= g++ -MM
+SHARED		= -dynamiclib -undefined dynamic_lookup -single_module
+
 AR		= ar
 ARFLAGS		= cr
 RM		= /bin/rm -f
@@ -13,4 +15,4 @@ DIFF		= diff
 # C++FLAGS	= -Wall -pg -g ${OPENMP} -DDEBUG
 
 OPENMP		= -fopenmp
-C++FLAGS	= -O3 ${OPENMP}
+C++FLAGS	= -fpic -O3 ${OPENMP}

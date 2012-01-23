@@ -18,21 +18,22 @@ all: realtarget
 	@:
 
 realtarget: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
+	@(make -s lib$(THISDIR).so)
 
 clean:
-	-$(RM) *.o *.d lib$(THISDIR).a
+	-$(RM) *.o *.d lib$(THISDIR).so
 
 realclean:
-	-$(RM) *.o *.d lib$(THISDIR).a
+	-$(RM) *.o *.d lib$(THISDIR).so
 
 %.o : %.cpp
 	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@
-	@$(AR) $(ARFLAGS) lib$(THISDIR).a $@
 
 %.d : %.cpp
 	@$(MAKEDEPEND) $(IFLAGS) -MT '$*.o $*.d' -MF $*.d $*.cpp
 
-lib$(THISDIR).a : realtarget
-	@:
+lib$(THISDIR).so : $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
+	$(C++) $(SHARED) -o lib$(THISDIR).so $(SOURCES:.cpp=.o)
+	@$(LN) ../$(THISDIR)/$@ ../lib/
 
 -include $(SOURCES:.cpp=.d)

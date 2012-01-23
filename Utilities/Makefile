@@ -18,23 +18,23 @@ all: realtarget
 	@:
 
 realtarget: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
-	@($(AR) t lib$(THISDIR).a | grep -q NoiseCurves.o) || ($(AR) $(ARFLAGS) lib$(THISDIR).a NoiseCurves.o)
+	@(make -s lib$(THISDIR).so)
 
 clean:
-	-$(RM) `ls *.o | grep -v NoiseCurves` *.d lib$(THISDIR).a
+	-$(RM) `ls *.o | grep -v NoiseCurves` *.d lib$(THISDIR).so
 
 realclean:
-	-$(RM) *.o *.d lib$(THISDIR).a
+	-$(RM) *.o *.d lib$(THISDIR).so
 
 %.o : %.cpp
 # 	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@ ### This directory is the basic directory, with no dependencies
 	$(C++) $(C++FLAGS) -c $< -o $@
-	@$(AR) $(ARFLAGS) lib$(THISDIR).a $@
 
 %.d : %.cpp
 	@$(MAKEDEPEND) $(IFLAGS) -MT '$*.o $*.d' -MF $*.d $*.cpp
 
-lib$(THISDIR).a : realtarget
-	@:
+lib$(THISDIR).so : $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
+	$(C++) $(SHARED) -o lib$(THISDIR).so $(SOURCES:.cpp=.o)
+	@$(LN) ../$(THISDIR)/$@ ../lib/
 
 -include $(SOURCES:.cpp=.d)

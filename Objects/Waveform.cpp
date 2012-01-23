@@ -1072,8 +1072,8 @@ Waveform& Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
   history << "### this->AlignPhasesToTwoPi(a, " << t << ");\n#" << flush;
   int Ia=0;
   int Ithis=0;
-  while(a.T(Ia)<t && Ia<a.NTimes()) { Ia++; }
-  while(T(Ithis)<t && Ithis<NTimes()) { Ithis++; }
+  while(a.T(Ia)<t && Ia<int(a.NTimes())) { Ia++; }
+  while(T(Ithis)<t && Ithis<int(NTimes())) { Ithis++; }
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
     arg[mode] += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis))/(2.0*M_PI)));
   }
@@ -1092,8 +1092,8 @@ Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2)
   this->AddToTime(dt);
   int Ia=0;
   int Ithis=0;
-  while(a.T(Ia)<t2 && Ia<a.NTimes()) { Ia++; }
-  while(T(Ithis)<t2 && Ithis<NTimes()) { Ithis++; }
+  while(a.T(Ia)<t2 && Ia<int(a.NTimes())) { Ia++; }
+  while(T(Ithis)<t2 && Ithis<int(NTimes())) { Ithis++; }
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
     arg[mode] += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis)-M(mode)*darg22/2.0)/(2.0*M_PI))) + M(mode)*darg22/2.0;
   }
