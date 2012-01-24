@@ -2,8 +2,7 @@ C++		= g++
 C++LINK		= g++
 MAKEDEPEND	= g++ -MM
 SHARED		= -dynamiclib -undefined dynamic_lookup -single_module
-#SHARED		= -shared
-
+#SHARED		= -shared -Wl,-soname,lib$(THISDIR).so
 
 AR		= ar
 ARFLAGS		= cr
