@@ -39,6 +39,7 @@ Waveforms::Waveforms(const vector<double>& Radii, const string& DataFile,
     cout << "Reading " << DataFileName << ", " << AreaFileName << ", and " << LapseFileName << "." << endl;
     Ws[i] = Waveform(DataFileName, "ReIm", ZeroEnds);
     Ws[i].SetArealRadius(AreaFileName);
+    Ws[i].RescaleMagForRadius(Radii[i]*ChMass);
     Ws[i].SetTimeFromLapseSurfaceIntegral(LapseFileName, ADMMass);
     Ws[i].TortoiseOffset(ADMMass);
     if(ChMass != 1.0) { Ws[i].SetTotalMassToOne(ChMass); }

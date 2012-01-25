@@ -118,6 +118,7 @@ namespace WaveformObjects {
     
     // Used in extrapolation
     Waveform& SetArealRadius(const std::string& AreaFileName);
+    Waveform& RescaleMagForRadius(const double OldRadius);
     Waveform& SetTimeFromLapseSurfaceIntegral(const std::string& LapseFileName, const double ADMMass);
     Waveform& TortoiseOffset(const double ADMMass);
     Waveform& SetTotalMassToOne(const double TotalMassInCurrentUnits);

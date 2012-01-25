@@ -768,6 +768,35 @@ Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
   return *this;
 }
 
+Waveform& Waveform::RescaleMagForRadius(const double OldRadius) {
+  history << "### this->RescaleMagForRadius(\"" << OldRadius << "\");" << endl;
+  if(typeIndex>5) {
+    cerr << "\n\nWarning: This Waveform type is not multiplied by 'r', so this function has no effect.\n" << endl;
+    return *this;
+  }
+  if(r.size()<1) {
+    cerr << "\n\nr.size()=" << r.size() << endl;
+    throw("Known radii not big enough.");
+  }
+  if(r.size()==1) {
+    const double ScaleFactor = R(0)/OldRadius;
+    for(unsigned int mode=0; mode<NModes(); ++mode) {
+      MagRef(mode) *= ScaleFactor;
+    }
+  } else if(r.size() != NTimes()) {
+    cerr << "\n\nr.size()=" << r.size() << "\tNTimes()=" << NTimes() << endl;
+    throw("Known radii vector has wrong size.");
+  } else {
+    for(unsigned int t=0; t<NTimes(); ++t) {
+      const double ScaleFactor = R(t)/OldRadius;
+      for(unsigned int mode=0; mode<NModes(); ++mode) {
+	MagRef(mode,t) *= ScaleFactor;
+      }
+    }
+  }
+  return *this;
+}
+
 Waveform& Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName, const double ADMMass) {
   if(r.size()==0) { throw("Bad size for r data."); }
   history << "### this->SetTimeFromLapseSurfaceIntegral(\"" << LapseFileName << "\", " << setprecision(16) << ADMMass << ");" << endl;
