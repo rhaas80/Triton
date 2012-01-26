@@ -14,23 +14,23 @@ LFLAGS:=$(SUBLIBS:%=-L%)
 lFLAGS:=$(SUBLIBS:../%=-l%)
 LIBDEPS:=$(SUBLIBS:../%=lib%.so)
 
-.PHONY: sublibs $(SUBLIBS) svnignore
+.PHONY: sublibs $(SUBLIBS) gitignore
 
-all: sublibs $(EXECUTABLES) | svnignore
+all: sublibs $(EXECUTABLES) | gitignore
 
-svnignore:
-	@$(ECHO) .svnignore $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
+gitignore:
+	@$(ECHO) .gitignore $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
 	@test -f .$@ \
 	  && ($(DIFF) .$@ .$@.tmp > .$@.diff; \
-	      (test -s .$@.diff && (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore) || ($(RM) .$@.tmp)); \
+	      (test -s .$@.diff && (mv .$@.tmp .$@) || ($(RM) .$@.tmp)); \
 	      $(RM) .$@.diff) \
-	  || (mv .$@.tmp .$@; svn propset svn:ignore . -F .svnignore)
+	  || (mv .$@.tmp .$@)
 
 clean:
-	-$(RM) *.d $(EXECUTABLES) .svnignore
+	-$(RM) *.d $(EXECUTABLES) .gitignore
 
 realclean:
-	-$(RM) *.d $(EXECUTABLES) .svnignore
+	-$(RM) *.d $(EXECUTABLES) .gitignore
 
 $(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
 	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
