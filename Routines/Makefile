@@ -23,15 +23,15 @@ gitignore:
 	@$(ECHO) .gitignore $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
 	@test -f .$@ \
 	  && ($(DIFF) .$@ .$@.tmp > .$@.diff; \
-	      (test -s .$@.diff && (mv .$@.tmp .$@) || ($(RM) .$@.tmp)); \
+	      (test -s .$@.diff && (mv .$@.tmp .$@; cp .$@ ../bin/) || ($(RM) .$@.tmp)); \
 	      $(RM) .$@.diff) \
-	  || (mv .$@.tmp .$@)
+	  || (mv .$@.tmp .$@; cp .$@ ../bin/)
 
 clean:
-	-$(RM) *.d $(EXECUTABLES) $(BINEXECUTABLES) .gitignore
+	-$(RM) *.d $(EXECUTABLES) $(BINEXECUTABLES) .gitignore ../bin/.gitignore
 
 realclean:
-	-$(RM) *.d $(EXECUTABLES) $(BINEXECUTABLES) .gitignore
+	-$(RM) *.d $(EXECUTABLES) $(BINEXECUTABLES) .gitignore ../bin/.gitignore
 
 $(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
 	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
