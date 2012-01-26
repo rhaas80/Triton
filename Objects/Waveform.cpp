@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <sys/param.h>
 
+
+#include <fstream>
+
 #include "Waveform.hpp"
 
 #include "Interpolate.hpp"
@@ -780,6 +783,7 @@ Waveform& Waveform::RescaleMagForRadius(const double OldRadius) {
   }
   if(r.size()==1) {
     const double ScaleFactor = R(0)/OldRadius;
+    cerr << "\n\nScaleFactor = " << ScaleFactor << endl;
     for(unsigned int mode=0; mode<NModes(); ++mode) {
       MagRef(mode) *= ScaleFactor;
     }
@@ -787,12 +791,16 @@ Waveform& Waveform::RescaleMagForRadius(const double OldRadius) {
     cerr << "\n\nr.size()=" << r.size() << "\tNTimes()=" << NTimes() << endl;
     throw("Known radii vector has wrong size.");
   } else {
+    ofstream file(("ScaleFactors"+DoubleToString(OldRadius)+".dat").c_str());
+    file << "# [1] = t\n# [2] = ScaleFactor" << endl;
     for(unsigned int t=0; t<NTimes(); ++t) {
       const double ScaleFactor = R(t)/OldRadius;
+      file << T(t) << " " << ScaleFactor << endl;
       for(unsigned int mode=0; mode<NModes(); ++mode) {
 	MagRef(mode,t) *= ScaleFactor;
       }
     }
+    file.close();
   }
   return *this;
 }
