@@ -1,8 +1,15 @@
 C++		= g++
 C++LINK		= g++
 MAKEDEPEND	= g++ -MM
-SHARED		= -dynamiclib -undefined dynamic_lookup -single_module
-#SHARED		= -shared -Wl,-soname,lib$(THISDIR).so
+
+ifeq ($(OSTYPE),darwin)
+	SHARED	= -dynamiclib -undefined dynamic_lookup -single_module
+else ifeq ($(OSTYPE),linux)
+	SHARED	= -shared -Wl,-soname,lib$(THISDIR).so
+else
+	echo Unsupported OS type
+	false
+endif
 
 AR		= ar
 ARFLAGS		= cr
