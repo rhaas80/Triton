@@ -1,3 +1,6 @@
 .gitignore
 lib*.so
 MachineDef
+*.d
+*.o
+*~
