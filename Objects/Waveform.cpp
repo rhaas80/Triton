@@ -969,7 +969,7 @@ Waveform& Waveform::DropNegativeMModes() {
   LMrit--;
   //ORIENTATION!!! following loop
   while(LMrit >= lm.RawData().begin()) {
-    if((*LMrit)[1]<1) {
+    if((*LMrit)[1]<0) {
       mag.RawData().erase(magrit);
       arg.RawData().erase(argrit);
       lm.RawData().erase(LMrit);
