@@ -1,5 +1,5 @@
 ## Set this as the directory with Waveforms, including trailing '/'
-BASE = $(wildcard /home/boyle/Triton/)
+BASE = $(wildcard /Users/boyle/Research/Triton/)
 
 
 ## This is a basic executables-building makefile; the lines below shouldn't need much tweaking.
