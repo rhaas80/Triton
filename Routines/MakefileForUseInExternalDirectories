@@ -13,7 +13,7 @@ EXECUTABLES = $(SOURCES:%.cpp=%)
 IFLAGS:=$(SUBLIBS:%=-I%)
 LFLAGS:=$(SUBLIBS:%=-L%)
 lFLAGS:=$(SUBLIBS:${BASE}%=-l%)
-LIBDEPS:=$(SUBLIBS:${BASE}%=lib%.a)
+LIBDEPS:=$(SUBLIBS:${BASE}%=lib%.so)
 
 .PHONY: sublibs $(SUBLIBS)
 
@@ -36,7 +36,7 @@ sublibs: $(SUBLIBS)
 $(SUBLIBS):
 	@$(MAKE) -C $@
 
-lib%.a:
+lib%.so:
 	@$(MAKE) -C ${BASE}$(subst lib,,$(basename $@)) $@
 
 -include $(EXECUTABLES:=.d)
