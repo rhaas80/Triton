@@ -20,7 +20,7 @@ LIBDEPS:=$(SUBLIBS:../%=lib%.so)
 all: sublibs $(EXECUTABLES) | gitignore
 
 gitignore:
-	@$(ECHO) .gitignore $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
+	@$(ECHO) .gitignore MakefileForUseInExternalDirectories $(EXECUTABLES) | tr ' ' '\n' > .$@.tmp
 	@test -f .$@ \
 	  && ($(DIFF) .$@ .$@.tmp > .$@.diff; \
 	      (test -s .$@.diff && (mv .$@.tmp .$@; cp .$@ ../bin/) || ($(RM) .$@.tmp)); \
