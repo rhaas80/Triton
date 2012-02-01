@@ -7,6 +7,8 @@ IFLAGS = -I../Utilities -I../PostNewtonian
 THISDIR:=$(shell basename `pwd`)
 include ../MachineDef
 
+GIT_REVISION:=$(shell git rev-parse HEAD)
+
 VPATH = $(SUBLIBS)
 SUFFIXES += .d
 
@@ -27,7 +29,7 @@ realclean:
 	-$(RM) *.o *.d lib$(THISDIR).so
 
 %.o : %.cpp
-	$(C++) $(C++FLAGS) -c $(IFLAGS) $< -o $@
+	$(C++) -DGitRevision=\"$(GIT_REVISION)\" $(C++FLAGS) -c $(IFLAGS) $< -o $@
 
 %.d : %.cpp
 	@$(MAKEDEPEND) $(IFLAGS) -MT '$*.o $*.d' -MF $*.d $*.cpp

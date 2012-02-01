@@ -39,9 +39,6 @@ using std::ios_base;
 
 string tolower(const string& A);
 
-string Rev = "$Rev: 16185 $";
-int Revision = atoi(Rev.substr(5,Rev.size()-6).c_str());
-
 int GetWaveformType(const string& FullPath, const vector<string>& Header);
 string GetFileFormat(const vector<string>& Header);
 void GetWaveformTimeScaleAndLM(const string& FullPath, const vector<string>& Header, string& Scale, Matrix<int>& lm);
@@ -105,7 +102,7 @@ Waveform::Waveform(const string& DataFileName, const string& Format, const bool 
     gethostname(host, MAXHOSTNAMELEN);
     hostname = host;
   }
-  history << "### Code revision Rev = " << Revision << endl
+  history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
 	  << "### pwd = " << pwd << endl
 	  << "### hostname = " << hostname << endl
 	  << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\"); // constructor from data file" << endl;
@@ -279,7 +276,7 @@ Waveform::Waveform(const string& Approximant, const double delta, const double c
   SetWaveformTypes();
   
   {
-    history << "### Code revision Rev=" << Revision << endl
+    history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
 	    << "### Waveform("
 	    << Approximant << ", "
 	    << delta << ", "
@@ -360,7 +357,7 @@ Waveform::Waveform(const string& Approximant, const double delta, const std::vec
   SetWaveformTypes();
   
   {
-    history << "### Code revision Rev=" << Revision << endl
+    history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
 	    << "### Waveform("
 	    << Approximant << ", "
 	    << delta << ", ("
