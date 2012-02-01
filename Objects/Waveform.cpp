@@ -464,7 +464,7 @@ Waveform Waveform::operator[](const unsigned int mode) const {
 }
 
 void Waveform::swap(Waveform& b) {
-  /// This call should not be recorded explicitly in the history
+  /// This call should not be recorded explicitly in the history, because the histories are swapped
   { const string historyb=b.history.str(); b.history.str(history.str()); history.str(historyb); }
   history.seekp(0, ios_base::end);
   b.history.seekp(0, ios_base::end);
@@ -489,7 +489,7 @@ double Waveform::Peak22Time() const {
   }
   //// Error if not found
   if(TwoTwo==-1) { throw("Can't find the 2,2 component of the data!"); }
-  return t[maxIndex(mag[TwoTwo])];
+  return T(maxIndex(Mag(TwoTwo)));
 }
 
 vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
@@ -505,7 +505,7 @@ vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
       if(L(i)==2 && M(i)==2) { TwomTwo=i; break; }
     }
     if(TwomTwo==-1) {
-      cerr << "\nlm=\n" << lm << endl;
+      cerr << "\nlm=\n" << LM() << endl;
       throw("Bad L,M data; no (2,-2) mode.");
     }
     cerr << "\n(2,-2) mode not found; proceeding with (2,2) mode.\n" << endl;
@@ -513,9 +513,9 @@ vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
   
   //// Return differentiated Arg data
   //ORIENTATION!!! following section
-  if((t1!=-1e300 && t1>t[0]) && (t2!=1e300 && t2<t.back())) {
-    vector<double> NewTime(t);
-    vector<double> phase(arg[TwomTwo]);
+  if((t1!=-1e300 && t1>T(0)) && (t2!=1e300 && t2<T().back())) {
+    vector<double> NewTime(T());
+    vector<double> phase(Arg(TwomTwo));
     int i=NewTime.size()-1;
     while(NewTime[i]>t2) { --i; }
     NewTime.erase(NewTime.begin()+i, NewTime.begin()+NewTime.size());
@@ -525,30 +525,30 @@ vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
     NewTime.erase(NewTime.begin(), NewTime.begin()+i);
     phase.erase(phase.begin(), phase.begin()+i);
     return dydx(phase, NewTime);
-  } else if((t1!=-1e300 && t1>t[0])) {
-    vector<double> NewTime(t);
-    vector<double> phase(arg[TwomTwo]);
+  } else if((t1!=-1e300 && t1>T(0))) {
+    vector<double> NewTime(T());
+    vector<double> phase(Arg(TwomTwo));
     int i=0;
     while(NewTime[i]<t1) { ++i; }
     NewTime.erase(NewTime.begin(), NewTime.begin()+i);
     phase.erase(phase.begin(), phase.begin()+i);
     return dydx(phase, NewTime);
-  } else if((t2!=1e300 && t2<t.back())) {
-    vector<double> NewTime(t);
-    vector<double> phase(arg[TwomTwo]);
+  } else if((t2!=1e300 && t2<T().back())) {
+    vector<double> NewTime(T());
+    vector<double> phase(Arg(TwomTwo));
     int i=NewTime.size()-1;
     while(NewTime[i]>t2) { --i; }
     NewTime.erase(NewTime.begin()+i, NewTime.begin()+NewTime.size());
     phase.erase(phase.begin()+i, phase.begin()+phase.size());
     return dydx(phase, NewTime);
   } else {
-    return dydx(arg[TwomTwo], t);
+    return dydx(Arg(TwomTwo), t);
   }
 }
 
 bool Waveform::HasNaNs() const {
   bool hasnans = false;
-  for(unsigned int i=0; i<t.size(); ++i) {
+  for(unsigned int i=0; i<NTimes(); ++i) {
     if(t[i]!=t[i]) {
       cerr << "\nChecking Waveform, a NaN was detected in the Time at index i=" << i << "." << endl;
       hasnans = true;
@@ -578,10 +578,10 @@ vector<double> Waveform::Flux() const {
     cerr << "\nType = " << Type() << endl;
     throw("Can't get Flux() for Waveform of Type other than rhdot.  Maybe you should use Differentiate().");
   }
-  vector<double> Flux(t.size(), 0.0);
+  vector<double> Flux(NTimes(), 0.0);
   //ORIENTATION!!! Following loop
   for(unsigned int i=0; i<NModes(); ++i) {
-    Flux += mag[i]*mag[i];
+    Flux += Mag(i)*Mag(i);
   }
   return (Flux/(16.0*M_PI));
 }
@@ -590,37 +590,37 @@ vector<double> Waveform::Flux() const {
 // Interpolation routines
 Waveform& Waveform::Interpolate(const vector<double>& NewTime) {
   history << "### this->Interpolate(const vector<double>& NewTime);" << endl;
-  if(r.size()==t.size()) {
-    r = WaveformUtilities::Interpolate(t, r, NewTime);
+  if(R().size()==NTimes()) {
+    RRef() = WaveformUtilities::Interpolate(T(), R(), NewTime);
   }
   WaveformUtilities::Matrix<double> Newmag(NModes(), NewTime.size());
   WaveformUtilities::Matrix<double> Newarg(NModes(), NewTime.size());
   //ORIENTATION!!! 4 following lines
   for(unsigned int i=0; i<NModes(); ++i) {
-    Newmag[i] = WaveformUtilities::Interpolate(t, mag[i], NewTime);
-    Newarg[i] = WaveformUtilities::Interpolate(t, arg[i], NewTime);
+    Newmag[i] = WaveformUtilities::Interpolate(t, Mag(i), NewTime);
+    Newarg[i] = WaveformUtilities::Interpolate(t, Arg(i), NewTime);
   }
-  Newmag.swap(mag);
-  Newarg.swap(arg);
-  t = NewTime;
+  Newmag.swap(MagRef());
+  Newarg.swap(ArgRef());
+  TRef() = NewTime;
   return *this;
 }
 
 Waveform& Waveform::Interpolate(const vector<double>& NewTime, const double ExtrapVal) {
   history << "### this->Interpolate(const vector<double>& NewTime, " << ExtrapVal << ");" << endl;
-  if(r.size()==t.size()) {
-    r = WaveformUtilities::Interpolate(t, r, NewTime, r.back());
+  if(R().size()==NTimes()) {
+    RRef() = WaveformUtilities::Interpolate(T(), R(), NewTime, R().back());
   }
   WaveformUtilities::Matrix<double> Newmag(NModes(), NewTime.size());
   WaveformUtilities::Matrix<double> Newarg(NModes(), NewTime.size());
   //ORIENTATION!!! 4 following lines
   for(unsigned int i=0; i<NModes(); ++i) {
-    Newmag[i] = WaveformUtilities::Interpolate(t, mag[i], NewTime, ExtrapVal);
-    Newarg[i] = WaveformUtilities::Interpolate(t, arg[i], NewTime, arg[i].back());
+    Newmag[i] = WaveformUtilities::Interpolate(T(), Mag(i), NewTime, ExtrapVal);
+    Newarg[i] = WaveformUtilities::Interpolate(T(), Arg(i), NewTime, Arg(i).back());
   }
   Newmag.swap(mag);
   Newarg.swap(arg);
-  t = NewTime;
+  TRef() = NewTime;
   return *this;
 }
 
@@ -632,45 +632,45 @@ Waveform& Waveform::Interpolate(const double NewTime) {
 
 Waveform& Waveform::Interpolate(const Waveform& b) {
   history << "### this->Interpolate(const Waveform& b);" << endl << "#";
-  this->Interpolate(b.t);
+  this->Interpolate(b.T());
   return *this;
 }
 
 Waveform& Waveform::Interpolate(const Waveform& b, const double ExtrapVal) {
   history << "### this->Interpolate(const Waveform& b, " << ExtrapVal << ");" << endl << "#";
-  this->Interpolate(b.t, ExtrapVal);
+  this->Interpolate(b.T(), ExtrapVal);
   return *this;
 }
 
 // Trim or adjust time axis
 Waveform& Waveform::AddToTime(const double time) {
   history << "### this->AddToTime(" << setprecision(16) << time << ");" << endl;
-  t += time;
+  TRef() += time;
   return *this;
 }
 
 Waveform& Waveform::DropBefore(const double time) {
   history << "### this->DropBefore(" << setprecision(16) << time << ");" << endl;
   unsigned int i=0;
-  while(i<t.size()-1 && t[i+1]<=time) { ++i; }
-  if(r.size()==t.size()) { r.erase(r.begin(), r.begin()+i); }
+  while(i<NTimes()-1 && T(i+1)<=time) { ++i; }
+  if(R().size()==NTimes()) { RRef().erase(RRef().begin(), (RRef().begin())+i); }
   t.erase(t.begin(), t.begin()+i);
   for(unsigned int j=0; j<NModes(); ++j) {
-    mag[j].erase(mag[j].begin(), mag[j].begin()+i);
-    arg[j].erase(arg[j].begin(), arg[j].begin()+i);
+    MagRef(j).erase(MagRef(j).begin(), MagRef(j).begin()+i);
+    ArgRef(j).erase(ArgRef(j).begin(), ArgRef(j).begin()+i);
   }
   return *this;
 }
 
 Waveform& Waveform::DropAfter(const double time) {
   history << "### this->DropAfter(" << setprecision(16) << time << ");" << endl;
-  unsigned int i=t.size()-1;
-  while(i>0 && t[i]>time) { --i; }
-  if(r.size()==t.size()) { r.erase(r.begin()+i, r.end()); }
-  t.erase(t.begin()+i, t.end());
+  unsigned int i=NTimes()-1;
+  while(i>0 && T(i)>time) { --i; }
+  if(RRef().size()==NTimes()) { RRef().erase(RRef().begin()+i, RRef().end()); }
+  TRef().erase(TRef().begin()+i, TRef().end());
   for(unsigned int j=0; j<NModes(); ++j) {
-    mag[j].erase(mag[j].begin()+i, mag[j].end());
-    arg[j].erase(arg[j].begin()+i, arg[j].end());
+    MagRef(j).erase(MagRef(j).begin()+i, MagRef(j).end());
+    ArgRef(j).erase(ArgRef(j).begin()+i, ArgRef(j).end());
   }
   return *this;
 }
@@ -678,19 +678,19 @@ Waveform& Waveform::DropAfter(const double time) {
 Waveform& Waveform::ZeroBefore(const double time) {
   history << "### this->ZeroBefore(" << setprecision(16) << time << ");" << endl;
   unsigned int i=0;
-  while(i<t.size()-1 && t[i+1]<=time) { ++i; }
+  while(i<NTimes()-1 && t[i+1]<=time) { ++i; }
   for(unsigned int j=0; j<NModes(); ++j) {
     for(unsigned int k=0; k<i; ++k) {
-      mag[j][k] = 0.0;
+      MagRef(j,k) = 0.0;
     }
   }
   return *this;
 }
 
 Waveform& Waveform::UniformTimeToPowerOfTwo() {
-  if(((t.size()) & (t.size()-1)) == 0) { return *this; } // Return *this if we already have a power of 2
+  if(((NTimes()) & (NTimes()-1)) == 0) { return *this; } // Return *this if we already have a power of 2
   history << "### this->UniformTimeToPowerOfTwo();" << endl << "#";
-  unsigned int N = static_cast<unsigned int>(pow(2.0,ceil(log2(t.size()))));
+  unsigned int N = static_cast<unsigned int>(pow(2.0,ceil(log2(NTimes()))));
   double dt = (t.back()-t[0])/(N-1);
   vector<double> NewTime(N, 0.0);
   for(unsigned int i=0; i<N; ++i) {
@@ -713,21 +713,19 @@ Waveform& Waveform::UniformTime(const unsigned int N) {
 
 Waveform& Waveform::NSamplesPerCycle22(const unsigned int N) {
   history << "### this->NSamplesPerCycle22(" << N << ");" << endl << "#";
-  vector<double> NewTime(t.size());
+  vector<double> NewTime(NTimes());
   vector<double> omega22s = Omega2m2();
   NewTime[0] = t[0];
   unsigned int iNew=1;
   double dt_Last = t[1]-t[0];
-  for(unsigned int iOld=1; iNew<t.size() && iOld<t.size(); iNew++) {
+  for(unsigned int iOld=1; iNew<NTimes() && iOld<NTimes(); iNew++) {
     const double omega22 = omega22s[iOld];
     const double dt_Data = t[iOld]-t[iOld-1];
     const double dt_Samples = (fabs(omega22)==0.0 ? 0.0 : 2*M_PI / (N*fabs(omega22)));
     const double dt_New = max(dt_Data, min(dt_Samples, 1.1*dt_Last));
     const double t_New = NewTime[iNew-1] + dt_New;
-//     cout << iNew << " " << iOld << ":\tomega22 = " << omega22 << "\tdt_Data="
-// 	 << dt_Data << "\tdt_Samples=" << dt_Samples << "\ttNew=" << tNew << endl;
     if(t_New>t.back()) { break; }
-    while(t[iOld]<t_New && iOld<t.size()) { iOld++; }
+    while(t[iOld]<t_New && iOld<NTimes()) { iOld++; }
     NewTime[iNew] = t_New;
     dt_Last = dt_New;
   }
@@ -1001,9 +999,9 @@ Waveform& Waveform::FixNonOscillatingData() {
   //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) { // Loop over components
     if(M(i)==0) {
-      vector<double> Im = mag[i] * sin(arg[i]);
-      mag[i] = mag[i] * cos(arg[i]);
-      arg[i] = Im;
+      vector<double> Im = mag[i] * sin(Arg(i));
+      mag[i] = mag[i] * cos(Arg(i));
+      ArgRef(i) = Im;
     }
   }
   return *this;
@@ -1015,8 +1013,8 @@ Waveform& Waveform::UnfixNonOscillatingData() {
   for(unsigned int i=0; i<NModes(); ++i) { // Loop over components
     if(M(i)==0) {
       vector<double> Re = mag[i];
-      vector<double> Im = arg[i];
-      MagArg(Re, Im, mag[i], arg[i]);
+      vector<double> Im = Arg(i);
+      MagArg(Re, Im, MagRef(i), ArgRef(i));
     }
   }
   return *this;
@@ -1109,7 +1107,7 @@ Waveform& Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
   while(a.T(Ia)<t && Ia<int(a.NTimes())) { Ia++; }
   while(T(Ithis)<t && Ithis<int(NTimes())) { Ithis++; }
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
-    arg[mode] += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis))/(2.0*M_PI)));
+    ArgRef(mode) += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis))/(2.0*M_PI)));
   }
   return *this;
 }
@@ -1129,7 +1127,7 @@ Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2)
   while(a.T(Ia)<t2 && Ia<int(a.NTimes())) { Ia++; }
   while(T(Ithis)<t2 && Ithis<int(NTimes())) { Ithis++; }
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
-    arg[mode] += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis)-M(mode)*darg22/2.0)/(2.0*M_PI))) + M(mode)*darg22/2.0;
+    ArgRef(mode) += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis)-M(mode)*darg22/2.0)/(2.0*M_PI))) + M(mode)*darg22/2.0;
   }
   return *this;
 }
@@ -1155,34 +1153,34 @@ Waveform Waveform::HybridizeWith(const Waveform& b, const double t1, const doubl
   }
   Waveform c(*this);
   c.t = Union(t, b.t, MinStep);
-  int it=c.t.size()-1;
+  int it=c.NTimes()-1;
   while(c.T(it)>b.T().back() && it>0) { --it; }
   c.t.erase(c.t.begin()+it, c.t.end());
   c.r = vector<double>(1, 0.0);
   c.mag.resize(NModes(), c.NTimes());
   c.arg.resize(NModes(), c.NTimes());
-  unsigned int J01=0, J12=c.t.size()-1;
-  while(c.t[J01]<t1 && J01<c.t.size()) { J01++; }
+  unsigned int J01=0, J12=c.NTimes()-1;
+  while(c.t[J01]<t1 && J01<c.NTimes()) { J01++; }
   while(c.t[J12]>t2 && J12>0) { J12--; }
   const double TransitionLength=max(1.0,double(J12-J01-1.0)); // This is an int that will be used for division
   //ORIENTATION!!! Following loop
   for(unsigned int Mode=0; Mode<NModes(); ++Mode) {
     SplineInterpolator SplineMagA(  t,   mag[Mode]);
     SplineInterpolator SplineMagB(b.t, b.mag[Mode]);
-    SplineInterpolator SplineArgA(  t,   arg[Mode]);
-    SplineInterpolator SplineArgB(b.t, b.arg[Mode]);
+    SplineInterpolator SplineArgA(  t,   Arg(Mode));
+    SplineInterpolator SplineArgB(b.t, b.Arg(Mode));
     for(unsigned int j=0; j<J01; ++j) {
       c.mag[Mode][j] = SplineMagA.interp(c.t[j]);
-      c.arg[Mode][j] = SplineArgA.interp(c.t[j]);
+      c.ArgRef(Mode,j) = SplineArgA.interp(c.t[j]);
     }
     for(unsigned int j=J01; j<J12; ++j) {
       const double Transition = double(j-J01)/TransitionLength;
       c.mag[Mode][j] = SplineMagA.interp(c.t[j])*(1.0-Transition) + SplineMagB.interp(c.t[j])*Transition;
-      c.arg[Mode][j] = SplineArgA.interp(c.t[j])*(1.0-Transition) + SplineArgB.interp(c.t[j])*Transition;
+      c.ArgRef(Mode,j) = SplineArgA.interp(c.t[j])*(1.0-Transition) + SplineArgB.interp(c.t[j])*Transition;
     }
-    for(unsigned int j=J12; j<c.t.size(); ++j) {
+    for(unsigned int j=J12; j<c.NTimes(); ++j) {
       c.mag[Mode][j] = SplineMagB.interp(c.t[j]);
-      c.arg[Mode][j] = SplineArgB.interp(c.t[j]);
+      c.ArgRef(Mode,j) = SplineArgB.interp(c.t[j]);
     }
   }
   
@@ -1291,12 +1289,12 @@ Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const doubl
   const double dt = TA-TB;
   t += dt;
   for(unsigned int i=0; i<a.NModes() && i<NModes(); ++i) {
-    arg[i] += WaveformUtilities::Interpolate(a.t, a.arg[i], TA) - WaveformUtilities::Interpolate(t, arg[i], TA);
+    ArgRef(i) += WaveformUtilities::Interpolate(a.t, a.Arg(i), TA) - WaveformUtilities::Interpolate(t, Arg(i), TA);
   }
   
   if(DeltaT!=1e300) {
     //cerr << "\nomega=" << omega << "\tTA=" << TA << "\tt1=" << max(TA-DeltaT, max(a.t[0], t[0]))
-    //     << "\tt2=" << min(TA+DeltaT, min(a.t[a.t.size()-1], t[t.size()-1])) << endl;
+    //     << "\tt2=" << min(TA+DeltaT, min(a.t[a.NTimes()-1], t[NTimes()-1])) << endl;
     *this = this->HybridizeWith(a, std::max(TA-DeltaT, std::max(a.t[0], t[0])), std::min(TA+DeltaT, std::min(a.T().back(), T().back())), MinStep);
   }
   
@@ -1488,8 +1486,8 @@ Waveform& Waveform::Differentiate() {
   for(unsigned int iMode=0; iMode<NModes(); ++iMode) {
     magdot = dydx(Mag(iMode), T());
     argdot = dydx(Arg(iMode), T());
-    mag[iMode] = sqrt(magdot*magdot + Mag(iMode)*Mag(iMode)*argdot*argdot);
-    arg[iMode] = Arg(iMode) + Unwrap(atan2(Mag(iMode)*argdot, magdot));
+    MagRef(iMode) = sqrt(magdot*magdot + Mag(iMode)*Mag(iMode)*argdot*argdot);
+    ArgRef(iMode) = Arg(iMode) + Unwrap(atan2(Mag(iMode)*argdot, magdot));
   }
   return *this;
 }
@@ -1826,7 +1824,7 @@ Waveform& Waveform::MinimalGrid(const double magTol, const double argTol) {
     while(!Tbool[I1]) { ++I1; }
     if(i != I0 && i != I1) {
       if(fabs(1-(mag[0][I0]+(T(i)-T(I0))*(mag[0][I1]-mag[0][I0])/(T(I1)-T(I0)))/mag[0][i]) > magTol
-	 || fabs(arg[0][I0]+(T(i)-T(I0))*(arg[0][I1]-arg[0][I0])/(T(I1)-T(I0))-arg[0][i]) > argTol) {
+	 || fabs(Arg(0,I0)+(T(i)-T(I0))*(Arg(0,I1)-Arg(0,I0))/(T(I1)-T(I0))-Arg(0,i)) > argTol) {
 	I1 = ((I0+I1)>>1);
 	if(!Tbool[I1]) {
 	  //if(I1==I0+1) { Caution(magTol, argTol); }
