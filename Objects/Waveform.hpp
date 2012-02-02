@@ -22,8 +22,8 @@ namespace WaveformObjects {
 	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
 	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     ~Waveform() { }
-    void clear() { t.clear(); r.clear(); lm.clear(); mag.clear(); arg.clear(); }
     void swap(Waveform& b);
+    void clear() { t.clear(); r.clear(); lm.clear(); mag.clear(); arg.clear(); }
     
   private:  // Member data
     std::stringstream history;
@@ -36,11 +36,6 @@ namespace WaveformObjects {
     WaveformUtilities::Matrix<double> arg;
   public:
     static std::vector<std::string> Types;
-    
-  public:  // Operators
-    Waveform& operator=(const Waveform& b);
-    Waveform operator/(const Waveform& b) const;
-    Waveform operator[](const unsigned int mode) const;
     
   public:  // Getty access functions
     // Basic Waveform information
@@ -92,13 +87,19 @@ namespace WaveformObjects {
     inline WaveformUtilities::Matrix<double>& MagRef() { return mag; }
     inline WaveformUtilities::Matrix<double>& ArgRef() { return arg; }
     
+  public:  // Operators
+    Waveform& operator=(const Waveform& b);
+    Waveform operator/(const Waveform& b) const;
+    Waveform operator[](const unsigned int mode) const;
+    
   public:  // Member functions
-    // Handy description routines
+    // Extract features
     double Peak22Time() const;
     std::vector<double> Omega2m2(const double t1=-1e300, const double t2=1e300) const;
     bool HasNaNs() const;
     std::vector<double> Flux() const;
     void SetTypeIndex(const unsigned int I) { typeIndex = I; }
+    Waveform& Differentiate(); // Useful to compare h to Psi4
     
     // Interpolation routines
     Waveform& Interpolate(const std::vector<double>& Time);
@@ -107,7 +108,7 @@ namespace WaveformObjects {
     Waveform& Interpolate(const Waveform& b);
     Waveform& Interpolate(const Waveform& b, const double ExtrapVal);
     
-    // Trim or adjust time axis
+    // Adjust time axis
     Waveform& AddToTime(const double t);
     Waveform& DropBefore(const double t);
     Waveform& DropAfter(const double t);
@@ -116,30 +117,24 @@ namespace WaveformObjects {
     Waveform& UniformTime(const unsigned int N=200);
     Waveform& NSamplesPerCycle22(const unsigned int N=20);
     
-    // Used in extrapolation
+    // Physical conversions for extrapolations or conversion to frequency space
     Waveform& SetArealRadius(const std::string& AreaFileName);
     Waveform& RescaleMagForRadius(const double OldRadius);
     Waveform& SetTimeFromLapseSurfaceIntegral(const std::string& LapseFileName, const double ADMMass);
     Waveform& TortoiseOffset(const double ADMMass);
     Waveform& SetTotalMassToOne(const double TotalMassInCurrentUnits);
-    
-    // Used before converting to frequency space
     Waveform& SetPhysicalMassAndDistance(const double TotalMassInSolarMasses, const double DistanceInMegaparsecs);
     
-    // Useful for time saving or comparing very different waveforms
+    // Manipulate (l,m) modes
     Waveform& DropLMode(const int L);
     Waveform& DropLMMode(const int L, const int M);
     Waveform& DropOddMModes();
     Waveform& DropZeroMModes();
     Waveform& DropNegativeMModes();
     Waveform& Conjugate();
-    
-    // Hack to fix RWZ extraction
-    Waveform& HackOddLPlusM(); // Change sign of mode if l+m is odd
-    
-    // Convert (mag,arg) to (re,im) for, e.g., m=0 modes
-    Waveform& FixNonOscillatingData();
-    Waveform& UnfixNonOscillatingData();
+    Waveform& HackOddLPlusM(); // Change sign of mode if l+m is odd (Hack to fix RWZ extraction)
+    Waveform& FixNonOscillatingData(); // If M=0, convert to ReIm from MagArg
+    Waveform& UnfixNonOscillatingData(); // If M=0, convert from ReIm to MagArg
     
     // Align and hybridize waveforms
     Waveform& AlignPhasesToTwoPi(const Waveform& a, const double t);
@@ -152,13 +147,6 @@ namespace WaveformObjects {
 			     const double DeltaT=10.0, const double MinStep=0.005) const;
     Waveform& AttachQNMs(const double delta, const double chiKerr, double dt=0.0, const double TLength=500.0);
     
-    // Nice, easy way of compressing and outputting to NINJA
-    Waveform& MinimalGrid(const double MagTol=1.e-5, const double ArgTol=1.e-5);
-    void OutputToNINJAFormat(const std::string& MetadataFileName, const std::string ExtractionRadiusString="", const std::string WaveformIdentifier="") const;
-    
-    // Useful to compare h to Psi4
-    Waveform& Differentiate();
-    
     // Rotate by the given Euler angles or Quaternion
     Waveform& RotatePhysicalSystem(const double alpha, const double beta, const double gamma);
     Waveform& RotatePhysicalSystem(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
@@ -167,11 +155,24 @@ namespace WaveformObjects {
     Waveform& RotatePhysicalSystem(const std::vector<WaveformUtilities::Quaternion>& Q);
     Waveform& RotateCoordinates(const std::vector<WaveformUtilities::Quaternion>& Q);
     
+    // Radiation-frame utilities
+    Waveform& TransformToSchmidtFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0); // Transforms the waveform into the Schmidt frame
+    Waveform& TransformToSchmidtFrame(std::vector<double>& alpha, std::vector<double>& beta, const double alpha0Guess=0.0, const double beta0Guess=0.0);
+    Waveform& TransformToSchmidtFrame(std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+				      const double alpha0Guess=0.0, const double beta0Guess=0.0);
+    Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0); // Transforms the waveform into the minimal-rotation frame
+    Waveform& TransformToMinimalRotationFrame(std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+					      const double alpha0Guess=0.0, const double beta0Guess=0.0);
+    
+    // Nice, easy way of compressing and outputting to NINJA
+    Waveform& MinimalGrid(const double MagTol=1.e-5, const double ArgTol=1.e-5);
+    void OutputToNINJAFormat(const std::string& MetadataFileName, const std::string ExtractionRadiusString="", const std::string WaveformIdentifier="") const;
+    
   }; // class Waveform
   
 } // namespace WaveformObjects
 
-// Related functions
+// Output functions (non-members)
 std::ostream& operator<<(std::ostream& os, const WaveformObjects::Waveform& a);
 void Output(const std::string& FileName, const WaveformObjects::Waveform& a, const unsigned int precision=14);
 void OutputSingleMode(std::ostream& os, const WaveformObjects::Waveform& a, const unsigned int Mode);
