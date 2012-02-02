@@ -1,3 +1,5 @@
+# -*- makefile -*-  This makes emacs see this file as a Makefile
+
 C++		= g++
 C++LINK		= g++
 MAKEDEPEND	= g++ -MM
@@ -19,8 +21,10 @@ LN		= ln -sf
 SED		= sed
 DIFF		= diff
 
+## Use this for debug builds
 # OPENMP		= 
 # C++FLAGS	= -Wall -pg -g ${OPENMP} -DDEBUG
 
+## Use this for standard builds
 OPENMP		= -fopenmp
 C++FLAGS	= -fpic -O3 ${OPENMP}

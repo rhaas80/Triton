@@ -12,7 +12,7 @@ GIT_REVISION:=$(shell git rev-parse HEAD)
 VPATH = $(SUBLIBS)
 SUFFIXES += .d
 
-SOURCES = $(wildcard *.cpp)
+SOURCES = $(wildcard *.cpp) $(wildcard Waveform/*.cpp)
 
 .PHONY: all
 
@@ -23,10 +23,10 @@ realtarget: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
 	@(make -s lib$(THISDIR).so)
 
 clean:
-	-$(RM) *.o *.d lib$(THISDIR).so
+	-$(RM) *.o *.d Waveform/*.o Waveform/*.d lib$(THISDIR).so
 
 realclean:
-	-$(RM) *.o *.d lib$(THISDIR).so
+	-$(RM) *.o *.d Waveform/*.o Waveform/*.d lib$(THISDIR).so
 
 %.o : %.cpp
 	$(C++) -DGitRevision=\"$(GIT_REVISION)\" $(C++FLAGS) -c $(IFLAGS) $< -o $@
