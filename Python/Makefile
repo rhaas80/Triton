@@ -24,10 +24,10 @@ realtarget:
 	@(make -s GravitationalWaves_python)
 
 clean:
-	-$(RM) GravitationalWaves_wrap.{o,cxx} GravitationalWaves.py{,c} _WaveformsObjects.so
+	-$(RM) GravitationalWaves_wrap.{o,cxx} GravitationalWaves.py{,c} _GravitationalWaves.so
 
 realclean:
-	-$(RM) GravitationalWaves_wrap.{o,cxx} GravitationalWaves.py{,c} _WaveformsObjects.so
+	-$(RM) GravitationalWaves_wrap.{o,cxx} GravitationalWaves.py{,c} _GravitationalWaves.so
 
 GravitationalWaves_python : GravitationalWaves.i
 	swig -c++ -python GravitationalWaves.i

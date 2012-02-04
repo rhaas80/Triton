@@ -1,8 +1,8 @@
-%module WaveformObjects
+%module GravitationalWaves
 %{
   #define SWIG_FILE_WITH_INIT
   // Includes the header in the wrapper code
-  #include "Waveform.hpp"
+  #include "../Objects/Waveform.hpp"
 %}
 
 %include numpy.i
@@ -72,6 +72,6 @@ namespace WaveformUtilities {
 /*  } */
 
 // Parse the header file to generate wrappers
-%include "Waveform.hpp"
+%include "../Objects/Waveform.hpp"
 
 //%rename(__divide__) WaveformObjects::Waveform::operator/;
