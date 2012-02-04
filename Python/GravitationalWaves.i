@@ -1,7 +1,14 @@
 %module WaveformObjects
 %{
+  #define SWIG_FILE_WITH_INIT
   // Includes the header in the wrapper code
   #include "Waveform.hpp"
+%}
+
+%include numpy.i
+
+%init %{
+  import_array();
 %}
 
 // Make sure std strings and vectors are dealt with appropriately
