@@ -7,7 +7,7 @@
 THISDIR:=$(shell basename `pwd`)
 include ../MachineDef
 
-VPATH = $(SUBLIBS)
+VPATH = $(IFLAGS:-I../%=%)
 SUFFIXES += .d
 
 SOURCES = $(wildcard *.cpp)

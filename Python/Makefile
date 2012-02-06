@@ -9,19 +9,19 @@ include ../MachineDef
 
 GIT_REVISION:=$(shell git rev-parse HEAD)
 
-VPATH = $(SUBLIBS)
+VPATH = $(IFLAGS:-I../%=%)
 SUFFIXES += .d
 
-LFLAGS:=$(SUBLIBS:%=-L%)
-lFLAGS:=$(SUBLIBS:../%=-l%)
+LFLAGS:=$(IFLAGS:-I%=-L%)
+lFLAGS:=$(IFLAGS:-I../%=-l%)
 
 .PHONY: all
 
 all: realtarget
 	@:
 
-realtarget:
-	@(make -s GravitationalWaves_python)
+realtarget: _GravitationalWaves.so
+	@:
 
 clean:
 	-$(RM) GravitationalWaves_wrap.{o,cxx} GravitationalWaves.py{,c} _GravitationalWaves.so
@@ -29,13 +29,15 @@ clean:
 realclean:
 	-$(RM) GravitationalWaves_wrap.{o,cxx} GravitationalWaves.py{,c} _GravitationalWaves.so
 
-GravitationalWaves_python : GravitationalWaves.i
+GravitationalWaves_python : _GravitationalWaves.so
+
+_GravitationalWaves.so : GravitationalWaves.i
 	swig -c++ -python GravitationalWaves.i
-	:
+	@:
 	$(C++) -c $(IFLAGS) `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
 		-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/ \
 		GravitationalWaves_wrap.cxx
-	:
+	@:
 	$(C++) $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
 		$(LFLAGS) $(lFLAGS) GravitationalWaves_wrap.o -o _GravitationalWaves.so
 

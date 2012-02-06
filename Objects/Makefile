@@ -9,7 +9,7 @@ include ../MachineDef
 
 GIT_REVISION:=$(shell git rev-parse HEAD)
 
-VPATH = $(SUBLIBS)
+VPATH = $(IFLAGS:-I../%=%)
 SUFFIXES += .d
 
 SOURCES = $(wildcard *.cpp) $(wildcard Waveform/*.cpp)
