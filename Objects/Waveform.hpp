@@ -67,6 +67,7 @@ namespace WaveformObjects {
     // Basic Waveform information
     inline unsigned int& TypeIndexRef() { return typeIndex; }
     void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
+    void AppendHistory(const std::string& Hist) { history << Hist; }
     inline std::stringstream& History() { return history; }
     inline std::string& TimeScaleRef() { return timeScale; }
     // Data from a single mode at an instant of time
