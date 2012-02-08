@@ -1,0 +1,19 @@
+* Operate in place as often as possible
+
+* Make the class definition clean; prefer free functions to methods
+
+* Separate class definition header file from free functions (but use the same namespace)
+
+* Provide access functions for each member datum
+** non-const reference
+** const reference
+
+* Provide direct setty access functions (rather than returning references to object data) for SWIG
+** Substitutes for the various +=, -=, *=, and /= operators
+** Substitutes for the various cmath functions
+** Possibly for_each similar to the one in stl's algorithms
+
+
+
+* New Things To Add
+** Quaternion function of time to Waveform data
