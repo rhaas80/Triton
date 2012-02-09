@@ -1,6 +1,8 @@
+-*- outline -*-
+
 * Operate in place as often as possible
 
-* Make the class definition clean; prefer free functions to methods
+* Make the class definition clean; prefer free functions to member functions
 
 * Separate class definition header file from free functions (but use the same namespace)
 
@@ -8,12 +10,22 @@
 ** non-const reference
 ** const reference
 
-* Provide direct setty access functions (rather than returning references to object data) for SWIG
+* Provide direct set-access functions (rather than returning references to object data) for SWIG
 ** Substitutes for the various +=, -=, *=, and /= operators
 ** Substitutes for the various cmath functions
 ** Possibly for_each similar to the one in stl's algorithms
 
+* Do NOT try to co-locate c++ and python memory
+** Crazy bugs arise otherwise, even when they shouldn't (e.g., just plotting doesn't work)
+** Make things explicit (with explicit set methods, for example)
+** References are unmanaged and memory can get out of sync
+** Let std_vector.i do its work
+*** Maybe add another step to convert to numpy arrays on output
 
 
-* New Things To Add
-** Quaternion function of time to Waveform data
+
+* To do
+** Add Quaternion function of time to Waveform data
+** Move as many member functions to free functions as possible
+** Move those free functions to separate header files
+** Do that for Waveforms, etc.
