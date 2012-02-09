@@ -37,7 +37,7 @@ namespace WaveformObjects {
   public:
     static std::vector<std::string> Types;
     
-  public:  // Getty access functions
+  public:  // Get-data access functions
     // Basic Waveform information
     inline const unsigned int NTimes() const { return t.size(); }
     inline const unsigned int NModes() const { return lm.nrows(); }
@@ -63,11 +63,9 @@ namespace WaveformObjects {
     inline const WaveformUtilities::Matrix<double>& Mag() const { return mag; }
     inline const WaveformUtilities::Matrix<double>& Arg() const { return arg; }
     
-  public:  // Setty access functions
+  public:  // Set-data implicit access functions
     // Basic Waveform information
     inline unsigned int& TypeIndexRef() { return typeIndex; }
-    void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
-    void AppendHistory(const std::string& Hist) { history << Hist; }
     inline std::stringstream& History() { return history; }
     inline std::string& TimeScaleRef() { return timeScale; }
     // Data from a single mode at an instant of time
@@ -88,6 +86,25 @@ namespace WaveformObjects {
     inline WaveformUtilities::Matrix<double>& MagRef() { return mag; }
     inline WaveformUtilities::Matrix<double>& ArgRef() { return arg; }
     
+  public:  // Set-data explicit access functions
+    inline void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
+    inline void AppendHistory(const std::string& Hist) { history << Hist; }
+    inline void SetTypeIndex(const unsigned int NewTypeIndex) { typeIndex = NewTypeIndex; }
+    inline void SetTimeScale(const std::string& NewTimeScale) { timeScale = NewTimeScale; }
+    inline void SetT(const unsigned int i, const double a) { t[i] = a; }
+    inline void SetT(const std::vector<double>& a) { t = a; }
+    inline void SetR(const unsigned int i, const double a) { r[i] = a; }
+    inline void SetR(const std::vector<double>& a) { r = a; }
+    inline void SetLM(const unsigned int i, const unsigned int j, const int a) { lm[i][j] = a; }
+    inline void SetLM(const unsigned int i, const std::vector<int>& a) { lm[i] = a; }
+    inline void SetLM(const WaveformUtilities::Matrix<int>& a) { lm = a; }
+    inline void SetMag(const unsigned int i, const unsigned int j, const double a) { mag[i][j] = a; }
+    inline void SetMag(const unsigned int i, const std::vector<double>& a) { mag[i] = a; }
+    inline void SetMag(const WaveformUtilities::Matrix<double>& a) { mag = a; }
+    inline void SetArg(const unsigned int i, const unsigned int j, const double a) { arg[i][j] = a; }
+    inline void SetArg(const unsigned int i, const std::vector<double>& a) { arg[i] = a; }
+    inline void SetArg(const WaveformUtilities::Matrix<double>& a) { arg = a; }
+    
   public:  // Operators
     Waveform& operator=(const Waveform& b);
     Waveform operator/(const Waveform& b) const;
@@ -99,7 +116,6 @@ namespace WaveformObjects {
     std::vector<double> Omega2m2(const double t1=-1e300, const double t2=1e300) const;
     bool HasNaNs() const;
     std::vector<double> Flux() const;
-    void SetTypeIndex(const unsigned int I) { typeIndex = I; }
     Waveform& Differentiate(); // Useful to compare h to Psi4
     
     // Interpolation routines
