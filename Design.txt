@@ -25,6 +25,9 @@
 
 
 * To do
+** Add directors to use for_each method
+** Add pythonappend function to return numpy arrays?
+** Put Ref's ignore in Waveform.hpp
 ** Add Quaternion function of time to Waveform data
 ** Move as many member functions to free functions as possible
 ** Move those free functions to separate header files
