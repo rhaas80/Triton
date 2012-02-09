@@ -3,10 +3,8 @@
 %module GravitationalWaves
 %{
   #define SWIG_FILE_WITH_INIT
-  // Includes the header in the wrapper code
-  #include <vector>
+  //#include <vector>
   #include "../Objects/Waveform.hpp"
-  #include <numpy/ndarraytypes.h>
 %}
 
 %include numpy.i
@@ -23,6 +21,7 @@
 
 // Make sure std::vectors are dealt with appropriately
 %include "std_vector.i"
+ //%include "std_vector_numpy.i"
 namespace std {
   %template(vectori) vector<int>;
   %template(vectord) vector<double>;
@@ -71,7 +70,8 @@ namespace std {
 
 // Add any additions to the Waveform class here
 %extend WaveformObjects::Waveform {
-  char *__str__() {
-    
-  }
+//   char *__str__() {
+//     char temp[1024];
+//     return temp;
+//   }
  };
