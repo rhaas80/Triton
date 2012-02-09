@@ -11,7 +11,7 @@ namespace WaveformUtilities {
   template <class T> class Matrix {
   private:
     std::vector<std::vector<T> > Data;
-    std::vector<std::vector<T>* > DataPtrs;
+    std::vector<T* > DataPtrs;
   public:
     Matrix();
     Matrix(unsigned int rows, unsigned int cols); // Zero-based array
@@ -47,21 +47,21 @@ namespace WaveformUtilities {
   template <class T>
   Matrix<T>::Matrix(unsigned int rows, unsigned int cols) : Data(rows, std::vector<T>(cols)), DataPtrs(rows, NULL) {
     for(unsigned int i=0; i<rows; ++i) {
-      DataPtrs[i] = &(Data[i]);
+      DataPtrs[i] = &(Data[i][0]);
     }
   }
   
   template <class T>
   Matrix<T>::Matrix(unsigned int rows, unsigned int cols, const T& a) : Data(rows, std::vector<T>(cols, a)), DataPtrs(rows, NULL) {
     for(unsigned int i=0; i<rows; ++i) {
-      DataPtrs[i] = &(Data[i]);
+      DataPtrs[i] = &(Data[i][0]);
     }
   }
   
   template <class T>
   Matrix<T>::Matrix(const Matrix &rhs) : Data(rhs.Data), DataPtrs(rhs.nrows(), NULL) {
     for(unsigned int i=0; i<nrows(); ++i) {
-      DataPtrs[i] = &(Data[i]);
+      DataPtrs[i] = &(Data[i][0]);
     }
   }
   
@@ -70,7 +70,7 @@ namespace WaveformUtilities {
     if (this != &rhs) {
       Data = rhs.Data;
       for(unsigned int i=0; i<nrows(); ++i) {
-	DataPtrs[i] = &(Data[i]);
+	DataPtrs[i] = &(Data[i][0]);
       }
     }
     return *this;
@@ -87,7 +87,7 @@ namespace WaveformUtilities {
     }
     Data = newData;
     for(unsigned int i=0; i<nrows(); ++i) {
-      DataPtrs[i] = &(Data[i]);
+      DataPtrs[i] = &(Data[i][0]);
     }
     return *this;
   }
@@ -144,14 +144,14 @@ namespace WaveformUtilities {
 
   template <class T>
   inline void Matrix<T>::RefreshPtr(const unsigned int i) {
-    DataPtrs[i] = &(Data[i]);
+    DataPtrs[i] = &(Data[i][0]);
     return;
   }
   
   template <class T>
   void Matrix<T>::RefreshPtrs() {
     for(unsigned int i=0; i<nrows(); ++i) {
-      DataPtrs[i] = &(Data[i]);
+      DataPtrs[i] = &(Data[i][0]);
     }
     return;
   }
@@ -199,7 +199,7 @@ namespace WaveformUtilities {
       DataPtrs.resize(newNRows, NULL);
     }
     for(unsigned int i=0; i<nrows(); ++i) {
-      DataPtrs[i] = &(Data[i]);
+      DataPtrs[i] = &(Data[i][0]);
     }
     return;
   }
@@ -216,7 +216,7 @@ namespace WaveformUtilities {
   void Matrix<T>::push_back(const std::vector<T>& NewRow) {
     if(nrows()==0) {
       Data = std::vector<std::vector<T> >(1, NewRow);
-      DataPtrs = std::vector<std::vector<T>* >(1, &Data[0]);
+      DataPtrs = std::vector<T* >(1, &Data[0][0]);
       return;
     }
     if (NewRow.size() != ncols()) {
@@ -224,7 +224,7 @@ namespace WaveformUtilities {
       throw("Trying to push_back on a Matrix with data of wrong size");
     }
     Data.push_back(NewRow);
-    DataPtrs.push_back(&(Data.back()));
+    DataPtrs.push_back(&(Data.back()[0]));
     return;
   }
   
