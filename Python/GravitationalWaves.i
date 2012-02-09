@@ -20,6 +20,7 @@
 %apply const std::string& {std::string* foo};
 %apply std::string* foo { std::string& };
 
+
 // Make sure std::vectors are dealt with appropriately
 %include "std_vector.i"
 namespace std {
@@ -29,104 +30,11 @@ namespace std {
   %template(vectorvectord) vector<vector<double> >;
 };
 
-// template <class T>
-// class WaveformUtilities::Matrix;
-// %define %my_typemaps(DATA_TYPE, DATA_TYPECODE, DIM_TYPE)
 
-// // This slightly different version of PyArray_SimpleNewFromData gives a read-only array
-// %{
-// #define PyArray_SimpleNewFromData_ReadOnly(nd, dims, typenum, data)                 \
-//         PyArray_New(&PyArray_Type, nd, dims, typenum, NULL,                   \
-//                     data, 0, NPY_CARRAY_RO, NULL)
-//   %}
-
-// %typemap(argout) //, fragment="NumPy_Backward_Compatibility"
-//   (std::vector<DATA_TYPE>&)
-// {
-//   // From C++ to python (argout &)
-//   npy_intp dims[1] = { $1->size() };
-//   PyObject * array = PyArray_SimpleNewFromData_ReadOnly(1, dims, DATA_TYPECODE, (void*)( &((*($1))[0]) ));
-//   if (!array) SWIG_fail;
-//   $result = SWIG_Python_AppendOutput($result,array);
-// }
-// %typemap(argout) //, fragment="NumPy_Backward_Compatibility"
-//   (std::vector<DATA_TYPE>)
-// {
-//   // From C++ to python (argout)
-//   npy_intp dims[1] = { $1.size() };
-//   PyObject * array = PyArray_SimpleNewFromData_ReadOnly(1, dims, DATA_TYPECODE, (void*)( &((*(&($1)))[0]) ));
-//   if (!array) SWIG_fail;
-//   $result = SWIG_Python_AppendOutput($result,array);
-// }
-// %typemap(out)//, fragment="NumPy_Backward_Compatibility")
-//   (std::vector<DATA_TYPE>&)
-// {
-//   // From C++ to python (out &)
-//   npy_intp dims[1] = { $1->size() };
-//   PyObject * array = PyArray_SimpleNewFromData_ReadOnly(1, dims, DATA_TYPECODE, (void*)( &((*($1))[0]) ));
-//   if (!array) SWIG_fail;
-//   $result = SWIG_Python_AppendOutput($result,array);
-// }
-// %typemap(out)//, fragment="NumPy_Backward_Compatibility")
-//   (std::vector<DATA_TYPE>)
-// {
-//   // From C++ to python (out)
-//   npy_intp dims[1] = { $1.size() };
-//   PyObject * array = PyArray_SimpleNewFromData_ReadOnly(1, dims, DATA_TYPECODE, (void*)( &((*(&($1)))[0]) ));
-//   if (!array) SWIG_fail;
-//   $result = SWIG_Python_AppendOutput($result,array);
-// }
-// %typemap(out)//, fragment="NumPy_Backward_Compatibility")
-//   (WaveformUtilities::Matrix<DATA_TYPE>&)
-// {
-//   // From C++ to python
-//   npy_intp dims[2] = { $1->ncols(), $1->nrows() };
-//   PyObject * array = PyArray_SimpleNewFromData_ReadOnly(2, dims, DATA_TYPECODE, (void*)( *($1)->PtrsPtrs() ));
-//   if (!array) SWIG_fail;
-//   $result = SWIG_Python_AppendOutput($result,array);
-// }
-// %typemap(out)//, fragment="NumPy_Backward_Compatibility")
-//   (WaveformUtilities::Matrix<DATA_TYPE>)
-// {
-//   // From C++ to python
-//   npy_intp dims[2] = { $1.ncols(), $1.nrows() };
-//   PyObject * array = PyArray_SimpleNewFromData_ReadOnly(2, dims, DATA_TYPECODE, (void*)( ($1)->PtrsPtrs() ));
-//   if (!array) SWIG_fail;
-//   $result = SWIG_Python_AppendOutput($result,array);
-// }
-// // %typemap(out)//, fragment="NumPy_Backward_Compatibility")
-// //   (WaveformUtilities::Matrix<DATA_TYPE>&)
-// // {
-// //   // From C++ to python
-// //   npy_intp dims[2] = { $1->ncols(), $1->nrows() };
-// //   PyObject * array = PyArray_SimpleNewFromData_ReadOnly(2, dims, DATA_TYPECODE, (void*)( *($1)->PtrsPtrs() ));
-// //   if (!array) SWIG_fail;
-// //   $result = SWIG_Python_AppendOutput($result,array);
-// // }
-
-// %enddef // my_typemaps
-
-// // This uses the above typemaps for various basic data types
-// %my_typemaps(signed char       , NPY_BYTE     , int)
-// %my_typemaps(unsigned char     , NPY_UBYTE    , int)
-// %my_typemaps(short             , NPY_SHORT    , int)
-// %my_typemaps(unsigned short    , NPY_USHORT   , int)
-// %my_typemaps(int               , NPY_INT      , int)
-// %my_typemaps(unsigned int      , NPY_UINT     , int)
-// %my_typemaps(long              , NPY_LONG     , int)
-// %my_typemaps(unsigned long     , NPY_ULONG    , int)
-// %my_typemaps(long long         , NPY_LONGLONG , int)
-// %my_typemaps(unsigned long long, NPY_ULONGLONG, int)
-// %my_typemaps(float             , NPY_FLOAT    , int)
-// %my_typemaps(double            , NPY_DOUBLE   , int)
-
-
-
-// Try to handle Matrix objects as numpy arrays
+// Treat Matrix objects as numpy arrays
 %ignore WaveformUtilities::Matrix::operator=;
 %ignore WaveformUtilities::Matrix::operator[];
 %include "../Utilities/Matrix.hpp"
-
 
 
 // Ignore things that don't translate well...
@@ -163,5 +71,7 @@ namespace std {
 
 // Add any additions to the Waveform class here
 %extend WaveformObjects::Waveform {
-  
+  char *__str__() {
+    
+  }
  };
