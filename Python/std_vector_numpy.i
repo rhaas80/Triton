@@ -96,8 +96,6 @@
       typedef typename sequence::const_iterator const_iterator;
       
       static PyObject *from(const sequence& seq) {
-	unsigned int count=0;
-	printf("Step %d\n", ++count);
 	%#ifdef SWIG_PYTHON_EXTRA_NATIVE_CONTAINERS
 	  swig_type_info *desc = swig::type_info<sequence>();
 	if (desc && desc->clientdata) {
@@ -105,24 +103,32 @@
 	}
 	%#endif
 	   size_type size = seq.size();
-	printf("Step %d\n", ++count);
 	if (size <= (size_type)INT_MAX) {
-	  // 	    PyObject *obj = PyTuple_New((int)size);
-	  // 	    int i = 0;
-	  // 	    for (const_iterator it = seq.begin();
-	  // 		 it != seq.end(); ++it, ++i) {
-	  // 	      PyTuple_SetItem(obj,i,swig::from<value_type>(*it));
-	  // 	    }
-	  // 	    return obj;
 	  int nd = 1;
 	  npy_intp dims[1] = { size };
-	printf("Step %d\n", ++count);
-	  PyObject* array = PyArray_SimpleNew(nd, dims, Numpy_TypeName<T>());
-	printf("Step %d\n", ++count);
+	  PyObject *obj = PyTuple_New((int)size);
+	  int i = 0;
+	  for (const_iterator it = seq.begin();
+	       it != seq.end(); ++it, ++i) {
+	    PyTuple_SetItem(obj,i,swig::from<value_type>(*it));
+	    printf("Set the %dth element to %g = %g\n", i, double(*it), PyFloat_AsDouble(PyTuple_GetItem(obj,i)));
+	  }
+	  return (PyObject *) ( (PyArrayObject *) obj );
+//  	  PyObject *array = PyArray_SimpleNewFromData(nd, dims, Numpy_TypeName<value_type>(), obj);
+// 	  return array;
 	  
-// 	  if (!array || !require_dimensions(array, 1) ||
-// 	      !require_size(array, size, 1)) SWIG_fail;
-	  return array;
+// 	  int nd = 1;
+// 	  npy_intp dims[1] = { size };
+// 	  PyObject* array = PyArray_SimpleNew(nd, dims, Numpy_TypeName<T>());
+// 	  if (!array) {
+// 	    PyErr_SetString(PyExc_OverflowError,);
+// 	    return NULL;
+// 	  }
+// 	  int i = 0;
+// 	  for (const_iterator it = seq.begin(); it != seq.end(); ++it, ++i) {
+// 	    PyArray_SETITEM((PyArrayObject *) array, i, swig::from<value_type>(*it));
+// 	  }
+// 	  return array;
 	} else {
 	  PyErr_SetString(PyExc_OverflowError,"sequence size not valid in python");
 	  return NULL;
@@ -203,10 +209,11 @@
     };
     //%}
     
-    %define %std_vector_numpy_traits(DATA_TYPE, DATA_TYPECODE);
+    %define %std_vector_numpy_traits(DATA_TYPE, DATA_TYPECODE, DATA_CONVERSION);
     template <>
     struct traits_from<std::vector<DATA_TYPE> > {
       static PyObject *from(const std::vector<DATA_TYPE>& vec) {
+// 	return traits_from_stdseq<std::vector<DATA_TYPE> >::from(vec);
 	return traits_from_stdseq_numpy_1d<std::vector<DATA_TYPE> >::from(vec);
       }
     };
@@ -218,19 +225,21 @@
     };
     template <>
     int Numpy_TypeName<DATA_TYPE>() { return DATA_TYPECODE; }
+    PyObject *Numpy_TypeConvert(const DATA_TYPE a) { return DATA_CONVERSION(a); }
     %enddef    /* %std_vector_numpy_traits() macro */
-    %std_vector_numpy_traits(signed char       , NPY_BYTE     );
-    %std_vector_numpy_traits(unsigned char     , NPY_UBYTE    );
-    %std_vector_numpy_traits(short             , NPY_SHORT    );
-    %std_vector_numpy_traits(unsigned short    , NPY_USHORT   );
-    %std_vector_numpy_traits(int               , NPY_INT      );
-    %std_vector_numpy_traits(unsigned int      , NPY_UINT     );
-    %std_vector_numpy_traits(long              , NPY_LONG     );
-    %std_vector_numpy_traits(unsigned long     , NPY_ULONG    );
-    %std_vector_numpy_traits(long long         , NPY_LONGLONG );
-    %std_vector_numpy_traits(unsigned long long, NPY_ULONGLONG);
-    %std_vector_numpy_traits(float             , NPY_FLOAT    );
-    %std_vector_numpy_traits(double            , NPY_DOUBLE   );
+//     %std_vector_numpy_traits(signed char       , NPY_BYTE     , PyInt_FromLong);
+//     %std_vector_numpy_traits(unsigned char     , NPY_UBYTE    , PyInt_FromLong);
+//     %std_vector_numpy_traits(short             , NPY_SHORT    , PyInt_FromLong);
+//     %std_vector_numpy_traits(unsigned short    , NPY_USHORT   , PyInt_FromLong);
+    %std_vector_numpy_traits(int               , NPY_INT      , PyInt_FromLong);
+//     %std_vector_numpy_traits(unsigned int      , NPY_UINT     , PyInt_FromLong);
+//     %std_vector_numpy_traits(long              , NPY_LONG     , PyLong_FromLong);
+//     %std_vector_numpy_traits(unsigned long     , NPY_ULONG    , PyLong_FromUnsignedLong);
+//     %std_vector_numpy_traits(long long         , NPY_LONGLONG , PyLong_FromLongLong);
+//     %std_vector_numpy_traits(unsigned long long, NPY_ULONGLONG, PyLong_FromUnsignedLongLong);
+//     %std_vector_numpy_traits(float             , NPY_FLOAT    , PyFloat_FromDouble);
+    %std_vector_numpy_traits(double            , NPY_DOUBLE   , PyFloat_FromDouble);
+    
   }
 }
 

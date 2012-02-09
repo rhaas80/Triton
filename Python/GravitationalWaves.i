@@ -3,7 +3,6 @@
 %module GravitationalWaves
 %{
   #define SWIG_FILE_WITH_INIT
-  //#include <vector>
   #include "../Objects/Waveform.hpp"
 %}
 
@@ -70,6 +69,8 @@ namespace std {
 
 // Add any additions to the Waveform class here
 %extend WaveformObjects::Waveform {
+  
+  
 //   char *__str__() {
 //     char temp[1024];
 //     return temp;

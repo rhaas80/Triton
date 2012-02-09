@@ -31,7 +31,7 @@ realclean:
 
 GravitationalWaves_python : _GravitationalWaves.so
 
-_GravitationalWaves.so : GravitationalWaves.i
+_GravitationalWaves.so : GravitationalWaves.i std_vector_numpy.i
 	swig -c++ -python GravitationalWaves.i
 	@:
 	$(C++) -c $(IFLAGS) `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
