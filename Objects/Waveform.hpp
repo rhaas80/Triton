@@ -59,7 +59,7 @@ namespace WaveformObjects {
     inline const std::vector<double>& Mag(const unsigned int Mode) const { return mag[Mode]; }
     inline const std::vector<double>& Arg(const unsigned int Mode) const { return arg[Mode]; }
     // Data for all modes throughout time
-    #ifndef SWIG // Change the following for SWIG
+    #ifdef SWIG // Change the following for SWIG
     inline const std::vector<std::vector<int> >& LM() const { return lm.RawData(); }
     inline const std::vector<std::vector<double> >& Mag() const { return mag.RawData(); }
     inline const std::vector<std::vector<double> >& Arg() const { return arg.RawData(); }
