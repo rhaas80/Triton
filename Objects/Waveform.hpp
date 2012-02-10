@@ -59,12 +59,18 @@ namespace WaveformObjects {
     inline const std::vector<double>& Mag(const unsigned int Mode) const { return mag[Mode]; }
     inline const std::vector<double>& Arg(const unsigned int Mode) const { return arg[Mode]; }
     // Data for all modes throughout time
+    #ifndef SWIG // Change the following for SWIG
+    inline const std::vector<std::vector<int> >& LM() const { return lm.RawData(); }
+    inline const std::vector<std::vector<double> >& Mag() const { return mag.RawData(); }
+    inline const std::vector<std::vector<double> >& Arg() const { return arg.RawData(); }
+    #else
     inline const WaveformUtilities::Matrix<int>& LM() const { return lm; }
     inline const WaveformUtilities::Matrix<double>& Mag() const { return mag; }
     inline const WaveformUtilities::Matrix<double>& Arg() const { return arg; }
+    #endif
     
   public:  // Set-data implicit access functions
-    #ifndef SWIG
+    #ifndef SWIG // Exclude the following from SWIG
     // Basic Waveform information
     inline unsigned int& TypeIndexRef() { return typeIndex; }
     inline std::stringstream& History() { return history; }
@@ -86,30 +92,30 @@ namespace WaveformObjects {
     inline WaveformUtilities::Matrix<int>& LMRef() { return lm; }
     inline WaveformUtilities::Matrix<double>& MagRef() { return mag; }
     inline WaveformUtilities::Matrix<double>& ArgRef() { return arg; }
+    #endif // Excluded the above from SWIG
     
   public:  // Operators
     Waveform& operator=(const Waveform& b);
-    #endif
     Waveform operator[](const unsigned int mode) const;
     Waveform operator/(const Waveform& b) const;
     
-  public:  // Set-data explicit access functions
+  public:  // Set-data explicit access functions (mostly for SWIG)
     inline void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
     inline void AppendHistory(const std::string& Hist) { history << Hist; }
     inline void SetTypeIndex(const unsigned int NewTypeIndex) { typeIndex = NewTypeIndex; }
     inline void SetTimeScale(const std::string& NewTimeScale) { timeScale = NewTimeScale; }
-    inline void SetT(const unsigned int i, const double a) { t[i] = a; }
+    inline void SetT(const unsigned int Time, const double a) { t[Time] = a; }
     inline void SetT(const std::vector<double>& a) { t = a; }
-    inline void SetR(const unsigned int i, const double a) { r[i] = a; }
+    inline void SetR(const unsigned int Time, const double a) { r[Time] = a; }
     inline void SetR(const std::vector<double>& a) { r = a; }
-    inline void SetLM(const unsigned int i, const unsigned int j, const int a) { lm[i][j] = a; }
-    inline void SetLM(const unsigned int i, const std::vector<int>& a) { lm[i] = a; }
+    inline void SetLM(const unsigned int Mode, const unsigned int Time, const int a) { lm[Mode][Time] = a; }
+    inline void SetLM(const unsigned int Mode, const std::vector<int>& a) { lm[Mode] = a; }
     inline void SetLM(const WaveformUtilities::Matrix<int>& a) { lm = a; }
-    inline void SetMag(const unsigned int i, const unsigned int j, const double a) { mag[i][j] = a; }
-    inline void SetMag(const unsigned int i, const std::vector<double>& a) { mag[i] = a; }
+    inline void SetMag(const unsigned int Mode, const unsigned int Time, const double a) { mag[Mode][Time] = a; }
+    inline void SetMag(const unsigned int Mode, const std::vector<double>& a) { mag[Mode] = a; }
     inline void SetMag(const WaveformUtilities::Matrix<double>& a) { mag = a; }
-    inline void SetArg(const unsigned int i, const unsigned int j, const double a) { arg[i][j] = a; }
-    inline void SetArg(const unsigned int i, const std::vector<double>& a) { arg[i] = a; }
+    inline void SetArg(const unsigned int Mode, const unsigned int Time, const double a) { arg[Mode][Time] = a; }
+    inline void SetArg(const unsigned int Mode, const std::vector<double>& a) { arg[Mode] = a; }
     inline void SetArg(const WaveformUtilities::Matrix<double>& a) { arg = a; }
     
   public:  // Member functions
