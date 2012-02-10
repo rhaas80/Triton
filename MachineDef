@@ -6,8 +6,10 @@ MAKEDEPEND	= g++ -MM
 
 ifeq ($(OSTYPE),darwin)
 	SHARED	= -dynamiclib -undefined dynamic_lookup -single_module
+	INSTALL_NAME_TOOL = install_name_tool -id $(CURDIR)/../lib/lib$(THISDIR).so lib$(THISDIR).so
 else ifeq ($(OSTYPE),linux)
 	SHARED	= -shared -Wl,-soname,lib$(THISDIR).so
+	INSTALL_NAME_TOOL =
 else
 	echo Unsupported OS type
 	false

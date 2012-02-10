@@ -37,5 +37,6 @@ realclean:
 lib$(THISDIR).so : $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
 	$(C++) $(SHARED) -o lib$(THISDIR).so $(SOURCES:.cpp=.o)
 	@$(LN) ../$(THISDIR)/$@ ../lib/
+	$(INSTALL_NAME_TOOL)
 
 -include $(SOURCES:.cpp=.d)
