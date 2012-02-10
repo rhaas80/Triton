@@ -8,20 +8,17 @@
   #include "../Objects/Waveform.hpp"
 %}
 
-//// This lets me use numpy.array's in the code below
+//// This lets me use numpy.array in the code below
 %pythoncode %{
   import numpy;
   %}
 
 // Make sure std::strings are dealt with appropriately
 %include "std_string.i"
-// %apply const std::string& { std::string* };
-// %apply std::string* { std::string& };
 
 
 // Make sure std::vectors are dealt with appropriately
 %include "std_vector.i"
- //%include "std_vector_numpy.i"
 namespace std {
   %template(vectori) vector<int>;
   %template(vectord) vector<double>;
@@ -39,12 +36,12 @@ namespace std {
 // Ignore things that don't translate well...
 %ignore operator<<;
 %ignore WaveformObjects::Waveform::operator=;
-//%ignore WaveformObjects::Waveform::operator[];
 
 // ...and rename things that do
 %rename(__divide__) WaveformObjects::Waveform::operator/;
 %rename(__getitem__) WaveformObjects::Waveform::operator[] const;
 
+// These convert the output data to numpy.ndarray for easier use (it's a pretty lightweight conversion)
 %feature("pythonappend") WaveformObjects::Waveform::T() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 %feature("pythonappend") WaveformObjects::Waveform::R() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 %feature("pythonappend") WaveformObjects::Waveform::LM() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
@@ -56,12 +53,10 @@ namespace std {
 // Parse the header file to generate wrappers
 %include "../Objects/Waveform.hpp"
 
-
-
-// Add any additions to the Waveform class here
+// Make any additions to the Waveform class here
 %extend WaveformObjects::Waveform {
   
-  // This function is called when printing the 
+  // This function is called when printing the Waveform object
   char *__str__() {
     std::stringstream S;
     S << ($self->HistoryStr()) << "###\n"
