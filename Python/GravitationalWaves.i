@@ -2,20 +2,21 @@
 
 %module GravitationalWaves
 %{
-  #define SWIG_FILE_WITH_INIT
+  #include <iostream>
+  #include <sstream>
+  #include <iomanip>
   #include "../Objects/Waveform.hpp"
 %}
 
-%include numpy.i
-
-%init %{
-  import_array();
-%}
+//// This lets me use numpy.array's in the code below
+%pythoncode %{
+  import numpy;
+  %}
 
 // Make sure std::strings are dealt with appropriately
 %include "std_string.i"
-%apply const std::string& {std::string* foo};
-%apply std::string* foo { std::string& };
+// %apply const std::string& { std::string* };
+// %apply std::string* { std::string& };
 
 
 // Make sure std::vectors are dealt with appropriately
@@ -38,29 +39,19 @@ namespace std {
 // Ignore things that don't translate well...
 %ignore operator<<;
 %ignore WaveformObjects::Waveform::operator=;
-%ignore WaveformObjects::Waveform::operator[];
-%ignore WaveformObjects::Waveform::TypeIndexRef();
-%ignore WaveformObjects::Waveform::History();
-%ignore WaveformObjects::Waveform::TimeScaleRef();
-%ignore WaveformObjects::Waveform::TRef(const unsigned int Time);
-%ignore WaveformObjects::Waveform::RRef(const unsigned int Time);
-%ignore WaveformObjects::Waveform::MagRef(const unsigned int Mode, const unsigned int Time);
-%ignore WaveformObjects::Waveform::ArgRef(const unsigned int Mode, const unsigned int Time);
-%ignore WaveformObjects::Waveform::TRef();
-%ignore WaveformObjects::Waveform::RRef();
-%ignore WaveformObjects::Waveform::LRef(const unsigned int Mode);
-%ignore WaveformObjects::Waveform::MRef(const unsigned int Mode);
-%ignore WaveformObjects::Waveform::LMRef(const unsigned int Mode);
-%ignore WaveformObjects::Waveform::MagRef(const unsigned int Mode);
-%ignore WaveformObjects::Waveform::ArgRef(const unsigned int Mode);
-%ignore WaveformObjects::Waveform::LMRef();
-%ignore WaveformObjects::Waveform::MagRef();
-%ignore WaveformObjects::Waveform::ArgRef();
+//%ignore WaveformObjects::Waveform::operator[];
 
 // ...and rename things that do
 %rename(__divide__) WaveformObjects::Waveform::operator/;
+%rename(__getitem__) WaveformObjects::Waveform::operator[] const;
 
-
+%feature("pythonappend") WaveformObjects::Waveform::T() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%feature("pythonappend") WaveformObjects::Waveform::R() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%feature("pythonappend") WaveformObjects::Waveform::LM() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%feature("pythonappend") WaveformObjects::Waveform::Mag() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%feature("pythonappend") WaveformObjects::Waveform::Arg() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%feature("pythonappend") WaveformObjects::Waveform::Omega2m2(const double t1, const double t2) const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%feature("pythonappend") WaveformObjects::Waveform::Flux() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 
 // Parse the header file to generate wrappers
 %include "../Objects/Waveform.hpp"
@@ -70,9 +61,25 @@ namespace std {
 // Add any additions to the Waveform class here
 %extend WaveformObjects::Waveform {
   
+  // This function is called when printing the 
+  char *__str__() {
+    std::stringstream S;
+    S << ($self->HistoryStr()) << "###\n"
+      << "### # In python:\n"
+      << "### import GravitationalWaves\n"
+      << "### print(this)" << std::endl << std::setprecision(14);
+    for(unsigned int t=0; t<$self->NTimes(); ++t) {
+      S << $self->T(t) << " ";
+      for(unsigned int mode=0; mode<$self->NModes(); ++mode) {
+	S << $self->Mag(mode, t) << " " << $self->Arg(mode, t) << " ";
+      }
+      S << std::endl;
+    }
+    std::string String(S.str());
+    std::vector<char> CharVec(String.size() + 1);
+    std::copy(String.begin(), String.end(), CharVec.begin());
+    CharVec.push_back('\0');
+    return &(CharVec[0]);
+  }
   
-//   char *__str__() {
-//     char temp[1024];
-//     return temp;
-//   }
  };
