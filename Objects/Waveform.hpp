@@ -64,6 +64,7 @@ namespace WaveformObjects {
     inline const WaveformUtilities::Matrix<double>& Arg() const { return arg; }
     
   public:  // Set-data implicit access functions
+    #ifndef SWIG
     // Basic Waveform information
     inline unsigned int& TypeIndexRef() { return typeIndex; }
     inline std::stringstream& History() { return history; }
@@ -86,6 +87,12 @@ namespace WaveformObjects {
     inline WaveformUtilities::Matrix<double>& MagRef() { return mag; }
     inline WaveformUtilities::Matrix<double>& ArgRef() { return arg; }
     
+  public:  // Operators
+    Waveform& operator=(const Waveform& b);
+    #endif
+    Waveform operator[](const unsigned int mode) const;
+    Waveform operator/(const Waveform& b) const;
+    
   public:  // Set-data explicit access functions
     inline void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
     inline void AppendHistory(const std::string& Hist) { history << Hist; }
@@ -104,11 +111,6 @@ namespace WaveformObjects {
     inline void SetArg(const unsigned int i, const unsigned int j, const double a) { arg[i][j] = a; }
     inline void SetArg(const unsigned int i, const std::vector<double>& a) { arg[i] = a; }
     inline void SetArg(const WaveformUtilities::Matrix<double>& a) { arg = a; }
-    
-  public:  // Operators
-    Waveform& operator=(const Waveform& b);
-    Waveform operator/(const Waveform& b) const;
-    Waveform operator[](const unsigned int mode) const;
     
   public:  // Member functions
     // Extract features
