@@ -20,14 +20,14 @@
 ** Make things explicit (with explicit set methods, for example)
 ** References are unmanaged and memory can get out of sync
 ** Let std_vector.i do its work
-*** Maybe add another step to convert to numpy arrays on output
 
 
 
 * To do
-** Get the Matrix return values working
+** Handle errors so python doesn't just exit
 ** Add directors to use for_each method
 ** Add Quaternion function of time to Waveform data
+
 ** Move as many member functions to free functions as possible
 ** Move those free functions to separate header files
 ** Also do that for Waveforms, etc.
