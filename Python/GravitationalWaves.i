@@ -27,10 +27,10 @@ namespace std {
 };
 
 
-// Treat Matrix objects as numpy arrays
-%ignore WaveformUtilities::Matrix::operator=;
-%ignore WaveformUtilities::Matrix::operator[];
-%include "../Utilities/Matrix.hpp"
+// // Treat Matrix objects as numpy arrays
+// %ignore WaveformUtilities::Matrix::operator=;
+// %ignore WaveformUtilities::Matrix::operator[];
+// %include "../Utilities/Matrix.hpp"
 
 
 // Ignore things that don't translate well...
