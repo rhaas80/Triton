@@ -24,9 +24,11 @@
 
 
 * To do
+** Add plotting methods to GravitationalWaves
+** Add a plotting function to show the GWs on a sphere, then animate it
+** Add Quaternion function of time to Waveform data
 ** Handle errors so python doesn't just exit
 ** Add directors to use for_each method
-** Add Quaternion function of time to Waveform data
 
 ** Move as many member functions to free functions as possible
 ** Move those free functions to separate header files
