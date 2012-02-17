@@ -5,6 +5,11 @@ def PlotWaveformOnSphere(W, OutputFileName, PlayFor = 30, PhiSteps = 200, ThetaS
     
     This function takes the Waveform object W containing -2Ylm data,
     and plots the value of the waveform on the sphere.
+    
+    The output files are stored in <FileName>_real_Frame0001.png, etc.
+    Assemble these into an animated gif using the Imagemagick
+    'convert' utility, with a command line like
+      convert -delay 10 -loop 4 q1_real_Frame*.png q1_real.gif
     """
     
     from mpl_toolkits.mplot3d import Axes3D
@@ -21,10 +26,11 @@ def PlotWaveformOnSphere(W, OutputFileName, PlayFor = 30, PhiSteps = 200, ThetaS
     
     from SWSHs import SWSH
     
-    PlayFor = 30 # seconds at 24 frames per second
-    PhiSteps = 300
-    ThetaSteps = 150
-    Part = 'real'
+#     PlayFor = 30 # seconds at 24 frames per second
+#     PhiSteps = 300
+#     ThetaSteps = 150
+#     Part = 'real'
+    DPI = 200 # savefig resolution
     
     plt.ioff()
     
@@ -78,14 +84,7 @@ def PlotWaveformOnSphere(W, OutputFileName, PlayFor = 30, PhiSteps = 200, ThetaS
         
         plt.draw()
         
-        if Part.lower() == 'mag':
-            savefig(OutputFileName + '_Frame%04d.png' % FrameIndex)
-        elif Part.lower() == 'real':
-            savefig(OutputFileName + '_Frame%04d.png' % FrameIndex)
-        elif Part.lower() == 'imag':
-            savefig(OutputFileName + '_Frame%04d.png' % FrameIndex)
-        else:
-            raise NameError('Unknown Part: ' + Part)
+        savefig(OutputFileName + '_' + Part.lower() + '_Frame%04d.png' % FrameIndex, dpi=DPI)
         
         ax.collections.remove(Surface)
         TimeText.remove()
