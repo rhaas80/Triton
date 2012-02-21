@@ -20,26 +20,26 @@ lFLAGS:=$(IFLAGS:-I../%=-l%)
 all: realtarget
 	@:
 
-realtarget: _GravitationalWaves.so _SWSHs.so
+realtarget: _WaveformObjects.so _SWSHs.so
 	@:
 
 clean:
-	-$(RM) GravitationalWaves_wrap.{o,cxx} GravitationalWaves.py{,c} _GravitationalWaves.so SWSHs_wrap.{o,cxx} SWSHs.py{,c} _SWSHs.so
+	-$(RM) WaveformObjects_wrap.{o,cxx} PyGW/WaveformObjects.py{,c} PyGW/_WaveformObjects.so SWSHs_wrap.{o,cxx} SWSHs.py{,c} _SWSHs.so
 
 realclean:
-	-$(RM) GravitationalWaves_wrap.{o,cxx} GravitationalWaves.py{,c} _GravitationalWaves.so SWSHs_wrap.{o,cxx} SWSHs.py{,c} _SWSHs.so
+	-$(RM) WaveformObjects_wrap.{o,cxx} PyGW/WaveformObjects.py{,c} PyGW/_WaveformObjects.so SWSHs_wrap.{o,cxx} SWSHs.py{,c} _SWSHs.so
 
-GravitationalWaves_python : _GravitationalWaves.so
+WaveformObjects_python : _WaveformObjects.so
 
-_GravitationalWaves.so : GravitationalWaves.i
-	swig -c++ -python GravitationalWaves.i
+_WaveformObjects.so : WaveformObjects.i
+	swig -c++ -python -outdir PyGW WaveformObjects.i
 	@:
 	$(C++) -c $(IFLAGS) `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
 		-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/ \
-		GravitationalWaves_wrap.cxx
+		WaveformObjects_wrap.cxx
 	@:
 	$(C++) $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
-		$(LFLAGS) $(lFLAGS) GravitationalWaves_wrap.o -o _GravitationalWaves.so
+		$(LFLAGS) $(lFLAGS) WaveformObjects_wrap.o -o PyGW/_WaveformObjects.so
 
 SWSHs_python : _SWSHs.so
 

@@ -1,6 +1,6 @@
 // -*- c++ -*-
 
-%module GravitationalWaves
+%module WaveformObjects
 
 
 /////////////////////////////////////////////////
@@ -60,7 +60,7 @@ namespace std {
     std::stringstream S;
     S << ($self->HistoryStr()) << "###\n"
       << "### # In python:\n"
-      << "### import GravitationalWaves\n"
+      << "### import PyGW\n"
       << "### print(this)" << std::endl << std::setprecision(14);
     for(unsigned int t=0; t<$self->NTimes(); ++t) {
       S << $self->T(t) << " ";
