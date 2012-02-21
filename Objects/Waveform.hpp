@@ -120,6 +120,7 @@ namespace WaveformObjects {
     
   public:  // Member functions
     // Extract features
+    unsigned int Peak22TimeIndex() const;
     double Peak22Time() const;
     std::vector<double> Omega2m2(const double t1=-1e300, const double t2=1e300) const;
     bool HasNaNs() const;

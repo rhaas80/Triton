@@ -37,7 +37,7 @@ using std::max;
 using std::ios_base;
 
 
-double Waveform::Peak22Time() const {
+unsigned int Waveform::Peak22TimeIndex() const {
   //// Find 2,2 component
   int TwoTwo = -1;
   //ORIENTATION!!! following loop
@@ -46,7 +46,11 @@ double Waveform::Peak22Time() const {
   }
   //// Error if not found
   if(TwoTwo==-1) { throw("Can't find the 2,2 component of the data!"); }
-  return T(maxIndex(Mag(TwoTwo)));
+  return (unsigned int)(maxIndex(Mag(TwoTwo)));
+}
+
+double Waveform::Peak22Time() const {
+  return T(Peak22TimeIndex());
 }
 
 vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
