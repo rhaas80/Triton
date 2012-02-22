@@ -37,6 +37,19 @@ using std::max;
 using std::ios_base;
 
 
+unsigned int Waveform::FindModeIndex(const int l, const int m) const {
+  int ModeIndex = -1;
+  //ORIENTATION!!! following loop
+  for(unsigned int i=0; i<NModes(); ++i) {
+    if(L(i)==l && M(i)==m) { ModeIndex=i; break; }
+  }
+  if(ModeIndex==-1) {
+    std::cerr << "\n\nl=" << l << " m=" << m << std::endl;
+    throw("Can't find the l,m component of the data!");
+  }
+  return (unsigned int)(ModeIndex);
+}
+
 unsigned int Waveform::Peak22TimeIndex() const {
   //// Find 2,2 component
   int TwoTwo = -1;
