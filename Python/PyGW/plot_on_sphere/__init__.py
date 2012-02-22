@@ -20,7 +20,7 @@ def sphere_coordinates(ThetaSteps=100, PhiSteps=200) :
 from numpy import outer
 from numpy import sin
 from numpy import cos
-from numpy import ones
+from numpy import ones_like
 def sphere_points(vartheta, varphi, Radius=1) :
     """
     Simply returns the (x,y,z) coordinates of the points given by
@@ -28,7 +28,7 @@ def sphere_points(vartheta, varphi, Radius=1) :
     """
     x = Radius*outer(sin(vartheta), cos(varphi))
     y = Radius*outer(sin(vartheta), sin(varphi))
-    z = Radius*outer(cos(vartheta), ones(size(varphi)))
+    z = Radius*outer(cos(vartheta), ones_like(varphi))
     return (x,y,z)
 
 
@@ -36,6 +36,7 @@ from SWSHs import SWSH
 from numpy import array
 from numpy import zeros
 from numpy import empty_like
+from numpy import exp
 def data_on_sphere(W, TimeIndex, vartheta, varphi) :
     """
     Given the Waveform object W, some integer TimeIndex, and spherical
@@ -56,6 +57,7 @@ def data_on_sphere(W, TimeIndex, vartheta, varphi) :
     return ComplexDataOnSphere
 
 
+from numpy import empty
 from matplotlib.cm import jet
 def colors_on_sphere(WaveformData, Normalization=1, Quantities=['real', 'imag', 'mag']) :
     """
@@ -66,7 +68,7 @@ def colors_on_sphere(WaveformData, Normalization=1, Quantities=['real', 'imag', 
     """
     Colors = []
     for quantity in Quantities :
-        colors = numpy.empty(WaveformData.shape, dtype=tuple)
+        colors = empty(WaveformData.shape, dtype=tuple)
         if quantity.lower() == 'real' :
             colors = jet( 0.5 * ( (WaveformData.real/Normalization) + 1.0 ) );
         elif quantity.lower() == 'imag' :
@@ -83,7 +85,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.pyplot import figure
 from matplotlib.pyplot import draw
 def plot_sphere(W, TimeIndex, Normalization=0, Quantities=['real', 'imag', 'mag'],
-                         ThetaSteps=100, PhiSteps=200, vartheta=(), varphi=(), x=(), y=(), z=()) :
+                ThetaSteps=100, PhiSteps=200, vartheta=array(()), varphi=array(()), x=array(()), y=array(()), z=array(())) :
     """
     This plots the real or imaginary part or magnitude of the complex
     Waveform data on the sphere.
@@ -107,7 +109,6 @@ def plot_sphere(W, TimeIndex, Normalization=0, Quantities=['real', 'imag', 'mag'
         fig.tight_layout(pad=0.1)
         Surface = ax.plot_surface(x, y, z,  rstride=1, cstride=1, linewidth=0, antialiased=False, facecolors=Colors[i])
         TimeText = ax.text2D(0.05, 0.92, r'$t = '+str(round(W.T(TimeIndex),1))+'$\n'+quantity, transform=ax.transAxes)
-        fig.draw()
         Figs.append(fig)
     return Figs
 
