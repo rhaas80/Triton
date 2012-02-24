@@ -3,6 +3,7 @@
 * Operate in place as often as possible
 
 * Make the class definition clean; prefer free functions to member functions
+** Maybe modify this when the goal is to SWIGify, because that's more pythonic
 
 * Separate class definition header file from free functions (but use the same namespace)
 
@@ -24,12 +25,6 @@
 
 
 * To do
-** Add plotting methods to GravitationalWaves
-** Add a plotting function to show the GWs on a sphere, then animate it
 ** Add Quaternion function of time to Waveform data
-** Handle errors so python doesn't just exit
-** Add directors to use for_each method
-
-** Move as many member functions to free functions as possible
-** Move those free functions to separate header files
-** Also do that for Waveforms, etc.
+** Handle errors so python doesn't just exit on a throw from c++
+** Add directors to use for_each method on Waveforms with python-defined function
