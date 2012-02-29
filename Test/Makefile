@@ -33,7 +33,7 @@ realclean:
 	-$(RM) *.d $(EXECUTABLES) .gitignore
 
 $(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
-	$(C++) $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
+	$(C++) -Wl,-rpath,$(CURDIR)/../lib $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
 
 %.d : %.cpp
 	@$(MAKEDEPEND) $(IFLAGS) -MT '$* $*.d' -MF $*.d $*.cpp
