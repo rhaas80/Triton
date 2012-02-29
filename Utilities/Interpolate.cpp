@@ -88,7 +88,7 @@ void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const v
   return;
 }
 
-double WU::Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const double& X2) {
+double WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const double& X2) {
   if(X1.size()==0) { throw("X1.size()==0"); }
   if(Y1.size()==0) { throw("Y1.size()==0"); }
   vector<double> x1(1, X2);
@@ -98,7 +98,7 @@ double WU::Interpolate(const std::vector<double>& X1, const std::vector<double>&
 
 
 
-Interpolator::Interpolator(const std::vector<double>& x, const vector<double>& y, int m)
+Interpolator::Interpolator(const vector<double>& x, const vector<double>& y, int m)
   : n(x.size()), mm(m), jsav(0), cor(0), xx(x), yy(y)
 {
   dj = MAX(1,int(pow(double(n),0.25)));

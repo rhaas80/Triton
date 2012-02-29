@@ -215,18 +215,10 @@ namespace WaveformUtilities {
   bool ismonotonic(const std::vector<double>& a);
   
   /// Transition functions
-  inline double TransitionFunction_Linear(const double x) {
-    return (x<0.0 ? 0.0 : (x>1.0 ? 1.0 : x) );
-  }
-  inline double TransitionFunction_Linear(const double x, const double a, const double b) {
-    return TransitionFunction_Linear((x-a)/b);
-  }
-  inline double TransitionFunction_Smooth(const double x) {
-    return (x<=0.0 ? 0.0 : (x>=1.0 ? 1.0 : 1.0/(1.0+exp(1.0/(x-1.0) + 1.0/x))) );
-  }
-  inline double TransitionFunction_Smooth(const double x, const double a, const double b) {
-    return TransitionFunction_Smooth((x-a)/b);
-  }
+  inline double TransitionFunction_Linear(const double x);
+  inline double TransitionFunction_Linear(const double x, const double a, const double b);
+  inline double TransitionFunction_Smooth(const double x);
+  inline double TransitionFunction_Smooth(const double x, const double a, const double b);
   
 } // namespace WaveformUtilities
 

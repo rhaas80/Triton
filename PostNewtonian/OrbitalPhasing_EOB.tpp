@@ -58,7 +58,7 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
   
   /// Guess some parameters
   const double nu = (1.0-delta*delta)/4.0;
-  const double GuessedLength = 1.1 * 5.0/(256.0*nu*pow(v0,8));
+  const double GuessedLength = 1.1 * 5.0/(256.0*nu*::pow(v0,8));
   const double AcceptableEcc=1e-12;
   const double r0 = 1.0/(v0*v0);
   const double h1=10*(2.0*M_PI/(v0*v0*v0))/4.0;
@@ -71,7 +71,7 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
   ystart[3] = r0*sqrt((r0*g.dDtdr - 2*g.Dt)/(-r0*g.dDtdr + 4*g.Dt));
   H(r0, 0.0, ystart[3]);
   T(v0, r0, 0.0, ystart[3]);
-  const double dpPhi0dr = (-8*pow(g.Dt,2) + 7*g.dDtdr*g.Dt*r0 - 2*pow(g.dDtdr,2)*pow(r0,2))/(pow(4*g.Dt - g.dDtdr*r0,1.5)*sqrt(-2*g.Dt + g.dDtdr*r0));
+  const double dpPhi0dr = (-8*::pow(g.Dt,2) + 7*g.dDtdr*g.Dt*r0 - 2*::pow(g.dDtdr,2)*::pow(r0,2))/(::pow(4*g.Dt - g.dDtdr*r0,1.5)*sqrt(-2*g.Dt + g.dDtdr*r0));
   ystart[2] = nu * g.drstardr * T.Torque / dpPhi0dr;
   if(ystart[2]>0.0) ystart[2] *= -1;
   //std::cout << ystart << std::endl;

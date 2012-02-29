@@ -7,7 +7,7 @@ while(<SWSHIn>) {
     my($line) = $_;
     chomp($line);
     $line =~ s/Sqrt */sqrt/g;
-    $line =~ s/Power */pow/g;
+    $line =~ s/Power */::pow/g;
     $line =~ s/Sin */sin/g;
     $line =~ s/Cos */cos/g;
     $line =~ s/Pi/M_PI/g;

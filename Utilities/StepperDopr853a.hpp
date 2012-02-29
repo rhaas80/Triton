@@ -349,7 +349,7 @@ bool StepperDopr853<D>::Controller::success(const Doub err, Doub &h) {
     if (err == 0.0)
       scale=maxscale;
     else {
-      scale=safe*pow(err,-alpha)*pow(errold,beta);
+      scale=safe*::pow(err,-alpha)*::pow(errold,beta);
       if (scale<minscale) scale=minscale;
       if (scale>maxscale) scale=maxscale;
     }
@@ -361,7 +361,7 @@ bool StepperDopr853<D>::Controller::success(const Doub err, Doub &h) {
     reject=false;
     return true;
   } else {
-    scale=MAX(safe*pow(err,-alpha),minscale);
+    scale=MAX(safe*::pow(err,-alpha),minscale);
     h *= scale;
     reject=true;
     return false;

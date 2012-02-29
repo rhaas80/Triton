@@ -217,6 +217,7 @@ namespace WaveformUtilities {
 					       rtol(rtoll),dense(dens),n(y.size()),neqn(n),yout(n),yerr(n) {}
   };
   
+  #include <cmath>
   #include "StepperDopr853a.hpp"
   #include "StepperBS.hpp"
   

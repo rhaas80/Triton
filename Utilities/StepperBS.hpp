@@ -199,7 +199,7 @@ void StepperBS<D>::prepare_dense(const Doub h,VecDoub_I &dydxnew,
   for (Int kmi=1; kmi<=mu; kmi++) {
     Int kbeg=(kmi-1)/2;
     for (Int kk=kbeg; kk<=k; kk++) {
-      Doub facnj=pow(nseq[kk]/2.0,kmi-1);
+      Doub facnj=::pow(nseq[kk]/2.0,kmi-1);
       Int ipt=ipoint[kk+1]-2*kk+kmi-3;
       for (Int i=0; i<n; i++)
 	ysave[kk][i]=fsave[ipt][i]*facnj;
@@ -295,11 +295,11 @@ void StepperBS<D>::step(const Doub htry,D &derivs) {
 	}
 	err=sqrt(err/n);
 	Doub expo=1.0/(2*k+1);
-	Doub facmin=pow(STEPFAC3,expo);
+	Doub facmin=::pow(STEPFAC3,expo);
 	if (err == 0.0)
 	  fac=1.0/facmin;
 	else {
-	  fac=STEPFAC2/pow(err/STEPFAC1,expo);
+	  fac=STEPFAC2/::pow(err/STEPFAC1,expo);
 	  fac=MAX(facmin/STEPFAC4,MIN(1.0/facmin,fac));
 	}
 	hopt[k]=std::abs(h*fac);
@@ -346,7 +346,7 @@ void StepperBS<D>::step(const Doub htry,D &derivs) {
   derivs(x+h,y,dydxnew);
   if (dense) {
     prepare_dense(h,dydxnew,ysav,scale,k,err);
-    hopt_int=h/MAX(pow(err,1.0/(2*k+3)),0.01);
+    hopt_int=h/MAX(::pow(err,1.0/(2*k+3)),0.01);
     if (err > 10.0) {
       hnew=std::abs(hopt_int);
       reject=true;
