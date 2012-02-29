@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <limits>
 #include "VectorFunctions.hpp"
 #include "Utilities.hpp"
 using namespace std;
@@ -76,12 +77,12 @@ Quaternion Quaternion::operator-() const {
   return Quaternion(-q0, -q1, -q2, -q3);
 }
 
-Quaternion Quaternion::operator/(const double x) const {
-  return Quaternion(q0/x, q1/x, q2/x, q3/x);
+Quaternion Quaternion::operator*(const double x) const {
+  return Quaternion(q0*x, q1*x, q2*x, q3*x);
 }
 
-Quaternion Quaternion::operator/(const Quaternion& Q) const {
-  return (*this)*(Q.Inverse());
+Quaternion Quaternion::operator/(const double x) const {
+  return Quaternion(q0/x, q1/x, q2/x, q3/x);
 }
 
 Quaternion Quaternion::operator*(const Quaternion& Q) const {
@@ -89,6 +90,10 @@ Quaternion Quaternion::operator*(const Quaternion& Q) const {
 		    q0*Q.q1 + q1*Q.q0 + q2*Q.q3 - q3*Q.q2,
 		    q0*Q.q2 - q1*Q.q3 + q2*Q.q0 + q3*Q.q1,
 		    q0*Q.q3 + q1*Q.q2 - q2*Q.q1 + q3*Q.q0);
+}
+
+Quaternion Quaternion::operator/(const Quaternion& Q) const {
+  return (*this)*(Q.Inverse());
 }
 
 Quaternion Quaternion::operator+(const Quaternion& Q) const {
@@ -144,6 +149,47 @@ vector<double> Quaternion::EulerAnglesZYZ() const {
 }
 
 
+//// The basic math functions
+Quaternion exp(const Quaternion& Q) {
+  Quaternion P;
+  double b = sqrt(Q[1]*Q[1] + Q[2]*Q[2] + Q[3]*Q[3]);
+  if (abs(b)<=numeric_limits<double>::epsilon()) {
+    P[0] = ::exp(Q[0]);
+  } else {
+    double f = sin(b)/b;
+    P[0] = ::exp(Q[0])*cos(b);
+    P[1] = f*Q[1];
+    P[2] = f*Q[2];
+    P[3] = f*Q[3];
+  }
+  return P;
+}
+
+Quaternion log(const Quaternion& Q) {
+  Quaternion P;
+  double b = sqrt(Q[1]*Q[1] + Q[2]*Q[2] + Q[3]*Q[3]);
+  if (abs(b)<=numeric_limits<double>::epsilon()) {
+    // if (Q[0]<=numeric_limits<double>::epsilon()) {
+    //   cerr << "Q=" << Q << endl;
+    //   throw("Q is too close to 0 to take the logarithm.");
+    // }
+    P[0] = ::log(Q[0]);
+  } else {
+    double t = atan2(b, Q[0]);
+    double f = t/b;
+    double ct = cos(t);
+    // if (abs(ct)<=numeric_limits<double>::epsilon())
+    //   throw EValueError("math domain error");
+    double r = Q[0]/ct;
+    // if (r<=numeric_limits<double>::epsilon())
+    //   throw EValueError("math domain error");
+    P[0] = ::log(r);
+    P[1] = f*Q[1];
+    P[2] = f*Q[2];
+    P[3] = f*Q[3];
+  }
+  return P;
+}
 
 //// Useful other functions
 vector<Quaternion> WaveformUtilities::Quaternions(const vector<double>& alpha, const vector<double>& beta, const vector<double>& gamma) {
@@ -185,6 +231,23 @@ vector<Quaternion> WaveformUtilities::dQdt(const vector<Quaternion>& Q, const ve
   return dQ;
 }
 
+vector<double> WaveformUtilities::Re(const vector<Quaternion>& Q) {
+  vector<double> re(Q.size());
+  for(unsigned int i=0; i<Q.size(); ++i) {
+    re[i] = Q[i].Re();
+  }
+  return re;
+}
+
+
+Quaternion operator*(const double x, const Quaternion& Q) {
+  return (Q*x);
+}
+
+Quaternion operator/(const double x, const Quaternion& Q) {
+  return (Q.Inverse() * x);
+}
+
 vector<Quaternion> operator*(const Quaternion& P, const vector<Quaternion>& Q) {
   vector<Quaternion> PQ(Q.size());
   for(unsigned int i=0; i<Q.size(); ++i) {
@@ -211,14 +274,6 @@ vector<Quaternion> operator*(const vector<Quaternion>& P, const vector<Quaternio
     PQ[i] = P[i]*Q[i];
   }
   return PQ;
-}
-
-vector<double> WaveformUtilities::Re(const vector<Quaternion>& Q) {
-  vector<double> re(Q.size());
-  for(unsigned int i=0; i<Q.size(); ++i) {
-    re[i] = Q[i].Re();
-  }
-  return re;
 }
 
 vector<Quaternion> operator-(const vector<Quaternion>& Q) {
