@@ -1421,20 +1421,3 @@ bool WU::ismonotonic(const vector<double>& a) {
 //   return true;
 // }
 
-
-/// Transition functions
-inline double WU::TransitionFunction_Linear(const double x) {
-  return (x<0.0 ? 0.0 : (x>1.0 ? 1.0 : x) );
-}
-inline double WU::TransitionFunction_Linear(const double x, const double a, const double b) {
-  return TransitionFunction_Linear((x-a)/b);
-}
-inline double WU::TransitionFunction_Smooth(const double x) {
-  return (x<=0.0 ? 0.0 : (x>=1.0 ? 1.0 : 1.0/(1.0+exp(1.0/(x-1.0) + 1.0/x))) );
-}
-inline double WU::TransitionFunction_Smooth(const double x, const double a, const double b) {
-  return TransitionFunction_Smooth((x-a)/b);
-}
-
-
-/// Transition functions

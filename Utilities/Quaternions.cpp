@@ -21,6 +21,13 @@ Quaternion::Quaternion(const double angle, const vector<double>& axis)
     q3(sin(angle/2.0)*axis[2]/sqrt(axis[0]*axis[0]+axis[1]*axis[1]+axis[2]*axis[2]))
 { }
 
+Quaternion::Quaternion(const vector<double>& vec)
+  : q0(0.0),
+    q1(vec[0]),
+    q2(vec[1]),
+    q3(vec[2])
+{ }
+
 Quaternion::Quaternion(const double alpha, const double beta, const double gamma)
   : q0(cos(beta/2.)*cos((alpha + gamma)/2.)),
     q1(-(sin(beta/2.)*sin((alpha - gamma)/2.))),
@@ -134,6 +141,14 @@ vector<double> Quaternion::Axis() const {
   return v;
 }
 
+vector<double> Quaternion::Vec() const {
+  vector<double> v(3);
+  v[0] = q1;
+  v[1] = q2;
+  v[2] = q3;
+  return v;
+}
+
 vector<double> Quaternion::EulerAnglesZYZ() const {
   vector<double> AlphaBetaGamma(3, 0.0);
   Quaternion Q = Normalized();
@@ -149,47 +164,47 @@ vector<double> Quaternion::EulerAnglesZYZ() const {
 }
 
 
-//// The basic math functions
-Quaternion exp(const Quaternion& Q) {
+Quaternion Quaternion::exp() const {
   Quaternion P;
-  double b = sqrt(Q[1]*Q[1] + Q[2]*Q[2] + Q[3]*Q[3]);
+  double b = sqrt(q1*q1 + q2*q2 + q3*q3);
   if (abs(b)<=numeric_limits<double>::epsilon()) {
-    P[0] = ::exp(Q[0]);
+    P[0] = ::exp(q0);
   } else {
     double f = sin(b)/b;
-    P[0] = ::exp(Q[0])*cos(b);
-    P[1] = f*Q[1];
-    P[2] = f*Q[2];
-    P[3] = f*Q[3];
+    P[0] = ::exp(q0)*cos(b);
+    P[1] = f*q1;
+    P[2] = f*q2;
+    P[3] = f*q3;
   }
   return P;
 }
 
-Quaternion log(const Quaternion& Q) {
+Quaternion Quaternion::log() const {
   Quaternion P;
-  double b = sqrt(Q[1]*Q[1] + Q[2]*Q[2] + Q[3]*Q[3]);
+  double b = sqrt(q1*q1 + q2*q2 + q3*q3);
   if (abs(b)<=numeric_limits<double>::epsilon()) {
-    // if (Q[0]<=numeric_limits<double>::epsilon()) {
+    // if (q0<=numeric_limits<double>::epsilon()) {
     //   cerr << "Q=" << Q << endl;
     //   throw("Q is too close to 0 to take the logarithm.");
     // }
-    P[0] = ::log(Q[0]);
+    P[0] = ::log(q0);
   } else {
-    double t = atan2(b, Q[0]);
+    double t = atan2(b, q0);
     double f = t/b;
     double ct = cos(t);
     // if (abs(ct)<=numeric_limits<double>::epsilon())
     //   throw EValueError("math domain error");
-    double r = Q[0]/ct;
+    double r = q0/ct;
     // if (r<=numeric_limits<double>::epsilon())
     //   throw EValueError("math domain error");
     P[0] = ::log(r);
-    P[1] = f*Q[1];
-    P[2] = f*Q[2];
-    P[3] = f*Q[3];
+    P[1] = f*q1;
+    P[2] = f*q2;
+    P[3] = f*q3;
   }
   return P;
 }
+
 
 //// Useful other functions
 vector<Quaternion> WaveformUtilities::Quaternions(const vector<double>& alpha, const vector<double>& beta, const vector<double>& gamma) {
@@ -282,4 +297,9 @@ vector<Quaternion> operator-(const vector<Quaternion>& Q) {
     P[i] = -Q[i];
   }
   return P;
+}
+
+ostream& operator<<(ostream& out, const WaveformUtilities::Quaternion& q) {
+  out << "[" << q[0] << ", " << q[1] << ", " << q[2] << ", " << q[3] << "]";
+  return out;
 }

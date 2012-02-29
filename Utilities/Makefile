@@ -21,7 +21,7 @@ realtarget: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
 	@(make -s lib$(THISDIR).so)
 
 clean:
-	-$(RM) `ls *.o | grep -v NoiseCurves` *.d lib$(THISDIR).so
+	-$(RM) `ls *.o | grep -v NoiseCurves | grep -v SWSHs` *.d lib$(THISDIR).so
 
 realclean:
 	-$(RM) *.o *.d lib$(THISDIR).so

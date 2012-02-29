@@ -48,10 +48,11 @@ vector<Quaternion> WU::Squad(const vector<double>& tIn, const vector<Quaternion>
 vector<Quaternion> WU::QuaternionInterpolator::SetControlPoints(const vector<Quaternion>& q) {
   vector<Quaternion> c(q.size());
   c[0] = q[0];
+  std::cerr << "Warning: The squad interpolation control points may be incorrectly set at: " << __FILE__ << ": " << __LINE__+2 << std::endl;
   for(unsigned int i=1; i<c.size()-1; ++i) {
-    std::cerr << "Warning: The squad interpolation control points may be incorrectly set in " << __FILE__ << ": " << __LINE__ << std::endl;
-    //c[i] = q[i] * exp(-0.25 * (log(q[i+1]/q[i]) + log(q[i-1]/q[i])) ) // from http://www.sjbrown.co.uk/2002/05/01/quaternions/, but I think it's wrong
-    c[i] = exp(-0.25 * q[i] * (log(q[i+1]/q[i]) - log(q[i]/q[i-1])) / q[i] ) * q[i];
+    //c[i] = q[i] * exp(-0.25 * (log(q[i+1]/q[i]) + log(q[i-1]/q[i])) ); // from http://www.sjbrown.co.uk/2002/05/01/quaternions/, but I think it's wrong
+    c[i] = exp(-0.25 * (log(q[i+1]/q[i]) + log(q[i-1]/q[i])) ) * q[i];
+    //c[i] = exp(-0.25 * q[i] * (WU::log(q[i+1]/q[i]) - WU::log(q[i]/q[i-1])) / q[i] ) * q[i];
   }
   c[c.size()-1] = q[q.size()-1];
   return c;
@@ -68,5 +69,3 @@ double WU::QuaternionInterpolator::rawinterp(int jlo, double t) {
   // This just has to be here to override the empty default in the base class
   return 0.;
 }
-
-
