@@ -31,6 +31,7 @@ namespace WaveformObjects {
     std::string timeScale;
     std::vector<double> t;
     std::vector<double> r;
+    std::vector<WaveformUtilities::Quaternion> frame;
     WaveformUtilities::Matrix<int> lm;
     WaveformUtilities::Matrix<double> mag;
     WaveformUtilities::Matrix<double> arg;
@@ -48,13 +49,15 @@ namespace WaveformObjects {
     // Data from a single mode at an instant of time
     inline const double T(const unsigned int Time) const { return t[Time]; }
     inline const double R(const unsigned int Time) const { if(r.size()>1) {return r[Time]; } else { return r[0]; } }
+    inline const WaveformUtilities::Quaternion& Frame(const unsigned int Time) const { if(frame.size()>1) {return frame[Time]; } else { return frame[0]; } }
     inline const double Mag(const unsigned int Mode, const unsigned int Time) const { return mag[Mode][Time]; }
     inline const double Arg(const unsigned int Mode, const unsigned int Time) const { return arg[Mode][Time]; }
     // Data from a single mode throughout time
     inline const std::vector<double>& T() const { return t; }
     inline const std::vector<double>& R() const { return r; }
-    inline const int& L(const unsigned int Mode) const { return lm[Mode][0]; }
-    inline const int& M(const unsigned int Mode) const { return lm[Mode][1]; }
+    inline const std::vector<WaveformUtilities::Quaternion>& Frame() const { return frame; }
+    inline const int L(const unsigned int Mode) const { return lm[Mode][0]; }
+    inline const int M(const unsigned int Mode) const { return lm[Mode][1]; }
     inline const std::vector<int>& LM(const unsigned int Mode) const { return lm[Mode]; }
     inline const std::vector<double>& Mag(const unsigned int Mode) const { return mag[Mode]; }
     inline const std::vector<double>& Arg(const unsigned int Mode) const { return arg[Mode]; }
@@ -78,11 +81,13 @@ namespace WaveformObjects {
     // Data from a single mode at an instant of time
     inline double& TRef(const unsigned int Time) { return t[Time]; }
     inline double& RRef(const unsigned int Time) { if(r.size()>1) {return r[Time]; } else { return r[0]; } }
+    inline WaveformUtilities::Quaternion& FrameRef(const unsigned int Time) { if(frame.size()>1) {return frame[Time]; } else { return frame[0]; } }
     inline double& MagRef(const unsigned int Mode, const unsigned int Time) { return mag[Mode][Time]; }
     inline double& ArgRef(const unsigned int Mode, const unsigned int Time) { return arg[Mode][Time]; }
     // Data from a single mode throughout time
     inline std::vector<double>& TRef() { return t; }
     inline std::vector<double>& RRef() { return r; }
+    inline std::vector<WaveformUtilities::Quaternion>& FrameRef() { return frame; }
     inline int& LRef(const unsigned int Mode) { return lm[Mode][0]; }
     inline int& MRef(const unsigned int Mode) { return lm[Mode][1]; }
     inline std::vector<int>& LMRef(const unsigned int Mode) { return lm[Mode]; }
@@ -102,12 +107,15 @@ namespace WaveformObjects {
   public:  // Set-data explicit access functions (mostly for SWIG)
     inline void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
     inline void AppendHistory(const std::string& Hist) { history << Hist; }
+    #ifdef SWIG // Only SWIG should use these; c++ should use the standard Ref functions
     inline void SetTypeIndex(const unsigned int NewTypeIndex) { typeIndex = NewTypeIndex; }
     inline void SetTimeScale(const std::string& NewTimeScale) { timeScale = NewTimeScale; }
     inline void SetT(const unsigned int Time, const double a) { t[Time] = a; }
     inline void SetT(const std::vector<double>& a) { t = a; }
     inline void SetR(const unsigned int Time, const double a) { r[Time] = a; }
     inline void SetR(const std::vector<double>& a) { r = a; }
+    inline void SetFrame(const unsigned int Time, const WaveformUtilities::Quaternion& a) { frame[Time] = a; }
+    inline void SetFrame(const std::vector<WaveformUtilities::Quaternion>& a) { frame = a; }
     inline void SetLM(const unsigned int Mode, const unsigned int Time, const int a) { lm[Mode][Time] = a; }
     inline void SetLM(const unsigned int Mode, const std::vector<int>& a) { lm[Mode] = a; }
     inline void SetLM(const WaveformUtilities::Matrix<int>& a) { lm = a; }
@@ -117,16 +125,19 @@ namespace WaveformObjects {
     inline void SetArg(const unsigned int Mode, const unsigned int Time, const double a) { arg[Mode][Time] = a; }
     inline void SetArg(const unsigned int Mode, const std::vector<double>& a) { arg[Mode] = a; }
     inline void SetArg(const WaveformUtilities::Matrix<double>& a) { arg = a; }
+    #endif // Only used above for SWIG
     
   public:  // Member functions
     // Extract features
     unsigned int FindModeIndex(const int L, const int M) const;
     unsigned int Peak22TimeIndex() const;
     double Peak22Time() const;
+    //unsigned int PeakFluxTimeIndex() const;
+    //double PeakFluxTime() const;
     std::vector<double> Omega2m2(const double t1=-1e300, const double t2=1e300) const;
     bool HasNaNs() const;
     std::vector<double> Flux() const;
-    Waveform& Differentiate(); // Useful to compare h to Psi4
+    Waveform& Differentiate();
     
     // Interpolation routines
     Waveform& Interpolate(const std::vector<double>& Time);
@@ -179,8 +190,11 @@ namespace WaveformObjects {
     Waveform& RotatePhysicalSystem(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
     Waveform& RotateCoordinates(const double alpha, const double beta, const double gamma);
     Waveform& RotateCoordinates(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
+    //Waveform& RotatePhysicalSystem(const WaveformUtilities::Quaternion& Q);
     Waveform& RotatePhysicalSystem(const std::vector<WaveformUtilities::Quaternion>& Q);
+    //Waveform& RotateCoordinates(const WaveformUtilities::Quaternion& Q);
     Waveform& RotateCoordinates(const std::vector<WaveformUtilities::Quaternion>& Q);
+    //Waveform& ReconcileAxisDirection(const Waveform& W, const double TimeFraction=0.5);
     
     // Radiation-frame utilities
     Waveform& TransformToSchmidtFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0); // Transforms the waveform into the Schmidt frame
