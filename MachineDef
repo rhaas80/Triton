@@ -11,7 +11,7 @@ else ifeq ($(OSTYPE),linux)
 	SHARED	= -shared -Wl,-soname,lib$(THISDIR).so
 	INSTALL_NAME_TOOL =
 else
-	echo Unsupported OS type
+	echo Unsupported OS type.  Please see the MachineDef file.
 	false
 endif
 
