@@ -17,14 +17,25 @@
 ** Possibly for_each similar to the one in stl's algorithms
 
 * Do NOT try to co-locate c++ and python memory
+** References are unmanaged and memory can get out of sync
 ** Crazy bugs arise otherwise, even when they shouldn't (e.g., just plotting doesn't work)
 ** Make things explicit (with explicit set methods, for example)
-** References are unmanaged and memory can get out of sync
 ** Let std_vector.i do its work
 
 
 
 * To do
+** Convert Routines to python scripts
 ** Add Quaternion function of time to Waveform data
+*** Check all member functions for the new 'frame' member data
+**** Flux: check frame; if not constant, rotate before calculating
+**** operator= : make sure the frame data is copied
+**** operator/ : rotate into a common frame? or return W1.frame * W2.frame.Inverse() ?
+*** New member functions:
+**** PeakFluxTimeIndex
+**** PeakFluxTime
+**** WaveformInStationaryFrame
+*** Add frame data to I/O
+** Get h5 import working
 ** Handle errors so python doesn't just exit on a throw from c++
 ** Add directors to use for_each method on Waveforms with python-defined function
