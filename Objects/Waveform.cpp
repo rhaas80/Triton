@@ -214,6 +214,11 @@ Waveform::Waveform(const string& DataFileName, const string& Format, const bool 
     vector<vector<double> > Data;
     vector<string> Header;
     ReadDatFile(DataFileName,  Data,  Header);
+    history << "###### Begin Previous History\n";
+    for(unsigned int i=0; i<Header.size(); ++i) {
+      history << Header[i];
+    }
+    history << "###### End Previous History\n";
     t = vector<double>(Data.size());
     for(unsigned int i=0; i<t.size(); ++i) {
       t[i] = Data[i][0];
@@ -222,7 +227,8 @@ Waveform::Waveform(const string& DataFileName, const string& Format, const bool 
     
     //// Get mag and arg data
     // The data has vectors of vectors of components at a given time;
-    // we transpose the matrix to vectors of components, each of which is a vector through time.
+    // we transpose the matrix to vectors of components, each of which
+    // is a vector through time.
     //ORIENTATION!!!  7 following lines
     vector<vector<double> > Re((Data[0].size()-1)/2, vector<double>(Data.size(), 0));
     vector<vector<double> > Im(Re.size(), vector<double>(Data.size(), 0));
