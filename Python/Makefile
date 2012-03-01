@@ -34,11 +34,11 @@ WaveformObjects_python : _WaveformObjects.so
 _WaveformObjects.so : WaveformObjects.i
 	swig -c++ -python -outdir PyGW WaveformObjects.i
 	@:
-	$(C++) -c $(IFLAGS) `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
+	$(C++) -DSWIG -c $(IFLAGS) `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
 		-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/ \
 		WaveformObjects_wrap.cxx
 	@:
-	$(C++) $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
+	$(C++) -DSWIG $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
 		$(LFLAGS) $(lFLAGS) WaveformObjects_wrap.o -o PyGW/_WaveformObjects.so
 
 SWSHs_python : _SWSHs.so
@@ -46,11 +46,11 @@ SWSHs_python : _SWSHs.so
 _SWSHs.so : SWSHs.i
 	swig -c++ -python SWSHs.i
 	@:
-	$(C++) -c $(IFLAGS) `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
+	$(C++) -DSWIG -c $(IFLAGS) `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
 		-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/ \
 		SWSHs_wrap.cxx
 	@:
-	$(C++) $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
+	$(C++) -DSWIG $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
 		$(LFLAGS) $(lFLAGS) SWSHs_wrap.o -o _SWSHs.so
 
 -include $(SOURCES:.cpp=.d)
