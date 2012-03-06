@@ -62,7 +62,7 @@ namespace WaveformObjects {
     inline const std::vector<double>& Mag(const unsigned int Mode) const { return mag[Mode]; }
     inline const std::vector<double>& Arg(const unsigned int Mode) const { return arg[Mode]; }
     // Data for all modes throughout time
-    #ifdef SWIG // Change the following for SWIG
+    #if defined(SWIG) || defined(DOXYGEN)
     inline const std::vector<std::vector<int> >& LM() const { return lm.RawData(); }
     inline const std::vector<std::vector<double> >& Mag() const { return mag.RawData(); }
     inline const std::vector<std::vector<double> >& Arg() const { return arg.RawData(); }
@@ -99,15 +99,10 @@ namespace WaveformObjects {
     inline WaveformUtilities::Matrix<double>& ArgRef() { return arg; }
     #endif // Excluded the above from SWIG
     
-  public:  // Operators
-    Waveform& operator=(const Waveform& b);
-    Waveform operator[](const unsigned int mode) const;
-    Waveform operator/(const Waveform& b) const;
-    
   public:  // Set-data explicit access functions (mostly for SWIG)
     inline void AppendHistory(const std::string& Hist) { history << Hist; }
     inline void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
-    #ifdef SWIG // Only SWIG should use these; c++ should use the standard Ref functions
+    #if defined( SWIG ) || defined( DOXYGEN )
     inline void SetTypeIndex(const unsigned int NewTypeIndex) { typeIndex = NewTypeIndex; }
     inline void SetTimeScale(const std::string& NewTimeScale) { timeScale = NewTimeScale; }
     inline void SetT(const unsigned int Time, const double a) { t[Time] = a; }
@@ -116,7 +111,6 @@ namespace WaveformObjects {
     inline void SetR(const std::vector<double>& a) { r = a; }
     inline void SetFrame(const unsigned int Time, const WaveformUtilities::Quaternion& a) { frame[Time] = a; }
     inline void SetFrame(const std::vector<WaveformUtilities::Quaternion>& a) { frame = a; }
-    inline void SetLM(const unsigned int Mode, const unsigned int Time, const int a) { lm[Mode][Time] = a; }
     inline void SetLM(const unsigned int Mode, const std::vector<int>& a) { lm[Mode] = a; }
     inline void SetLM(const WaveformUtilities::Matrix<int>& a) { lm = a; }
     inline void SetMag(const unsigned int Mode, const unsigned int Time, const double a) { mag[Mode][Time] = a; }
@@ -126,6 +120,11 @@ namespace WaveformObjects {
     inline void SetArg(const unsigned int Mode, const std::vector<double>& a) { arg[Mode] = a; }
     inline void SetArg(const WaveformUtilities::Matrix<double>& a) { arg = a; }
     #endif // Only used above for SWIG
+    
+  public:  // Operators
+    Waveform& operator=(const Waveform& b);
+    Waveform operator[](const unsigned int mode) const;
+    Waveform operator/(const Waveform& b) const;
     
   public:  // Member functions
     // Extract features

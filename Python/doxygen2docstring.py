@@ -7,10 +7,15 @@ called as a script, the docstrings are output in SWIG format.
 
 Usage:
 
-  Doc.py index.xml output.i
+  Doc.py ../xml/index.xml WaveformObjects_Doc.i
 
 index.xml is your doxygen generated XML file and output.i is where the
 output will be written (the file will be clobbered).
+
+There are a few specializations to the WaveformObjects module in this
+file.  For example, deletion of 'WaveformObjects::' and
+'WaveformUtilities::' in certain strings.  Otherwise, this should be
+fairly general.
 
 """
 
@@ -208,14 +213,15 @@ class doxy2docstring :
             ## Look for <memberdef>[kind="function" prot="public"]
             for memberdef in cdoc.getElementsByTagName('memberdef') :
                 if ((memberdef.attributes['kind'].value=='function') and (memberdef.attributes['prot'].value=='public')) :
-                    documented_object = self.human_readable(memberdef.getElementsByTagName('definition')[0]) \
-                        .replace(self.human_readable(memberdef.getElementsByTagName('type')[0])+' ', '')
+                    definition = self.human_readable(memberdef.getElementsByTagName('definition')[0])
+                    typestring = self.human_readable(memberdef.getElementsByTagName('type')[0])
+                    documented_object = definition.replace(typestring+' ', '')
                     ## Make header with brief description
                     brief = self.human_readable(memberdef.getElementsByTagName('briefdescription')[0])
                     #print(documented_object)
                     docstring = ''
                     if documented_object in self.documented_objects :
-                        docstring = self.documented_objects[documented_object] + '\n\n'
+                        docstring = self.documented_objects[documented_object] + '\n'
                     ## Document parameters
                     docstring += brief + '\n' + len(brief)*'=' + '\n  Parameters\n  ----------\n'
                     params = memberdef.getElementsByTagName('param')
@@ -240,7 +246,7 @@ class doxy2docstring :
                     returnType = self.human_readable(memberdef.getElementsByTagName('type')[0]).replace('WaveformUtilities::','').replace('std::','')
                     if len(returnType.strip())==0 :
                         returnType = self.human_readable(memberdef.getElementsByTagName('name')[0])
-                    docstring += returnType + '\n    \n'
+                    docstring += returnType + '\n  \n'
                     ## Document other desciptions
                     Descriptions=False
                     for child in memberdef.childNodes :
@@ -252,15 +258,10 @@ class doxy2docstring :
                                 if (Descriptions == False) :
                                     docstring += '  Description\n  -----------\n'
                                     Descriptions = True
-                                docstring += word_wrap(string, ind1=4, ind2=4)
-                    if(Descriptions == True) : docstring += '  \n'
+                                docstring += word_wrap(string, ind1=4, ind2=4) + '\n  \n'
+                    #if(Descriptions == True) : docstring += '  \n'
                     ##   Add to self.documented_objects
                     self.documented_objects[documented_object] = docstring
-            
-            
-            # p = Doxy2SWIG(fname)
-            # p.generate()
-            # self.pieces.extend(self.clean_pieces(p.pieces))
     
     def open_read(self, source):
         if hasattr(source, "read"):
@@ -285,6 +286,7 @@ class doxy2docstring :
                       .replace(' &amp;','&') \
                       .replace('&amp;','&') \
                       .replace('&quot;',"'") \
+                      .replace('&apos;',"'") \
                       .strip()
     
     def getText(self, nodelist):
@@ -297,7 +299,7 @@ class doxy2docstring :
     def output_swig(self, OutputFileName):
         o = self.open_write(OutputFileName)
         for key, value in self.documented_objects.iteritems():
-            o.write('%feature("docstring") {0} """\n{1}\n"""\n\n'.format(key, value))
+            o.write('%feature("docstring") {0} """\n{1}"""\n\n'.format(key, value))
         o.close()
 
 

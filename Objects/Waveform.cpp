@@ -59,18 +59,326 @@ void GetWaveformTimeScaleAndLM(const string& FullPath, const std::vector<string>
 /// provide all manipulations that might be necessary in the course of
 /// waveform analysis.
 
+// ** Get-data access functions
+/// \fn inline const unsigned int WaveformObjects::Waveform::NTimes() const
+/// \brief Return the number of time steps in the data.
+
+/// \fn inline const unsigned int WaveformObjects::Waveform::NModes() const
+/// \brief Return the number of modes in the data.
+
+/// \fn inline const unsigned int WaveformObjects::Waveform::TypeIndex() const
+/// \brief Return the index for the Type of the data.
+/// 
+/// A more useful function might be the 'Type()' function, which
+/// returns the type as a string.
+
+/// \fn inline const std::string WaveformObjects::Waveform::HistoryStr() const
+/// \brief Return a string containing the history of the Waveform.
+
+/// \fn inline const std::string WaveformObjects::Waveform::TimeScale() const
+/// \brief Return a string describing the time scale (e.g., units).
+
+/// \fn inline const std::string WaveformObjects::Waveform::Type() const
+/// \brief Return a string describing the Type of the data.
+
+/// \fn inline const double WaveformObjects::Waveform::T(const unsigned int Time) const
+/// \brief Return the time value at time index 'Time'.
+
+/// \fn inline const double WaveformObjects::Waveform::R(const unsigned int Time) const
+/// \brief Return the radius of the measured data at time index 'Time'.
+
+/// \fn inline const WaveformUtilities::Quaternion& WaveformObjects::Waveform::Frame(const unsigned int Time) const
+/// \brief Return a quaternion describing the frame in which the data are decomposed at time index 'Time'.
+
+/// \fn inline const double WaveformObjects::Waveform::Mag(const unsigned int Mode, const unsigned int Time) const
+/// \brief Return the magnitude of mode 'Mode' at time index 'Time'.
+
+/// \fn inline const double WaveformObjects::Waveform::Arg(const unsigned int Mode, const unsigned int Time) const
+/// \brief Return the argument (phase) of mode 'Mode' at time index 'Time'.
+
+/// \fn inline const std::vector<double>& WaveformObjects::Waveform::T() const
+/// \brief Return the entire vector of times in the data.
+
+/// \fn inline const std::vector<double>& WaveformObjects::Waveform::R() const
+/// \brief Return the vector of radii of the measured data.
+/// 
+/// Note that this vector may contain 0, 1, or NTimes() elements.  If
+/// 1, the radius is assumed to be constant.
+
+/// \fn inline const std::vector<WaveformUtilities::Quaternion>& WaveformObjects::Waveform::Frame() const
+/// \brief Return the entire vector of frames in which the data are decomposed.
+/// 
+/// Note that this vector may contain 0, 1, or NTimes() elements.  If
+/// 1, the frame is assumed to be constant.  If 0, it is constant, and
+/// equal to the standard frame.
+
+/// \fn inline const int WaveformObjects::Waveform::L(const unsigned int Mode) const
+/// \brief Return the 'l' (azimuthal) index of mode 'Mode'.
+
+/// \fn inline const int WaveformObjects::Waveform::M(const unsigned int Mode) const
+/// \brief Return the 'm' (magnetic) index of mode 'Mode'.
+
+/// \fn inline const std::vector<int>& WaveformObjects::Waveform::LM(const unsigned int Mode) const
+/// \brief Return the (l,m) indices of mode 'Mode'.
+
+/// \fn inline const std::vector<double>& WaveformObjects::Waveform::Mag(const unsigned int Mode) const
+/// \brief Return the magnitude of mode 'Mode' as a function of time.
+
+/// \fn inline const std::vector<double>& WaveformObjects::Waveform::Arg(const unsigned int Mode) const
+/// \brief Return the argument (phase) of mode 'Mode' as a function of time.
+
+/// \fn inline const std::vector<std::vector<int> >& WaveformObjects::Waveform::LM() const
+/// \brief Return the (l,m) data for all modes.
+/// 
+/// The return value is actually a Matrix when called from c++.
+
+/// \fn inline const std::vector<std::vector<double> >& WaveformObjects::Waveform::Mag() const
+/// \brief Return the magnitude of all modes as a function of time.
+/// 
+/// The return value is actually a Matrix when called from c++.
+
+/// \fn inline const std::vector<std::vector<double> >& WaveformObjects::Waveform::Arg() const
+/// \brief Return the argument (phase) of all modes as a function of time.
+/// 
+/// The return value is actually a Matrix when called from c++.
+
+// ** Set-data implicit access functions
+/// \fn inline unsigned int& WaveformObjects::Waveform::TypeIndexRef()
+/// \brief Return a reference to the index for the Type of the data.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline std::stringstream& WaveformObjects::Waveform::History()
+/// \brief Return a reference to the stringstream recording the Waveform's history.
+/// 
+/// Note that the methods 'SetHistory(const std::string& Hist)' and
+/// 'AppendHistory(const std::string& Hist)' are also available.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline std::string& WaveformObjects::Waveform::TimeScaleRef()
+/// \brief Return a reference to the string describing the time scale (e.g., units).
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline double& WaveformObjects::Waveform::TRef(const unsigned int Time)
+/// \brief Return a reference 
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline double& WaveformObjects::Waveform::RRef(const unsigned int Time)
+/// \brief Return a reference to the radius at time index 'Time'.
+/// 
+/// Note that this may return a reference to the sole element of the
+/// vector of radii, in the case that the radius is constant.  Thus,
+/// setting the radius at different instants of time may simply
+/// overwrite that sole value.  It would be better to use 'RRef()' for
+/// that application.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline WaveformUtilities::Quaternion& WaveformObjects::Waveform::FrameRef(const unsigned int Time)
+/// \brief Return a reference to the frames in which the data are decomposed at time index 'Time'.
+/// 
+/// Note that this may return a reference to the sole element of the
+/// vector of frames, in the case that the frame is constant.  Thus,
+/// setting the frame at different instants of time may simply
+/// overwrite that sole value.  It would be better to use 'FrameRef()'
+/// for that application.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline double& WaveformObjects::Waveform::MagRef(const unsigned int Mode, const unsigned int Time)
+/// \brief Return a reference to the magnitude of mode 'Mode' at time index 'Time'.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline double& WaveformObjects::Waveform::ArgRef(const unsigned int Mode, const unsigned int Time)
+/// \brief Return a reference to the argument (phase) of mode 'Mode' at time index 'Time'.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline std::vector<double>& WaveformObjects::Waveform::TRef()
+/// \brief Return a reference to the entire vector of times in the data.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline std::vector<double>& WaveformObjects::Waveform::RRef()
+/// \brief Return a reference to the vector of radii of the measured data.
+/// 
+/// Note that this vector may contain 0, 1, or NTimes() elements.  If
+/// 1, the radius is assumed to be constant.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline std::vector<WaveformUtilities::Quaternion>& WaveformObjects::Waveform::FrameRef()
+/// \brief Return a reference to the vector of frames in which the data are decomposed.
+/// 
+/// Note that this vector may contain 0, 1, or NTimes() elements.  If
+/// 1, the frame is assumed to be constant.  If 0, it is constant, and
+/// equal to the standard frame.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline int& WaveformObjects::Waveform::LRef(const unsigned int Mode)
+/// \brief Return a reference to the l (azimuthal) index of mode 'Mode'.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline int& WaveformObjects::Waveform::MRef(const unsigned int Mode)
+/// \brief Return a reference to the m (magnetic) index of mode 'Mode'.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline std::vector<int>& WaveformObjects::Waveform::LMRef(const unsigned int Mode)
+/// \brief Return a reference to the (l,m) data of mode 'Mode'.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline std::vector<double>& WaveformObjects::Waveform::MagRef(const unsigned int Mode)
+/// \brief Return a reference to the magnitude of mode 'Mode' as a function of time.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline std::vector<double>& WaveformObjects::Waveform::ArgRef(const unsigned int Mode)
+/// \brief Return a reference to the argument (phase) of mode 'Mode' as a function of time.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline WaveformUtilities::Matrix<int>& WaveformObjects::Waveform::LMRef()
+/// \brief Return a reference to the (l,m) data for all modes.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline WaveformUtilities::Matrix<double>& WaveformObjects::Waveform::MagRef()
+/// \brief Return a reference to the magnitude of all modes as a function of time.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+/// \fn inline WaveformUtilities::Matrix<double>& WaveformObjects::Waveform::ArgRef()
+/// \brief Return a reference to the argument (phase) of all modes as a function of time.
+/// 
+/// This function is not available via SWIG (e.g., in python).
+
+// ** Set-data explicit access functions
+/// \fn inline void WaveformObjects::Waveform::AppendHistory(const std::string& Hist)
+/// \brief Append the input string to the Waveform history.
+
+/// \fn inline void WaveformObjects::Waveform::SetHistory(const std::string& Hist)
+/// \brief Replace the Waveform history with the input string.
+
+/// \fn inline void WaveformObjects::Waveform::SetTypeIndex(const unsigned int NewTypeIndex)
+/// \brief Change the Waveform type index to the input int.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetTimeScale(const std::string& NewTimeScale)
+/// \brief Change the Waveform time scale to the input string.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetT(const unsigned int Time, const double a)
+/// \brief Set the time at index 'Time' to value 'a'.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetT(const std::vector<double>& a)
+/// \brief Set the time vector to the input data.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetR(const unsigned int Time, const double a)
+/// \brief Set the radius at index 'Time' to value 'a'.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetR(const std::vector<double>& a)
+/// \brief Set the radius vector to the input data.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetFrame(const unsigned int Time, const WaveformUtilities::Quaternion& a)
+/// \brief Set the frame at index 'Time' to the value 'a'.
+/// 
+/// Note that no transformation of the modes is done by this function.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetFrame(const std::vector<WaveformUtilities::Quaternion>& a)
+/// \brief Set the frame to the input data.
+/// 
+/// Note that no transformation of the modes is done by this function.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetLM(const unsigned int Mode, const std::vector<int>& a)
+/// \brief Set the (l,m) data of mode 'Mode' to the input data.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetLM(const WaveformUtilities::Matrix<int>& a)
+/// \brief Set the (l,m) data to the input data.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetMag(const unsigned int Mode, const unsigned int Time, const double a)
+/// \brief Set the magnitude of mode 'Mode' at time index 'Time' to the value 'a'.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetMag(const unsigned int Mode, const std::vector<double>& a)
+/// \brief Set the magnitude of mode 'Mode' to the input data.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetMag(const WaveformUtilities::Matrix<double>& a)
+/// \brief Set the magnitude of the Waveform to the input data.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetArg(const unsigned int Mode, const unsigned int Time, const double a)
+/// \brief Set the argument (phase) of mode 'Mode' at time index 'Time' to the value 'a'.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetArg(const unsigned int Mode, const std::vector<double>& a)
+/// \brief Set the argument (phase) of mode 'Mode' to the input data.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
+/// \fn inline void WaveformObjects::Waveform::SetArg(const WaveformUtilities::Matrix<double>& a)
+/// \brief Set the argument (phase) of the Waveform to the input data.
+/// 
+/// This function is only available via SWIG (e.g., python), not c++.
+/// In c++, use the reference method.
+
 
 std::vector<string> WaveformObjects::Waveform::Types(12, "");
-/// Note on Waveform Types:
-/// In any system, h -- being strain -- should be dimensionless.
-/// When G=c=1, the dimensionless quantities are rMPsi4, rhdot, and rhOverM; as are rOverM and tOverM.
-/// When G and c are dimensionful, the dimensionless quantities are 
-///   -  (r/c) * (M*G/c^3) * Psi4
-///   -  (r/c) * hdot
-///   -  (r/c) * h / (M*G/c^3)
-///   -  (r/c) / (M*G/c^3)
-///   -  t / (M*G/c^3)
-/// To regain the dimensionful quantities, we simply need to remove the relevant dimensionful elements.
+// Note on Waveform Types:
+// In any system, h -- being strain -- should be dimensionless.
+// When G=c=1, the dimensionless quantities are rMPsi4, rhdot, and rhOverM; as are rOverM and tOverM.
+// When G and c are dimensionful, the dimensionless quantities are 
+//     -  (r/c) * (M*G/c^3) * Psi4
+//     -  (r/c) * hdot
+//     -  (r/c) * h / (M*G/c^3)
+//     -  (r/c) / (M*G/c^3)
+//     -  t / (M*G/c^3)
+// To regain the dimensionful quantities, we simply need to remove the relevant dimensionful elements.
 void SetWaveformTypes() {
   WaveformObjects::Waveform::Types[0]  = "rMPsi4";
   WaveformObjects::Waveform::Types[1]  = "rhdot";
@@ -108,7 +416,7 @@ WaveformObjects::Waveform::Waveform(const Waveform& a) :
   history.seekp(0, ios_base::end);
 }
 
-/// Constructor from data file
+/// Construct Waveform from data file
 WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::string& Format, const bool ZeroEnds) :
   history(""), typeIndex(0), timeScale("Time"),
   t(0), r(0), frame(0), lm(0, 2), mag(0, 0), arg(0, 0)
@@ -138,9 +446,9 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
   /// scale and (l,m) values for the pairs of columns are deduced from
   /// the header, assuming standard SpEC output.  That is, the header
   /// is assumed to contain lines like \n
-  ///   # [1] = (t-r*)/M \n
-  ///   # [2] = Mag{rMPsi4(2,-2)} \n
-  ///   # [3] = Arg{rMPsi4(2,-2)} \n
+  ///     # [1] = (t-r*)/M \n
+  ///     # [2] = Mag{rMPsi4(2,-2)} \n
+  ///     # [3] = Arg{rMPsi4(2,-2)} \n
   /// Finally, the data format is also deduced from the header, and a
   /// warning is issued if it mismatches the input parameter to this
   /// function.
@@ -245,7 +553,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     
     r = std::vector<double>(1, 0.0);
     
-    //// Search for TimeScale, LM info, Format, and Waveform Type
+    // Search for TimeScale, LM info, Format, and Waveform Type
     //LM = std::vector<std::vector<int> > (mag.size(), std::vector<int>(2, 0));
     //GetWaveformTimeScaleAndLM(Header, timeScale, LM);
     timeScale = "(t-r*)/M";
@@ -266,9 +574,9 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       arg[i] = WaveformUtilities::Interpolate(Times[i], Im[i], t);
     }
     
-  } else {  //// Treat this file like a normal data file
+  } else {  // Treat this file like a normal data file
     
-    //// Read data file
+    // Read data file
     std::vector<std::vector<double> > Data;
     std::vector<string> Header;
     ReadDatFile(DataFileName,  Data,  Header);
@@ -283,7 +591,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     }
     r = std::vector<double>(1, 0.0);
     
-    //// Get mag and arg data
+    // Get mag and arg data
     // The data has std::vectors of std::vectors of components at a given time;
     // we transpose the matrix to std::vectors of components, each of which
     // is a std::vector through time.
@@ -302,7 +610,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     }
     Data.clear();
     
-    //// Search for TimeScale, LM info, and Waveform Type
+    // Search for TimeScale, LM info, and Waveform Type
     lm.resize(Re.size(), 2);
     GetWaveformTimeScaleAndLM(DataFileName, Header, timeScale, lm);
     typeIndex = GetWaveformType(DataFileName, Header);
@@ -359,8 +667,6 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   ///   &= 2\left[L\, (L-1)/2-1\right] + (L-2) \\
   ///   &= (L+3)\, (L-1)
   /// \f}
-  /// 
-  /// \sa AttachQNMs
   
   SetWaveformTypes();
   
@@ -517,10 +823,10 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 
 // Member functions
 
-/// Efficiently swaps data between two Waveform objects
+/// Efficiently swap data between two Waveform objects.
 void WaveformObjects::Waveform::swap(Waveform& b) {
-  /// This function uses the std::vector method swap, which simply
-  /// swaps pointers to data for efficiency
+  /// This function uses the std::vector method 'swap' which simply
+  /// swaps pointers to data, for efficiency.
   
   // This call should not be recorded explicitly in the history,
   // because the histories are swapped
@@ -538,38 +844,38 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
   return;
 }
 
-//// Operators
-////   These functions are defined in Waveform/Waveform_Operators.cpp
+// Operators
+//   These functions are defined in Waveform/Waveform_Operators.cpp
 
-//// Extract features
-////   These functions are defined in Waveform/Waveform_Features.cpp
+// Extract features
+//   These functions are defined in Waveform/Waveform_Features.cpp
 
-//// Interpolation routines
-////   These functions are defined in Waveform/Waveform_Interpolate.cpp
+// Interpolation routines
+//   These functions are defined in Waveform/Waveform_Interpolate.cpp
 
-//// Adjust time axis
-////   These functions are defined in Waveform/Waveform_AdjustTime.cpp
+// Adjust time axis
+//   These functions are defined in Waveform/Waveform_AdjustTime.cpp
 
-//// Physical conversions for extrapolations or conversion to frequency space
-////   These functions are defined in Waveform/Waveform_PhysicalConversions.cpp
+// Physical conversions for extrapolations or conversion to frequency space
+//   These functions are defined in Waveform/Waveform_PhysicalConversions.cpp
 
-//// Manipulate (l,m) modes
-////   These functions are defined in Waveform/Waveform_ManipulateModes.cpp
+// Manipulate (l,m) modes
+//   These functions are defined in Waveform/Waveform_ManipulateModes.cpp
 
-//// Align and hybridize waveforms
-////   These functions are defined in Waveform/Waveform_AlignAndHybridize.cpp
+// Align and hybridize waveforms
+//   These functions are defined in Waveform/Waveform_AlignAndHybridize.cpp
 
-//// Rotate by the given Euler angles or Quaternion
-////   These functions are defined in Waveform/Waveform_Rotation.cpp
+// Rotate by the given Euler angles or Quaternion
+//   These functions are defined in Waveform/Waveform_Rotation.cpp
 
-//// Output functions (members and non-members)
-////   These functions are defined in Waveform/Waveform_Output.cpp
+// Output functions (members and non-members)
+//   These functions are defined in Waveform/Waveform_Output.cpp
 
-//// Radiation-frame utilities
-////   These functions are defined in Waveform/Waveform_RadiationFrame.cpp
+// Radiation-frame utilities
+//   These functions are defined in Waveform/Waveform_RadiationFrame.cpp
 
 
-//// Utilities for this file only
+// Utilities for this file only
 std::string tolower(const std::string& A) {
   string B = A;
   string::iterator it;
@@ -583,7 +889,7 @@ int GetWaveformType(const std::string& FullPath, const std::vector<std::string>&
   int typeIndex = 0;
   string FileName = FullPath;
   
-  //// Look for the info at the beginning of the file name
+  // Look for the info at the beginning of the file name
   size_t found=FileName.find_last_of("/\\");
   if (found!=string::npos) { FileName = FileName.substr(found+1); }
   for(unsigned int i=0; i<Waveform::Types.size(); ++i) {
@@ -593,7 +899,7 @@ int GetWaveformType(const std::string& FullPath, const std::vector<std::string>&
     }
   }
   
-  //// Look for the info in the Header
+  // Look for the info in the Header
   for(unsigned int j=0; j<Header.size(); ++j) {
     for(unsigned int i=0; i<Waveform::Types.size(); ++i) {
       if(tolower(Header[j]).find(tolower(Waveform::Types[i])) != string::npos) {
@@ -608,7 +914,7 @@ int GetWaveformType(const std::string& FullPath, const std::vector<std::string>&
 std::string GetFileFormat(const std::vector<std::string>& Header) {
   string DetectedFormat("");
   
-  //// Look for the info in the Header
+  // Look for the info in the Header
   for(unsigned int j=0; j<Header.size(); ++j) {
     if(tolower(Header[j]).find(tolower("Mag{")) != string::npos || tolower(Header[j]).find(tolower("Abs{")) != string::npos || tolower(Header[j]).find(tolower("Amp{")) != string::npos) {
       DetectedFormat = "MagArg";
@@ -623,7 +929,7 @@ std::string GetFileFormat(const std::vector<std::string>& Header) {
 }
 
 void GetWaveformTimeScaleAndLM(const std::string& FullPath, const std::vector<std::string>& Header, std::string& Scale, Matrix<int>& lm) {
-  //// Look for the info at the beginning of the file name
+  // Look for the info at the beginning of the file name
   size_t found;
   string FileName = FullPath;
   found=FileName.find_last_of("/\\");

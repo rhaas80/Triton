@@ -7,8 +7,7 @@ GENERATE_HTML = NO
 GENERATE_LATEX = NO
 EXTRA_PACKAGES = amsmath amssymb amsfonts
 
-
-#EXCLUDE_PATTERNS = */Test/*
+PREDEFINED = DOXYGEN
 
 INPUT = Objects/Waveform Objects/Waveform.hpp Objects/Waveform.cpp Objects/Waveforms.hpp Objects/Waveforms.cpp \
 	Objects/WaveformAtAPoint.hpp Objects/WaveformAtAPoint.cpp Objects/WaveformAtAPointFT.hpp Objects/WaveformAtAPointFT.cpp

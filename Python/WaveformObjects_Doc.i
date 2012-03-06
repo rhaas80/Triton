@@ -8,8 +8,7 @@
   Returns
   -------
     ~Waveforms
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveforms::operator[] """
@@ -22,8 +21,7 @@
   Returns
   -------
     const Waveform&
-    
-
+  
 
 
 
@@ -34,13 +32,12 @@
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::RRef """
-
-
+Return a reference to the radius at time index 'Time'.
+======================================================
   Parameters
   ----------
     const unsigned int Time
@@ -48,11 +45,19 @@
   Returns
   -------
     double&
+  
+  Description
+  -----------
+    Note that this may return a reference to the sole element of the vector of
+    radii, in the case that the radius is constant. Thus, setting the radius at
+    different instants of time may simply overwrite that sole value. It would
+    be better to use 'RRef()' for that application.
     
+    This function is not available via SWIG (e.g., in python).
+  
 
-
-
-
+Return a reference to the vector of radii of the measured data.
+===============================================================
   Parameters
   ----------
     (none)
@@ -60,8 +65,14 @@
   Returns
   -------
     vector<double>&
+  
+  Description
+  -----------
+    Note that this vector may contain 0, 1, or NTimes() elements. If 1, the
+    radius is assumed to be constant.
     
-
+    This function is not available via SWIG (e.g., in python).
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::NSamplesPerCycle22 """
@@ -74,8 +85,432 @@
   Returns
   -------
     Waveform&
-    
+  
+"""
 
+%feature("docstring") WaveformObjects::Waveform::L """
+Return the 'l' (azimuthal) index of mode 'Mode'.
+================================================
+  Parameters
+  ----------
+    const unsigned int Mode
+  
+  Returns
+  -------
+    const int
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::M """
+Return the 'm' (magnetic) index of mode 'Mode'.
+===============================================
+  Parameters
+  ----------
+    const unsigned int Mode
+  
+  Returns
+  -------
+    const int
+  
+"""
+
+%feature("docstring") Waveforms::SetCommonTime """
+
+
+  Parameters
+  ----------
+    const double& MinStep = 0.005
+    const double& MinTime = 0.0
+  
+  Returns
+  -------
+    void
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::TypeIndexRef """
+Return a reference to the index for the Type of the data.
+=========================================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    unsigned int&
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::LMRef """
+Return a reference to the (l,m) data of mode 'Mode'.
+====================================================
+  Parameters
+  ----------
+    const unsigned int Mode
+  
+  Returns
+  -------
+    vector<int>&
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
+
+Return a reference to the (l,m) data for all modes.
+===================================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    Matrix<int>&
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::FrameRef """
+Return a reference to the frames in which the data are decomposed at time index 'Time'.
+=======================================================================================
+  Parameters
+  ----------
+    const unsigned int Time
+  
+  Returns
+  -------
+    Quaternion&
+  
+  Description
+  -----------
+    Note that this may return a reference to the sole element of the vector of
+    frames, in the case that the frame is constant. Thus, setting the frame at
+    different instants of time may simply overwrite that sole value. It would
+    be better to use 'FrameRef()' for that application.
+    
+    This function is not available via SWIG (e.g., in python).
+  
+
+Return a reference to the vector of frames in which the data are decomposed.
+============================================================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    vector<Quaternion>&
+  
+  Description
+  -----------
+    Note that this vector may contain 0, 1, or NTimes() elements. If 1, the
+    frame is assumed to be constant. If 0, it is constant, and equal to the
+    standard frame.
+    
+    This function is not available via SWIG (e.g., in python).
+  
+"""
+
+%feature("docstring") Waveforms::AlignPhases """
+
+
+  Parameters
+  ----------
+    const double& AlignmentPoint = 0.5
+  
+  Returns
+  -------
+    void
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::T """
+Return the time value at time index 'Time'.
+===========================================
+  Parameters
+  ----------
+    const unsigned int Time
+  
+  Returns
+  -------
+    const double
+  
+
+Return the entire vector of times in the data.
+==============================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    const vector<double>&
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::R """
+Return the radius of the measured data at time index 'Time'.
+============================================================
+  Parameters
+  ----------
+    const unsigned int Time
+  
+  Returns
+  -------
+    const double
+  
+
+Return the vector of radii of the measured data.
+================================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    const vector<double>&
+  
+  Description
+  -----------
+    Note that this vector may contain 0, 1, or NTimes() elements. If 1, the
+    radius is assumed to be constant.
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::Peak22Time """
+
+
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    double
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::SetArg """
+Set the argument (phase) of mode 'Mode' at time index 'Time' to the value 'a'.
+==============================================================================
+  Parameters
+  ----------
+    const unsigned int Mode
+    const unsigned int Time
+    const double a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+
+Set the argument (phase) of mode 'Mode' to the input data.
+==========================================================
+  Parameters
+  ----------
+    const unsigned int Mode
+    const vector<double>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+
+Set the argument (phase) of the Waveform to the input data.
+===========================================================
+  Parameters
+  ----------
+    const Matrix<double>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::swap """
+Efficiently swap data between two Waveform objects.
+===================================================
+  Parameters
+  ----------
+    Waveform& b
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function uses the std::vector method 'swap' which simply swaps
+    pointers to data, for efficiency.
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::SetT """
+Set the time at index 'Time' to value 'a'.
+==========================================
+  Parameters
+  ----------
+    const unsigned int Time
+    const double a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+
+Set the time vector to the input data.
+======================================
+  Parameters
+  ----------
+    const vector<double>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+"""
+
+%feature("docstring") WaveformAtAPointFT::ZeroAbove """
+
+
+  Parameters
+  ----------
+    const double Frequency
+  
+  Returns
+  -------
+    WaveformAtAPointFT&
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::SetTimeScale """
+Change the Waveform time scale to the input string.
+===================================================
+  Parameters
+  ----------
+    const string& NewTimeScale
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::SetR """
+Set the radius at index 'Time' to value 'a'.
+============================================
+  Parameters
+  ----------
+    const unsigned int Time
+    const double a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+
+Set the radius vector to the input data.
+========================================
+  Parameters
+  ----------
+    const vector<double>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+"""
+
+%feature("docstring") Waveforms::Extrapolate """
+
+
+  Parameters
+  ----------
+    const int ExtrapolationOrder = 5
+  
+  Returns
+  -------
+    Waveform
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::TypeIndex """
+Return the index for the Type of the data.
+==========================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    const unsigned int
+  
+  Description
+  -----------
+    A more useful function might be the 'Type()' function, which returns the
+    type as a string.
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::DropLMode """
+
+
+  Parameters
+  ----------
+    const int L
+  
+  Returns
+  -------
+    Waveform&
+  
 """
 
 %feature("docstring") WaveformAtAPoint::WaveformAtAPoint """
@@ -91,271 +526,7 @@
   Returns
   -------
     WaveformAtAPoint
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::M """
-
-
-  Parameters
-  ----------
-    const unsigned int Mode
   
-  Returns
-  -------
-    const int
-    
-
-"""
-
-%feature("docstring") Waveforms::SetCommonTime """
-
-
-  Parameters
-  ----------
-    const double& MinStep = 0.005
-    const double& MinTime = 0.0
-  
-  Returns
-  -------
-    void
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::TypeIndexRef """
-
-
-  Parameters
-  ----------
-    (none)
-  
-  Returns
-  -------
-    unsigned int&
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::LMRef """
-
-
-  Parameters
-  ----------
-    const unsigned int Mode
-  
-  Returns
-  -------
-    vector<int>&
-    
-
-
-
-
-  Parameters
-  ----------
-    (none)
-  
-  Returns
-  -------
-    Matrix<int>&
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::FrameRef """
-
-
-  Parameters
-  ----------
-    const unsigned int Time
-  
-  Returns
-  -------
-    Quaternion&
-    
-
-
-
-
-  Parameters
-  ----------
-    (none)
-  
-  Returns
-  -------
-    vector<Quaternion>&
-    
-
-"""
-
-%feature("docstring") Waveforms::AlignPhases """
-
-
-  Parameters
-  ----------
-    const double& AlignmentPoint = 0.5
-  
-  Returns
-  -------
-    void
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::T """
-
-
-  Parameters
-  ----------
-    const unsigned int Time
-  
-  Returns
-  -------
-    const double
-    
-
-
-
-
-  Parameters
-  ----------
-    (none)
-  
-  Returns
-  -------
-    const vector<double>&
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::R """
-
-
-  Parameters
-  ----------
-    const unsigned int Time
-  
-  Returns
-  -------
-    const double
-    
-
-
-
-
-  Parameters
-  ----------
-    (none)
-  
-  Returns
-  -------
-    const vector<double>&
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::Peak22Time """
-
-
-  Parameters
-  ----------
-    (none)
-  
-  Returns
-  -------
-    double
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::swap """
-Efficiently swaps data between two Waveform objects.
-====================================================
-  Parameters
-  ----------
-    Waveform& b
-  
-  Returns
-  -------
-    void
-    
-  Description
-  -----------
-    This function uses the std::vector method swap, which simply swaps pointers
-    to data for efficiency  
-
-"""
-
-%feature("docstring") WaveformAtAPointFT::ZeroAbove """
-
-
-  Parameters
-  ----------
-    const double Frequency
-  
-  Returns
-  -------
-    WaveformAtAPointFT&
-    
-
-"""
-
-%feature("docstring") Waveforms::Extrapolate """
-
-
-  Parameters
-  ----------
-    const int ExtrapolationOrder = 5
-  
-  Returns
-  -------
-    Waveform
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::TypeIndex """
-
-
-  Parameters
-  ----------
-    (none)
-  
-  Returns
-  -------
-    const unsigned int
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::DropLMode """
-
-
-  Parameters
-  ----------
-    const int L
-  
-  Returns
-  -------
-    Waveform&
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::L """
-
-
-  Parameters
-  ----------
-    const unsigned int Mode
-  
-  Returns
-  -------
-    const int
-    
-
 """
 
 %feature("docstring") WaveformObjects::Waveform::clear """
@@ -368,22 +539,7 @@ Efficiently swaps data between two Waveform objects.
   Returns
   -------
     void
-    
-
-"""
-
-%feature("docstring") WaveformObjects::Waveform::DropZeroMModes """
-
-
-  Parameters
-  ----------
-    (none)
   
-  Returns
-  -------
-    Waveform&
-    
-
 """
 
 %feature("docstring") WaveformObjects::Waveform::operator[] """
@@ -396,8 +552,7 @@ Efficiently swaps data between two Waveform objects.
   Returns
   -------
     Waveform
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::HackOddLPlusM """
@@ -410,8 +565,7 @@ Efficiently swaps data between two Waveform objects.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::DropLMMode """
@@ -425,13 +579,12 @@ Efficiently swaps data between two Waveform objects.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Mag """
-
-
+Return the magnitude of mode 'Mode' at time index 'Time'.
+=========================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -440,11 +593,10 @@ Efficiently swaps data between two Waveform objects.
   Returns
   -------
     const double
-    
+  
 
-
-
-
+Return the magnitude of mode 'Mode' as a function of time.
+==========================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -452,20 +604,22 @@ Efficiently swaps data between two Waveform objects.
   Returns
   -------
     const vector<double>&
-    
+  
 
-
-
-
+Return the magnitude of all modes as a function of time.
+========================================================
   Parameters
   ----------
     (none)
   
   Returns
   -------
-    const Matrix<double>&
-    
-
+    const vector<vector<double>>&
+  
+  Description
+  -----------
+    The return value is actually a Matrix when called from c++.
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::FixNonOscillatingData """
@@ -478,8 +632,7 @@ Efficiently swaps data between two Waveform objects.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") DoubleSidedF """
@@ -494,14 +647,25 @@ Efficiently swaps data between two Waveform objects.
   Returns
   -------
     double
-    
+  
+"""
 
+%feature("docstring") WaveformObjects::Waveform::UnfixNonOscillatingData """
+
+
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    Waveform&
+  
 """
 
 %feature("docstring") WaveformUtilities """
 namespace WaveformUtilities
 ===========================
-
 """
 
 %feature("docstring") RadiationAxis """
@@ -518,8 +682,7 @@ namespace WaveformUtilities
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") operator<< """
@@ -533,8 +696,7 @@ namespace WaveformUtilities
   Returns
   -------
     ostream&
-    
-
+  
 
 
 
@@ -546,8 +708,7 @@ namespace WaveformUtilities
   Returns
   -------
     ostream&
-    
-
+  
 
 
 
@@ -559,8 +720,7 @@ namespace WaveformUtilities
   Returns
   -------
     ostream&
-    
-
+  
 
 
 
@@ -572,8 +732,7 @@ namespace WaveformUtilities
   Returns
   -------
     ostream&
-    
-
+  
 
 
 
@@ -585,8 +744,7 @@ namespace WaveformUtilities
   Returns
   -------
     ostream&
-    
-
+  
 
 
 
@@ -598,8 +756,7 @@ namespace WaveformUtilities
   Returns
   -------
     ostream&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::DropOddMModes """
@@ -612,8 +769,7 @@ namespace WaveformUtilities
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") Waveforms::FixNonOscillatingData """
@@ -626,8 +782,7 @@ namespace WaveformUtilities
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::AlignPhasesToTwoPi """
@@ -641,8 +796,7 @@ namespace WaveformUtilities
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Omega2m2 """
@@ -656,8 +810,7 @@ namespace WaveformUtilities
   Returns
   -------
     vector<double>
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::TransformToSchmidtFrame """
@@ -671,8 +824,7 @@ namespace WaveformUtilities
   Returns
   -------
     Waveform&
-    
-
+  
 
 
 
@@ -686,8 +838,7 @@ namespace WaveformUtilities
   Returns
   -------
     Waveform&
-    
-
+  
 
 
 
@@ -702,8 +853,7 @@ namespace WaveformUtilities
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint """
@@ -725,7 +875,6 @@ class WaveformObjects::WaveformAtAPoint
     double vartheta
     double varphi
   
-
 """
 
 %feature("docstring") SetWaveformTypes """
@@ -738,24 +887,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-  Description
-  -----------
-    Note on Waveform Types: In any system, h -- being strain -- should be
-    dimensionless. When G=c=1, the dimensionless quantities are rMPsi4, rhdot,
-    and rhOverM; as are rOverM and tOverM. When G and c are dimensionful, the
-    dimensionless quantities are
-(r/c) * (M*G/c^3) * Psi4
-    
-    (r/c) * hdot
-    
-    (r/c) * h / (M*G/c^3)
-    
-    (r/c) / (M*G/c^3)
-    
-    t / (M*G/c^3) To regain the dimensionful quantities, we simply need to
-    remove the relevant dimensionful elements.  
-
+  
 """
 
 %feature("docstring") sign """
@@ -768,13 +900,12 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     double
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Arg """
-
-
+Return the argument (phase) of mode 'Mode' at time index 'Time'.
+================================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -783,11 +914,10 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     const double
-    
+  
 
-
-
-
+Return the argument (phase) of mode 'Mode' as a function of time.
+=================================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -795,20 +925,22 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     const vector<double>&
-    
+  
 
-
-
-
+Return the argument (phase) of all modes as a function of time.
+===============================================================
   Parameters
   ----------
     (none)
   
   Returns
   -------
-    const Matrix<double>&
-    
-
+    const vector<vector<double>>&
+  
+  Description
+  -----------
+    The return value is actually a Matrix when called from c++.
+  
 """
 
 %feature("docstring") WaveformObjects::Waveforms::clear """
@@ -821,8 +953,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") ScaleMag """
@@ -836,8 +967,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     double
-    
-
+  
 """
 
 %feature("docstring") GetFileFormat """
@@ -850,8 +980,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     string
-    
-
+  
 
 
 
@@ -862,8 +991,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     string
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::OutputToNINJAFormat """
@@ -878,8 +1006,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::AttachQNMs """
@@ -895,16 +1022,16 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     Waveform&
-    
+  
   Description
   -----------
-    Add the new times, and resize everything as appropriate  
-
+    Add the new times, and resize everything as appropriate
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::AppendHistory """
-
-
+Append the input string to the Waveform history.
+================================================
   Parameters
   ----------
     const string& Hist
@@ -912,8 +1039,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::DropBefore """
@@ -926,8 +1052,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint::ReRef """
@@ -940,8 +1065,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     double&
-    
-
+  
 
 
 
@@ -952,8 +1076,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     vector<double>&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Flux """
@@ -966,8 +1089,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     vector<double>
-    
-
+  
 """
 
 %feature("docstring") MinimalRotation """
@@ -983,8 +1105,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::UniformTime """
@@ -997,8 +1118,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::DropAfter """
@@ -1011,8 +1131,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") OutputSingleMode """
@@ -1027,8 +1146,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-
+  
 
 
 
@@ -1042,8 +1160,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-
+  
 
 
 
@@ -1056,8 +1173,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-
+  
 
 
 
@@ -1071,8 +1187,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::SetTimeFromLapseSurfaceIntegral """
@@ -1086,13 +1201,12 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::History """
-
-
+Return a reference to the stringstream recording the Waveform's history.
+========================================================================
   Parameters
   ----------
     (none)
@@ -1100,8 +1214,32 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     stringstream&
+  
+  Description
+  -----------
+    Note that the methods 'SetHistory(const std::string& Hist)' and
+    'AppendHistory(const std::string& Hist)' are also available.
     
+    This function is not available via SWIG (e.g., in python).
+  
+"""
 
+%feature("docstring") WaveformObjects::Waveform::SetTypeIndex """
+Change the Waveform type index to the input int.
+================================================
+  Parameters
+  ----------
+    const unsigned int NewTypeIndex
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint::Vartheta """
@@ -1114,8 +1252,7 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     const double
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPointFT """
@@ -1129,7 +1266,6 @@ class WaveformObjects::WaveformAtAPointFT
   ----------------
     bool Normalized
   
-
 """
 
 %feature("docstring") WaveformObjects::Waveform::AlignTo """
@@ -1144,8 +1280,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint::VarthetaRef """
@@ -1158,8 +1293,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     double&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::AlignWithIntermediate """
@@ -1175,8 +1309,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::DropNegativeMModes """
@@ -1189,8 +1322,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformAtAPointFT::operator- """
@@ -1203,8 +1335,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     WaveformAtAPointFT
-    
-
+  
 """
 
 %feature("docstring") MinimalGrid_Hunt """
@@ -1221,15 +1352,15 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     int
-    
+  
   Description
   -----------
     Given data (t,arg), some initial index I0, and a guess for I1, this
     function outputs the optimal index I1 so that (t,arg) can be interpolated
     between I0 and I1 to just within argTol of the full input data set. Compare
     Numerical Recipes's 'hunt' function; this is basically a hunt for that
-    optimal index.  
-
+    optimal index.
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::TransformToMinimalRotationFrame """
@@ -1243,8 +1374,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     Waveform&
-    
-
+  
 
 
 
@@ -1259,8 +1389,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::AddToTime """
@@ -1273,8 +1402,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformAtAPointFT::WaveformAtAPointFT """
@@ -1287,8 +1415,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     WaveformAtAPointFT
-    
-
+  
 
 
 
@@ -1302,8 +1429,7 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     WaveformAtAPointFT
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint::WaveformAtAPoint """
@@ -1316,11 +1442,10 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     WaveformAtAPoint
-    
-
+  
 """
 
-%feature("docstring") WaveformObjects::WaveformAtAPoint::~WaveformAtAPoint """
+%feature("docstring") WaveformObjects::Waveform::DropZeroMModes """
 
 
   Parameters
@@ -1329,9 +1454,8 @@ class WaveformObjects::WaveformAtAPointFT
   
   Returns
   -------
-    ~WaveformAtAPoint
-    
-
+    Waveform&
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Interpolate """
@@ -1344,8 +1468,7 @@ Interpolate Waveform to a new time vector.
   Returns
   -------
     Waveform&
-    
-
+  
 
 Interpolate Waveform to a new time vector, returning ExtrapVal when out of range.
 =================================================================================
@@ -1357,8 +1480,7 @@ Interpolate Waveform to a new time vector, returning ExtrapVal when out of range
   Returns
   -------
     Waveform&
-    
-
+  
 
 Interpolate Waveform to a single time.
 ======================================
@@ -1369,8 +1491,7 @@ Interpolate Waveform to a single time.
   Returns
   -------
     Waveform&
-    
-
+  
 
 Interpolate Waveform to the time axis of another Waveform.
 ==========================================================
@@ -1381,8 +1502,7 @@ Interpolate Waveform to the time axis of another Waveform.
   Returns
   -------
     Waveform&
-    
-
+  
 
 Interpolate Waveform to the time axis of another Waveform, returning ExtrapVal when out of range.
 =================================================================================================
@@ -1394,8 +1514,7 @@ Interpolate Waveform to the time axis of another Waveform, returning ExtrapVal w
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::operator/ """
@@ -1408,8 +1527,7 @@ Interpolate Waveform to the time axis of another Waveform, returning ExtrapVal w
   Returns
   -------
     Waveform
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::FindModeIndex """
@@ -1424,8 +1542,7 @@ Find index of mode with given (l,m) data.
   Returns
   -------
     unsigned int
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::HybridizeWith_F """
@@ -1443,8 +1560,7 @@ Find index of mode with given (l,m) data.
   Returns
   -------
     Waveform
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::HybridizeWith """
@@ -1460,8 +1576,7 @@ Find index of mode with given (l,m) data.
   Returns
   -------
     Waveform
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform """
@@ -1487,7 +1602,6 @@ class WaveformObjects::Waveform
     Matrix<double> arg
     vector<string> Types
   
-
 """
 
 %feature("docstring") WaveformObjects::Waveform::MinimalGrid """
@@ -1501,7 +1615,7 @@ class WaveformObjects::Waveform
   Returns
   -------
     Waveform&
-    
+  
   Description
   -----------
     The objective here will be to create a vector of bool's, the same length as
@@ -1515,8 +1629,8 @@ class WaveformObjects::Waveform
     within argTol and magTol. If that's not true, the interval is split evenly
     into two, and the algorithm proceeds with the earlier interval. Finally,
     the input t, mag, and arg vectors are replaced by the smaller vectors given
-    by our vector of bool's.  
-
+    by our vector of bool's.
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::operator= """
@@ -1529,11 +1643,11 @@ class WaveformObjects::Waveform
   Returns
   -------
     Waveform&
-    
+  
   Description
   -----------
-    This call should not be recorded in the history  
-
+    This call should not be recorded in the history
+  
 """
 
 %feature("docstring") BumpFunction """
@@ -1548,13 +1662,12 @@ class WaveformObjects::Waveform
   Returns
   -------
     double
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::HistoryStr """
-
-
+Return a string containing the history of the Waveform.
+=======================================================
   Parameters
   ----------
     (none)
@@ -1562,8 +1675,7 @@ class WaveformObjects::Waveform
   Returns
   -------
     const string
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint::ImRef """
@@ -1576,8 +1688,7 @@ class WaveformObjects::Waveform
   Returns
   -------
     double&
-    
-
+  
 
 
 
@@ -1588,13 +1699,12 @@ class WaveformObjects::Waveform
   Returns
   -------
     vector<double>&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::ArgRef """
-
-
+Return a reference to the argument (phase) of mode 'Mode' at time index 'Time'.
+===============================================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -1603,11 +1713,14 @@ class WaveformObjects::Waveform
   Returns
   -------
     double&
-    
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 
-
-
-
+Return a reference to the argument (phase) of mode 'Mode' as a function of time.
+================================================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -1615,11 +1728,14 @@ class WaveformObjects::Waveform
   Returns
   -------
     vector<double>&
-    
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 
-
-
-
+Return a reference to the argument (phase) of all modes as a function of time.
+==============================================================================
   Parameters
   ----------
     (none)
@@ -1627,8 +1743,11 @@ class WaveformObjects::Waveform
   Returns
   -------
     Matrix<double>&
-    
-
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Differentiate """
@@ -1641,8 +1760,7 @@ class WaveformObjects::Waveform
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Conjugate """
@@ -1655,8 +1773,7 @@ class WaveformObjects::Waveform
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint::Re """
@@ -1669,8 +1786,7 @@ class WaveformObjects::Waveform
   Returns
   -------
     const double
-    
-
+  
 
 
 
@@ -1681,8 +1797,20 @@ class WaveformObjects::Waveform
   Returns
   -------
     const vector<double>&
-    
+  
+"""
 
+%feature("docstring") WaveformObjects::WaveformAtAPoint::~WaveformAtAPoint """
+
+
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    ~WaveformAtAPoint
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint::Varphi """
@@ -1695,8 +1823,7 @@ class WaveformObjects::Waveform
   Returns
   -------
     const double
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::AlignTo_F """
@@ -1714,7 +1841,7 @@ class WaveformObjects::Waveform
   Returns
   -------
     Waveform&
-    
+  
   Description
   -----------
     Make sure A only includes data before T2
@@ -1735,8 +1862,8 @@ class WaveformObjects::Waveform
     increasing before it
     
     Make sure NewOmegaB gets past fabs(omega), and is strictly monotonically
-    increasing afterward  
-
+    increasing afterward
+  
 """
 
 %feature("docstring") WaveformObjects::Waveforms """
@@ -1748,7 +1875,6 @@ class WaveformObjects::Waveforms
     bool CommonTimeSet
     bool PhasesAligned
   
-
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPoint::Im """
@@ -1761,8 +1887,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     const double
-    
-
+  
 
 
 
@@ -1773,8 +1898,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     const vector<double>&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::~Waveform """
@@ -1787,13 +1911,12 @@ class WaveformObjects::Waveforms
   Returns
   -------
     ~Waveform
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::SetHistory """
-
-
+Replace the Waveform history with the input string.
+===================================================
   Parameters
   ----------
     const string& Hist
@@ -1801,8 +1924,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") WaveformAtAPointFT::operator* """
@@ -1815,8 +1937,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     WaveformAtAPointFT
-    
-
+  
 """
 
 %feature("docstring") MinimalGrid_Check """
@@ -1833,12 +1954,12 @@ class WaveformObjects::Waveforms
   Returns
   -------
     bool
-    
+  
   Description
   -----------
     Returns true if the input (x,y) data can be interpolated between indices I0
-    and I1 to within a tolerance of Tol at the midpoint between I0 and I1.  
-
+    and I1 to within a tolerance of Tol at the midpoint between I0 and I1.
+  
 """
 
 %feature("docstring") GetWaveformTimeScaleAndLM """
@@ -1854,8 +1975,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     void
-    
-
+  
 
 
 
@@ -1869,13 +1989,12 @@ class WaveformObjects::Waveforms
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Type """
-
-
+Return a string describing the Type of the data.
+================================================
   Parameters
   ----------
     (none)
@@ -1883,13 +2002,12 @@ class WaveformObjects::Waveforms
   Returns
   -------
     const string
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Frame """
-
-
+Return a quaternion describing the frame in which the data are decomposed at time index 'Time'.
+===============================================================================================
   Parameters
   ----------
     const unsigned int Time
@@ -1897,11 +2015,10 @@ class WaveformObjects::Waveforms
   Returns
   -------
     const Quaternion&
-    
+  
 
-
-
-
+Return the entire vector of frames in which the data are decomposed.
+====================================================================
   Parameters
   ----------
     (none)
@@ -1909,8 +2026,13 @@ class WaveformObjects::Waveforms
   Returns
   -------
     const vector<Quaternion>&
-    
-
+  
+  Description
+  -----------
+    Note that this vector may contain 0, 1, or NTimes() elements. If 1, the
+    frame is assumed to be constant. If 0, it is constant, and equal to the
+    standard frame.
+  
 """
 
 %feature("docstring") GetWaveformType """
@@ -1924,8 +2046,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     int
-    
-
+  
 
 
 
@@ -1937,8 +2058,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     int
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::RotateCoordinates """
@@ -1953,8 +2073,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     Waveform&
-    
-
+  
 
 
 
@@ -1967,8 +2086,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     Waveform&
-    
-
+  
 
 
 
@@ -1979,8 +2097,7 @@ class WaveformObjects::Waveforms
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::SetPhysicalMassAndDistance """
@@ -1994,13 +2111,12 @@ class WaveformObjects::Waveforms
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::LM """
-
-
+Return the (l,m) indices of mode 'Mode'.
+========================================
   Parameters
   ----------
     const unsigned int Mode
@@ -2008,25 +2124,27 @@ class WaveformObjects::Waveforms
   Returns
   -------
     const vector<int>&
-    
+  
 
-
-
-
+Return the (l,m) data for all modes.
+====================================
   Parameters
   ----------
     (none)
   
   Returns
   -------
-    const Matrix<int>&
-    
-
+    const vector<vector<int>>&
+  
+  Description
+  -----------
+    The return value is actually a Matrix when called from c++.
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::MRef """
-
-
+Return a reference to the m (magnetic) index of mode 'Mode'.
+============================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -2034,11 +2152,14 @@ class WaveformObjects::Waveforms
   Returns
   -------
     int&
-    
-
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 """
 
-%feature("docstring") WaveformObjects::Waveform::NTimes """
+%feature("docstring") WaveformObjects::WaveformAtAPoint::VarphiRef """
 
 
   Parameters
@@ -2047,14 +2168,13 @@ class WaveformObjects::Waveforms
   
   Returns
   -------
-    const unsigned int
-    
-
+    double&
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::TRef """
-
-
+Return a reference.
+===================
   Parameters
   ----------
     const unsigned int Time
@@ -2062,11 +2182,14 @@ class WaveformObjects::Waveforms
   Returns
   -------
     double&
-    
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 
-
-
-
+Return a reference to the entire vector of times in the data.
+=============================================================
   Parameters
   ----------
     (none)
@@ -2074,8 +2197,46 @@ class WaveformObjects::Waveforms
   Returns
   -------
     vector<double>&
-    
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
+"""
 
+%feature("docstring") WaveformObjects::Waveform::SetLM """
+Set the (l,m) data of mode 'Mode' to the input data.
+====================================================
+  Parameters
+  ----------
+    const unsigned int Mode
+    const vector<int>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+
+Set the (l,m) data to the input data.
+=====================================
+  Parameters
+  ----------
+    const Matrix<int>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Waveform """
@@ -2088,8 +2249,7 @@ Default constructor for an empty object.
   Returns
   -------
     Waveform
-    
-
+  
 
 Copy constructor.
 =================
@@ -2100,15 +2260,15 @@ Copy constructor.
   Returns
   -------
     Waveform
-    
+  
   Description
   -----------
     Simply copies all fields in the input object to the constructed object,
-    including history  
+    including history
+  
 
-
-Constructor from data file.
-===========================
+Construct Waveform from data file.
+==================================
   Parameters
   ----------
     const string& DataFileName
@@ -2121,7 +2281,7 @@ Constructor from data file.
   Returns
   -------
     Waveform
-    
+  
   Description
   -----------
     This is the main Waveform constructor, which reads either a .dat file or a
@@ -2146,8 +2306,8 @@ Constructor from data file.
  # [3] = Arg{rMPsi4(2,-2)} 
 
     Finally, the data format is also deduced from the header, and a warning is
-    issued if it mismatches the input parameter to this function.  
-
+    issued if it mismatches the input parameter to this function.
+  
 
 Simple PN/EOB constructor for non-precessing systems.
 =====================================================
@@ -2179,7 +2339,7 @@ Simple PN/EOB constructor for non-precessing systems.
   Returns
   -------
     Waveform
-    
+  
   Description
   -----------
     Constructs a PN/EOB inspiral for simple non-precessing systems. Note that
@@ -2189,9 +2349,7 @@ Simple PN/EOB constructor for non-precessing systems.
     The total number of modes required for $L$ is given by \begin{align}
     N_{\text{modes}}&= \sum_{l=2}^{L} (2l+1) \\&= 2\left[L\, (L-1)/2-1\right] +
     (L-2) \\&= (L+3)\, (L-1) \end{align}
-    
-    AttachQNMs  
-
+  
 
 PN/EOB constructor for precessing systems.
 ==========================================
@@ -2229,13 +2387,13 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform
-    
+  
   Description
   -----------
     Constructs a PN inspiral for precessing systems using the method described
     in [Phys. Rev. D 84, 124011
-    (2011)](http://link.aps.org/doi/10.1103/PhysRevD.84.124011)  
-
+    (2011)](http://link.aps.org/doi/10.1103/PhysRevD.84.124011)
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::UniformTimeToPowerOfTwo """
@@ -2248,8 +2406,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::SetTotalMassToOne """
@@ -2262,8 +2419,46 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
+  
+"""
 
+%feature("docstring") WaveformObjects::Waveform::SetFrame """
+Set the frame at index 'Time' to the value 'a'.
+===============================================
+  Parameters
+  ----------
+    const unsigned int Time
+    const Quaternion& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    Note that no transformation of the modes is done by this function.
+    
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+
+Set the frame to the input data.
+================================
+  Parameters
+  ----------
+    const vector<Quaternion>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    Note that no transformation of the modes is done by this function.
+    
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPointFT::F """
@@ -2276,8 +2471,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     const double
-    
-
+  
 
 
 
@@ -2288,8 +2482,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     const vector<double>&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::HasNaNs """
@@ -2302,13 +2495,12 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     bool
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::MagRef """
-
-
+Return a reference to the magnitude of mode 'Mode' at time index 'Time'.
+========================================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -2317,11 +2509,14 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     double&
-    
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 
-
-
-
+Return a reference to the magnitude of mode 'Mode' as a function of time.
+=========================================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -2329,11 +2524,14 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     vector<double>&
-    
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 
-
-
-
+Return a reference to the magnitude of all modes as a function of time.
+=======================================================================
   Parameters
   ----------
     (none)
@@ -2341,8 +2539,11 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Matrix<double>&
-    
-
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 """
 
 %feature("docstring") WaveformAtAPointFT::InnerProduct """
@@ -2356,8 +2557,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     double
-    
-
+  
 """
 
 %feature("docstring") Waveforms::Waveforms """
@@ -2370,8 +2570,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveforms
-    
-
+  
 
 
 
@@ -2382,8 +2581,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveforms
-    
-
+  
 
 
 
@@ -2400,22 +2598,60 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveforms
-    
-
+  
 """
 
-%feature("docstring") WaveformObjects::Waveform::UnfixNonOscillatingData """
-
-
+%feature("docstring") WaveformObjects::Waveform::SetMag """
+Set the magnitude of mode 'Mode' at time index 'Time' to the value 'a'.
+=======================================================================
   Parameters
   ----------
-    (none)
+    const unsigned int Mode
+    const unsigned int Time
+    const double a
   
   Returns
   -------
-    Waveform&
-    
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
 
+Set the magnitude of mode 'Mode' to the input data.
+===================================================
+  Parameters
+  ----------
+    const unsigned int Mode
+    const vector<double>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
+
+Set the magnitude of the Waveform to the input data.
+====================================================
+  Parameters
+  ----------
+    const Matrix<double>& a
+  
+  Returns
+  -------
+    void
+  
+  Description
+  -----------
+    This function is only available via SWIG (e.g., python), not c++. In c++,
+    use the reference method.
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::TortoiseOffset """
@@ -2428,8 +2664,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::ZeroBefore """
@@ -2442,8 +2677,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") tolower """
@@ -2456,8 +2690,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     string
-    
-
+  
 
 
 
@@ -2468,13 +2701,12 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     string
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::LRef """
-
-
+Return a reference to the l (azimuthal) index of mode 'Mode'.
+=============================================================
   Parameters
   ----------
     const unsigned int Mode
@@ -2482,8 +2714,11 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     int&
-    
-
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::RotatePhysicalSystem """
@@ -2498,8 +2733,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
-
+  
 
 
 
@@ -2512,8 +2746,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
-
+  
 
 
 
@@ -2524,8 +2757,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformAtAPointFT::Normalize """
@@ -2538,8 +2770,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     WaveformAtAPointFT&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::SetArealRadius """
@@ -2552,13 +2783,12 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::TimeScale """
-
-
+Return a string describing the time scale (e.g., units).
+========================================================
   Parameters
   ----------
     (none)
@@ -2566,8 +2796,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     const string
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::Peak22TimeIndex """
@@ -2580,8 +2809,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     unsigned int
-    
-
+  
 """
 
 %feature("docstring") Output """
@@ -2596,8 +2824,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     void
-    
-
+  
 
 
 
@@ -2610,8 +2837,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     void
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::RescaleMagForRadius """
@@ -2624,8 +2850,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects::WaveformAtAPointFT::~WaveformAtAPointFT """
@@ -2638,8 +2863,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     ~WaveformAtAPointFT
-    
-
+  
 """
 
 %feature("docstring") WaveformAtAPointFT::SNR """
@@ -2652,8 +2876,7 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     double
-    
-
+  
 """
 
 %feature("docstring") WaveformObjects """
@@ -2662,12 +2885,11 @@ namespace WaveformObjects
   The collection of objects that define encapsulated Waveform-type objects.
   This includes Waveform, WaveformAtAPoint, WaveformFT, and Waveforms.
   
-
 """
 
 %feature("docstring") WaveformObjects::Waveform::NModes """
-
-
+Return the number of modes in the data.
+=======================================
   Parameters
   ----------
     (none)
@@ -2675,27 +2897,25 @@ namespace WaveformObjects
   Returns
   -------
     const unsigned int
-    
-
+  
 """
 
-%feature("docstring") WaveformObjects::WaveformAtAPoint::VarphiRef """
-
-
+%feature("docstring") WaveformObjects::Waveform::NTimes """
+Return the number of time steps in the data.
+============================================
   Parameters
   ----------
     (none)
   
   Returns
   -------
-    double&
-    
-
+    const unsigned int
+  
 """
 
 %feature("docstring") WaveformObjects::Waveform::TimeScaleRef """
-
-
+Return a reference to the string describing the time scale (e.g., units).
+=========================================================================
   Parameters
   ----------
     (none)
@@ -2703,8 +2923,11 @@ namespace WaveformObjects
   Returns
   -------
     string&
-    
-
+  
+  Description
+  -----------
+    This function is not available via SWIG (e.g., in python).
+  
 """
 
 %feature("docstring") WaveformAtAPointFT::Match """
@@ -2718,15 +2941,15 @@ namespace WaveformObjects
   Returns
   -------
     double
-    
+  
   Description
   -----------
     The return from ifft is just the bare FFT sum, so we multiply by df to get
     the continuum-analog FT. This is correct because the input data (re,im) are
     the continuum-analog data, rather than just the return from the bare FFT
     sum. See, e.g., Eq. (A.33) [rather than Eq. (A.35)] of
-    http://etd.caltech.edu/etd/available/etd-01122009-143851/  
-
+    http://etd.caltech.edu/etd/available/etd-01122009-143851/
+  
 
 
 
@@ -2738,7 +2961,6 @@ namespace WaveformObjects
   Returns
   -------
     double
-    
-
+  
 """
 
