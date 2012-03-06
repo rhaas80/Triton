@@ -37,7 +37,7 @@ using std::max;
 using std::ios_base;
 
 
-Waveform& Waveform::DropLMode(const int L) {
+Waveform& WaveformObjects::Waveform::DropLMode(const int L) {
   History() << "### this->DropLMode(" << L << ");" << endl;
   vector<vector<double> >::iterator magrit=MagRef().RawData().end();
   vector<vector<double> >::iterator argrit=ArgRef().RawData().end();
@@ -59,7 +59,7 @@ Waveform& Waveform::DropLMode(const int L) {
   return *this;
 }
 
-Waveform& Waveform::DropLMMode(const int L, const int M) {
+Waveform& WaveformObjects::Waveform::DropLMMode(const int L, const int M) {
   History() << "### this->DropLMMode(" << L << ", " << M << ");" << endl;
   vector<vector<double> >::iterator magrit=MagRef().RawData().end();
   vector<vector<double> >::iterator argrit=ArgRef().RawData().end();
@@ -81,7 +81,7 @@ Waveform& Waveform::DropLMMode(const int L, const int M) {
   return *this;
 }
 
-Waveform& Waveform::DropOddMModes() {
+Waveform& WaveformObjects::Waveform::DropOddMModes() {
   History() << "### this->DropOddMModes();" << endl;
   vector<vector<double> >::iterator magrit=MagRef().RawData().end();
   vector<vector<double> >::iterator argrit=ArgRef().RawData().end();
@@ -103,7 +103,7 @@ Waveform& Waveform::DropOddMModes() {
   return *this;
 }
 
-Waveform& Waveform::DropZeroMModes() {
+Waveform& WaveformObjects::Waveform::DropZeroMModes() {
   History() << "### this->DropZeroMModes();" << endl;
   vector<vector<double> >::iterator magrit=MagRef().RawData().end();
   vector<vector<double> >::iterator argrit=ArgRef().RawData().end();
@@ -125,7 +125,7 @@ Waveform& Waveform::DropZeroMModes() {
   return *this;
 }
 
-Waveform& Waveform::DropNegativeMModes() {
+Waveform& WaveformObjects::Waveform::DropNegativeMModes() {
   History() << "### this->DropNegativeMModes();" << endl;
   vector<vector<double> >::iterator magrit=MagRef().RawData().end();
   vector<vector<double> >::iterator argrit=ArgRef().RawData().end();
@@ -147,12 +147,12 @@ Waveform& Waveform::DropNegativeMModes() {
   return *this;
 }
 
-Waveform& Waveform::Conjugate() {
+Waveform& WaveformObjects::Waveform::Conjugate() {
   ArgRef() *= -1.0;
   return *this;
 }
 
-Waveform& Waveform::HackOddLPlusM() {
+Waveform& WaveformObjects::Waveform::HackOddLPlusM() {
   History() << "### this->HackOddLPlusM();" << endl;
   cerr << "\n\nWARNING!  Hacking modes with odd l+m to fix bad RWZ extraction.\n" << endl;
   for(unsigned int mode=0; mode<NModes(); ++mode) {
@@ -165,7 +165,7 @@ Waveform& Waveform::HackOddLPlusM() {
 
 
 // Convert (mag,arg) to (re,im) for, e.g., m=0 modes
-Waveform& Waveform::FixNonOscillatingData() {
+Waveform& WaveformObjects::Waveform::FixNonOscillatingData() {
   History() << "### this->FixNonOscillatingData();" << endl;
   //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) { // Loop over components
@@ -178,7 +178,7 @@ Waveform& Waveform::FixNonOscillatingData() {
   return *this;
 }
 
-Waveform& Waveform::UnfixNonOscillatingData() {
+Waveform& WaveformObjects::Waveform::UnfixNonOscillatingData() {
   History() << "### this->UnfixNonOscillatingData();" << endl;
   //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) { // Loop over components

@@ -115,7 +115,7 @@ public:
   }
 };
 
-Waveform& Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
+Waveform& WaveformObjects::Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
   History() << "### this->AlignPhasesToTwoPi(a, " << t << ");\n#" << flush;
   int Ia=0;
   int Ithis=0;
@@ -127,7 +127,7 @@ Waveform& Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
   return *this;
 }
 
-Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2) {
+Waveform& WaveformObjects::Waveform::AlignTo(const Waveform& a, const double t1, const double t2) {
   History() << "### this->AlignTo(a, " << t1 << ", " << t2 << ");\n#" << flush;
   WaveformAligner Align(a, *this, t1, t2);
   Brent Minimizer;
@@ -147,7 +147,7 @@ Waveform& Waveform::AlignTo(const Waveform& a, const double t1, const double t2)
   return *this;
 }
 
-Waveform& Waveform::AlignWithIntermediate(const Waveform& a, Waveform Intermediate, const double t1, const double t2) {
+Waveform& WaveformObjects::Waveform::AlignWithIntermediate(const Waveform& a, Waveform Intermediate, const double t1, const double t2) {
   History() << "### this->AlignWithIntermediate(a, b, "  << t1 << ", " << t2 << ");\n#" << flush;
   Intermediate.AlignTo(a, t1, t2);
   History() << "#" << flush;
@@ -155,7 +155,7 @@ Waveform& Waveform::AlignWithIntermediate(const Waveform& a, Waveform Intermedia
   return *this;
 }
 
-Waveform Waveform::HybridizeWith(const Waveform& b, const double t1, const double t2, const double MinStep) const {
+Waveform WaveformObjects::Waveform::HybridizeWith(const Waveform& b, const double t1, const double t2, const double MinStep) const {
   if(NModes() != b.NModes()) {
     cerr << "\nTrying to Align Waveforms with mismatched LM data." << endl;
     cerr << "NModes()=" << NModes() << "\tb.NModes()=" << b.NModes() << endl;
@@ -209,7 +209,7 @@ inline double sign(const double x) {
   return (x<0 ? -1.0 : 1.0);
 }
 
-Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const double t1, const double t2, const double DeltaT, const double MinStep) {
+Waveform& WaveformObjects::Waveform::AlignTo_F(const Waveform& a, const double omega, const double t1, const double t2, const double DeltaT, const double MinStep) {
   if(omega==0.0) {
     cerr << "\nThe frequency input to AlignTo_F is exactly 0.0.  This will give you garbage" << endl;
     throw("Bad frequency");
@@ -316,13 +316,13 @@ Waveform& Waveform::AlignTo_F(const Waveform& a, const double omega, const doubl
   return *this;
 }
 
-Waveform Waveform::HybridizeWith_F(const Waveform& a, const double omega, const double omegat1, const double omegat2, const double DeltaT, const double MinStep) const {
+Waveform WaveformObjects::Waveform::HybridizeWith_F(const Waveform& a, const double omega, const double omegat1, const double omegat2, const double DeltaT, const double MinStep) const {
   Waveform b(*this);
   b.AlignTo_F(a, omega, omegat1, omegat2, DeltaT, MinStep);
   return b;
 }
 
-Waveform& Waveform::AttachQNMs(const double delta, const double chiKerr, double dt, const double TLength) {
+Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double chiKerr, double dt, const double TLength) {
 //   if(LM() != QNMLMs()) {
 //     cerr << "LM=" << LM() << "\nQNMLMs()=" << QNMLMs() << endl;
 //     throw("Bad input LMs.");

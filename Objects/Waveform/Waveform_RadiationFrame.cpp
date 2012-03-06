@@ -95,7 +95,7 @@ public:
 
 
 
-void RadiationAxis(const Waveform& W, vector<double>& alpha, vector<double>& beta,
+void RadiationAxis(const Waveform& W, std::vector<double>& alpha, std::vector<double>& beta,
 		   const double alphaGuess=0.0, const double betaGuess=0.0) {
   alpha.resize(W.NTimes());
   beta.resize(W.NTimes());
@@ -130,7 +130,7 @@ void RadiationAxis(const Waveform& W, vector<double>& alpha, vector<double>& bet
 }
 
 // This function alters gamma to enforce the minimal-rotation condition
-void MinimalRotation(const vector<double>& alpha, const vector<double>& beta, vector<double>& gamma, const vector<double>& t) {
+void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta, std::vector<double>& gamma, const std::vector<double>& t) {
   if(alpha.size() != beta.size() || alpha.size() != t.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tt.size()=" << t.size() << endl;
     throw("Size mismatch in MinimalRotation.");
@@ -144,29 +144,29 @@ void MinimalRotation(const vector<double>& alpha, const vector<double>& beta, ve
 
 
 
-Waveform& Waveform::TransformToSchmidtFrame(const double alpha0Guess, const double beta0Guess) {
+Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(const double alpha0Guess, const double beta0Guess) {
   vector<double> alpha(NTimes(), 0.0), beta(NTimes(), 0.0), gamma(NTimes(), 0.0);
   return this->TransformToSchmidtFrame(alpha, beta, gamma, alpha0Guess, beta0Guess);
 }
 
-Waveform& Waveform::TransformToSchmidtFrame(vector<double>& alpha, vector<double>& beta, const double alpha0Guess, const double beta0Guess) {
+Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(std::vector<double>& alpha, std::vector<double>& beta, const double alpha0Guess, const double beta0Guess) {
   vector<double> gamma(NTimes(), 0.0);
   return this->TransformToSchmidtFrame(alpha, beta, gamma, alpha0Guess, beta0Guess);
 }
 
-Waveform& Waveform::TransformToSchmidtFrame(vector<double>& alpha, vector<double>& beta, vector<double>& gamma,
+Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
 					    const double alpha0Guess, const double beta0Guess) {
   RadiationAxis(*this, alpha, beta, alpha0Guess, beta0Guess);
   gamma = vector<double>(NTimes(), 0.0);
   return this->RotateCoordinates(alpha, beta, gamma);
 }
 
-Waveform& Waveform::TransformToMinimalRotationFrame(const double alpha0Guess, const double beta0Guess) {
+Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const double alpha0Guess, const double beta0Guess) {
   vector<double> alpha(NTimes(), 0.0), beta(NTimes(), 0.0), gamma(NTimes(), 0.0);
   return this->TransformToMinimalRotationFrame(alpha, beta, gamma, alpha0Guess, beta0Guess);
 }
 
-Waveform& Waveform::TransformToMinimalRotationFrame(vector<double>& alpha, vector<double>& beta, vector<double>& gamma,
+Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
 						    const double alpha0Guess, const double beta0Guess) {
   RadiationAxis(*this, alpha, beta, alpha0Guess, beta0Guess);
   MinimalRotation(alpha, beta, gamma, T());

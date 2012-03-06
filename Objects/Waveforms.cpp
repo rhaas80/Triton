@@ -25,8 +25,8 @@ Waveforms::Waveforms(const int N) :
   Ws(N), CommonTimeSet(false), PhasesAligned(false)
 { }
 
-Waveforms::Waveforms(const vector<double>& Radii, const string& DataFile,
-		     const string& AreaFile, const string& LapseFile,
+Waveforms::Waveforms(const std::vector<double>& Radii, const std::string& DataFile,
+		     const std::string& AreaFile, const std::string& LapseFile,
 		     const double& ADMMass, const double& ChMass, const bool ZeroEnds) :
   Ws(Radii.size()), CommonTimeSet(false), PhasesAligned(false)
 {

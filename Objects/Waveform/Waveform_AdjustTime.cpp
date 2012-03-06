@@ -38,13 +38,13 @@ using std::ios_base;
 
 
 
-Waveform& Waveform::AddToTime(const double time) {
+Waveform& WaveformObjects::Waveform::AddToTime(const double time) {
   History() << "### this->AddToTime(" << setprecision(16) << time << ");" << endl;
   TRef() += time;
   return *this;
 }
 
-Waveform& Waveform::DropBefore(const double time) {
+Waveform& WaveformObjects::Waveform::DropBefore(const double time) {
   History() << "### this->DropBefore(" << setprecision(16) << time << ");" << endl;
   unsigned int i=0;
   while(i<NTimes()-1 && T(i+1)<=time) { ++i; }
@@ -57,7 +57,7 @@ Waveform& Waveform::DropBefore(const double time) {
   return *this;
 }
 
-Waveform& Waveform::DropAfter(const double time) {
+Waveform& WaveformObjects::Waveform::DropAfter(const double time) {
   History() << "### this->DropAfter(" << setprecision(16) << time << ");" << endl;
   unsigned int i=NTimes()-1;
   while(i>0 && T(i)>time) { --i; }
@@ -70,7 +70,7 @@ Waveform& Waveform::DropAfter(const double time) {
   return *this;
 }
 
-Waveform& Waveform::ZeroBefore(const double time) {
+Waveform& WaveformObjects::Waveform::ZeroBefore(const double time) {
   History() << "### this->ZeroBefore(" << setprecision(16) << time << ");" << endl;
   unsigned int i=0;
   while(i<NTimes()-1 && T(i+1)<=time) { ++i; }
@@ -82,7 +82,7 @@ Waveform& Waveform::ZeroBefore(const double time) {
   return *this;
 }
 
-Waveform& Waveform::UniformTimeToPowerOfTwo() {
+Waveform& WaveformObjects::Waveform::UniformTimeToPowerOfTwo() {
   if(((NTimes()) & (NTimes()-1)) == 0) { return *this; } // Return *this if we already have a power of 2
   History() << "### this->UniformTimeToPowerOfTwo();" << endl << "#";
   unsigned int N = static_cast<unsigned int>(pow(2.0,ceil(log2(NTimes()))));
@@ -95,7 +95,7 @@ Waveform& Waveform::UniformTimeToPowerOfTwo() {
   return *this;
 }
 
-Waveform& Waveform::UniformTime(const unsigned int N) {
+Waveform& WaveformObjects::Waveform::UniformTime(const unsigned int N) {
   History() << "### this->UniformTime(" << N << ");" << endl << "#";
   double dt = (T().back()-T(0))/(N-1);
   vector<double> NewTime(N, 0.0);
@@ -106,7 +106,7 @@ Waveform& Waveform::UniformTime(const unsigned int N) {
   return *this;
 }
 
-Waveform& Waveform::NSamplesPerCycle22(const unsigned int N) {
+Waveform& WaveformObjects::Waveform::NSamplesPerCycle22(const unsigned int N) {
   History() << "### this->NSamplesPerCycle22(" << N << ");" << endl << "#";
   vector<double> NewTime(NTimes());
   vector<double> omega22s = Omega2m2();

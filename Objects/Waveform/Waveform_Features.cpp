@@ -37,7 +37,13 @@ using std::max;
 using std::ios_base;
 
 
-unsigned int Waveform::FindModeIndex(const int l, const int m) const {
+/// \brief Find index of mode with given (l,m) data
+/// 
+/// \param L
+/// \param M
+///
+/// Some other description
+unsigned int WaveformObjects::Waveform::FindModeIndex(const int l, const int m) const {
   int ModeIndex = -1;
   //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) {
@@ -50,7 +56,7 @@ unsigned int Waveform::FindModeIndex(const int l, const int m) const {
   return (unsigned int)(ModeIndex);
 }
 
-unsigned int Waveform::Peak22TimeIndex() const {
+unsigned int WaveformObjects::Waveform::Peak22TimeIndex() const {
   //// Find 2,2 component
   int TwoTwo = -1;
   //ORIENTATION!!! following loop
@@ -62,11 +68,11 @@ unsigned int Waveform::Peak22TimeIndex() const {
   return (unsigned int)(maxIndex(Mag(TwoTwo)));
 }
 
-double Waveform::Peak22Time() const {
+double WaveformObjects::Waveform::Peak22Time() const {
   return T(Peak22TimeIndex());
 }
 
-vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
+std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const double t2) const {
   //// Find 2,2 component
   int TwomTwo = -1;
   for(unsigned int i=0; i<NModes(); ++i) {
@@ -120,7 +126,7 @@ vector<double> Waveform::Omega2m2(const double t1, const double t2) const {
   }
 }
 
-bool Waveform::HasNaNs() const {
+bool WaveformObjects::Waveform::HasNaNs() const {
   bool hasnans = false;
   for(unsigned int i=0; i<NTimes(); ++i) {
     if(t[i]!=t[i]) {
@@ -147,7 +153,7 @@ bool Waveform::HasNaNs() const {
   return hasnans;
 }
 
-vector<double> Waveform::Flux() const {
+std::vector<double> WaveformObjects::Waveform::Flux() const {
   if(TypeIndex()%3!=1) {
     cerr << "\nType = " << Type() << endl;
     throw("Can't get Flux() for Waveform of Type other than rhdot.  Maybe you should use Differentiate().");
@@ -161,7 +167,7 @@ vector<double> Waveform::Flux() const {
 }
 
 // Mostly useful for getting the flux
-Waveform& Waveform::Differentiate() {
+Waveform& WaveformObjects::Waveform::Differentiate() {
   if(TypeIndex()%3==0) {
     cerr << "\nType=" << Type() << endl;
     throw("Derivative of Psi4 not supported.");

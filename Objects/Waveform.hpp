@@ -105,8 +105,8 @@ namespace WaveformObjects {
     Waveform operator/(const Waveform& b) const;
     
   public:  // Set-data explicit access functions (mostly for SWIG)
-    inline void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
     inline void AppendHistory(const std::string& Hist) { history << Hist; }
+    inline void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
     #ifdef SWIG // Only SWIG should use these; c++ should use the standard Ref functions
     inline void SetTypeIndex(const unsigned int NewTypeIndex) { typeIndex = NewTypeIndex; }
     inline void SetTimeScale(const std::string& NewTimeScale) { timeScale = NewTimeScale; }

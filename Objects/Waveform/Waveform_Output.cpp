@@ -108,7 +108,7 @@ int MinimalGrid_Hunt(const vector<double>& t, const vector<double>& arg,
 }
 
 
-Waveform& Waveform::MinimalGrid(const double magTol, const double argTol) {
+Waveform& WaveformObjects::Waveform::MinimalGrid(const double magTol, const double argTol) {
   /// The objective here will be to create a vector of bool's, the same
   /// length as t.  The truth value will correspond to whether or not
   /// that time step should be kept in the final data.  We begin by
@@ -206,7 +206,7 @@ Waveform& Waveform::MinimalGrid(const double magTol, const double argTol) {
   return *this;
 }
 
-void Waveform::OutputToNINJAFormat(const string& MetadataFileName, const string ExtractionRadiusString, const string WaveformIdentifier) const {
+void WaveformObjects::Waveform::OutputToNINJAFormat(const string& MetadataFileName, const string ExtractionRadiusString, const string WaveformIdentifier) const {
   size_t found = MetadataFileName.find_last_of("/\\");
   const string Dir = (found!=string::npos ? MetadataFileName.substr(0,found) : ".");
   ofstream meta(MetadataFileName.c_str(), ofstream::app);

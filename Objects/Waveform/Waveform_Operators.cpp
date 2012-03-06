@@ -37,7 +37,7 @@ using std::max;
 using std::ios_base;
 
 
-Waveform& Waveform::operator=(const Waveform& b) {
+Waveform& WaveformObjects::Waveform::operator=(const Waveform& b) {
   /// This call should not be recorded in the history
   SetHistory(b.HistoryStr());
   History().seekp(0, ios_base::end);
@@ -51,7 +51,7 @@ Waveform& Waveform::operator=(const Waveform& b) {
   return *this;
 }
 
-Waveform Waveform::operator/(const Waveform& b) const {
+Waveform WaveformObjects::Waveform::operator/(const Waveform& b) const {
   if(b.NModes() != NModes() || b.LM().RawData() != LM().RawData()) {
     throw("Trying to divide Waveform objects with mismatched LM data");
   }
@@ -71,7 +71,7 @@ Waveform Waveform::operator/(const Waveform& b) const {
   return c;
 }
 
-Waveform Waveform::operator[](const unsigned int mode) const {
+Waveform WaveformObjects::Waveform::operator[](const unsigned int mode) const {
   Waveform copy;
   copy.SetHistory(HistoryStr());
   copy.History().seekp(0, ios_base::end);

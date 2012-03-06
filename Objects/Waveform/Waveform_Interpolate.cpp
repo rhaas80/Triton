@@ -37,7 +37,8 @@ using std::max;
 using std::ios_base;
 
 
-Waveform& Waveform::Interpolate(const vector<double>& NewTime) {
+/// Interpolate Waveform to a new time vector.
+Waveform& WaveformObjects::Waveform::Interpolate(const std::vector<double>& NewTime) {
   History() << "### this->Interpolate(const vector<double>& NewTime);" << endl;
   if(R().size()==NTimes()) {
     RRef() = WaveformUtilities::Interpolate(T(), R(), NewTime);
@@ -55,7 +56,8 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime) {
   return *this;
 }
 
-Waveform& Waveform::Interpolate(const vector<double>& NewTime, const double ExtrapVal) {
+/// Interpolate Waveform to a new time vector, returning ExtrapVal when out of range.
+Waveform& WaveformObjects::Waveform::Interpolate(const std::vector<double>& NewTime, const double ExtrapVal) {
   History() << "### this->Interpolate(const vector<double>& NewTime, " << ExtrapVal << ");" << endl;
   if(R().size()==NTimes()) {
     RRef() = WaveformUtilities::Interpolate(T(), R(), NewTime, R().back());
@@ -73,19 +75,22 @@ Waveform& Waveform::Interpolate(const vector<double>& NewTime, const double Extr
   return *this;
 }
 
-Waveform& Waveform::Interpolate(const double NewTime) {
+/// Interpolate Waveform to a single time.
+Waveform& WaveformObjects::Waveform::Interpolate(const double NewTime) {
   History() << "### this->Interpolate(" << setprecision(16) << NewTime << ");" << endl << "#";
   this->Interpolate(vector<double>(1, NewTime));
   return *this;
 }
 
-Waveform& Waveform::Interpolate(const Waveform& b) {
+/// Interpolate Waveform to the time axis of another Waveform.
+Waveform& WaveformObjects::Waveform::Interpolate(const Waveform& b) {
   History() << "### this->Interpolate(const Waveform& b);" << endl << "#";
   this->Interpolate(b.T());
   return *this;
 }
 
-Waveform& Waveform::Interpolate(const Waveform& b, const double ExtrapVal) {
+/// Interpolate Waveform to the time axis of another Waveform, returning ExtrapVal when out of range.
+Waveform& WaveformObjects::Waveform::Interpolate(const Waveform& b, const double ExtrapVal) {
   History() << "### this->Interpolate(const Waveform& b, " << ExtrapVal << ");" << endl << "#";
   this->Interpolate(b.T(), ExtrapVal);
   return *this;

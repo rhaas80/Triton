@@ -55,7 +55,7 @@ double ScaleMag(const double S, const unsigned int typeIndex) {
 }
 
 // Used in extrapolation
-Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
+Waveform& WaveformObjects::Waveform::SetArealRadius(const string& AreaFileName) {
   History() << "### this->SetArealRadius(\"" << AreaFileName << "\");" << endl;
   //// Read data files
   vector<vector<double> > Area;
@@ -68,7 +68,7 @@ Waveform& Waveform::SetArealRadius(const string& AreaFileName) {
   return *this;
 }
 
-Waveform& Waveform::RescaleMagForRadius(const double OldRadius) {
+Waveform& WaveformObjects::Waveform::RescaleMagForRadius(const double OldRadius) {
   History() << "### this->RescaleMagForRadius(\"" << OldRadius << "\");" << endl;
   if(TypeIndex()>5) {
     cerr << "\n\nWarning: This Waveform type is not multiplied by 'r', so this function has no effect.\n" << endl;
@@ -96,7 +96,7 @@ Waveform& Waveform::RescaleMagForRadius(const double OldRadius) {
   return *this;
 }
 
-Waveform& Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName, const double ADMMass) {
+Waveform& WaveformObjects::Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName, const double ADMMass) {
   if(R().size()==0) { throw("Bad size for radius data."); }
   History() << "### this->SetTimeFromLapseSurfaceIntegral(\"" << LapseFileName << "\", " << setprecision(16) << ADMMass << ");" << endl;
   //// Read data files
@@ -122,7 +122,7 @@ Waveform& Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName,
   return *this;
 }
 
-Waveform& Waveform::TortoiseOffset(const double ADMMass) {
+Waveform& WaveformObjects::Waveform::TortoiseOffset(const double ADMMass) {
   History() << "### this->TortoiseOffset(" << setprecision(16) << ADMMass << ");" << endl;
   TimeScaleRef() = "(t-r*)";
   if(R().size()==1) {
@@ -133,7 +133,7 @@ Waveform& Waveform::TortoiseOffset(const double ADMMass) {
   return *this;
 }
 
-Waveform& Waveform::SetTotalMassToOne(const double TotalMassInCurrentUnits) {
+Waveform& WaveformObjects::Waveform::SetTotalMassToOne(const double TotalMassInCurrentUnits) {
   History() << "### this->SetTotalMassToOne(" << setprecision(16) << TotalMassInCurrentUnits << ");" << endl;
   MagRef() *= ScaleMag(TotalMassInCurrentUnits, TypeIndex());
   TRef() = T() / TotalMassInCurrentUnits;
@@ -143,7 +143,7 @@ Waveform& Waveform::SetTotalMassToOne(const double TotalMassInCurrentUnits) {
   return *this;
 }
 
-Waveform& Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSolarMasses, const double DistanceInMegaparsecs) {
+Waveform& WaveformObjects::Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSolarMasses, const double DistanceInMegaparsecs) {
   History() << "### this->SetPhysicalMassAndDistance(" << setprecision(16)
 	  << CurrentUnitMassInSolarMasses << ", "
 	  << DistanceInMegaparsecs << ");" << endl;

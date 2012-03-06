@@ -39,7 +39,7 @@ using std::ios_base;
 
 
 // Rotate all modes by the given Euler angles
-Waveform& Waveform::RotatePhysicalSystem(const double alpha, const double beta, const double gamma) {
+Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, const double beta, const double gamma) {
   // Make sure the ordering is as expected (could program something to make this unecessary...)
   {
     unsigned int mode=0;
@@ -111,14 +111,14 @@ Waveform& Waveform::RotatePhysicalSystem(const double alpha, const double beta, 
   return *this;
 }
 
-Waveform& Waveform::RotateCoordinates(const double alpha, const double beta, const double gamma) {
+Waveform& WaveformObjects::Waveform::RotateCoordinates(const double alpha, const double beta, const double gamma) {
   History() << "### this->RotateCoordinates(" << alpha << ", " << beta << ", " << gamma << ");\n#";
   RotatePhysicalSystem(-gamma, -beta, -alpha);
   return *this;
 }
 
 // Rotate all modes by the given Euler angles
-Waveform& Waveform::RotatePhysicalSystem(const vector<double>& alpha, const vector<double>& beta, const vector<double>& gamma) {
+Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma) {
   if(alpha.size()!=NTimes()) {
     cerr << "\nalpha.size()=" << alpha.size() << "  NTimes()=" << NTimes() << endl;
     throw("Mismatched sizes of vectors to Rotate.");
@@ -203,14 +203,14 @@ Waveform& Waveform::RotatePhysicalSystem(const vector<double>& alpha, const vect
   return *this;
 }
 
-Waveform& Waveform::RotateCoordinates(const vector<double>& alpha, const vector<double>& beta, const vector<double>& gamma) {
+Waveform& WaveformObjects::Waveform::RotateCoordinates(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma) {
   History() << "### this->RotateCoordinates(alpha, beta, gamma);\n#";
   RotatePhysicalSystem(-gamma, -beta, -alpha);
   return *this;
 }
 
 // Rotate all modes by the given Euler angles
-Waveform& Waveform::RotatePhysicalSystem(const vector<Quaternion>& Q) {
+Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<WaveformUtilities::Quaternion>& Q) {
   if(Q.size()!=NTimes()) {
     cerr << "\nQ.size()=" << Q.size() << "  NTimes()=" << NTimes() << endl;
     throw("Mismatched sizes of vectors to Rotate.");
@@ -226,7 +226,7 @@ Waveform& Waveform::RotatePhysicalSystem(const vector<Quaternion>& Q) {
   return this -> RotatePhysicalSystem(alpha, beta, gamma);
 }
 
-Waveform& Waveform::RotateCoordinates(const vector<Quaternion>& Q) {
+Waveform& WaveformObjects::Waveform::RotateCoordinates(const std::vector<WaveformUtilities::Quaternion>& Q) {
   History() << "### this->RotateCoordinates(Q);\n#";
   RotatePhysicalSystem(WaveformUtilities::Conjugate(Q));
   return *this;
