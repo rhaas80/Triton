@@ -37,13 +37,14 @@ using std::max;
 using std::ios_base;
 
 
-
+/// Simply add the input constant to the time data of the Waveform.
 Waveform& WaveformObjects::Waveform::AddToTime(const double time) {
   History() << "### this->AddToTime(" << setprecision(16) << time << ");" << endl;
   TRef() += time;
   return *this;
 }
 
+/// Delete data from the Waveform occurring at or before the input time.
 Waveform& WaveformObjects::Waveform::DropBefore(const double time) {
   History() << "### this->DropBefore(" << setprecision(16) << time << ");" << endl;
   unsigned int i=0;
@@ -57,6 +58,7 @@ Waveform& WaveformObjects::Waveform::DropBefore(const double time) {
   return *this;
 }
 
+/// Delete data from the Waveform occurring after the input time.
 Waveform& WaveformObjects::Waveform::DropAfter(const double time) {
   History() << "### this->DropAfter(" << setprecision(16) << time << ");" << endl;
   unsigned int i=NTimes()-1;
@@ -70,6 +72,7 @@ Waveform& WaveformObjects::Waveform::DropAfter(const double time) {
   return *this;
 }
 
+/// Set magnitude to zero for data at or before the input time.
 Waveform& WaveformObjects::Waveform::ZeroBefore(const double time) {
   History() << "### this->ZeroBefore(" << setprecision(16) << time << ");" << endl;
   unsigned int i=0;
@@ -82,7 +85,11 @@ Waveform& WaveformObjects::Waveform::ZeroBefore(const double time) {
   return *this;
 }
 
+/// Interpolate to evenly spaced time axis with size 2^n for integer n.
 Waveform& WaveformObjects::Waveform::UniformTimeToPowerOfTwo() {
+  /// This function is useful for interpolating the data to a time
+  /// series appropriate for FFTing.  The size of the output is the
+  /// smallest 2^n that is larger than the current size of the data.
   if(((NTimes()) & (NTimes()-1)) == 0) { return *this; } // Return *this if we already have a power of 2
   History() << "### this->UniformTimeToPowerOfTwo();" << endl << "#";
   unsigned int N = static_cast<unsigned int>(pow(2.0,ceil(log2(NTimes()))));
@@ -95,6 +102,7 @@ Waveform& WaveformObjects::Waveform::UniformTimeToPowerOfTwo() {
   return *this;
 }
 
+/// Interpolate to evenly spaced time axis of size N.
 Waveform& WaveformObjects::Waveform::UniformTime(const unsigned int N) {
   History() << "### this->UniformTime(" << N << ");" << endl << "#";
   double dt = (T().back()-T(0))/(N-1);
@@ -106,6 +114,7 @@ Waveform& WaveformObjects::Waveform::UniformTime(const unsigned int N) {
   return *this;
 }
 
+/// Resample data such that there are N samples per cycle of the (2,2) mode.
 Waveform& WaveformObjects::Waveform::NSamplesPerCycle22(const unsigned int N) {
   History() << "### this->NSamplesPerCycle22(" << N << ");" << endl << "#";
   vector<double> NewTime(NTimes());

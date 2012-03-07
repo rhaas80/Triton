@@ -37,12 +37,7 @@ using std::max;
 using std::ios_base;
 
 
-/// \brief Find index of mode with given (l,m) data
-/// 
-/// \param L
-/// \param M
-///
-/// Some other description
+/// Find index of mode with given (l,m) data.
 unsigned int WaveformObjects::Waveform::FindModeIndex(const int l, const int m) const {
   int ModeIndex = -1;
   //ORIENTATION!!! following loop
@@ -56,30 +51,35 @@ unsigned int WaveformObjects::Waveform::FindModeIndex(const int l, const int m) 
   return (unsigned int)(ModeIndex);
 }
 
+/// Return the time index at which the (2,2) mode peaks.
 unsigned int WaveformObjects::Waveform::Peak22TimeIndex() const {
-  //// Find 2,2 component
+  // Find 2,2 component
   int TwoTwo = -1;
   //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) {
     if(L(i)==2 && M(i)==2) { TwoTwo=i; break; }
   }
-  //// Error if not found
+  // Error if not found
   if(TwoTwo==-1) { throw("Can't find the 2,2 component of the data!"); }
   return (unsigned int)(maxIndex(Mag(TwoTwo)));
 }
 
+/// Return the time at which the (2,2) mode peaks.
 double WaveformObjects::Waveform::Peak22Time() const {
   return T(Peak22TimeIndex());
 }
 
+///
 std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const double t2) const {
-  //// Find 2,2 component
+  
+  
+  // Find 2,2 component
   int TwomTwo = -1;
   for(unsigned int i=0; i<NModes(); ++i) {
     if(L(i)==2 && M(i)==-2) { TwomTwo=i; break; }
   }
   
-  //// Error if not found
+  // Error if not found
   if(TwomTwo==-1) {
     for(unsigned int i=0; i<NModes(); ++i) {
       if(L(i)==2 && M(i)==2) { TwomTwo=i; break; }
@@ -91,7 +91,7 @@ std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const d
     cerr << "\n(2,-2) mode not found; proceeding with (2,2) mode.\n" << endl;
   }
   
-  //// Return differentiated Arg data
+  // Return differentiated Arg data
   //ORIENTATION!!! following section
   if((t1!=-1e300 && t1>T(0)) && (t2!=1e300 && t2<T().back())) {
     vector<double> NewTime(T());

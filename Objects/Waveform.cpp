@@ -485,9 +485,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       Dir = "";
     }
     
-    // Open the metadata file and look for "[ht-ampphi-data]" or "[ht-data]"
-    string SectionHeadingMagArg = "[ht-ampphi-data]";
-    string SectionHeadingReIm = "[ht-data]";
+    // Open the metadata file and look for "[ht-ampphi-data]" or "[ht-data]" or "[psi4t-ampphi-data]" or "[psi4t-data]"
     string Format = "ReIm";
     int LineLength=8192;
     char LineChars[LineLength];
@@ -503,10 +501,10 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     while(ifs.getline(LineChars, LineLength, '\n')) {
       string TrimmedLine(LineChars);
       TrimmedLine = TrimWhiteSpace(StripComments(TrimmedLine));
-      if(TrimmedLine.compare(SectionHeadingReIm) == 0) {
+      if(TrimmedLine.compare("[ht-data]") == 0 || TrimmedLine.compare("[psi4t-data]") == 0) {
 	Format = "ReIm";
 	break;
-      } else if(TrimmedLine.compare(SectionHeadingMagArg) == 0) {
+      } else if(TrimmedLine.compare("[ht-ampphi-data]") == 0 || TrimmedLine.compare("[psi4t-ampphi-data]") == 0) {
 	Format = "MagArg";
 	break;
       }
@@ -523,6 +521,8 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       LineCharsStripped = TrimWhiteSpace(StripComments(LineCharsStripped));
       if(LineCharsStripped.length()==0) { continue; }
       Pair = split(Line.assign(LineCharsStripped), '=');
+      if(Pair[0].find("extraction-radius")!=string::npos) { continue; }
+      if(Pair[0].find("data]")!=string::npos) { break; }
       LandMString = split(Pair[0], ',');
       DataFileName = TrimWhiteSpace(Pair[1]);
       LandM[0] = atoi(LandMString[0].c_str());
@@ -531,22 +531,22 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       
       //// Read data file
       std::vector<std::vector<double> > Data;
-      ReadDatFile(Dir+DataFileName,  Data,  Header);
-      Times.push_back(std::vector<double>(Data.size()));
-      Re.push_back(std::vector<double>(Data.size()));
-      Im.push_back(std::vector<double>(Data.size()));
+      ReadDatFile(Dir+DataFileName,  Data,  Header, true); // Read "transposed" data
+      Times.push_back(std::vector<double>(Data[0].size()));
+      Re.push_back(std::vector<double>(Data[0].size()));
+      Im.push_back(std::vector<double>(Data[0].size()));
       unsigned int End=Times.size()-1;
-      for(unsigned int i=0; i<Times[End].size(); ++i) {
-	Times[End][i] = Data[i][0];
+      for(unsigned int i=0; i<Data[0].size(); ++i) {
+      	Times[End][i] = Data[0][i];
       }
       if(t.size()==0) {
-	t = Times[End];
+      	t = Times[End];
       } else {
-	t = Intersection(t, Times[End], 0.05, -1.e300);
+      	t = Intersection(t, Times[End], 0.05, -1.e300);
       }
-      for(unsigned int i = 0; i<Data.size(); ++i) { // Loop over time steps
-	Re[End][i] = Data[i][1];
-	Im[End][i] = Data[i][2];
+      for(unsigned int i = 0; i<Data[0].size(); ++i) { // Loop over time steps
+      	Re[End][i] = Data[1][i];
+      	Im[End][i] = Data[2][i];
       }
     }
     ifs.close();

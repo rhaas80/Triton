@@ -287,6 +287,7 @@ class doxy2docstring :
                       .replace('&amp;','&') \
                       .replace('&quot;',"'") \
                       .replace('&apos;',"'") \
+                      .replace('\\','\\\\') \
                       .strip()
     
     def getText(self, nodelist):

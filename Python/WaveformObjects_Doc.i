@@ -2316,14 +2316,14 @@ Simple PN/EOB constructor for non-precessing systems.
     const string& Approximant
       ('TaylorT1'|'TaylorT2'|'TaylorT3'|'TaylorT4'|'EOB')
     const double delta
-      $\delta = (M_1 - M_2) / (M_2 + M_2)$
+      $\\delta = (M_1 - M_2) / (M_2 + M_2)$
     const double chis
-      $\chi_s = (\chi_1+\chi_2)/2$
+      $\\chi_s = (\\chi_1+\\chi_2)/2$
     const double chia
-      $\chi_a = (\chi_1-\chi_2)/2$
+      $\\chi_a = (\\chi_1-\\chi_2)/2$
     const double v0
-      Initial Newtonian velocity: $v = \left( \frac{G\, M\, \Omega}{c^3}
-      \right)^{1/3}$
+      Initial Newtonian velocity: $v = \\left( \\frac{G\\, M\\, \\Omega}{c^3}
+      \\right)^{1/3}$
     const Matrix<int> LM = Matrix<int>(0, 0)
       Desired set of (l,m) modes for the output; if empty, output all modes up
       to $L = 8$
@@ -2346,9 +2346,9 @@ Simple PN/EOB constructor for non-precessing systems.
     in all cases, only the inspiral is returned -- EOB included. To attach a
     ringdown (though a hackish technique) see also the AttachQNMs function.
     
-    The total number of modes required for $L$ is given by \begin{align}
-    N_{\text{modes}}&= \sum_{l=2}^{L} (2l+1) \\&= 2\left[L\, (L-1)/2-1\right] +
-    (L-2) \\&= (L+3)\, (L-1) \end{align}
+    The total number of modes required for $L$ is given by \\begin{align}
+    N_{\\text{modes}}&= \\sum_{l=2}^{L} (2l+1) \\\\&= 2\\left[L\\,
+    (L-1)/2-1\\right] + (L-2) \\\\&= (L+3)\\, (L-1) \\end{align}
   
 
 PN/EOB constructor for precessing systems.
@@ -2358,20 +2358,20 @@ PN/EOB constructor for precessing systems.
     const string& Approximant
       ('TaylorT4Spin')
     const double delta
-      $\delta = (M_1 - M_2) / (M_2 + M_2)$
+      $\\delta = (M_1 - M_2) / (M_2 + M_2)$
     const vector<double>& chi1
-      $\vec{\chi}_1 = \vec{S}_1 / M_1^2$
+      $\\vec{\\chi}_1 = \\vec{S}_1 / M_1^2$
     const vector<double>& chi2
-      $\vec{\chi}_2 = \vec{S}_2 / M_2^2$
+      $\\vec{\\chi}_2 = \\vec{S}_2 / M_2^2$
     const double v0
-      Initial Newtonian velocity: $v = \left( \frac{G\, M\, \Omega}{c^3}
-      \right)^{1/3}$
+      Initial Newtonian velocity: $v = \\left( \\frac{G\\, M\\, \\Omega}{c^3}
+      \\right)^{1/3}$
     vector<double>& alpha
-      Returns vector containing $\alpha$ coordinates of frame rotation
+      Returns vector containing $\\alpha$ coordinates of frame rotation
     vector<double>& beta
-      Returns vector containing $\beta$ coordinates of frame rotation
+      Returns vector containing $\\beta$ coordinates of frame rotation
     vector<double>& gamma
-      Returns vector containing $\gamma$ coordinates of frame rotation
+      Returns vector containing $\\gamma$ coordinates of frame rotation
     const Matrix<int> LM = Matrix<int>(0, 0)
       Desired set of (l,m) modes for the output; if empty, output all modes up
       to $L = 8$

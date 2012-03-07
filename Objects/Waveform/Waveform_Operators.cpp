@@ -36,9 +36,9 @@ using std::min;
 using std::max;
 using std::ios_base;
 
-
+/// Set contents of this Waveform equal to the contents of another.
 Waveform& WaveformObjects::Waveform::operator=(const Waveform& b) {
-  /// This call should not be recorded in the history
+  // This call should not be explicitly recorded in the history
   SetHistory(b.HistoryStr());
   History().seekp(0, ios_base::end);
   TypeIndexRef() = b.TypeIndex();
@@ -51,7 +51,14 @@ Waveform& WaveformObjects::Waveform::operator=(const Waveform& b) {
   return *this;
 }
 
+/// Subtract Waveforms and normalize.
 Waveform WaveformObjects::Waveform::operator/(const Waveform& b) const {
+  /// The two Waveforms are interpolated onto their intersection, then
+  /// the second is subtracted from this Waveform, and the difference
+  /// in magnitudes is normalized by the magnitude of the second
+  /// Waveform.  The two Waveforms are assumed to have identical (l,m)
+  /// modes, and any alignment should be done before calling this
+  /// function.
   if(b.NModes() != NModes() || b.LM().RawData() != LM().RawData()) {
     throw("Trying to divide Waveform objects with mismatched LM data");
   }
@@ -71,7 +78,11 @@ Waveform WaveformObjects::Waveform::operator/(const Waveform& b) const {
   return c;
 }
 
+/// Return a copy of the Waveform with only the requested mode.
 Waveform WaveformObjects::Waveform::operator[](const unsigned int mode) const {
+  /// All other data (history, typeIndex, timeScale, t, r, frame) are
+  /// kept as they are.  Only the lm, mag, and arg data are reduced to
+  /// the single mode requested.
   Waveform copy;
   copy.SetHistory(HistoryStr());
   copy.History().seekp(0, ios_base::end);
@@ -80,6 +91,7 @@ Waveform WaveformObjects::Waveform::operator[](const unsigned int mode) const {
   copy.TimeScaleRef() = TimeScale();
   copy.TRef() = T();
   copy.RRef() = R();
+  copy.FrameRef() = Frame();
   copy.LMRef().resize(1,2);
   copy.MagRef().resize(1,NTimes());
   copy.ArgRef().resize(1,NTimes());
