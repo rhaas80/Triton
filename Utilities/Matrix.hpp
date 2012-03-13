@@ -16,6 +16,7 @@ namespace WaveformUtilities {
     Matrix(unsigned int rows, unsigned int cols); // Zero-based array
     Matrix(unsigned int rows, unsigned int cols, const T& a); // array of a's
     Matrix(const Matrix &rhs);  // Copy constructor
+    Matrix(const std::vector<std::vector<T> >& DataIn); // constructor from data
     Matrix& operator=(const Matrix &rhs); //assignment operator
     Matrix& operator=(const std::vector<std::vector<T> >& newData); //assignment operator
     typedef T value_type; // make T available externally
@@ -47,6 +48,9 @@ namespace WaveformUtilities {
   
   template <class T>
   Matrix<T>::Matrix(const Matrix &rhs) : Data(rhs.Data) { }
+  
+  template <class T>
+  Matrix<T>::Matrix(const std::vector<std::vector<T> >& DataIn) : Data(DataIn) { }
   
   template <class T>
   Matrix<T>& Matrix<T>::operator=(const Matrix<T> &rhs) {
