@@ -75,8 +75,9 @@ string RowFormat(const vector<double>& v) {
     for(unsigned int i=0; i<v.size()-1; ++i) {
       RowForm << v[i] << ", ";
     }
+    RowForm << v.back();
   }
-  RowForm << v.back() << "]";
+  RowForm << "]";
   return RowForm.str();
 }
 
@@ -87,8 +88,9 @@ string RowFormat(const vector<int>& v) {
     for(unsigned int i=0; i<v.size()-1; ++i) {
       RowForm << v[i] << ", ";
     }
+    RowForm << v.back();
   }
-  RowForm << v.back() << "]";
+  RowForm << "]";
   return RowForm.str();
 }
 
@@ -99,8 +101,9 @@ string RowFormat(const WaveformUtilities::Matrix<double>& m) {
     for(unsigned int i=0; i<m.nrows()-1; ++i) {
       RowForm << RowFormat(m[i]) << ", ";
     }
-    RowForm << RowFormat(m[m.nrows()-1]) << " ]";
+    RowForm << RowFormat(m[m.nrows()-1]);
   }
+  RowForm << " ]";
   return RowForm.str();
 }
 
@@ -111,8 +114,9 @@ string RowFormat(const WaveformUtilities::Matrix<int>& m) {
     for(unsigned int i=0; i<m.nrows()-1; ++i) {
       RowForm << RowFormat(m[i]) << ", ";
     }
-    RowForm << RowFormat(m[m.nrows()-1]) << " ]";
+    RowForm << RowFormat(m[m.nrows()-1]);
   }
+  RowForm << " ]";
   return RowForm.str();
 }
 
