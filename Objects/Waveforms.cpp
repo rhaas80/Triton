@@ -153,7 +153,7 @@ WaveformObjects::Waveforms::Waveforms(const std::vector<std::string>& BBHDataSec
     string pwd = path;
     char host[MAXHOSTNAMELEN];
     gethostname(host, MAXHOSTNAMELEN);
-    strng hostname = host;
+    string hostname = host;
     time_t rawtime;
     time ( &rawtime );
     string date = asctime ( localtime ( &rawtime ) );
