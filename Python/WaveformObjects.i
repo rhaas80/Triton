@@ -2,6 +2,15 @@
 
 %module WaveformObjects
 
+%exception {
+  try {
+    $action;
+  } catch(int i) {
+    PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+    return NULL;
+  }
+}
+
 %include "WaveformObjects_Doc.i"
 
 /////////////////////////////////////////////////

@@ -39,7 +39,7 @@ _WaveformObjects.so : WaveformObjects.i
 		WaveformObjects_wrap.cxx
 	@:
 	$(C++) -DSWIG $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
-		$(LFLAGS) $(lFLAGS) WaveformObjects_wrap.o -o PyGW/_WaveformObjects.so
+		$(LFLAGS) $(lFLAGS) $(H5LIB) WaveformObjects_wrap.o -o PyGW/_WaveformObjects.so
 
 SWSHs_python : _SWSHs.so
 

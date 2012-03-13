@@ -76,8 +76,8 @@ Return a reference to the vector of radii of the measured data.
 """
 
 %feature("docstring") WaveformObjects::Waveform::NSamplesPerCycle22 """
-
-
+Resample data such that there are N samples per cycle of the (2,2) mode.
+========================================================================
   Parameters
   ----------
     const unsigned int N = 20
@@ -111,20 +111,6 @@ Return the 'm' (magnetic) index of mode 'Mode'.
   Returns
   -------
     const int
-  
-"""
-
-%feature("docstring") Waveforms::SetCommonTime """
-
-
-  Parameters
-  ----------
-    const double& MinStep = 0.005
-    const double& MinTime = 0.0
-  
-  Returns
-  -------
-    void
   
 """
 
@@ -218,19 +204,6 @@ Return a reference to the vector of frames in which the data are decomposed.
   
 """
 
-%feature("docstring") Waveforms::AlignPhases """
-
-
-  Parameters
-  ----------
-    const double& AlignmentPoint = 0.5
-  
-  Returns
-  -------
-    void
-  
-"""
-
 %feature("docstring") WaveformObjects::Waveform::T """
 Return the time value at time index 'Time'.
 ===========================================
@@ -285,8 +258,8 @@ Return the vector of radii of the measured data.
 """
 
 %feature("docstring") WaveformObjects::Waveform::Peak22Time """
-
-
+Return the time at which the (2,2) mode peaks.
+==============================================
   Parameters
   ----------
     (none)
@@ -469,19 +442,6 @@ Set the radius vector to the input data.
   
 """
 
-%feature("docstring") Waveforms::Extrapolate """
-
-
-  Parameters
-  ----------
-    const int ExtrapolationOrder = 5
-  
-  Returns
-  -------
-    Waveform
-  
-"""
-
 %feature("docstring") WaveformObjects::Waveform::TypeIndex """
 Return the index for the Type of the data.
 ==========================================
@@ -543,8 +503,8 @@ Return the index for the Type of the data.
 """
 
 %feature("docstring") WaveformObjects::Waveform::operator[] """
-
-
+Return a copy of the Waveform with only the requested mode.
+===========================================================
   Parameters
   ----------
     const unsigned int mode
@@ -552,6 +512,12 @@ Return the index for the Type of the data.
   Returns
   -------
     Waveform
+  
+  Description
+  -----------
+    All other data (history, typeIndex, timeScale, t, r, frame) are kept as
+    they are. Only the lm, mag, and arg data are reduced to the single mode
+    requested.
   
 """
 
@@ -685,6 +651,89 @@ namespace WaveformUtilities
   
 """
 
+%feature("docstring") WaveformObjects::Waveforms::Waveforms """
+Basic copy constructor.
+=======================
+  Parameters
+  ----------
+    const Waveforms& In
+  
+  Returns
+  -------
+    Waveforms
+  
+
+Nearly-empty constructor of N empty objects.
+============================================
+  Parameters
+  ----------
+    const int N = 0
+  
+  Returns
+  -------
+    Waveforms
+  
+
+Construct from a vector of radii and corresponding data file names.
+===================================================================
+  Parameters
+  ----------
+    const vector<double>& Radii
+    const string& DataFile
+    const string& AreaFile
+    const string& LapseFile
+    const double& ADMMass
+    const double& ChMass
+    const bool ZeroEnds = false
+  
+  Returns
+  -------
+    Waveforms
+  
+  Description
+  -----------
+    This constructor is used for extrapolation, primarily. The various file
+    names are expected to be printf-formatted strings, where each radius is the
+    quantity used in the printf statement. Thus, for example, '(100, 110, ...)'
+    and 'rPsi4_R%04.0fm_U8+.dat' may be input, where the file names are
+    'rPsi4_R0100m_U8+.dat', 'rPsi4_R0110m_U8+.dat', etc. The input AreaFile and
+    LapseFile are treated similarly.
+  
+
+Construct Waveforms from multiple [*-data] .bbh sections.
+=========================================================
+  Parameters
+  ----------
+    const string& BBHFileName
+    const Matrix<int> LM = Matrix<int>(0, 0)
+  
+  Returns
+  -------
+    Waveforms
+  
+
+Construct Waveforms from a single [*-data] .bbh section.
+========================================================
+  Parameters
+  ----------
+    const vector<string>& BBHDataSection
+    const string Dir = ''
+    const Matrix<int> LM = Matrix<int>(0, 0)
+  
+  Returns
+  -------
+    Waveforms
+  
+  Description
+  -----------
+    The resulting set of Waveforms really represents just one Waveform, but
+    each mode can have different times. The modes can be re-assembled into a
+    single Waveform by calling the Merge() method. That is probably the most
+    useful format. This constructor and Merge() are called by the
+    Waveform::Waveform constructor having the same arguments as this function.
+  
+"""
+
 %feature("docstring") operator<< """
 
 
@@ -772,26 +821,13 @@ namespace WaveformUtilities
   
 """
 
-%feature("docstring") Waveforms::FixNonOscillatingData """
-
-
-  Parameters
-  ----------
-    (none)
-  
-  Returns
-  -------
-    void
-  
-"""
-
 %feature("docstring") WaveformObjects::Waveform::AlignPhasesToTwoPi """
-
-
+Align phases of two Waveforms to within 2*pi at a fractional time in this Waveform of tFrac.
+============================================================================================
   Parameters
   ----------
     const Waveform& a
-    const double t
+    const double tFrac = 0.25
   
   Returns
   -------
@@ -994,6 +1030,19 @@ Return the argument (phase) of all modes as a function of time.
   
 """
 
+%feature("docstring") WaveformObjects::Waveforms::FixNonOscillatingData """
+
+
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    void
+  
+"""
+
 %feature("docstring") WaveformObjects::Waveform::OutputToNINJAFormat """
 
 
@@ -1043,8 +1092,8 @@ Append the input string to the Waveform history.
 """
 
 %feature("docstring") WaveformObjects::Waveform::DropBefore """
-
-
+Delete data from the Waveform occurring at or before the input time.
+====================================================================
   Parameters
   ----------
     const double t
@@ -1109,8 +1158,8 @@ Append the input string to the Waveform history.
 """
 
 %feature("docstring") WaveformObjects::Waveform::UniformTime """
-
-
+Interpolate to evenly spaced time axis of size N.
+=================================================
   Parameters
   ----------
     const unsigned int N = 200
@@ -1122,8 +1171,8 @@ Append the input string to the Waveform history.
 """
 
 %feature("docstring") WaveformObjects::Waveform::DropAfter """
-
-
+Delete data from the Waveform occurring after the input time.
+=============================================================
   Parameters
   ----------
     const double t
@@ -1393,8 +1442,8 @@ class WaveformObjects::WaveformAtAPointFT
 """
 
 %feature("docstring") WaveformObjects::Waveform::AddToTime """
-
-
+Simply add the input constant to the time data of the Waveform.
+===============================================================
   Parameters
   ----------
     const double t
@@ -1518,8 +1567,8 @@ Interpolate Waveform to the time axis of another Waveform, returning ExtrapVal w
 """
 
 %feature("docstring") WaveformObjects::Waveform::operator/ """
-
-
+Subtract Waveforms and normalize.
+=================================
   Parameters
   ----------
     const Waveform& b
@@ -1527,6 +1576,14 @@ Interpolate Waveform to the time axis of another Waveform, returning ExtrapVal w
   Returns
   -------
     Waveform
+  
+  Description
+  -----------
+    The two Waveforms are interpolated onto their intersection, then the second
+    is subtracted from this Waveform, and the difference in magnitudes is
+    normalized by the magnitude of the second Waveform. The two Waveforms are
+    assumed to have identical (l,m) modes, and any alignment should be done
+    before calling this function.
   
 """
 
@@ -1537,7 +1594,6 @@ Find index of mode with given (l,m) data.
   ----------
     const int L
     const int M
-      Some other description
   
   Returns
   -------
@@ -1634,8 +1690,8 @@ class WaveformObjects::Waveform
 """
 
 %feature("docstring") WaveformObjects::Waveform::operator= """
-
-
+Set contents of this Waveform equal to the contents of another.
+===============================================================
   Parameters
   ----------
     const Waveform& b
@@ -1643,10 +1699,6 @@ class WaveformObjects::Waveform
   Returns
   -------
     Waveform&
-  
-  Description
-  -----------
-    This call should not be recorded in the history
   
 """
 
@@ -1871,9 +1923,24 @@ class WaveformObjects::Waveforms
 ================================
   Member variables
   ----------------
+    stringstream history
     vector<Waveform> Ws
     bool CommonTimeSet
     bool PhasesAligned
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveforms::SetCommonTime """
+
+
+  Parameters
+  ----------
+    const double& MinStep = 0.005
+    const double& MinTime = 0.0
+  
+  Returns
+  -------
+    void
   
 """
 
@@ -2100,6 +2167,20 @@ Return the entire vector of frames in which the data are decomposed.
   
 """
 
+%feature("docstring") WaveformObjects::Waveforms::Merge """
+
+
+  Parameters
+  ----------
+    const double& MinStep = 0.0
+    const double& MinTime = 0.0
+  
+  Returns
+  -------
+    Waveform
+  
+"""
+
 %feature("docstring") WaveformObjects::Waveform::SetPhysicalMassAndDistance """
 
 
@@ -2169,6 +2250,19 @@ Return a reference to the m (magnetic) index of mode 'Mode'.
   Returns
   -------
     double&
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveforms::Extrapolate """
+
+
+  Parameters
+  ----------
+    const int ExtrapolationOrder = 5
+  
+  Returns
+  -------
+    Waveform
   
 """
 
@@ -2309,6 +2403,37 @@ Construct Waveform from data file.
     issued if it mismatches the input parameter to this function.
   
 
+Construct a single Waveform from a .bbh or .minimal file.
+=========================================================
+  Parameters
+  ----------
+    const string& BBHFileName
+    unsigned int SectionToUse = 0
+    const Matrix<int> LM = Matrix<int>(0, 0)
+  
+  Returns
+  -------
+    Waveform
+  
+
+Construct a single Waveform from a [*-data] bbh section.
+========================================================
+  Parameters
+  ----------
+    const vector<string>& BBHDataSection
+    const string Dir = ''
+    const Matrix<int> LM = Matrix<int>(0, 0)
+  
+  Returns
+  -------
+    Waveform
+  
+  Description
+  -----------
+    The section is passed as a vector of strings, each element of which
+    contains the 'l,m = path' line from a metadata file.
+  
+
 Simple PN/EOB constructor for non-precessing systems.
 =====================================================
   Parameters
@@ -2397,8 +2522,8 @@ PN/EOB constructor for precessing systems.
 """
 
 %feature("docstring") WaveformObjects::Waveform::UniformTimeToPowerOfTwo """
-
-
+Interpolate to evenly spaced time axis with size 2^n for integer n.
+===================================================================
   Parameters
   ----------
     (none)
@@ -2406,6 +2531,12 @@ PN/EOB constructor for precessing systems.
   Returns
   -------
     Waveform&
+  
+  Description
+  -----------
+    This function is useful for interpolating the data to a time series
+    appropriate for FFTing. The size of the output is the smallest 2^n that is
+    larger than the current size of the data.
   
 """
 
@@ -2458,6 +2589,19 @@ Set the frame to the input data.
     
     This function is only available via SWIG (e.g., python), not c++. In c++,
     use the reference method.
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveforms::AlignPhases """
+
+
+  Parameters
+  ----------
+    const double& AlignmentPoint = 0.5
+  
+  Returns
+  -------
+    void
   
 """
 
@@ -2560,47 +2704,6 @@ Return a reference to the magnitude of all modes as a function of time.
   
 """
 
-%feature("docstring") Waveforms::Waveforms """
-
-
-  Parameters
-  ----------
-    const Waveforms& In
-  
-  Returns
-  -------
-    Waveforms
-  
-
-
-
-  Parameters
-  ----------
-    const int N = 0
-  
-  Returns
-  -------
-    Waveforms
-  
-
-
-
-  Parameters
-  ----------
-    const vector<double>& Radii
-    const string& DataFile
-    const string& AreaFile
-    const string& LapseFile
-    const double& ADMMass
-    const double& ChMass
-    const bool ZeroEnds = false
-  
-  Returns
-  -------
-    Waveforms
-  
-"""
-
 %feature("docstring") WaveformObjects::Waveform::SetMag """
 Set the magnitude of mode 'Mode' at time index 'Time' to the value 'a'.
 =======================================================================
@@ -2668,8 +2771,8 @@ Set the magnitude of the Waveform to the input data.
 """
 
 %feature("docstring") WaveformObjects::Waveform::ZeroBefore """
-
-
+Set magnitude to zero for data at or before the input time.
+===========================================================
   Parameters
   ----------
     const double t
@@ -2800,8 +2903,8 @@ Return a string describing the time scale (e.g., units).
 """
 
 %feature("docstring") WaveformObjects::Waveform::Peak22TimeIndex """
-
-
+Return the time index at which the (2,2) mode peaks.
+====================================================
   Parameters
   ----------
     (none)
