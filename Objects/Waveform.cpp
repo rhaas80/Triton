@@ -455,6 +455,8 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
   /// warning is issued if it mismatches the input parameter to this
   /// function.
   
+  //cout << "Calling Waveform(const std::string& DataFileName, const std::string& Format, ...)" << endl;
+  
   SetWaveformTypes();
   {
     char path[MAXPATHLEN];
@@ -649,11 +651,13 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
 
 /// Construct a single Waveform from a .bbh or .minimal file.
 WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
-				    unsigned int SectionToUse, // default: 0
+				    const int SectionToUse, // default: 0
 				    const WaveformUtilities::Matrix<int> LM) :
   history(""), typeIndex(0), timeScale("Time"), t(0), r(0), frame(0),
   lm(), mag(), arg()
 {
+  //cout << "Calling Waveform(const std::string& BBHFileName, ..." << endl;
+  
   // Get the directory of the .bbh file
   string Dir = BBHFileName;
   size_t LastSlash = Dir.rfind("/");
@@ -679,6 +683,7 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
   
   // Skip to the desired [*-data] section
   std::vector<std::string> BBHDataSection;
+  int SectionToUseHere=SectionToUse;
   while(ifs.getline(LineChars, LineLength, '\n')) {
     string LineCharsStripped(LineChars);
     LineCharsStripped = TrimWhiteSpace(StripComments(LineCharsStripped));
@@ -687,16 +692,16 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
        (LineCharsStripped.find("[ht-ampphi-data]")!=string::npos) ||
        (LineCharsStripped.find("[psi4t-ampphi-data]")!=string::npos))
       {
-	if(SectionToUse==0) {
+	if(SectionToUseHere==0) {
 	  BBHDataSection.push_back(LineCharsStripped);
 	  break;
 	} else {
-	  --SectionToUse;
+	  --SectionToUseHere;
 	}
       }
   }
-  if(SectionToUse != 0) {
-    cerr << "\nSectionToUse=" << SectionToUse << endl;
+  if(SectionToUseHere != 0) {
+    cerr << "\nSectionToUse=" << SectionToUse << "\tSectionToUseHere=" << SectionToUseHere << endl;
     throw("Not enough [*-data] sections in metadata file for requested section.");
   }
   
@@ -709,8 +714,6 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
        (LineCharsStripped.find("[ht-ampphi-data]")!=string::npos) ||
        (LineCharsStripped.find("[psi4t-ampphi-data]")!=string::npos))
       {
-	cerr << "\n\nWarning: Multiple [*-data] sections found in metadata file.\n"
-	     << "         Using only the first instance.\n" << endl;
 	break;
       }
     BBHDataSection.push_back(LineCharsStripped);
@@ -727,8 +730,15 @@ WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSecti
 {
   /// The section is passed as a vector of strings, each element of
   /// which contains the "l,m = path" line from a metadata file.
+  
+  //cout << "Calling Waveform(const std::vector<std::string>& BBHDataSection, ..." << endl;
+  
   Waveforms Ws(BBHDataSection, Dir, LM);
-  *this = Ws.Merge();
+  if(LM.nrows()<2) {
+    *this = Ws[0];
+  } else {
+    *this = Ws.Merge();
+  }
   // SetHistory("");
   // {
   //   char path[MAXPATHLEN];
@@ -756,7 +766,8 @@ WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSecti
 
 /// Simple PN/EOB constructor for non-precessing systems
 WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const double chis, const double chia, const double v0,
-		   const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish, const double PNPhaseOrder, const double PNAmplitudeOrder) :
+				    const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
+				    const double PNPhaseOrder, const double PNAmplitudeOrder) :
   history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0), frame(0),
   lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
 {
@@ -840,7 +851,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   mag.resize(lm.nrows(), t.size());
   arg.resize(lm.nrows(), t.size());
   WaveformAmplitudes PNAmp(delta, chis, chia);
-  if(LM.nrows()>0) {
+  if(lm.nrows()>0) {
     for(unsigned int m=0; m<NModes(); ++m) {
       PNAmp.rhOverM(L(m), M(m), v, Phi, mag[m], arg[m]);
     }
@@ -861,8 +872,9 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 
 /// PN/EOB constructor for precessing systems
 WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
-		   const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
-		   const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish, const double PNPhaseOrder, const double PNAmplitudeOrder) :
+				    const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+				    const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
+				    const double PNPhaseOrder, const double PNAmplitudeOrder) :
   history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0), frame(0),
   lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
 {
@@ -918,7 +930,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   mag.resize(lm.nrows(), t.size());
   arg.resize(lm.nrows(), t.size());
   WaveformAmplitudes PNAmp(delta, chis[0], chia[0]);
-  if(LM.nrows()>0) {
+  if(lm.nrows()>0) {
     for(unsigned int m=0; m<NModes(); ++m) {
       PNAmp.rhOverM(L(m), M(m), v, Phi, chis, chia, mag[m], arg[m]);
     }

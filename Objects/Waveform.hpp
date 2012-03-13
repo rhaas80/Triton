@@ -15,7 +15,7 @@ namespace WaveformObjects {
     Waveform(const Waveform& W);
     Waveform(const std::string& DataFileName, const std::string& Format, const bool ZeroEnds=false);
     Waveform(const std::string& BBHFileName,
-	     unsigned int SectionToUse=0,
+	     int SectionToUse=0,
 	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
     Waveform(const std::vector<std::string>& BBHDataSection,
 	     const std::string Dir = "",

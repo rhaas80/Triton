@@ -54,6 +54,8 @@ WaveformObjects::Waveforms::Waveforms(const std::vector<double>& Radii, const st
   /// 'rPsi4_R0100m_U8+.dat', 'rPsi4_R0110m_U8+.dat', etc.  The input
   /// AreaFile and LapseFile are treated similarly.
   
+  //cout << "Calling Waveforms(Radii, ...)" << endl;
+  
   // Record the construction of this object
   {
     char path[MAXPATHLEN];
@@ -102,6 +104,7 @@ WaveformObjects::Waveforms::Waveforms(const std::string& BBHFileName,
 				      const WaveformUtilities::Matrix<int> LM) :
   history(""), Ws(0), CommonTimeSet(false), PhasesAligned(false)
 {
+  //cout << "Calling Waveforms(const std::string& BBHFileName, ...)" << endl;
   
   // Record the construction of this object
   {
@@ -129,7 +132,7 @@ WaveformObjects::Waveforms::Waveforms(const std::string& BBHFileName,
   // Construct the vector, and read data into each element
   Ws = vector<Waveform>(BBHDataSections.size());
   for(unsigned int i=0; i<Ws.size(); ++i) {
-    Ws[i] = Waveform(BBHDataSections[i], Dirs[i], LM);
+    Ws[i] = Waveform(BBHDataSections[i], Dirs[i], LM.RawData());
   }
 }
 
@@ -139,6 +142,8 @@ WaveformObjects::Waveforms::Waveforms(const std::vector<std::string>& BBHDataSec
 				      const WaveformUtilities::Matrix<int> LM) :
   history(""), Ws(0), CommonTimeSet(false), PhasesAligned(false)
 {
+  //cout << "Calling Waveforms(const std::vector<std::string>& BBHDataSection, ...)" << endl;
+  
   /// The resulting set of Waveforms really represents just one
   /// Waveform, but each mode can have different times.  The modes can
   /// be re-assembled into a single Waveform by calling the Merge()
@@ -161,7 +166,7 @@ WaveformObjects::Waveforms::Waveforms(const std::vector<std::string>& BBHDataSec
 	    << "### pwd = " << pwd << endl
 	    << "### hostname = " << hostname << endl
 	    << "### date = " << date // comes with a newline
-	    << "### Waveforms(\"\"\"";
+	    << "### Waveforms(\"\"\"" << endl;
     for(unsigned int i=0; i<BBHDataSection.size(); ++i) {
       history << "###              " << BBHDataSection[i] << endl;
     }
@@ -335,6 +340,8 @@ Waveform WaveformObjects::Waveforms::Extrapolate(const int ExtrapolationOrder) {
 }
 
 Waveform WaveformObjects::Waveforms::Merge(const double& MinStep, const double& MinTime) {
+  //cout << "Calling Merge(...)" << endl;
+  
   history << "### this->Merge(" << MinStep << ", " << MinTime << ");" << endl;
   
   if(Ws.size()<2) {

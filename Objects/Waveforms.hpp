@@ -37,9 +37,10 @@ namespace WaveformObjects {
     Waveform Extrapolate(const int ExtrapolationOrder=5);
     Waveform Merge(const double& MinStep=0.0, const double& MinTime=0.0);
     void clear() { Ws.clear(); CommonTimeSet=false; PhasesAligned=false; }
+    inline unsigned int size() { return Ws.size(); }
     
   }; // class
-
+  
 } // namespace
 
 #endif // WAVEFORMS_HPP
