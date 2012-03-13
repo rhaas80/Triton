@@ -41,6 +41,16 @@ namespace std {
   %template(vectorvectori) vector<vector<int> >;
   %template(vectorvectord) vector<vector<double> >;
 };
+//// This should help python understand matrices
+%ignore WaveformUtilities::Matrix::operator=;
+%ignore WaveformUtilities::Matrix::operator[];
+%rename(__getitem__) WaveformUtilities::Matrix<int>::operator[] const;
+%rename(__getitem__) WaveformUtilities::Matrix<double>::operator[] const;
+%include "../Utilities/Matrix.hpp"
+namespace WaveformUtilities {
+  %template(matrixi) Matrix<int>;
+  %template(matrixd) Matrix<double>;
+};
 //////////////////////////////////////////////////////////////////////
 
 
