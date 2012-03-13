@@ -2408,7 +2408,7 @@ Construct a single Waveform from a .bbh or .minimal file.
   Parameters
   ----------
     const string& BBHFileName
-    unsigned int SectionToUse = 0
+    int SectionToUse = 0
     const Matrix<int> LM = Matrix<int>(0, 0)
   
   Returns
