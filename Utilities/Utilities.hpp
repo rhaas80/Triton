@@ -4,7 +4,7 @@
 #ifndef THROW_REPLACEMENT
 #define THROW_REPLACEMENT
 #define throw(message) \
-  { fprintf(stderr, "ERROR: %s\n\tin file %s at line %d\n", message, __FILE__, __LINE__); throw(1); }
+  { fprintf(stderr, "ERROR: %s\n       in file %s at line %d\n", message, __FILE__, __LINE__); throw(1); }
 #endif // THROW_REPLACEMENT
 
 #ifndef EulerGamma
