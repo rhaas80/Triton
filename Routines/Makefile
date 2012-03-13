@@ -34,7 +34,7 @@ realclean:
 	-$(RM) *.d $(EXECUTABLES) $(BINEXECUTABLES) .gitignore ../bin/.gitignore
 
 $(EXECUTABLES): % : %.cpp %.d $(LIBDEPS)
-	$(C++) -Wl,-rpath,$(CURDIR)/../lib $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
+	$(C++LINK) -Wl,-rpath,$(CURDIR)/../lib $(C++FLAGS) $*.cpp $(IFLAGS) $(LFLAGS) $(lFLAGS) -o $@
 	@$(LN) ../Routines/$@ ../bin/
 
 %.d : %.cpp
