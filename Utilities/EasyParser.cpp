@@ -19,6 +19,17 @@ vector<string> WU::split(const string &s, char delim) {
     return WU::split(s, elems, delim);
 }
 
+string replace(string String, const string& ReplaceThis, const string& WithThis) {
+  size_t index = String.find(ReplaceThis, 0);
+  while(index != string::npos && index<String.size()) {
+    String.replace(index, ReplaceThis.size(), WithThis);
+    index += WithThis.size();
+    if(index>String.size()) { break; }
+    index = String.find(ReplaceThis, index);
+  }
+  return String;
+}
+
 string WU::TrimWhiteSpace(const string& String) {
   if(String.length()==0) { return String; }
   string Stripped = String;
