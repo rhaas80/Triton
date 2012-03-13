@@ -1,7 +1,10 @@
 # -*- makefile -*-  This makes emacs see this file as a Makefile
 
+H5INC		= -I/opt/local/include/
+H5LIB		= -L/opt/local/lib/ -lhdf5 -lhdf5_cpp
+
 C++		= g++
-C++LINK		= g++
+C++LINK		= g++ ${H5LIB}
 MAKEDEPEND	= g++ -MM
 
 ifeq ($(OSTYPE),darwin)
@@ -29,4 +32,4 @@ DIFF		= diff
 
 ## Use this for standard builds
 OPENMP		= -fopenmp
-C++FLAGS	= -fpic -O3 ${OPENMP}
+C++FLAGS	= ${H5INC} -fpic -O3 ${OPENMP}
