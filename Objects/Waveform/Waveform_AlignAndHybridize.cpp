@@ -115,14 +115,18 @@ public:
   }
 };
 
-Waveform& WaveformObjects::Waveform::AlignPhasesToTwoPi(const Waveform& a, const double t) {
-  History() << "### this->AlignPhasesToTwoPi(a, " << t << ");\n#" << flush;
-  int Ia=0;
-  int Ithis=0;
-  while(a.T(Ia)<t && Ia<int(a.NTimes())) { Ia++; }
-  while(T(Ithis)<t && Ithis<int(NTimes())) { Ithis++; }
-  for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
-    ArgRef(mode) += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis))/(2.0*M_PI)));
+/// Align phases of two Waveforms to within 2*pi at a fractional time in this Waveform of tFrac.
+Waveform& WaveformObjects::Waveform::AlignPhasesToTwoPi(const Waveform& a, const double tFrac) {
+  if(tFrac<0 || tFrac>1) {
+    cerr << "\ntFrac=" << tFrac << endl;
+    throw("Bad fraction");
+  }
+  History() << "### this->AlignPhasesToTwoPi(a, " << tFrac << ");\n#" << flush;
+  const int Ithis=int(tFrac*NTimes());
+  Waveform b(a);
+  b.Interpolate(T(Ithis));
+  for(unsigned int mode=0; mode<b.NModes() && mode<NModes(); ++mode) {
+    ArgRef(mode) += (2.0 * M_PI * round((b.Arg(mode,0)-Arg(mode,Ithis))/(2.0*M_PI)));
   }
   return *this;
 }
