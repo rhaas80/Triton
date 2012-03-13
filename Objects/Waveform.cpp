@@ -8,6 +8,7 @@
 #include <fstream>
 
 #include "Waveform.hpp"
+#include "Waveforms.hpp"
 
 #include "Interpolate.hpp"
 #include "Minimize.hpp"
@@ -403,6 +404,7 @@ WaveformObjects::Waveform::Waveform() :
   history("### Waveform(); // empty constructor\n"), typeIndex(0), timeScale("Time"),
   t(0), r(0), frame(0), lm(0, 2), mag(0, 0), arg(0, 0)
 {
+  history.seekp(0, ios_base::end);
   SetWaveformTypes();
 }
 
@@ -454,23 +456,22 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
   /// function.
   
   SetWaveformTypes();
-  
-  string pwd;
   {
     char path[MAXPATHLEN];
     getcwd(path, MAXPATHLEN);
-    pwd = path;
-  }
-  string hostname;
-  {
+    string pwd = path;
     char host[MAXHOSTNAMELEN];
     gethostname(host, MAXHOSTNAMELEN);
-    hostname = host;
+    string hostname = host;
+    time_t rawtime;
+    time ( &rawtime );
+    string date = asctime ( localtime ( &rawtime ) );
+    history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
+	    << "### pwd = " << pwd << endl
+	    << "### hostname = " << hostname << endl
+	    << "### date = " << date // comes with a newline
+	    << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\"); // constructor from data file" << endl;
   }
-  history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
-	  << "### pwd = " << pwd << endl
-	  << "### hostname = " << hostname << endl
-	  << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\"); // constructor from data file" << endl;
   
   if(tolower(Format).find("ninja") != string::npos
      || (DataFileName.size()>4 && DataFileName.compare(DataFileName.size()-4,4,".bbh")==0)
@@ -522,7 +523,11 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       if(LineCharsStripped.length()==0) { continue; }
       Pair = split(Line.assign(LineCharsStripped), '=');
       if(Pair[0].find("extraction-radius")!=string::npos) { continue; }
-      if(Pair[0].find("data]")!=string::npos) { break; }
+      if((Pair[0].find("[ht-data]")!=string::npos) ||
+	 (Pair[0].find("[psi4t-data]")!=string::npos) ||
+	 (Pair[0].find("[ht-ampphi-data]")!=string::npos) ||
+	 (Pair[0].find("[psi4t-ampphi-data]")!=string::npos))
+	{ break; }
       LandMString = split(Pair[0], ',');
       DataFileName = TrimWhiteSpace(Pair[1]);
       LandM[0] = atoi(LandMString[0].c_str());
@@ -579,15 +584,15 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     // Read data file
     std::vector<std::vector<double> > Data;
     std::vector<string> Header;
-    ReadDatFile(DataFileName,  Data,  Header);
+    ReadDatFile(DataFileName,  Data,  Header, true);
     history << "#### Begin Previous History\n#";
     for(unsigned int i=0; i<Header.size(); ++i) {
       history << Header[i] << "\n#";
     }
     history << "### End Previous History\n";
-    t = std::vector<double>(Data.size());
+    t = std::vector<double>(Data[0].size());
     for(unsigned int i=0; i<t.size(); ++i) {
-      t[i] = Data[i][0];
+      t[i] = Data[0][i];
     }
     r = std::vector<double>(1, 0.0);
     
@@ -596,16 +601,20 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     // we transpose the matrix to std::vectors of components, each of which
     // is a std::vector through time.
     //ORIENTATION!!!  7 following lines
-    std::vector<std::vector<double> > Re((Data[0].size()-1)/2, std::vector<double>(Data.size(), 0));
-    std::vector<std::vector<double> > Im(Re.size(), std::vector<double>(Data.size(), 0));
+    std::vector<std::vector<double> > Re((Data.size()-1)/2, std::vector<double>(Data[0].size(), 0));
+    std::vector<std::vector<double> > Im(Re.size(), std::vector<double>(Data[0].size(), 0));
     std::vector<double> ReEnds(Re.size(), 0.0);
     std::vector<double> ImEnds(Re.size(), 0.0);
+    if(ZeroEnds) {
+      for(unsigned int i = 0; i<Re.size(); ++i) { // Loop over components of Re
+	ReEnds[i] = Data[2*i+1][Data.size()-1];
+	ImEnds[i] = Data[2*i+2][Data.size()-1];
+      }
+    }
     for(unsigned int i = 0; i<Re.size(); ++i) { // Loop over components of Re
-      ReEnds[i] = (ZeroEnds ? Data[Data.size()-1][2*i+1] : 0.0);
-      ImEnds[i] = (ZeroEnds ? Data[Data.size()-1][2*i+2] : 0.0);
       for(unsigned int j = 0; j<Re[i].size(); ++j) { // Loop over time steps
-	Re[i][j] = Data[j][2*i+1];
-	Im[i][j] = Data[j][2*i+2];
+	Re[i][j] = Data[2*i+1][j];
+	Im[i][j] = Data[2*i+2][j];
       }
     }
     Data.clear();
@@ -637,6 +646,113 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     }
   }
 }
+
+/// Construct a single Waveform from a .bbh or .minimal file.
+WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
+				    unsigned int SectionToUse, // default: 0
+				    const WaveformUtilities::Matrix<int> LM) :
+  history(""), typeIndex(0), timeScale("Time"), t(0), r(0), frame(0),
+  lm(), mag(), arg()
+{
+  // Get the directory of the .bbh file
+  string Dir = BBHFileName;
+  size_t LastSlash = Dir.rfind("/");
+  if (LastSlash!=string::npos) {
+    Dir = Dir.substr(0, LastSlash+1);
+  } else {
+    Dir = "";
+  }
+  
+  // Set up variables we will use and open the metadata file
+  string Format = "ReIm";
+  int LineLength=8192;
+  char LineChars[LineLength];
+  string Line="";
+  std::vector<string> Pair(2,"");
+  std::vector<string> LandMString(2,"");
+  std::vector<int> LandM(2);
+  ifstream ifs(BBHFileName.c_str(), ifstream::in);
+  if(!ifs.is_open()) {
+    cerr << "Couldn't open '" << BBHFileName << "'" << endl;
+    throw("Bad file descriptor");
+  }
+  
+  // Skip to the desired [*-data] section
+  std::vector<std::string> BBHDataSection;
+  while(ifs.getline(LineChars, LineLength, '\n')) {
+    string LineCharsStripped(LineChars);
+    LineCharsStripped = TrimWhiteSpace(StripComments(LineCharsStripped));
+    if((LineCharsStripped.find("[ht-data]")!=string::npos) ||
+       (LineCharsStripped.find("[psi4t-data]")!=string::npos) ||
+       (LineCharsStripped.find("[ht-ampphi-data]")!=string::npos) ||
+       (LineCharsStripped.find("[psi4t-ampphi-data]")!=string::npos))
+      {
+	if(SectionToUse==0) {
+	  BBHDataSection.push_back(LineCharsStripped);
+	  break;
+	} else {
+	  --SectionToUse;
+	}
+      }
+  }
+  if(SectionToUse != 0) {
+    cerr << "\nSectionToUse=" << SectionToUse << endl;
+    throw("Not enough [*-data] sections in metadata file for requested section.");
+  }
+  
+  // Loop through following lines getting data
+  while(ifs.getline(LineChars, LineLength, '\n')) {
+    string LineCharsStripped(LineChars);
+    LineCharsStripped = TrimWhiteSpace(StripComments(LineCharsStripped));
+    if((LineCharsStripped.find("[ht-data]")!=string::npos) ||
+       (LineCharsStripped.find("[psi4t-data]")!=string::npos) ||
+       (LineCharsStripped.find("[ht-ampphi-data]")!=string::npos) ||
+       (LineCharsStripped.find("[psi4t-ampphi-data]")!=string::npos))
+      {
+	cerr << "\n\nWarning: Multiple [*-data] sections found in metadata file.\n"
+	     << "         Using only the first instance.\n" << endl;
+	break;
+      }
+    BBHDataSection.push_back(LineCharsStripped);
+  }
+  *this = Waveform(BBHDataSection, Dir, LM);
+}
+
+/// Construct a single Waveform from a [*-data] bbh section.
+WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSection,
+				    const std::string Dir,
+				    const WaveformUtilities::Matrix<int> LM) :
+  history(""), typeIndex(0), timeScale("Time"), t(0), r(0), frame(0),
+  lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
+{
+  /// The section is passed as a vector of strings, each element of
+  /// which contains the "l,m = path" line from a metadata file.
+  Waveforms Ws(BBHDataSection, Dir, LM);
+  *this = Ws.Merge();
+  // SetHistory("");
+  // {
+  //   char path[MAXPATHLEN];
+  //   getcwd(path, MAXPATHLEN);
+  //   string pwd = path;
+  //   char host[MAXHOSTNAMELEN];
+  //   gethostname(host, MAXHOSTNAMELEN);
+  //   string hostname = host;
+  //   time_t rawtime;
+  //   time ( &rawtime );
+  //   string date = asctime ( localtime ( &rawtime ) );
+  //   history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
+  // 	    << "### pwd = " << pwd << endl
+  // 	    << "### hostname = " << hostname << endl
+  // 	    << "### date = " << date // comes with a newline
+  // 	    << "### Waveform(BBHDataSection, " << RowFormat(LM) << ", " << Dir << "); // constructor from data file" << endl
+  // 	    << "##### BBHDataSection = " << endl;
+  //   for(unsigned int i=0; i<BBHDataSection.size(); ++i) {
+  //     history << "#### " << BBHDataSection[i] << endl;
+  //   }
+  //   history << "##### end of BBHDataSection";
+  // }
+}
+
 
 /// Simple PN/EOB constructor for non-precessing systems
 WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const double chis, const double chia, const double v0,

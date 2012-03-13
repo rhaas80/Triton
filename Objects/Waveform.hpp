@@ -14,6 +14,12 @@ namespace WaveformObjects {
     Waveform();
     Waveform(const Waveform& W);
     Waveform(const std::string& DataFileName, const std::string& Format, const bool ZeroEnds=false);
+    Waveform(const std::string& BBHFileName,
+	     unsigned int SectionToUse=0,
+	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
+    Waveform(const std::vector<std::string>& BBHDataSection,
+	     const std::string Dir = "",
+	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
     Waveform(const std::string& Approximant, const double delta, const double chis, const double chia, const double v0,
 	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
 	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
@@ -174,7 +180,7 @@ namespace WaveformObjects {
     Waveform& UnfixNonOscillatingData(); // If M=0, convert from ReIm to MagArg
     
     // Align and hybridize waveforms
-    Waveform& AlignPhasesToTwoPi(const Waveform& a, const double t);
+    Waveform& AlignPhasesToTwoPi(const Waveform& a, const double tFrac=0.25);
     Waveform& AlignTo(const Waveform& a, const double t1, const double t2);
     Waveform& AlignWithIntermediate(const Waveform& a, Waveform Intermediate, const double t1, const double t2);
     Waveform HybridizeWith(const Waveform& b, const double t1, const double t2, const double MinStep=0.005) const;
