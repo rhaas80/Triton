@@ -12,6 +12,9 @@ from matplotlib.pyplot import xlabel, ylabel, tight_layout, setp
 from warnings import warn
 from numpy import array, empty, transpose
 
+def NotAbs(Anything) :
+    return Anything
+
 def plot(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
     """
     This function should be called as a method of the Waveform class,
@@ -54,38 +57,50 @@ def plot(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
         YLabel =r'$\mathrm{Mag} \left( ' + TypeDict[this.Type()] + r' \right) $'
         styledplot = matplotlibpyplotplot
         quantity = this.Mag
+        AbsOrNot = NotAbs
     elif (WaveformPart.lower()=='logmag') :
         YLabel =r'$\mathrm{Mag} \left( ' + TypeDict[this.Type()] + r' \right) $'
         styledplot = matplotlibpyplotsemilogy
         quantity = this.Mag
+        AbsOrNot = abs
     elif (WaveformPart.lower()=='loglogmag') :
         YLabel =r'$\mathrm{Mag} \left( ' + TypeDict[this.Type()] + r' \right) $'
         styledplot = matplotlibpyplotloglog
         quantity = this.Mag
+        AbsOrNot = abs
     elif (WaveformPart.lower()=='arg') :
         YLabel =r'$\mathrm{Arg} \left( ' + TypeDict[this.Type()] + r' \right) $'
         styledplot = matplotlibpyplotplot
         quantity = this.Arg
+        AbsOrNot = NotAbs
+    elif (WaveformPart.lower()=='logarg') :
+        YLabel =r'$\mathrm{Arg} \left( ' + TypeDict[this.Type()] + r' \right) $'
+        styledplot = matplotlibpyplotsemilogy
+        quantity = this.Arg
+        AbsOrNot = abs
     else :
         print("Unsupported data type %s" % WaveformPart)
         return []
     
     ## This does the actual work of plotting, depending on what Modes are needed
-    if (type(Modes)==int or len(Modes)==1) :
-        Lines = styledplot(this.T(), quantity(Modes), *pyplot_args, **pyplot_kwargs)
+    if (type(Modes)==int or len(Modes)==1) : # The requested mode is plotted
+        Lines = styledplot(this.T(), AbsOrNot(quantity(Modes)), *pyplot_args, **pyplot_kwargs)
         Labels = ['(' + str(this.L(Modes)) + ', ' + str(this.M(Modes)) + ')']
-    elif (len(Modes)==0) :
-        Lines = styledplot(this.T(), quantity().transpose(), *pyplot_args, **pyplot_kwargs)
-        Labels = ['(' + str(this.L(mode)) + ', ' + str(this.M(mode)) + ')' for mode in range(this.NModes())]
+    elif (len(Modes)==0) : # All modes are plotted
+        Lines = styledplot(this.T(), AbsOrNot(quantity()).transpose(), *pyplot_args, **pyplot_kwargs)
+        if ((this.NModes()==1) and ('label' in pyplot_kwargs)) :
+            Labels = [pyplot_kwargs['label']]
+        else :
+            Labels = ['(' + str(this.L(mode)) + ', ' + str(this.M(mode)) + ')' for mode in range(this.NModes())]
     elif ((len(Modes)==2) and (type(Modes[0])==int and type(Modes[1])==int) and ((Modes[0]<2) or (Modes[0]<abs(Modes[1])))) :
-        Lines = styledplot(this.T(), transpose((quantity(Modes[0]), quantity(Modes[1]))), *pyplot_args, **pyplot_kwargs)
+        Lines = styledplot(this.T(), transpose((AbsOrNot(quantity(Modes[0])), AbsOrNot(quantity(Modes[1])))), *pyplot_args, **pyplot_kwargs)
         Labels = ['(' + str(this.L(mode)) + ', ' + str(this.M(mode)) + ')' for mode in Modes]
     else :
         Modes = array(Modes)
         if (Modes.shape==(2,)) :
             warn("Ambiguous 'Modes' specification.  Assuming this is an (l,m) specification.", SyntaxWarning)
             #try: # Catch a bad (l,m) error
-            Lines = styledplot(this.T(), quantity(this.FindModeIndex(int(Modes[0]), int(Modes[1]))), *pyplot_args, **pyplot_kwargs)
+            Lines = styledplot(this.T(), AbsOrNot(quantity(this.FindModeIndex(int(Modes[0]), int(Modes[1])))), *pyplot_args, **pyplot_kwargs)
             Labels = ['(' + str(Modes[0]) + ', ' + str(Modes[1]) + ')']
         else :
             Data = empty([Modes.shape[0], this.NTimes()], dtype=float)
@@ -97,7 +112,7 @@ def plot(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
                     ModeIndex = this.FindModeIndex(int(Modes[i][0]), int(Modes[i][1]))
                     Labels.append('(' + str(Modes[i][0]) + ', ' + str(Modes[i][1]) + ')')
                 Data[i] = quantity(ModeIndex)
-                Lines = styledplot(this.T(), Data.transpose(), *pyplot_args, **pyplot_kwargs)
+                Lines = styledplot(this.T(), AbsOrNot(Data).transpose(), *pyplot_args, **pyplot_kwargs)
     
     xlabel(XLabel)
     ylabel(YLabel)
