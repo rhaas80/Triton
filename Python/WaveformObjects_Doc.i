@@ -1197,8 +1197,8 @@ Delete data from the Waveform occurring after the input time.
     void
   
 
-
-
+Output single mode of Waveform to file.
+=======================================
   Parameters
   ----------
     const string& FileName
@@ -1211,8 +1211,8 @@ Delete data from the Waveform occurring after the input time.
     void
   
 
-
-
+Output single mode of Waveform to ostream.
+==========================================
   Parameters
   ----------
     ostream& os
@@ -1223,13 +1223,17 @@ Delete data from the Waveform occurring after the input time.
   -------
     void
   
+  Description
+  -----------
+    This is intended to be a helper function.
+  
 
-
-
+Output single mode of Waveform to file.
+=======================================
   Parameters
   ----------
     const string& FileName
-    const Waveform& a
+    const WaveformObjects::Waveform& a
     const unsigned int Mode
     const unsigned int precision
   
@@ -2521,6 +2525,19 @@ PN/EOB constructor for precessing systems.
   
 """
 
+%feature("docstring") WaveformObjects::Waveforms::size """
+
+
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    unsigned int
+  
+"""
+
 %feature("docstring") WaveformObjects::Waveform::UniformTimeToPowerOfTwo """
 Interpolate to evenly spaced time axis with size 2^n for integer n.
 ===================================================================
@@ -2916,8 +2933,8 @@ Return the time index at which the (2,2) mode peaks.
 """
 
 %feature("docstring") Output """
-
-
+Output Waveform to file.
+========================
   Parameters
   ----------
     const string& FileName
@@ -2929,12 +2946,12 @@ Return the time index at which the (2,2) mode peaks.
     void
   
 
-
-
+Output Waveform to file.
+========================
   Parameters
   ----------
     const string& FileName
-    const Waveform& a
+    const WaveformObjects::Waveform& a
     const unsigned int precision
   
   Returns

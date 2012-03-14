@@ -48,8 +48,8 @@ namespace std {
 %rename(__getitem__) WaveformUtilities::Matrix<double>::operator[] const;
 %include "../Utilities/Matrix.hpp"
 namespace WaveformUtilities {
-  %template(matrixi) Matrix<int>;
-  %template(matrixd) Matrix<double>;
+  %template(MatrixInt) Matrix<int>;
+  %template(MatrixDouble) Matrix<double>;
 };
 //////////////////////////////////////////////////////////////////////
 
