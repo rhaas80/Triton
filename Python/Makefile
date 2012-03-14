@@ -38,8 +38,9 @@ _WaveformObjects.so : WaveformObjects.i
 		-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/ \
 		WaveformObjects_wrap.cxx
 	@:
-	$(C++) -DSWIG $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
-		$(LFLAGS) $(lFLAGS) $(H5LIB) WaveformObjects_wrap.o -o PyGW/_WaveformObjects.so
+	$(C++LINK) -Wl,-rpath,$(CURDIR)/../lib -DSWIG $(SHARED) \
+		`python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
+		$(LFLAGS) $(lFLAGS) WaveformObjects_wrap.o -o PyGW/_WaveformObjects.so
 
 SWSHs_python : _SWSHs.so
 
@@ -50,7 +51,8 @@ _SWSHs.so : SWSHs.i
 		-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/ \
 		SWSHs_wrap.cxx
 	@:
-	$(C++) -DSWIG $(SHARED) `python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
+	$(C++LINK) -Wl,-rpath,$(CURDIR)/../lib -DSWIG $(SHARED) \
+		`python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
 		$(LFLAGS) $(lFLAGS) SWSHs_wrap.o -o _SWSHs.so
 
 -include $(SOURCES:.cpp=.d)
