@@ -251,7 +251,8 @@ ostream& operator<<(ostream& os, const Waveform& a) {
   return os;
 }
 
-void Output(const string& FileName, const Waveform& a, const unsigned int precision) {
+/// Output Waveform to file.
+void Output(const std::string& FileName, const WaveformObjects::Waveform& a, const unsigned int precision) {
   ofstream ofs(FileName.c_str(), ofstream::out);
   ofs << setprecision(precision);
   ofs << a;
@@ -259,7 +260,9 @@ void Output(const string& FileName, const Waveform& a, const unsigned int precis
   return;
 }
 
+/// Output single mode of Waveform to ostream.
 void OutputSingleMode(ostream& os, const Waveform& a, const unsigned int Mode) {
+  /// This is intended to be a helper function.
   os << a.HistoryStr()
      << "# [1] = " << a.TimeScale() << endl
      << "# [2] = Mag{" << a.Type() << "(" << a.L(Mode) << "," << a.M(Mode) << ")}" << endl
@@ -270,7 +273,8 @@ void OutputSingleMode(ostream& os, const Waveform& a, const unsigned int Mode) {
   return;
 }
 
-void OutputSingleMode(const string& FileName, const Waveform& a, const unsigned int Mode, const unsigned int precision) {
+/// Output single mode of Waveform to file.
+void OutputSingleMode(const std::string& FileName, const WaveformObjects::Waveform& a, const unsigned int Mode, const unsigned int precision) {
   ofstream ofs(FileName.c_str(), ofstream::out);
   ofs << setprecision(precision);
   OutputSingleMode(ofs, a, Mode);
