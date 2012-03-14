@@ -1,7 +1,13 @@
 .gitignore
+Python/PyGW/WaveformObjects.py
+Python/SWSHs.py
 MachineDef
 xml
 lib*.so
+_*.so
+*_wrap.cxx
+*.pyc
 *.d
 *.o
 *~
+
