@@ -1,7 +1,13 @@
 # -*- makefile -*-  This makes emacs see this file as a Makefile
 
-H5INC		= -I/opt/local/include/
-H5LIB		= -L/opt/local/lib/ -lhdf5 -lhdf5_cpp
+ifndef HDF5_HOME
+  $(warning You need to define the HDF5_HOME variable)
+  $(warning On zwicky, do something like 'module add HDF5')
+  $(error Cannot proceed)
+endif
+
+H5INC		= -I${HDF5_HOME}/include/
+H5LIB		= -L${HDF5_HOME}/lib/ -lhdf5 -lhdf5_cpp
 
 C++		= g++
 C++LINK		= g++ ${H5LIB}
