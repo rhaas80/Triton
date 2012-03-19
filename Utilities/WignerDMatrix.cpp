@@ -48,20 +48,24 @@ void WaveformUtilities::WignerDMatrix::SetAngles(const double ialpha, const doub
 }
 
 void WaveformUtilities::WignerDMatrix::SetElement(const int L, const int MP, const int M) {
-  if(L<0) {
+  if(iL<0) {
     Calculator = &WignerDMatrixLocal::Uninitialized;
     return;
   }
   
-  if(L>8) {
-    std::cerr << "\nL=" << L << std::endl;
+  if(iL>8) {
+    std::cerr << "\nL=" << iL << std::endl;
     throw("This L value not yet implemented for Wigner D matrices.");
   }
   
-  if(abs(MP)>L || abs(M)>L) {
-    std::cerr << "\nL=" << L << "  MP=" << MP << "  M=" << M << std::endl;
+  if(abs(iMP)>iL || abs(iM)>iL) {
+    std::cerr << "\nL=" << iL << "  MP=" << iMP << "  M=" << iM << std::endl;
     throw("Bad MP or M, out of range for Wigner D matrix.");
   }
+  
+  L=iL;
+  MP=iMP;
+  M=iM;
   
   switch(L) {
   case 0:
