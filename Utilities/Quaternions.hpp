@@ -17,6 +17,7 @@ namespace WaveformUtilities {
   public:
     const double& operator[](const unsigned int i) const;
     double& operator[](const unsigned int i);
+    bool operator==(const Quaternion& p) const;
     std::vector<double> Components() const;
     const double& Re() const { return q0; }
     std::vector<double> Vector() const;
@@ -42,6 +43,11 @@ namespace WaveformUtilities {
     Quaternion log() const;
     Quaternion pow(const double x) const;
   };
+  
+  const Quaternion Quaternion1(1.0,0.0,0.0,0.0);
+  const Quaternion Quaternionx(0.0,1.0,0.0,0.0);
+  const Quaternion Quaterniony(0.0,0.0,1.0,0.0);
+  const Quaternion Quaternionz(0.0,0.0,0.0,1.0);
   
   inline WaveformUtilities::Quaternion exp(const WaveformUtilities::Quaternion& Q) { return Q.exp(); }
   inline WaveformUtilities::Quaternion log(const WaveformUtilities::Quaternion& Q) { return Q.log(); }

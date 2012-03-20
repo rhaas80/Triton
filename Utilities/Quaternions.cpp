@@ -29,10 +29,10 @@ Quaternion::Quaternion(const vector<double>& vec)
 { }
 
 Quaternion::Quaternion(const double alpha, const double beta, const double gamma)
-  : q0(cos(beta/2.)*cos((alpha + gamma)/2.)),
+  : q0(  cos(beta/2.)*cos((alpha + gamma)/2.)),
     q1(-(sin(beta/2.)*sin((alpha - gamma)/2.))),
-    q2(cos((alpha - gamma)/2.)*sin(beta/2.)),
-    q3(cos(beta/2.)*sin((alpha + gamma)/2.))
+    q2(  sin(beta/2.)*cos((alpha - gamma)/2.)),
+    q3(  cos(beta/2.)*sin((alpha + gamma)/2.))
 { }
 
 const double& Quaternion::operator[](const unsigned int i) const {
@@ -53,6 +53,14 @@ double& Quaternion::operator[](const unsigned int i) {
   else if(i==3) { return q3; }
   cerr << "\ni=" << i << endl;
   throw("We shouldn't have gotten here!");
+}
+
+bool Quaternion::operator==(const Quaternion& p) const {
+  if(q0!=p.q0) { return false; }
+  if(q1!=p.q1) { return false; }
+  if(q2!=p.q2) { return false; }
+  if(q3!=p.q3) { return false; }
+  return true;
 }
 
 vector<double> Quaternion::Components() const {
@@ -126,7 +134,7 @@ Quaternion Quaternion::Normalized() const {
 double Quaternion::Angle() const {
   if(q0==0.0) { return M_PI; }
   const double norm = sqrt(q1*q1+q2*q2+q3*q3);
-  if(norm==0.0) { return 0.0; }
+  if(norm<=3*numeric_limits<double>::epsilon()) { return 0.0; }
 //   return 2.0*atan2(norm, q0);
   return 2.0*acos(q0/Norm());
 }
@@ -134,7 +142,7 @@ double Quaternion::Angle() const {
 vector<double> Quaternion::Axis() const {
   vector<double> v(3, 0.0);
   const double norm = sqrt(q1*q1+q2*q2+q3*q3);
-  if(norm==0.0) { v[0]=1.0; return v; }
+  if(norm<=3*numeric_limits<double>::epsilon()) { v[0]=1.0; return v; }
   v[0] = q1/norm;
   v[1] = q2/norm;
   v[2] = q3/norm;
@@ -152,22 +160,22 @@ vector<double> Quaternion::Vec() const {
 vector<double> Quaternion::EulerAnglesZYZ() const {
   vector<double> AlphaBetaGamma(3, 0.0);
   Quaternion Q = Normalized();
-  AlphaBetaGamma[1] = acos(1-2*q1*q1-2*q2*q2);
-  if(AlphaBetaGamma[1]==0.0) { return AlphaBetaGamma; }
-//   AlphaBetaGamma[0] = asin((-2*q0*q1 + 2*q2*q3)/sin(AlphaBetaGamma[1]));
-//   AlphaBetaGamma[2] = asin((2*q0*q1 + 2*q2*q3)/sin(AlphaBetaGamma[1]));
-//   AlphaBetaGamma[0] = acos((2*q0*q2 + 2*q1*q3)/sin(AlphaBetaGamma[1]));
-//   AlphaBetaGamma[2] = acos((2*q0*q2 - 2*q1*q3)/sin(AlphaBetaGamma[1]));
+  // AlphaBetaGamma[1] = acos(1-2*q1*q1-2*q2*q2);
+  // if(std::abs(AlphaBetaGamma[1])<=4*numeric_limits<double>::epsilon()) { return AlphaBetaGamma; }
+  // AlphaBetaGamma[0] = asin((-2*q0*q1 + 2*q2*q3)/sin(AlphaBetaGamma[1]));
+  // AlphaBetaGamma[2] = asin((2*q0*q1 + 2*q2*q3)/sin(AlphaBetaGamma[1]));
+  // AlphaBetaGamma[0] = acos((2*q0*q2 + 2*q1*q3)/sin(AlphaBetaGamma[1]));
+  // AlphaBetaGamma[2] = acos((2*q0*q2 - 2*q1*q3)/sin(AlphaBetaGamma[1]));
   AlphaBetaGamma[0] = atan2((-2*q0*q1 + 2*q2*q3), (2*q0*q2 + 2*q1*q3));
+  AlphaBetaGamma[1] = acos(1-2*q1*q1-2*q2*q2);
   AlphaBetaGamma[2] = atan2((2*q0*q1 + 2*q2*q3), (2*q0*q2 - 2*q1*q3));
   return AlphaBetaGamma;
 }
 
-
 Quaternion Quaternion::exp() const {
   Quaternion P;
   double b = sqrt(q1*q1 + q2*q2 + q3*q3);
-  if (abs(b)<=numeric_limits<double>::epsilon()) {
+  if (b<=3*numeric_limits<double>::epsilon()) {
     P[0] = ::exp(q0);
   } else {
     double f = sin(b)/b;
@@ -182,7 +190,7 @@ Quaternion Quaternion::exp() const {
 Quaternion Quaternion::log() const {
   Quaternion P;
   double b = sqrt(q1*q1 + q2*q2 + q3*q3);
-  if (abs(b)<=numeric_limits<double>::epsilon()) {
+  if (b<=3*numeric_limits<double>::epsilon()) {
     // if (q0<=numeric_limits<double>::epsilon()) {
     //   cerr << "Q=" << Q << endl;
     //   throw("Q is too close to 0 to take the logarithm.");
@@ -192,7 +200,7 @@ Quaternion Quaternion::log() const {
     double t = atan2(b, q0);
     double f = t/b;
     double ct = cos(t);
-    // if (abs(ct)<=numeric_limits<double>::epsilon())
+    // if (std::abs(ct)<=numeric_limits<double>::epsilon())
     //   throw EValueError("math domain error");
     double r = q0/ct;
     // if (r<=numeric_limits<double>::epsilon())
@@ -206,7 +214,7 @@ Quaternion Quaternion::log() const {
 }
 
 
-//// Useful other functions
+// Useful other functions
 vector<Quaternion> WaveformUtilities::Quaternions(const vector<double>& alpha, const vector<double>& beta, const vector<double>& gamma) {
   if(alpha.size() != beta.size() || alpha.size() != gamma.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tgamma.size()=" << gamma.size() << endl;

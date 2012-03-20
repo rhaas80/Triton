@@ -47,7 +47,7 @@ void WaveformUtilities::WignerDMatrix::SetAngles(const double ialpha, const doub
   return;
 }
 
-void WaveformUtilities::WignerDMatrix::SetElement(const int L, const int MP, const int M) {
+void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, const int iM) {
   if(iL<0) {
     Calculator = &WignerDMatrixLocal::Uninitialized;
     return;

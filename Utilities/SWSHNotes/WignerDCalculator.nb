@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       145,          7]
-NotebookDataLength[    406073,      10543]
-NotebookOptionsPosition[    403373,      10451]
-NotebookOutlinePosition[    403732,      10467]
-CellTagsIndexPosition[    403689,      10464]
+NotebookDataLength[    409159,      10608]
+NotebookOptionsPosition[    406459,      10516]
+NotebookOutlinePosition[    406816,      10532]
+CellTagsIndexPosition[    406773,      10529]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -26,8 +26,9 @@ Cell["Output the Wigner-\[ScriptCapitalD] code", "Section",
 
 Cell[CellGroupData[{
 
-Cell["Euler angle form", "Subsection",
- CellChangeTimes->{{3.526055838204115*^9, 3.526055842197324*^9}}],
+Cell["Euler-angle form", "Subsection",
+ CellChangeTimes->{{3.526055838204115*^9, 3.526055842197324*^9}, {
+  3.541164714857759*^9, 3.541164714951717*^9}}],
 
 Cell[BoxData[{
  RowBox[{
@@ -156,10 +157,10 @@ Cell[BoxData[{
           RowBox[{
            RowBox[{"2", "l"}], "-", 
            RowBox[{"2", "\[Rho]"}], "+", "m", "+", "mp"}]]}], " ", ")"}]}], 
-      "]"}]}]}], ";"}], "\n", "\[IndentingNewLine]"}], "\n", 
+      "]"}]}]}], ";"}], "\[IndentingNewLine]", "\n"}], "\n", 
  RowBox[{
   RowBox[{
-  "SetDirectory", "[", "\"\</Users/boyle/Research/Waveforms/Utilities/\>\"", 
+  "SetDirectory", "[", "\"\</Users/boyle/Research/Triton/Utilities/\>\"", 
    "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
@@ -384,7 +385,8 @@ cosbetaovertwo, double& Mag) {\\n\>\"", ",", "FuncName"}], "]"}]}], "]"}],
    3.5209338606671953`*^9, 3.5209338699618473`*^9}, {3.520933995903075*^9, 
    3.520933999242031*^9}, 3.5209342061809387`*^9, {3.5209343016366663`*^9, 
    3.520934302349765*^9}, {3.525796560393416*^9, 3.5257965626874323`*^9}, {
-   3.526055574650135*^9, 3.526055581890254*^9}}]
+   3.526055574650135*^9, 3.526055581890254*^9}, {3.541186167422579*^9, 
+   3.541186169687696*^9}}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -419,80 +421,22 @@ Cell[BoxData[{
      RowBox[{"(", 
       RowBox[{"-", "2"}], ")"}], 
      RowBox[{"m", "-", "l"}]], 
-    SuperscriptBox[
-     RowBox[{"(", 
-      RowBox[{
-       RowBox[{"P", "[", "3", "]"}], "-", 
-       RowBox[{"\[ImaginaryI]", " ", 
-        RowBox[{"P", "[", "0", "]"}]}]}], ")"}], 
-     RowBox[{"m", "+", "mp"}]], 
-    SuperscriptBox[
-     RowBox[{"(", 
-      RowBox[{
-       RowBox[{"P", "[", "1", "]"}], "+", 
-       RowBox[{"\[ImaginaryI]", " ", 
-        RowBox[{"P", "[", "2", "]"}]}]}], ")"}], 
-     RowBox[{"m", "-", "mp"}]], 
     RowBox[{"Simplify", "[", 
      RowBox[{
-      SubsuperscriptBox["\[Sum]", 
-       RowBox[{"\[Rho]", "=", 
-        RowBox[{"Max", "[", 
-         RowBox[{"0", ",", 
-          RowBox[{"m", "+", "mp"}]}], "]"}]}], 
-       RowBox[{"Min", "[", 
+      SuperscriptBox[
+       RowBox[{"(", 
         RowBox[{
-         RowBox[{"l", "+", "mp"}], ",", 
-         RowBox[{"l", "+", "m"}]}], "]"}]], 
-      RowBox[{"(", 
-       RowBox[{
-        RowBox[{"Binomial", "[", 
-         RowBox[{
-          RowBox[{"l", "+", "mp"}], ",", "\[Rho]"}], "]"}], 
-        RowBox[{"Binomial", "[", 
-         RowBox[{
-          RowBox[{"l", "-", "mp"}], ",", 
-          RowBox[{"\[Rho]", "-", "m", "-", "mp"}]}], "]"}], 
-        SuperscriptBox[
-         RowBox[{"(", 
-          RowBox[{"-", "1"}], ")"}], "\[Rho]"], 
-        SuperscriptBox[
-         RowBox[{"(", 
-          RowBox[{"1", "+", "QzQbarZ"}], ")"}], 
-         RowBox[{"\[Rho]", "-", "m", "-", "mp"}]], 
-        SuperscriptBox[
-         RowBox[{"(", 
-          RowBox[{"1", "-", "QzQbarZ"}], ")"}], 
-         RowBox[{"l", "-", "\[Rho]", "+", "mp"}]]}], " ", ")"}]}], "]"}]}]}], 
-  ";"}], "\n", 
- RowBox[{
-  RowBox[{
-   RowBox[{
-    RowBox[{"\[ScriptCapitalD]Mag", "[", 
-     RowBox[{"l_", ",", "mp_", ",", "m_", ",", "QzQbarZ_"}], "]"}], ":=", 
-    "\[IndentingNewLine]", 
-    RowBox[{
-     SqrtBox[
-      FractionBox[
-       RowBox[{
+         RowBox[{"Qz", "[", "3", "]"}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Qz", "[", "0", "]"}]}]}], ")"}], 
+       RowBox[{"m", "+", "mp"}]], 
+      SuperscriptBox[
+       RowBox[{"(", 
         RowBox[{
-         RowBox[{"(", 
-          RowBox[{"l", "+", "m"}], ")"}], "!"}], 
-        RowBox[{
-         RowBox[{"(", 
-          RowBox[{"l", "-", "m"}], ")"}], "!"}]}], 
-       RowBox[{
-        RowBox[{
-         RowBox[{"(", 
-          RowBox[{"l", "+", "mp"}], ")"}], "!"}], 
-        RowBox[{
-         RowBox[{"(", 
-          RowBox[{"l", "-", "mp"}], ")"}], "!"}]}]]], 
-     SuperscriptBox[
-      RowBox[{"(", 
-       RowBox[{"-", "2"}], ")"}], 
-      RowBox[{"m", "-", "l"}]], 
-     RowBox[{"Simplify", "[", 
+         RowBox[{"Qz", "[", "1", "]"}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Qz", "[", "2", "]"}]}]}], ")"}], 
+       RowBox[{"m", "-", "mp"}]], 
       RowBox[{
        SubsuperscriptBox["\[Sum]", 
         RowBox[{"\[Rho]", "=", 
@@ -522,11 +466,95 @@ Cell[BoxData[{
          SuperscriptBox[
           RowBox[{"(", 
            RowBox[{"1", "-", "QzQbarZ"}], ")"}], 
-          RowBox[{"l", "-", "\[Rho]", "+", "mp"}]]}], " ", ")"}]}], "]"}]}]}],
-    ";"}], "\[IndentingNewLine]", "\n"}], "\[IndentingNewLine]", 
+          RowBox[{"l", "-", "\[Rho]", "+", "mp"}]]}], " ", ")"}]}]}], 
+     "]"}]}]}], ";"}], "\n", 
  RowBox[{
   RowBox[{
-  "SetDirectory", "[", "\"\</Users/boyle/Research/Waveforms/Utilities/\>\"", 
+   RowBox[{
+    RowBox[{"\[ScriptCapitalD]Mag", "[", 
+     RowBox[{
+     "l_", ",", "mp_", ",", "m_", ",", "Mag30_", ",", "Mag12_", ",", 
+      "QzQbarZ_"}], "]"}], ":=", "\[IndentingNewLine]", 
+    RowBox[{
+     SqrtBox[
+      FractionBox[
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"l", "+", "m"}], ")"}], "!"}], 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"l", "-", "m"}], ")"}], "!"}]}], 
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"l", "+", "mp"}], ")"}], "!"}], 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"l", "-", "mp"}], ")"}], "!"}]}]]], 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"-", "2"}], ")"}], 
+      RowBox[{"m", "-", "l"}]], 
+     RowBox[{"Simplify", "[", 
+      RowBox[{
+       SuperscriptBox[
+        RowBox[{"(", "Mag30", ")"}], 
+        RowBox[{"m", "+", "mp"}]], 
+       SuperscriptBox[
+        RowBox[{"(", "Mag12", ")"}], 
+        RowBox[{"m", "-", "mp"}]], 
+       RowBox[{
+        SubsuperscriptBox["\[Sum]", 
+         RowBox[{"\[Rho]", "=", 
+          RowBox[{"Max", "[", 
+           RowBox[{"0", ",", 
+            RowBox[{"m", "+", "mp"}]}], "]"}]}], 
+         RowBox[{"Min", "[", 
+          RowBox[{
+           RowBox[{"l", "+", "mp"}], ",", 
+           RowBox[{"l", "+", "m"}]}], "]"}]], 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"Binomial", "[", 
+           RowBox[{
+            RowBox[{"l", "+", "mp"}], ",", "\[Rho]"}], "]"}], 
+          RowBox[{"Binomial", "[", 
+           RowBox[{
+            RowBox[{"l", "-", "mp"}], ",", 
+            RowBox[{"\[Rho]", "-", "m", "-", "mp"}]}], "]"}], 
+          SuperscriptBox[
+           RowBox[{"(", 
+            RowBox[{"-", "1"}], ")"}], "\[Rho]"], 
+          SuperscriptBox[
+           RowBox[{"(", 
+            RowBox[{"1", "+", "QzQbarZ"}], ")"}], 
+           RowBox[{"\[Rho]", "-", "m", "-", "mp"}]], 
+          SuperscriptBox[
+           RowBox[{"(", 
+            RowBox[{"1", "-", "QzQbarZ"}], ")"}], 
+           RowBox[{"l", "-", "\[Rho]", "+", "mp"}]]}], " ", ")"}]}]}], 
+      "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", "  ", 
+   RowBox[{
+    RowBox[{"Note", ":", " ", "Mag30"}], "=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Mag", "[", 
+       RowBox[{
+        RowBox[{"Qz", "[", "3", "]"}], "-", 
+        RowBox[{"\[ImaginaryI]", " ", 
+         RowBox[{"Qz", "[", "0", "]"}]}]}], "]"}], " ", "and", " ", "Mag12"}],
+      "=", 
+     RowBox[{"Mag", "[", 
+      RowBox[{
+       RowBox[{"Qz", "[", "1", "]"}], "+", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        RowBox[{"Qz", "[", "2", "]"}]}]}], "]"}]}]}], "  ", "*)"}], "\n", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "SetDirectory", "[", "\"\</Users/boyle/Research/Triton/Utilities/\>\"", 
    "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
@@ -540,27 +568,29 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
    RowBox[{"OutFilei", " ", "=", " ", 
-    RowBox[{"OpenWrite", "[", "\"\<WignerDMatrix_Q.ipp\>\"", "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+    RowBox[{
+    "OpenWrite", "[", "\"\<SWSHNotes/WignerDMatrix_Q_Output.ipp\>\"", "]"}]}],
+    ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"WriteString", "[", 
     RowBox[{
     "OutFilei", ",", " ", 
-     "\"\<namespace WignerDMatrixQLocal {\n  \n  void Uninitialized(const \
-double QzQbar_z, double& Mag) {\n    std::cerr << \\\"\\\\nThis matrix has \
-not yet been initialized with L,M,MP information.\\\" << std::endl;\n    \
-throw(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n  }\n  \
-\>\""}], "]"}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+     "\"\<\n  double Uninitialized() {\n    std::cerr << \\\"\\\\nThis matrix \
+has not yet been initialized with L,M,MP information.\\\" << std::endl;\n    \
+throw(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n    return \
+0.0;\n  }\n  \n  double Identity() {\n    return 1.0;\n  }\n  \n  double \
+Zero() {\n    return 0.0;\n  }\n  \>\""}], "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"WriteString", "[", 
    RowBox[{"OutFilec", ",", " ", "\"\<  \\n  switch(L) {\\n\>\""}], "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{"For", "[", 
   RowBox[{
-   RowBox[{"l", "=", "0"}], ",", 
-   RowBox[{"l", "\[LessEqual]", "LMax"}], ",", 
-   RowBox[{"l", "++"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"l", "=", "LMax"}], ",", 
+   RowBox[{"l", "\[GreaterEqual]", "0"}], ",", 
+   RowBox[{"l", "--"}], ",", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"WriteString", "[", 
      RowBox[{"OutFilec", ",", " ", 
@@ -615,9 +645,10 @@ throw(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n  }\n  \
                 RowBox[{"N", "[", 
                  RowBox[{
                   RowBox[{"\[ScriptCapitalD]Mag", "[", 
-                   RowBox[{"l", ",", "mp", ",", "m", ",", "QzQbarZ"}], "]"}], 
-                  ",", "18"}], "]"}], ",", 
-                RowBox[{"{", "QzQbarZ", "}"}]}], "]"}], "]"}], ",", 
+                   RowBox[{
+                   "l", ",", "mp", ",", "m", ",", "Mag30", ",", "Mag12", ",", 
+                    "RzRbar3"}], "]"}], ",", "18"}], "]"}], ",", 
+                RowBox[{"{", "RzRbar3", "}"}]}], "]"}], "]"}], ",", 
              "OutputForm"}], "]"}]}], ";", "\[IndentingNewLine]", 
           "\[IndentingNewLine]", 
           RowBox[{"WriteString", "[", 
@@ -626,18 +657,36 @@ throw(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n  }\n  \
           RowBox[{"WriteString", "[", 
            RowBox[{"OutFilei", ",", " ", 
             RowBox[{"StringForm", "[", 
+             RowBox[{"\"\<  double ``() {\\n\>\"", ",", "FuncName"}], "]"}]}],
+            "]"}], ";", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"m", "+", "mp"}], "<", "0"}], ",", 
+            RowBox[{"WriteString", "[", 
              RowBox[{
-             "\"\<  void ``(const double QzQbar_z, double& Mag) {\\n\>\"", 
-              ",", "FuncName"}], "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+             "OutFilei", ",", 
+              "\"\<    if (Mag_Rz_3_0==0.0) { // Test equality because \
+precise value was set in SetQuaternion\n      return 0.0;\n    }\\n\>\""}], 
+             "]"}]}], "]"}], ";", " ", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"m", "-", "mp"}], "<", "0"}], ",", 
+            RowBox[{"WriteString", "[", 
+             RowBox[{
+             "OutFilei", ",", 
+              "\"\<    if (Mag_Rz_1_2==0.0) { // Test equality because \
+precise value was set in SetQuaternion\n      return 0.0;\n    }\\n\>\""}], 
+             "]"}]}], "]"}], ";", "\n", "\[IndentingNewLine]", 
           RowBox[{"WriteString", "[", 
            RowBox[{"OutFilei", ",", " ", 
             RowBox[{"StringForm", "[", 
-             RowBox[{"\"\<    Mag = ``;\>\"", ",", "Func"}], "]"}]}], "]"}], 
+             RowBox[{"\"\<    return ``;\>\"", ",", "Func"}], "]"}]}], "]"}], 
           ";", "\[IndentingNewLine]", 
           RowBox[{"WriteString", "[", 
-           RowBox[{
-           "OutFilei", ",", " ", "\"\<\\n    return;\\n  }\\n  \>\""}], "]"}],
-           ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+           RowBox[{"OutFilei", ",", " ", "\"\<\\n  }\\n  \>\""}], "]"}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
           RowBox[{"WriteString", "[", 
            RowBox[{"OutFilec", ",", " ", 
             RowBox[{"StringForm", "[", 
@@ -647,8 +696,8 @@ throw(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n  }\n  \
            RowBox[{"OutFilec", ",", " ", 
             RowBox[{"StringForm", "[", 
              RowBox[{
-             "\"\<        Calculator = &WignerDMatrixQLocal::``;\\n\>\"", ",",
-               "FuncName"}], "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
+             "\"\<        Calculator = &WignerDMatrix_Q::``;\\n\>\"", ",", 
+              "FuncName"}], "]"}]}], "]"}], ";", "\[IndentingNewLine]", 
           RowBox[{"WriteString", "[", 
            RowBox[{"OutFilec", ",", " ", "\"\<        return;\\n\>\""}], 
            "]"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
@@ -676,7 +725,7 @@ throw(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n  }\n  \
  RowBox[{
   RowBox[{
    RowBox[{"WriteString", "[", 
-    RowBox[{"OutFilei", ",", " ", "\"\<\\n}\\n\>\""}], "]"}], ";"}], 
+    RowBox[{"OutFilei", ",", " ", "\"\<\\n\>\""}], "]"}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"Close", "[", "OutFilei", "]"}], ";"}], "\[IndentingNewLine]", 
@@ -749,7 +798,23 @@ throw(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n  }\n  \
    3.520934302349765*^9}, {3.525796560393416*^9, 3.5257965626874323`*^9}, {
    3.526055604069428*^9, 3.5260556713744164`*^9}, {3.52605573666177*^9, 
    3.526055778887516*^9}, {3.526055815842782*^9, 3.526055824737885*^9}, {
-   3.52605585677489*^9, 3.5260559257972593`*^9}}]
+   3.52605585677489*^9, 3.5260559257972593`*^9}, {3.5409162053402767`*^9, 
+   3.540916253296308*^9}, {3.5411655554610443`*^9, 3.541165583542284*^9}, {
+   3.5411660344109783`*^9, 3.541166041736143*^9}, {3.541176831406303*^9, 
+   3.541176883575169*^9}, {3.541176931672718*^9, 3.541177003302411*^9}, {
+   3.5411832470470657`*^9, 3.5411832510654163`*^9}, {3.5411851697982616`*^9, 
+   3.541185184155765*^9}, {3.541185848571785*^9, 3.5411858865082693`*^9}, {
+   3.541186034756893*^9, 3.541186065520541*^9}, {3.5411861394011917`*^9, 
+   3.541186164337698*^9}, {3.54118624625484*^9, 3.541186264256925*^9}, {
+   3.541186314147204*^9, 3.541186351470622*^9}, {3.5411897176161833`*^9, 
+   3.5411897278950167`*^9}, {3.541189798174056*^9, 3.541189806745757*^9}, {
+   3.541194360133875*^9, 3.541194361395698*^9}, {3.541194397976838*^9, 
+   3.5411944656441383`*^9}, {3.5411945265585747`*^9, 3.541194597441266*^9}, {
+   3.541194649666184*^9, 3.541194733593265*^9}, {3.5411951554117327`*^9, 
+   3.5411951610467873`*^9}, {3.541196672942154*^9, 3.541196683275339*^9}, {
+   3.541200736194154*^9, 3.54120074177614*^9}, {3.541200822987616*^9, 
+   3.541200826586151*^9}, {3.541201183378788*^9, 3.541201184750667*^9}, {
+   3.541202472722053*^9, 3.5412024813966007`*^9}}]
 }, Open  ]]
 }, Open  ]],
 
@@ -10449,8 +10514,8 @@ c4gamma = c2gamma*c2gamma-s2gamma*s2gamma;\n    const double s4gamma = \
 }, Closed]]
 }, Open  ]]
 },
-WindowSize->{1332, 1156},
-WindowMargins->{{105, Automatic}, {Automatic, 0}},
+WindowSize->{1811, 1108},
+WindowMargins->{{Automatic, 0}, {Automatic, 0}},
 FrontEndVersion->"8.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (February 23, \
 2011)",
 StyleDefinitions->"Default.nb"
@@ -10469,80 +10534,80 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[567, 22, 178, 2, 134, "Section"],
 Cell[CellGroupData[{
-Cell[770, 28, 104, 1, 68, "Subsection"],
-Cell[877, 31, 16052, 355, 2445, "Input"]
+Cell[770, 28, 153, 2, 69, "Subsection"],
+Cell[926, 32, 16099, 356, 2162, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[16966, 391, 105, 1, 68, "Subsection"],
-Cell[17074, 394, 15994, 357, 2347, "Input"]
+Cell[17062, 393, 105, 1, 68, "Subsection"],
+Cell[17170, 396, 18984, 420, 2603, "Input"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[33117, 757, 108, 1, 134, "Section"],
-Cell[33228, 760, 314, 7, 82, "Text"],
+Cell[36203, 822, 108, 1, 134, "Section"],
+Cell[36314, 825, 314, 7, 82, "Text"],
 Cell[CellGroupData[{
-Cell[33567, 771, 659, 19, 110, "Subsection"],
-Cell[34229, 792, 4930, 146, 580, "Input"],
+Cell[36653, 836, 659, 19, 79, "Subsection"],
+Cell[37315, 857, 4930, 146, 434, "Input"],
 Cell[CellGroupData[{
-Cell[39184, 942, 1575, 41, 243, "Input"],
-Cell[40762, 985, 43913, 1079, 163, "Output"]
+Cell[42270, 1007, 1575, 41, 227, "Input"],
+Cell[43848, 1050, 43913, 1079, 141, "Output"]
 }, Open  ]],
-Cell[84690, 2067, 8598, 187, 2275, "Input"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[93325, 2259, 581, 19, 79, "Subsection"],
-Cell[CellGroupData[{
-Cell[93931, 2282, 5031, 143, 236, "Input"],
-Cell[98965, 2427, 16559, 499, 560, "Output"]
+Cell[87776, 2132, 8598, 187, 2095, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[115561, 2931, 1416, 38, 92, "Input"],
-Cell[116980, 2971, 43770, 1079, 106, "Output"]
+Cell[96411, 2324, 581, 19, 79, "Subsection"],
+Cell[CellGroupData[{
+Cell[97017, 2347, 5031, 143, 236, "Input"],
+Cell[102051, 2492, 16559, 499, 560, "Output"]
 }, Open  ]],
-Cell[160765, 4053, 8452, 185, 1583, "Input"]
+Cell[CellGroupData[{
+Cell[118647, 2996, 1416, 38, 92, "Input"],
+Cell[120066, 3036, 43770, 1079, 106, "Output"]
+}, Open  ]],
+Cell[163851, 4118, 8452, 185, 1583, "Input"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[169254, 4243, 346, 11, 59, "Subsection"],
+Cell[172340, 4308, 346, 11, 59, "Subsection"],
 Cell[CellGroupData[{
-Cell[169625, 4258, 3723, 107, 276, "Input"],
-Cell[173351, 4367, 2175, 58, 108, "Output"],
-Cell[175529, 4427, 11429, 350, 538, "Output"]
+Cell[172711, 4323, 3723, 107, 276, "Input"],
+Cell[176437, 4432, 2175, 58, 108, "Output"],
+Cell[178615, 4492, 11429, 350, 538, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[186995, 4782, 1364, 37, 138, "Input"],
-Cell[188362, 4821, 36336, 902, 159, "Output"]
+Cell[190081, 4847, 1364, 37, 138, "Input"],
+Cell[191448, 4886, 36336, 902, 159, "Output"]
 }, Open  ]],
-Cell[224713, 5726, 8294, 183, 2373, "Input"]
+Cell[227799, 5791, 8294, 183, 2373, "Input"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[233044, 5914, 366, 12, 59, "Subsection"],
+Cell[236130, 5979, 366, 12, 59, "Subsection"],
 Cell[CellGroupData[{
-Cell[233435, 5930, 3803, 108, 276, "Input"],
-Cell[237241, 6040, 2201, 59, 108, "Output"],
-Cell[239445, 6101, 11601, 353, 523, "Output"]
+Cell[236521, 5995, 3803, 108, 276, "Input"],
+Cell[240327, 6105, 2201, 59, 108, "Output"],
+Cell[242531, 6166, 11601, 353, 523, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[251083, 6459, 1480, 38, 196, "Input"],
-Cell[252566, 6499, 36838, 910, 159, "Output"]
+Cell[254169, 6524, 1480, 38, 196, "Input"],
+Cell[255652, 6564, 36838, 910, 159, "Output"]
 }, Open  ]],
-Cell[289419, 7412, 8374, 184, 2373, "Input"]
+Cell[292505, 7477, 8374, 184, 2373, "Input"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[297830, 7601, 344, 11, 59, "Subsection"],
+Cell[300916, 7666, 344, 11, 59, "Subsection"],
 Cell[CellGroupData[{
-Cell[298199, 7616, 3234, 100, 276, "Input"],
-Cell[301436, 7718, 2478, 76, 262, "Output"],
-Cell[303917, 7796, 21100, 599, 1021, "Output"]
+Cell[301285, 7681, 3234, 100, 276, "Input"],
+Cell[304522, 7783, 2478, 76, 262, "Output"],
+Cell[307003, 7861, 21100, 599, 1021, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[325054, 8400, 515, 14, 106, "Input"],
-Cell[325572, 8416, 19547, 587, 967, "Output"]
+Cell[328140, 8465, 515, 14, 106, "Input"],
+Cell[328658, 8481, 19547, 587, 967, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[345156, 9008, 1174, 34, 138, "Input"],
-Cell[346333, 9044, 48533, 1216, 159, "Output"]
+Cell[348242, 9073, 1174, 34, 138, "Input"],
+Cell[349419, 9109, 48533, 1216, 159, "Output"]
 }, Open  ]],
-Cell[394881, 10263, 8464, 184, 2373, "Input"]
+Cell[397967, 10328, 8464, 184, 2373, "Input"]
 }, Closed]]
 }, Open  ]]
 }
