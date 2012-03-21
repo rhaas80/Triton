@@ -403,7 +403,7 @@ WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSecti
 				    const std::string Dir,
 				    const WaveformUtilities::Matrix<int> LM) :
   history(""), typeIndex(0), timeScale("Time"), t(0), r(0), frame(0),
-  lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
+  lm(LM), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
 {
   /// The section is passed as a vector of strings, each element of
   /// which contains the "l,m = path" line from a metadata file.
@@ -411,7 +411,16 @@ WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSecti
   //cout << "Calling Waveform(const std::vector<std::string>& BBHDataSection, ..." << endl;
   
   Waveforms Ws(BBHDataSection, Dir, LM);
-  if(LM.nrows()<2) {
+  if(Ws.size()==0) {
+    cerr << "BBHDataSection = \"\"\"\n";
+    for(unsigned int i=0; i<BBHDataSection.size(); ++i) {
+      cerr << BBHDataSection[i] << endl;
+    }
+    cerr << "\n\"\"\"\nDir = \"" << Dir
+	 << "\"\nLM = " << RowFormat(LM) << "\"" << endl;
+    throw("Found no Waveforms.");
+  }
+  if(Ws.size()==1) {
     *this = Ws[0];
   } else {
     *this = Ws.Merge();

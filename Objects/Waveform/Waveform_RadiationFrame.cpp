@@ -129,7 +129,7 @@ void RadiationAxis(const Waveform& W, std::vector<double>& alpha, std::vector<do
   return;
 }
 
-// This function alters gamma to enforce the minimal-rotation condition
+/// Alter gamma to enforce the minimal-rotation condition.
 void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta, std::vector<double>& gamma, const std::vector<double>& t) {
   if(alpha.size() != beta.size() || alpha.size() != t.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tt.size()=" << t.size() << endl;
@@ -143,32 +143,48 @@ void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>
 }
 
 
-
+/// Transform the Waveform to the naive radiation frame.
 Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(const double alpha0Guess, const double beta0Guess) {
+  /// This function finds the radiation axis, then rotates the
+  /// coordinates in which the physical system is expressed (by
+  /// calling RotateCoordinates) to align with that frame.  Note that
+  /// the rotation in this case always has the third Euler angle
+  /// (gamma) set to 0.
+  /// 
+  /// We define the Euler angles (alpha, beta, gamma) using the
+  /// z-y'-z'' convention, where the first rotation is through an
+  /// angle alpha about the z axis, the second through beta about the
+  /// (new) y' axis, and the third through gamma about the (new) z''
+  /// axis.  Note that this is equivalent to rotations in the opposite
+  /// order about the fixed set of axes z-y-z.
+  /// 
+  /// See PRD 84, 124011 (2011) for more details.
+  history << "### this->TransformToSchmidtFrame(" << alpha0Guess << ", " << beta0Guess << ");" << endl;
   vector<double> alpha(NTimes(), 0.0), beta(NTimes(), 0.0), gamma(NTimes(), 0.0);
-  return this->TransformToSchmidtFrame(alpha, beta, gamma, alpha0Guess, beta0Guess);
-}
-
-Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(std::vector<double>& alpha, std::vector<double>& beta, const double alpha0Guess, const double beta0Guess) {
-  vector<double> gamma(NTimes(), 0.0);
-  return this->TransformToSchmidtFrame(alpha, beta, gamma, alpha0Guess, beta0Guess);
-}
-
-Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
-					    const double alpha0Guess, const double beta0Guess) {
   RadiationAxis(*this, alpha, beta, alpha0Guess, beta0Guess);
   gamma = vector<double>(NTimes(), 0.0);
   return this->RotateCoordinates(alpha, beta, gamma);
 }
 
+/// Transform the Waveform to the minimal-rotation radiation frame.
 Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const double alpha0Guess, const double beta0Guess) {
+  /// This function finds the minimal-rotation radiation axis, then
+  /// rotates the coordinates in which the physical system is
+  /// expressed (by calling RotateCoordinates) to align with that
+  /// frame.
+  ///
+  /// We define the Euler angles (alpha, beta, gamma) using the
+  /// z-y'-z'' convention, where the first rotation is through an
+  /// angle alpha about the z axis, the second through beta about the
+  /// (new) y' axis, and the third through gamma about the (new) z''
+  /// axis.  Note that this is equivalent to rotations in the opposite
+  /// order about the fixed set of axes z-y-z.
+  /// 
+  /// See PRD 84, 124011 (2011) for more details.
+  history << "### this->TransformToMinimalRotationFrame(" << alpha0Guess << ", " << beta0Guess << ");" << endl;
   vector<double> alpha(NTimes(), 0.0), beta(NTimes(), 0.0), gamma(NTimes(), 0.0);
-  return this->TransformToMinimalRotationFrame(alpha, beta, gamma, alpha0Guess, beta0Guess);
-}
-
-Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
-						    const double alpha0Guess, const double beta0Guess) {
   RadiationAxis(*this, alpha, beta, alpha0Guess, beta0Guess);
   MinimalRotation(alpha, beta, gamma, T());
-  return this->RotateCoordinates(alpha, beta, gamma);
+  this->RotateCoordinates(alpha, beta, gamma);
+  return *this;
 }

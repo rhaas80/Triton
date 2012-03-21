@@ -22,6 +22,9 @@ namespace WaveformUtilities {
     #endif
   public: // Constructors
     WignerDMatrix_Q(const int iL=-1, const int iMP=-1, const int iM=-1, const Quaternion iR=Quaternion(1,0,0,0));
+    WignerDMatrix_Q(const WignerDMatrix_Q& D);
+  private:
+    WignerDMatrix_Q& operator=(const WignerDMatrix_Q& D);
   public: // Setty methods
     void SetQuaternion(const Quaternion& iR);
     void SetElement(const int iL, const int iMP, const int iM);

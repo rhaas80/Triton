@@ -17,6 +17,7 @@
 #include "Units.hpp"
 #include "PostNewtonian.hpp"
 #include "WignerDMatrix.hpp"
+#include "WignerDMatrix_Q.hpp"
 #include "Quaternions.hpp"
 
 using namespace WaveformUtilities;
@@ -38,7 +39,7 @@ using std::ios_base;
 
 
 
-// Rotate all modes by the given Euler angles
+/// Rotate all modes by the given Euler angles.
 Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, const double beta, const double gamma) {
   // Make sure the ordering is as expected (could program something to make this unecessary...)
   {
@@ -106,6 +107,15 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, co
       vector<double> Im = Arg(mode);
       MagArg(Re, Im, MagRef(mode), ArgRef(mode));
     }
+  }
+  
+  // Record the change of frame
+  if(frame.size()==0) { // set frame data equal to input data
+    frame.push_back(Quaternion(alpha, beta, gamma));
+  } else if(frame.size()==1) { // (pre-)multiply frame constant by input rotation
+    frame[0] = Quaternion(alpha, beta, gamma) * frame[0];
+  } else { //(pre-) multiply frame data by input rotation
+    frame = Quaternion(alpha, beta, gamma) * frame;
   }
   
   return *this;
@@ -200,6 +210,15 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<doub
     }
   }
   
+  // Record the change of frame
+  if(frame.size()==0) { // set frame data equal to input data
+    frame = Quaternions(alpha, beta, gamma);
+  } else if(frame.size()==1) { // (pre-)multiply frame constant by input rotation
+    frame = Quaternions(alpha, beta, gamma) * frame[0];
+  } else { //(pre-) multiply frame data by input rotation
+    frame = Quaternions(alpha, beta, gamma) * frame;
+  }
+  
   return *this;
 }
 
@@ -209,25 +228,201 @@ Waveform& WaveformObjects::Waveform::RotateCoordinates(const std::vector<double>
   return *this;
 }
 
-// Rotate all modes by the given Euler angles
+/// Rotate all modes by the given quaternion data.
 Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<WaveformUtilities::Quaternion>& Q) {
+  throw("BAAHHH!");
+  /// This rotates the physical system, leaving the coordinates in
+  /// place -- which is just the opposite rotation compared to
+  /// RotateCoordinates.  One way of thinking about this is that
+  /// whatever physical point is at the tip of the zHat axis is
+  /// rotated to the point Q*zHat*Qbar.
+  
   if(Q.size()!=NTimes()) {
     cerr << "\nQ.size()=" << Q.size() << "  NTimes()=" << NTimes() << endl;
-    throw("Mismatched sizes of vectors to Rotate.");
-  }
-  vector<double> alpha(NTimes()), beta(NTimes()), gamma(NTimes());
-  for(unsigned int t=0; t<NTimes(); ++t) {
-    const vector<double> ABC = Q[t].EulerAnglesZYZ();
-    alpha[t] = ABC[0];
-    beta[t] = ABC[1];
-    gamma[t] = ABC[2];
+    throw("Mismatched sizes of vectors to RotatePhysicalSystem.");
   }
   
-  return this -> RotatePhysicalSystem(alpha, beta, gamma);
+  History() << "### this->RotatePhysicalSystem(Q); // const vector<Quaternion>& Q" << endl;
+  
+  // Loop through each mode and do the rotation
+  {
+    unsigned int mode=1;
+    for(int l=2; l<int(NModes()); ++l) {
+      if(NModes()<mode) { break; }
+      // Use a vector of mode indices, in case the modes are out of
+      // order.  This still assumes that we have each l from l=2 up to
+      // some l_max, but it's better than assuming that plus assuming
+      // that everything is in order.
+      vector<unsigned int> ModeIndices(2*l+1);
+      for(int m=-l, i=0; m<=l; ++m, ++i) {
+	try {
+	  ModeIndices[i] = FindModeIndex(l, m);
+	} catch(char* thrown) {
+	  cerr << thrown << endl;
+	  cerr << RowFormat(LM()) << endl;
+	  throw("Incomplete mode information in Waveform; cannot rotate.");
+	}
+      }
+      // Construct the D matrices
+      Matrix<WignerDMatrix_Q> Ds(2*l+1, 2*l+1);
+      for(int m=-l; m<=l; ++m) {
+	for(int mp=-l; mp<=l; ++mp) {
+	  Ds[mp+l][m+l].SetElement(l, mp, m);
+	}
+      }
+      Matrix<double> DRe(2*l+1, 2*l+1);
+      Matrix<double> DIm(2*l+1, 2*l+1);
+      // Loop through each time step
+      for(unsigned int t=0; t<NTimes(); ++t) {
+	// Get the Wigner D matrix data at this time step
+	for(int m=-l; m<=l; ++m) {
+	  for(int mp=-l; mp<=l; ++mp) {
+	    Ds[mp+l][m+l].SetQuaternion(Q[t]);
+	    Ds[mp+l][m+l].ValueReIm(DRe[mp+l][m+l], DIm[mp+l][m+l]);
+	  }
+	}
+	vector<double> ReData(2*l+1);
+	vector<double> ImData(2*l+1);
+	for(int mp=-l, i=0; mp<=l; ++mp, ++i) {
+	  // Calculate the data for all m' modes at this time step
+	  ReData[mp+l] = Mag(ModeIndices[i], t)*cos(Arg(ModeIndices[i], t));
+	  ImData[mp+l] = Mag(ModeIndices[i], t)*sin(Arg(ModeIndices[i], t));
+	}
+	for(int m=-l, i=0; m<=l; ++m, ++i) {
+	  MagRef(ModeIndices[i], t) = 0.0;
+	  ArgRef(ModeIndices[i], t) = 0.0;
+	  for(int mp=-l; mp<=l; ++mp) {
+	    // Save the data at this time step
+	    // NB: Mag and Arg are temporarily storing Re and Im data!
+	    MagRef(ModeIndices[i], t) += DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
+	    ArgRef(ModeIndices[i], t) += DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
+	  }
+	}
+      }
+      mode += 2*l+1;
+    }
+    // Convert back to MagArg form
+    for(unsigned int mode=0; mode<NModes(); ++mode) {
+      vector<double> Re = Mag(mode);
+      vector<double> Im = Arg(mode);
+      MagArg(Re, Im, MagRef(mode), ArgRef(mode));
+    }
+  }
+  
+  // Record the change of frame
+  if(frame.size()==0) { // set frame data equal to input data
+    frame = Q;
+  } else if(frame.size()==1) { // (pre-)multiply frame constant by input rotation
+    frame = Q * frame[0];
+  } else { //(pre-) multiply frame data by input rotation
+    frame = Q * frame;
+  }
+  
+  return *this;
 }
 
-Waveform& WaveformObjects::Waveform::RotateCoordinates(const std::vector<WaveformUtilities::Quaternion>& Q) {
-  History() << "### this->RotateCoordinates(Q);\n#";
-  RotatePhysicalSystem(WaveformUtilities::Conjugate(Q));
+/// Rotate all modes by the given quaternion data.
+Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilities::Quaternion& Q) {
+  /// This rotates the physical system, leaving the coordinates in
+  /// place -- which is just the opposite rotation compared to
+  /// RotateCoordinates.  One way of thinking about this is that
+  /// whatever physical point is at the tip of the zHat axis is
+  /// rotated to the point Q*zHat*Qbar.
+  
+  History() << "### this->RotatePhysicalSystem(Q); // const Quaternion& Q" << endl;
+  
+  // Loop through each mode and do the rotation
+  {
+    unsigned int mode=1;
+    for(int l=2; l<int(NModes()); ++l) {
+      if(NModes()<mode) { break; }
+      // Use a vector of mode indices, in case the modes are out of
+      // order.  This still assumes that we have each l from l=2 up to
+      // some l_max, but it's better than assuming that plus assuming
+      // that everything is in order.
+      vector<unsigned int> ModeIndices(2*l+1);
+      for(int m=-l, i=0; m<=l; ++m, ++i) {
+	try {
+	  ModeIndices[i] = FindModeIndex(l, m);
+	} catch(char* thrown) {
+	  cerr << thrown << endl;
+	  cerr << RowFormat(LM()) << endl;
+	  throw("Incomplete mode information in Waveform; cannot rotate.");
+	}
+      }
+      // Construct the D matrices
+      Matrix<WignerDMatrix_Q> Ds(2*l+1, 2*l+1);
+      Matrix<double> DRe(2*l+1, 2*l+1);
+      Matrix<double> DIm(2*l+1, 2*l+1);
+      for(int m=-l; m<=l; ++m) {
+	for(int mp=-l; mp<=l; ++mp) {
+	  Ds[mp+l][m+l].SetElement(l, mp, m);
+	  Ds[mp+l][m+l].SetQuaternion(Q);
+	  Ds[mp+l][m+l].ValueReIm(DRe[mp+l][m+l], DIm[mp+l][m+l]);
+	}
+      }
+      // Loop through each time step
+      for(unsigned int t=0; t<NTimes(); ++t) {
+	vector<double> ReData(2*l+1);
+	vector<double> ImData(2*l+1);
+	for(int mp=-l, i=0; mp<=l; ++mp, ++i) {
+	  // Calculate the data for all m' modes at this time step
+	  ReData[mp+l] = Mag(ModeIndices[i], t)*cos(Arg(ModeIndices[i], t));
+	  ImData[mp+l] = Mag(ModeIndices[i], t)*sin(Arg(ModeIndices[i], t));
+	}
+	for(int m=-l, i=0; m<=l; ++m, ++i) {
+	  MagRef(ModeIndices[i], t) = 0.0;
+	  ArgRef(ModeIndices[i], t) = 0.0;
+	  for(int mp=-l; mp<=l; ++mp) {
+	    // Save the data at this time step
+	    // NB: Mag and Arg are temporarily storing Re and Im data!
+	    MagRef(ModeIndices[i], t) += DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
+	    ArgRef(ModeIndices[i], t) += DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
+	  }
+	}
+      }
+      mode += 2*l+1;
+    }
+    // Convert back to MagArg form
+    for(unsigned int mode=0; mode<NModes(); ++mode) {
+      vector<double> Re = Mag(mode);
+      vector<double> Im = Arg(mode);
+      MagArg(Re, Im, MagRef(mode), ArgRef(mode));
+    }
+  }
+  
+  // Record the change of frame
+  if(frame.size()==0) { // set frame data equal to input data
+    frame = vector<Quaternion>(1,Q);
+  } else if(frame.size()==1) { // (pre-)multiply frame constant by input rotation
+    frame[0] = Q * frame[0];
+  } else { //(pre-) multiply frame data by input rotation
+    frame = Q * frame;
+  }
+  
   return *this;
+}
+
+/// Rotate all modes by the given quaternion data.
+Waveform& WaveformObjects::Waveform::RotateCoordinates(const std::vector<WaveformUtilities::Quaternion>& Q) {
+  /// This rotates the coordinates, leaving the physical system in
+  /// place -- which is just the opposite rotation compared to
+  /// RotatePhysicalSystem.  One way of thinking about this is that
+  /// the zHat axis is rotated to the point Q*zHat*Qbar, while the
+  /// physical point that was located there is left in place.  In the
+  /// new coordinates, that physical point is at Qbar*zHat*Q.
+  History() << "### this->RotateCoordinates(Q);\n#";
+  return this->RotatePhysicalSystem(WaveformUtilities::Conjugate(Q));
+}
+
+/// Rotate all modes by the given quaternion.
+Waveform& WaveformObjects::Waveform::RotateCoordinates(const WaveformUtilities::Quaternion& Q) {
+  /// This rotates the coordinates, leaving the physical system in
+  /// place -- which is just the opposite rotation compared to
+  /// RotatePhysicalSystem.  One way of thinking about this is that
+  /// the zHat axis is rotated to the point Q*zHat*Qbar, while the
+  /// physical point that was located there is left in place.  In the
+  /// new coordinates, that physical point is at Qbar*zHat*Q.
+  History() << "### this->RotateCoordinates(Q);\n#";
+  return this->RotatePhysicalSystem(Q.Conjugate());
 }

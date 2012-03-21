@@ -955,6 +955,7 @@
       return;
       
     } // switch(M)
+    return;
     
   case 7:
     switch(M) {
@@ -1709,6 +1710,7 @@
       return;
       
     } // switch(M)
+    return;
     
   case 6:
     switch(M) {
@@ -2285,6 +2287,7 @@
       return;
       
     } // switch(M)
+    return;
     
   case 5:
     switch(M) {
@@ -2707,6 +2710,7 @@
       return;
       
     } // switch(M)
+    return;
     
   case 4:
     switch(M) {
@@ -2999,6 +3003,7 @@
       return;
       
     } // switch(M)
+    return;
     
   case 3:
     switch(M) {
@@ -3185,6 +3190,7 @@
       return;
       
     } // switch(M)
+    return;
     
   case 2:
     switch(M) {
@@ -3289,6 +3295,7 @@
       return;
       
     } // switch(M)
+    return;
     
   case 1:
     switch(M) {
@@ -3335,6 +3342,7 @@
       return;
       
     } // switch(M)
+    return;
     
   case 0:
     switch(M) {
@@ -3347,5 +3355,6 @@
       return;
       
     } // switch(M)
+    return;
     
   } // switch(L)

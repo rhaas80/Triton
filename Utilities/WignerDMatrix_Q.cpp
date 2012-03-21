@@ -12,36 +12,77 @@ using std::atan2;
 using std::numeric_limits;
 using WaveformUtilities::WignerDMatrix_Q;
 
+void WaveformUtilities::WignerD_Q(const int L, const int MP, const int M, const Quaternion& R, double& mag, double& arg) {
+  WignerDMatrix_Q Q(L, MP, M, R);
+  Q.Value(mag, arg);
+  return;
+}
 
 // (Qz[3] - I Qz[0])^(m + mp) (Qz[1] + I Qz[2])^(m - mp)
 
 WignerDMatrix_Q::WignerDMatrix_Q(const int iL, const int iMP, const int iM, const Quaternion iR)
-  : L(iL), MP(iMP), M(iM),
+  : L(-2), MP(-2), M(-2),
     Calculator(&WignerDMatrix_Q::Uninitialized),
-    R(iR.Normalized()), RzRbar3(0.),
+    R(0,0,0,0), RzRbar3(0.),
     Mag_Rz_3_0(0.), Mag_Rz_1_2(0.),
     Arg_Rz_3_0(0.), Arg_Rz_1_2(0.),
     Recalculated(false), ValMag(0.0), ValArg(0.0)
 {
-  SetQuaternion(R);
-  SetElement(L, MP, M);
+  SetQuaternion(iR);
+  SetElement(iL, iMP, iM);
 }
 
+WignerDMatrix_Q::WignerDMatrix_Q(const WignerDMatrix_Q& D)
+  : L(-2), MP(-2), M(-2),
+    Calculator(&WignerDMatrix_Q::Uninitialized),
+    R(0,0,0,0), RzRbar3(0.),
+    Mag_Rz_3_0(0.), Mag_Rz_1_2(0.),
+    Arg_Rz_3_0(0.), Arg_Rz_1_2(0.),
+    Recalculated(false), ValMag(0.0), ValArg(0.0)
+{
+  SetQuaternion(D.R);
+  SetElement(D.L, D.MP, D.M);
+}
+
+// WignerDMatrix_Q& WignerDMatrix_Q::operator=(const WignerDMatrix_Q& D) {
+//   L = D.L;
+//   MP = D.MP;
+//   M = D.M;
+//   Calculator = D.Calculator;
+//   R = D.R;
+//   RzRbar3 = D.RzRbar3;
+//   Mag_Rz_3_0 = D.Mag_Rz_3_0;
+//   Mag_Rz_1_2 = D.Mag_Rz_1_2;
+//   Arg_Rz_3_0 = D.Arg_Rz_3_0;
+//   Arg_Rz_1_2 = D.Arg_Rz_1_2;
+//   Recalculated = D.Recalculated;
+//   ValMag = D.ValMag;
+//   ValArg = D.ValArg;
+//   return *this;
+// }
+
 void WignerDMatrix_Q::Value(double& Mag, double& Arg) {
-  if(Recalculated) {
-    Mag=ValMag;
-    Arg=ValArg;
-    return;
-  }
+  // if(Recalculated) {
+  //   Mag=ValMag;
+  //   Arg=ValArg;
+  //   return;
+  // }
   Mag = (this->*Calculator)();
-  Arg = ::pow(Arg_Rz_3_0, M+MP) + ::pow(Arg_Rz_1_2, M-MP);
+  Arg = 0.0;
+  if(std::abs(Mag)==0.0) { return; }
+  if(std::abs(Arg_Rz_3_0)>3*numeric_limits<double>::epsilon() || M+MP>0) {
+    Arg += std::pow(Arg_Rz_3_0, M+MP);
+  }
+  if(std::abs(Arg_Rz_1_2)>3*numeric_limits<double>::epsilon() || M-MP>0) {
+    Arg += std::pow(Arg_Rz_1_2, M-MP);
+  }
   if(Mag<0.0) {
     Mag *= -1;
     Arg -= M_PI;
   }
-  ValMag=Mag;
-  ValArg=Arg;
-  Recalculated=true;
+  // ValMag=Mag;
+  // ValArg=Arg;
+  // Recalculated=true;
   return;
 }
 
@@ -54,15 +95,15 @@ void WignerDMatrix_Q::ValueReIm(double& Re, double& Im) {
 }
 
 void WignerDMatrix_Q::SetQuaternion(const Quaternion& iR) {
-  if(R==iR) { return; }
+  // if(R==iR) { return; }
   const Quaternion iRNormalized = iR.Normalized();
-  if(R==iRNormalized) { return; }
+  // if(R==iRNormalized) { return; }
   Recalculated = false;
   R = iRNormalized;
-  if(abs(R[0])<3*numeric_limits<double>::epsilon()) { R[0]=0.0; }
-  if(abs(R[1])<3*numeric_limits<double>::epsilon()) { R[1]=0.0; }
-  if(abs(R[2])<3*numeric_limits<double>::epsilon()) { R[2]=0.0; }
-  if(abs(R[3])<3*numeric_limits<double>::epsilon()) { R[3]=0.0; }
+  if(std::abs(R[0])<3*numeric_limits<double>::epsilon()) { R[0]=0.0; }
+  if(std::abs(R[1])<3*numeric_limits<double>::epsilon()) { R[1]=0.0; }
+  if(std::abs(R[2])<3*numeric_limits<double>::epsilon()) { R[2]=0.0; }
+  if(std::abs(R[3])<3*numeric_limits<double>::epsilon()) { R[3]=0.0; }
   Quaternion Rz = R*Quaternion(0,0,0,1);
   RzRbar3 = (Rz*(R.Conjugate()))[3];
   Mag_Rz_3_0 = sqrt(Rz[0]*Rz[0]+Rz[3]*Rz[3]);
@@ -79,6 +120,7 @@ void WignerDMatrix_Q::SetQuaternion(const Quaternion& iR) {
   } else {
     Arg_Rz_1_2 = atan2( Rz[2], Rz[1]);
   }
+  // std::cout << R << " " << RzRbar3 << " " << Mag_Rz_3_0 << " " << Mag_Rz_1_2 << " " << Arg_Rz_3_0 << " " << Arg_Rz_1_2 << std::endl;
   return;
 }
 
@@ -96,7 +138,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
     throw("This L value not yet implemented for Wigner D matrices.");
   }
   
-  if(abs(iMP)>iL || abs(iM)>iL) {
+  if(std::abs(iMP)>iL || std::abs(iM)>iL) {
     std::cerr << "\nL=" << iL << "  MP=" << iMP << "  M=" << iM << std::endl;
     throw("Bad MP or M, out of range for Wigner D matrix.");
   }
@@ -114,6 +156,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
     }
     return;
   }
+  
   
   
   switch(L) {
@@ -1072,6 +1115,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   case 7:
     switch(M) {
@@ -1826,6 +1870,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   case 6:
     switch(M) {
@@ -2402,6 +2447,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   case 5:
     switch(M) {
@@ -2824,6 +2870,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   case 4:
     switch(M) {
@@ -3116,6 +3163,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   case 3:
     switch(M) {
@@ -3302,6 +3350,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   case 2:
     switch(M) {
@@ -3406,6 +3455,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   case 1:
     switch(M) {
@@ -3452,6 +3502,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   case 0:
     switch(M) {
@@ -3464,8 +3515,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
       return;
       
     } // switch(M)
+    return;
     
   } // switch(L)
   
+  throw("Shouldn't have gotten here");
   return;
 }

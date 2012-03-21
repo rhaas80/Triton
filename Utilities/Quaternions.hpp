@@ -41,17 +41,17 @@ namespace WaveformUtilities {
     std::vector<double> EulerAnglesZYZ() const;
     Quaternion exp() const;
     Quaternion log() const;
-    Quaternion pow(const double x) const;
+    //Quaternion pow(const double x) const;
   };
   
-  const Quaternion Quaternion1(1.0,0.0,0.0,0.0);
-  const Quaternion Quaternionx(0.0,1.0,0.0,0.0);
-  const Quaternion Quaterniony(0.0,0.0,1.0,0.0);
-  const Quaternion Quaternionz(0.0,0.0,0.0,1.0);
+  // const Quaternion Quaternion1(1.0,0.0,0.0,0.0);
+  // const Quaternion Quaternionx(0.0,1.0,0.0,0.0);
+  // const Quaternion Quaterniony(0.0,0.0,1.0,0.0);
+  // const Quaternion Quaternionz(0.0,0.0,0.0,1.0);
   
-  inline WaveformUtilities::Quaternion exp(const WaveformUtilities::Quaternion& Q) { return Q.exp(); }
-  inline WaveformUtilities::Quaternion log(const WaveformUtilities::Quaternion& Q) { return Q.log(); }
-  inline WaveformUtilities::Quaternion pow(const WaveformUtilities::Quaternion& Q, const double x) { return Q.pow(x); }
+  // inline WaveformUtilities::Quaternion exp(const WaveformUtilities::Quaternion& Q) { return Q.exp(); }
+  // inline WaveformUtilities::Quaternion log(const WaveformUtilities::Quaternion& Q) { return Q.log(); }
+  // inline WaveformUtilities::Quaternion pow(const WaveformUtilities::Quaternion& Q, const double x) { return Q.pow(x); }
   
   std::vector<WaveformUtilities::Quaternion> Quaternions(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
   std::vector<WaveformUtilities::Quaternion> Conjugate(const std::vector<WaveformUtilities::Quaternion>& Q);
@@ -60,6 +60,7 @@ namespace WaveformUtilities {
   
 }
 
+#ifndef SWIG
 WaveformUtilities::Quaternion operator*(const double a, const WaveformUtilities::Quaternion& Q);
 WaveformUtilities::Quaternion operator/(const double a, const WaveformUtilities::Quaternion& Q);
 
@@ -69,5 +70,6 @@ std::vector<WaveformUtilities::Quaternion> operator*(const std::vector<WaveformU
 std::vector<WaveformUtilities::Quaternion> operator-(const std::vector<WaveformUtilities::Quaternion>& Q);
 
 std::ostream& operator<<(std::ostream& out, const WaveformUtilities::Quaternion& q);
+#endif // SWIG
 
 #endif // QUATERNIONS_HPP

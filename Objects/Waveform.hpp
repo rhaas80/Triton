@@ -195,20 +195,15 @@ namespace WaveformObjects {
     Waveform& RotatePhysicalSystem(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
     Waveform& RotateCoordinates(const double alpha, const double beta, const double gamma);
     Waveform& RotateCoordinates(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
-    //Waveform& RotatePhysicalSystem(const WaveformUtilities::Quaternion& Q);
+    Waveform& RotatePhysicalSystem(const WaveformUtilities::Quaternion& Q);
     Waveform& RotatePhysicalSystem(const std::vector<WaveformUtilities::Quaternion>& Q);
-    //Waveform& RotateCoordinates(const WaveformUtilities::Quaternion& Q);
+    Waveform& RotateCoordinates(const WaveformUtilities::Quaternion& Q);
     Waveform& RotateCoordinates(const std::vector<WaveformUtilities::Quaternion>& Q);
     //Waveform& ReconcileAxisDirection(const Waveform& W, const double TimeFraction=0.5);
     
     // Radiation-frame utilities
-    Waveform& TransformToSchmidtFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0); // Transforms the waveform into the Schmidt frame
-    Waveform& TransformToSchmidtFrame(std::vector<double>& alpha, std::vector<double>& beta, const double alpha0Guess=0.0, const double beta0Guess=0.0);
-    Waveform& TransformToSchmidtFrame(std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
-				      const double alpha0Guess=0.0, const double beta0Guess=0.0);
-    Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0); // Transforms the waveform into the minimal-rotation frame
-    Waveform& TransformToMinimalRotationFrame(std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
-					      const double alpha0Guess=0.0, const double beta0Guess=0.0);
+    Waveform& TransformToSchmidtFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
+    Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
     
     // Nice, easy way of compressing and outputting to NINJA
     Waveform& MinimalGrid(const double MagTol=1.e-5, const double ArgTol=1.e-5);
