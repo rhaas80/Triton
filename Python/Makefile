@@ -29,7 +29,7 @@ clean:
 realclean:
 	-$(RM) WaveformObjects_wrap.{o,cxx} PyGW/WaveformObjects.py{,c} PyGW/_WaveformObjects.so SWSHs_wrap.{o,cxx} SWSHs.py{,c} _SWSHs.so
 
-WaveformObjects_python : _WaveformObjects.so
+PyGW : _WaveformObjects.so
 
 _WaveformObjects.so : WaveformObjects.i
 	swig -c++ -python -outdir PyGW WaveformObjects.i
@@ -42,7 +42,7 @@ _WaveformObjects.so : WaveformObjects.i
 		`python-config --ldflags | perl -pe 's#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python##'` \
 		$(LFLAGS) $(lFLAGS) WaveformObjects_wrap.o -o PyGW/_WaveformObjects.so
 
-SWSHs_python : _SWSHs.so
+SWSHs : _SWSHs.so
 
 _SWSHs.so : SWSHs.i
 	swig -c++ -python SWSHs.i

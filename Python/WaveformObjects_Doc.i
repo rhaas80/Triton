@@ -850,8 +850,8 @@ Align phases of two Waveforms to within 2*pi at a fractional time in this Wavefo
 """
 
 %feature("docstring") WaveformObjects::Waveform::TransformToSchmidtFrame """
-
-
+Transform the Waveform to the naive radiation frame.
+====================================================
   Parameters
   ----------
     const double alpha0Guess = 0.0
@@ -861,34 +861,20 @@ Align phases of two Waveforms to within 2*pi at a fractional time in this Wavefo
   -------
     Waveform&
   
-
-
-
-  Parameters
-  ----------
-    vector<double>& alpha
-    vector<double>& beta
-    const double alpha0Guess = 0.0
-    const double beta0Guess = 0.0
-  
-  Returns
-  -------
-    Waveform&
-  
-
-
-
-  Parameters
-  ----------
-    vector<double>& alpha
-    vector<double>& beta
-    vector<double>& gamma
-    const double alpha0Guess = 0.0
-    const double beta0Guess = 0.0
-  
-  Returns
-  -------
-    Waveform&
+  Description
+  -----------
+    This function finds the radiation axis, then rotates the coordinates in
+    which the physical system is expressed (by calling RotateCoordinates) to
+    align with that frame. Note that the rotation in this case always has the
+    third Euler angle (gamma) set to 0.
+    
+    We define the Euler angles (alpha, beta, gamma) using the z-y'-z''
+    convention, where the first rotation is through an angle alpha about the z
+    axis, the second through beta about the (new) y' axis, and the third
+    through gamma about the (new) z'' axis. Note that this is equivalent to
+    rotations in the opposite order about the fixed set of axes z-y-z.
+    
+    See PRD 84, 124011 (2011) for more details.
   
 """
 
@@ -1142,8 +1128,8 @@ Delete data from the Waveform occurring at or before the input time.
 """
 
 %feature("docstring") MinimalRotation """
-
-
+Alter gamma to enforce the minimal-rotation condition.
+======================================================
   Parameters
   ----------
     const vector<double>& alpha
@@ -1417,8 +1403,8 @@ class WaveformObjects::WaveformAtAPointFT
 """
 
 %feature("docstring") WaveformObjects::Waveform::TransformToMinimalRotationFrame """
-
-
+Transform the Waveform to the minimal-rotation radiation frame.
+===============================================================
   Parameters
   ----------
     const double alpha0Guess = 0.0
@@ -1428,20 +1414,19 @@ class WaveformObjects::WaveformAtAPointFT
   -------
     Waveform&
   
-
-
-
-  Parameters
-  ----------
-    vector<double>& alpha
-    vector<double>& beta
-    vector<double>& gamma
-    const double alpha0Guess = 0.0
-    const double beta0Guess = 0.0
-  
-  Returns
-  -------
-    Waveform&
+  Description
+  -----------
+    This function finds the minimal-rotation radiation axis, then rotates the
+    coordinates in which the physical system is expressed (by calling
+    RotateCoordinates) to align with that frame.
+    
+    We define the Euler angles (alpha, beta, gamma) using the z-y'-z''
+    convention, where the first rotation is through an angle alpha about the z
+    axis, the second through beta about the (new) y' axis, and the third
+    through gamma about the (new) z'' axis. Note that this is equivalent to
+    rotations in the opposite order about the fixed set of axes z-y-z.
+    
+    See PRD 84, 124011 (2011) for more details.
   
 """
 
@@ -2159,8 +2144,27 @@ Return the entire vector of frames in which the data are decomposed.
     Waveform&
   
 
+Rotate all modes by the given quaternion.
+=========================================
+  Parameters
+  ----------
+    const Quaternion& Q
+  
+  Returns
+  -------
+    Waveform&
+  
+  Description
+  -----------
+    This rotates the coordinates, leaving the physical system in place -- which
+    is just the opposite rotation compared to RotatePhysicalSystem. One way of
+    thinking about this is that the zHat axis is rotated to the point
+    Q*zHat*Qbar, while the physical point that was located there is left in
+    place. In the new coordinates, that physical point is at Qbar*zHat*Q.
+  
 
-
+Rotate all modes by the given quaternion data.
+==============================================
   Parameters
   ----------
     const vector<Quaternion>& Q
@@ -2168,6 +2172,14 @@ Return the entire vector of frames in which the data are decomposed.
   Returns
   -------
     Waveform&
+  
+  Description
+  -----------
+    This rotates the coordinates, leaving the physical system in place -- which
+    is just the opposite rotation compared to RotatePhysicalSystem. One way of
+    thinking about this is that the zHat axis is rotated to the point
+    Q*zHat*Qbar, while the physical point that was located there is left in
+    place. In the new coordinates, that physical point is at Qbar*zHat*Q.
   
 """
 
@@ -2842,8 +2854,8 @@ Return a reference to the l (azimuthal) index of mode 'Mode'.
 """
 
 %feature("docstring") WaveformObjects::Waveform::RotatePhysicalSystem """
-
-
+Rotate all modes by the given Euler angles.
+===========================================
   Parameters
   ----------
     const double alpha
@@ -2868,8 +2880,26 @@ Return a reference to the l (azimuthal) index of mode 'Mode'.
     Waveform&
   
 
+Rotate all modes by the given quaternion data.
+==============================================
+  Parameters
+  ----------
+    const Quaternion& Q
+  
+  Returns
+  -------
+    Waveform&
+  
+  Description
+  -----------
+    This rotates the physical system, leaving the coordinates in place -- which
+    is just the opposite rotation compared to RotateCoordinates. One way of
+    thinking about this is that whatever physical point is at the tip of the
+    zHat axis is rotated to the point Q*zHat*Qbar.
+  
 
-
+Rotate all modes by the given quaternion data.
+==============================================
   Parameters
   ----------
     const vector<Quaternion>& Q
@@ -2877,6 +2907,13 @@ Return a reference to the l (azimuthal) index of mode 'Mode'.
   Returns
   -------
     Waveform&
+  
+  Description
+  -----------
+    This rotates the physical system, leaving the coordinates in place -- which
+    is just the opposite rotation compared to RotateCoordinates. One way of
+    thinking about this is that whatever physical point is at the tip of the
+    zHat axis is rotated to the point Q*zHat*Qbar.
   
 """
 

@@ -9,7 +9,7 @@ EXTRA_PACKAGES = amsmath amssymb amsfonts
 
 PREDEFINED = DOXYGEN
 
-INPUT = Objects/Waveform Objects/Waveform.hpp Objects/Waveform.cpp Objects/Waveforms.hpp Objects/Waveforms.cpp \
+INPUT = Objects/Waveform.doc Objects/Waveform Objects/Waveform.hpp Objects/Waveform.cpp Objects/Waveforms.hpp Objects/Waveforms.cpp \
 	Objects/WaveformAtAPoint.hpp Objects/WaveformAtAPoint.cpp Objects/WaveformAtAPointFT.hpp Objects/WaveformAtAPointFT.cpp
 
 EXCLUDE_SYMBOLS = MaximizeMagSum WaveformAligner

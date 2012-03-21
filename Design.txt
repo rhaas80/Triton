@@ -3,9 +3,8 @@
 * Operate in place as often as possible
 
 * Make the class definition clean; prefer free functions to member functions
+** Separate class definition header file from free functions (but use the same namespace)
 ** Maybe modify this when the goal is to SWIGify, because that's more pythonic
-
-* Separate class definition header file from free functions (but use the same namespace)
 
 * Provide access functions for each member datum
 ** non-const reference
@@ -25,6 +24,9 @@
 
 
 * To do
+** Smarter differentiation of quaternions
+** Get h5 import/export working
+*** Add ability to only import particular mode or modes
 ** Convert Routines to python scripts
 ** Add Quaternion function of time to Waveform data
 *** Check all member functions for the new 'frame' member data
@@ -36,6 +38,8 @@
 **** PeakFluxTime
 **** WaveformInStationaryFrame
 *** Add frame data to I/O
-** Get h5 import working
-** Handle errors so python doesn't just exit on a throw from c++
+** Add data about format of each mode (ReIm|MagArg)
+** Change typeIndex to enum
+*** Add 'Unknown' type
+** Implement better exceptions
 ** Add directors to use for_each method on Waveforms with python-defined function

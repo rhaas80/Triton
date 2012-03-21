@@ -13,6 +13,25 @@
 /// of code.  The various methods for this class are intended to
 /// provide all manipulations that might be necessary in the course of
 /// waveform analysis.
+/// 
+/// \var history
+/// \var typeIndex
+/// \var timeScale
+/// \var t
+/// \var r
+/// \var frame Vector of quaternions.  This represents the rotation
+///            applied to the coordinates to go from the standard
+///            inertial frame to the frame in which the Waveform is
+///            decomposed.  If this vector has length 0, the frame is
+///            assumed to be constant, and the standard frame.  If
+///            this vector has length 1, the frame is assumed to be
+///            constant, but given by that value.  Otherwise, this
+///            vector is assumed to have length NTimes(),
+///            corresponding to the frame at each moment.
+/// \var lm
+/// \var mag
+/// \var arg
+/// \var Types
 
 // ** Get-data access functions
 /// \fn inline const unsigned int WaveformObjects::Waveform::NTimes() const

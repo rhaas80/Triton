@@ -21,6 +21,7 @@
   #include <sstream>
   #include <iomanip>
   #include "../Objects/Waveforms.hpp"
+  #include "../Utilities/Quaternions.hpp"
 %}
 
 
@@ -51,6 +52,31 @@ namespace WaveformUtilities {
   %template(MatrixInt) Matrix<int>;
   %template(MatrixDouble) Matrix<double>;
 };
+//// I need to use my Quaternion class, to pass arguments into PyGW
+%ignore WaveformUtilities::Quaternion::operator=;
+%ignore WaveformUtilities::Quaternion::operator[];
+%rename(__getitem__) WaveformUtilities::Quaternion::operator[] const;
+%include "../Utilities/Quaternions.hpp"
+%extend WaveformUtilities::Quaternion {
+  //// This function is called when printing a Quaternion object
+  char *__str__() {
+    std::stringstream S;
+    S << std::setprecision(14) << "["
+      << $self->operator[](0) << ", "
+      << $self->operator[](1) << ", "
+      << $self->operator[](2) << ", " 
+      << $self->operator[](3) << "]";
+    std::string String(S.str());
+    static std::vector<char> CharVec(String.size() + 1);
+    std::copy(String.begin(), String.end(), CharVec.begin());
+    CharVec.push_back('\0');
+    return &(CharVec[0]);
+  }
+ };
+namespace std {
+  %template(vectorq) vector<WaveformUtilities::Quaternion>;
+}
+
 //////////////////////////////////////////////////////////////////////
 
 
@@ -66,6 +92,7 @@ namespace WaveformUtilities {
 //// These will convert the output data to numpy.ndarray for easier use
 %feature("pythonappend") WaveformObjects::Waveform::T() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 %feature("pythonappend") WaveformObjects::Waveform::R() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%feature("pythonappend") WaveformObjects::Waveform::Frame() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 %feature("pythonappend") WaveformObjects::Waveform::LM() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 %feature("pythonappend") WaveformObjects::Waveform::Mag() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 %feature("pythonappend") WaveformObjects::Waveform::Arg() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
@@ -90,7 +117,7 @@ namespace WaveformUtilities {
       S << std::endl;
     }
     std::string String(S.str());
-    std::vector<char> CharVec(String.size() + 1);
+    static std::vector<char> CharVec(String.size() + 1);
     std::copy(String.begin(), String.end(), CharVec.begin());
     CharVec.push_back('\0');
     return &(CharVec[0]);
