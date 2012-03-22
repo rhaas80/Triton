@@ -83,7 +83,7 @@ namespace std {
 %ignore operator<<;
 %ignore WaveformObjects::Waveform::operator=;
 //// ...and rename things that do
-%rename(__divide__) WaveformObjects::Waveform::operator/;
+%rename(__div__) WaveformObjects::Waveform::operator/;
 %rename(__getitem__) WaveformObjects::Waveform::operator[] const;
 //// These will convert the output data to numpy.ndarray for easier use
 %feature("pythonappend") WaveformObjects::Waveform::T() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
