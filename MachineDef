@@ -1,8 +1,9 @@
 # -*- makefile -*-  This makes emacs see this file as a Makefile
 
 ifndef HDF5_HOME
-  $(warning You need to define the HDF5_HOME variable)
-  $(warning On zwicky, do something like 'module add HDF5')
+  $(warning You need to define the HDF5_HOME variable pointing to)
+  $(warning the root of the hdf5 'include' and 'lib' directories.)
+  $(warning On zwicky, do something like 'module add HDF5'.)
   $(error Cannot proceed)
 endif
 
