@@ -6067,6 +6067,8 @@
     if (Mag_Rz_1_2==0.0) { // Test equality because precise value was set in SetQuaternion
       return 0.0;
     }
+    std::cout << std::setprecision(16) << RzRbar3 << "\t" << Mag_Rz_1_2 << "\t" << Mag_Rz_3_0 << "\t"
+	      << (0.038273277230987158 + RzRbar3*(-0.15309310892394863 + RzRbar3*(0.19136638615493579 + RzRbar3*(0.e-17 + RzRbar3*(-0.19136638615493579 + (0.153093108923948631 - 0.0382732772309871578*RzRbar3)*RzRbar3)))))/(::pow(Mag_Rz_1_2,5)*Mag_Rz_3_0) << std::endl;
     return (0.038273277230987158 + RzRbar3*(-0.15309310892394863 + RzRbar3*(0.19136638615493579 + RzRbar3*(0.e-17 + RzRbar3*(-0.19136638615493579 + (0.153093108923948631 - 0.0382732772309871578*RzRbar3)*RzRbar3)))))/(::pow(Mag_Rz_1_2,5)*Mag_Rz_3_0);
   }
   

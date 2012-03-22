@@ -1,11 +1,11 @@
 #define WIGNERDMATRIX_Q_CPP
 
 #include <iostream>
+#include <iomanip>
 #include <cmath>
 #include "WignerDMatrix_Q.hpp"
 #include <cstdlib>
 #include <limits>
-#include <iomanip>
 #include "Utilities.hpp"
 
 using std::sqrt;
@@ -103,10 +103,10 @@ void WignerDMatrix_Q::SetQuaternion(const Quaternion& iR) {
   // if(R==iRNormalized) { return; }
   Recalculated = false;
   R = iRNormalized;
-  if(std::abs(R[0])<3*numeric_limits<double>::epsilon()) { R[0]=0.0; }
-  if(std::abs(R[1])<3*numeric_limits<double>::epsilon()) { R[1]=0.0; }
-  if(std::abs(R[2])<3*numeric_limits<double>::epsilon()) { R[2]=0.0; }
-  if(std::abs(R[3])<3*numeric_limits<double>::epsilon()) { R[3]=0.0; }
+  if(std::abs(R[0])<2*numeric_limits<double>::epsilon()) { R[0]=0.0; }
+  if(std::abs(R[1])<2*numeric_limits<double>::epsilon()) { R[1]=0.0; }
+  if(std::abs(R[2])<2*numeric_limits<double>::epsilon()) { R[2]=0.0; }
+  if(std::abs(R[3])<2*numeric_limits<double>::epsilon()) { R[3]=0.0; }
   Quaternion Rz = R*Quaternion(0,0,0,1);
   RzRbar3 = (Rz*(R.Conjugate()))[3];
   Mag_Rz_3_0 = sqrt(Rz[0]*Rz[0]+Rz[3]*Rz[3]);
