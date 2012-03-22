@@ -9,26 +9,34 @@ from matplotlib.pyplot import semilogx as matplotlibpyplotsemilogx
 from matplotlib.pyplot import semilogy as matplotlibpyplotsemilogy
 from matplotlib.pyplot import loglog as matplotlibpyplotloglog
 from matplotlib.pyplot import xlabel, ylabel, tight_layout, setp
+from matplotlib.pyplot import isinteractive, ioff, ion, draw, show, gcf
 from warnings import warn
 from numpy import array, empty, transpose
 
 def NotAbs(Anything) :
     return Anything
 
-def plot(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
+def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
     """
     This function should be called as a method of the Waveform class,
     e.g., as
     
-    >>> W.plot('Mag', Modes=((2,2), (2,-2)), c='r')
+    >>> W.plot('Mag', Modes=[[2,2], [2,-2]], c='r')
     
     where W is a Waveform object.  The first parameter should be a
     string --- one of ('Mag', 'LogMag', 'LogLogMag', 'Arg', 'Omega').
-    The second (optional) parameter is a tuple, where each element is
-    either a mode index, or some (l,m).  Only modes included in this
+    The second (optional) parameter is a list (using square brackets),
+    where each element is some [l,m].  Only modes included in this
     list will be plotted, unless the list is empty (the default), in
-    which case all modes are plotted.  All following arguments are
-    passed to the usual pyplot.plot function.
+    which case all modes are plotted.
+    
+    All following arguments are passed to the usual pyplot.plot (or
+    semilogx, semilogy, or loglog) function; in the example above, the
+    "c='r'" argument is passed, making the line color red.  The only
+    exception to this rule is the "label" keyword, which is handled
+    internally when there is just one line.  Otherwise, the legend
+    labels are set automatically to contain the [l,m] mode (though the
+    legend is not shown by default).
     
     """
     
@@ -51,6 +59,9 @@ def plot(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
     YLabel = ''
     
     Labels = []
+    
+    WasInteractive = isinteractive()
+    ioff()
     
     ## This decides which quantity to plot, what type of plot, and what the labels should be
     if (WaveformPart.lower()=='mag') :
@@ -83,7 +94,7 @@ def plot(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
         return []
     
     ## This does the actual work of plotting, depending on what Modes are needed
-    if (type(Modes)==int or len(Modes)==1) : # The requested mode is plotted
+    if (type(Modes)==int) : # The requested mode is plotted
         Lines = styledplot(this.T(), AbsOrNot(quantity(Modes)), *pyplot_args, **pyplot_kwargs)
         Labels = ['(' + str(this.L(Modes)) + ', ' + str(this.M(Modes)) + ')']
     elif (len(Modes)==0) : # All modes are plotted
@@ -92,30 +103,28 @@ def plot(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
             Labels = [pyplot_kwargs['label']]
         else :
             Labels = ['(' + str(this.L(mode)) + ', ' + str(this.M(mode)) + ')' for mode in range(this.NModes())]
-    elif ((len(Modes)==2) and (type(Modes[0])==int and type(Modes[1])==int) and ((Modes[0]<2) or (Modes[0]<abs(Modes[1])))) :
-        Lines = styledplot(this.T(), transpose((AbsOrNot(quantity(Modes[0])), AbsOrNot(quantity(Modes[1])))), *pyplot_args, **pyplot_kwargs)
-        Labels = ['(' + str(this.L(mode)) + ', ' + str(this.M(mode)) + ')' for mode in Modes]
+    elif ((len(Modes)==2) and (type(Modes[0])==int and type(Modes[1])==int)) :
+        Lines = styledplot(this.T(), transpose(AbsOrNot(quantity(this.FindModeIndex(Modes[0], Modes[1])))), *pyplot_args, **pyplot_kwargs)
+        Labels = ['(' + str(this.L(Modes[0])) + ', ' + str(this.M(Modes[1])) + ')']
     else :
         Modes = array(Modes)
-        if (Modes.shape==(2,)) :
-            warn("Ambiguous 'Modes' specification.  Assuming this is an (l,m) specification.", SyntaxWarning)
-            #try: # Catch a bad (l,m) error
-            Lines = styledplot(this.T(), AbsOrNot(quantity(this.FindModeIndex(int(Modes[0]), int(Modes[1])))), *pyplot_args, **pyplot_kwargs)
-            Labels = ['(' + str(Modes[0]) + ', ' + str(Modes[1]) + ')']
-        else :
-            Data = empty([Modes.shape[0], this.NTimes()], dtype=float)
-            for i in range(Modes.shape[0]) :
-                if (type(Modes[i])==int) :
-                    ModeIndex = Modes[i]
-                    Labels.append('(' + str(this.L(Modes[i])) + ', ' + str(this.M(Modes[i])) + ')')
-                else :
-                    ModeIndex = this.FindModeIndex(int(Modes[i][0]), int(Modes[i][1]))
-                    Labels.append('(' + str(Modes[i][0]) + ', ' + str(Modes[i][1]) + ')')
-                Data[i] = quantity(ModeIndex)
-                Lines = styledplot(this.T(), AbsOrNot(Data).transpose(), *pyplot_args, **pyplot_kwargs)
+        Data = empty([Modes.shape[0], this.NTimes()], dtype=float)
+        for i in range(Modes.shape[0]) :
+            print("\t{}".Format(i));
+            ModeIndex = this.FindModeIndex(int(Modes[i][0]), int(Modes[i][1]))
+            Labels.append('(' + str(Modes[i][0]) + ', ' + str(Modes[i][1]) + ')')
+            Data[i] = quantity(ModeIndex)
+            Lines = styledplot(this.T(), AbsOrNot(Data).transpose(), *pyplot_args, **pyplot_kwargs)
     
     xlabel(XLabel)
     ylabel(YLabel)
+    
+    draw()
+    
+    if(WasInteractive) :
+        ion()
+        gcf().show()
+    
     try :
         tight_layout(pad=0.1)
     except RuntimeError :
@@ -132,4 +141,4 @@ def plot(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwargs) :
 #   Waveform W
 #   W.plot('Mag', ((2,2), (2,-2)))
 import PyGW
-PyGW.WaveformObjects.Waveform.plot = plot
+PyGW.WaveformObjects.Waveform.plot = plotWaveform
