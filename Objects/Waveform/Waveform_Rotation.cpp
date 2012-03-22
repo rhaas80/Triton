@@ -41,26 +41,6 @@ using std::ios_base;
 
 /// Rotate all modes by the given Euler angles.
 Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, const double beta, const double gamma) {
-  // Make sure the ordering is as expected (could program something to make this unecessary...)
-  {
-    unsigned int mode=0;
-    for(int l=2; ; ++l) {
-      if(mode>=NModes()) { break; }
-      for(int m=-l; m<=l; ++m) {
-	if(mode>=NModes()) { break; }
-	if(L(mode)!=l) {
-	  std::cerr << "\nmode=" << mode << "  L(mode)=" << L(mode) << "  l=" << l << std::endl;
-	  throw("Unrecognized mode ordering in this Waveform.");
-	}
-	if(M(mode)!=m) {
-	  std::cerr << "\nmode=" << mode << "  M(mode)=" << M(mode) << "  m=" << m << std::endl;
-	  throw("Unrecognized mode ordering in this Waveform.");
-	}
-	mode++;
-      }
-    }
-  }
-  
   History() << "### this->RotatePhysicalSystem(" << alpha << ", " << beta << ", " << gamma << ");" << endl;
   
   // Loop through each mode and do the rotation
@@ -68,6 +48,20 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, co
     unsigned int mode=1;
     for(int l=2; l<int(NModes()); ++l) {
       if(NModes()<mode) { break; }
+      // Use a vector of mode indices, in case the modes are out of
+      // order.  This still assumes that we have each l from l=2 up to
+      // some l_max, but it's better than assuming that plus assuming
+      // that everything is in order.
+      vector<int> ModeIndices(2*l+1);
+      for(int m=-l, i=0; m<=l; ++m, ++i) {
+	try {
+	  ModeIndices[i] = FindModeIndex(l, m);
+	} catch(char* thrown) {
+	  cerr << thrown << endl;
+	  cerr << RowFormat(LM()) << endl;
+	  throw("Incomplete mode information in Waveform; cannot rotate.");
+	}
+      }
       // Construct the D matrices
       Matrix<double> DRe(2*l+1, 2*l+1);
       Matrix<double> DIm(2*l+1, 2*l+1);
@@ -83,19 +77,19 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, co
       for(unsigned int t=0; t<NTimes(); ++t) {
 	vector<double> ReData(2*l+1);
 	vector<double> ImData(2*l+1);
-	for(int mp=-l; mp<=l; ++mp) {
+	for(int mp=-l, i=0; mp<=l; ++mp, ++i) {
 	  // Save the data at this time step
-	  ReData[mp+l] = Mag((l*l-4)+(mp+l), t)*cos(Arg((l*l-4)+(mp+l), t));
-	  ImData[mp+l] = Mag((l*l-4)+(mp+l), t)*sin(Arg((l*l-4)+(mp+l), t));
+	  ReData[mp+l] = Mag(ModeIndices[i], t)*cos(Arg(ModeIndices[i], t));
+	  ImData[mp+l] = Mag(ModeIndices[i], t)*sin(Arg(ModeIndices[i], t));
 	}
-	for(int m=-l; m<=l; ++m) {
-	  MagRef((l*l-4)+(m+l), t) = 0.0;
-	  ArgRef((l*l-4)+(m+l), t) = 0.0;
+	for(int m=-l, i=0; m<=l; ++m, ++i) {
+	  MagRef(ModeIndices[i], t) = 0.0;
+	  ArgRef(ModeIndices[i], t) = 0.0;
 	  for(int mp=-l; mp<=l; ++mp) {
 	    // Save the data at this time step
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    MagRef((l*l-4)+(m+l), t) += DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
-	    ArgRef((l*l-4)+(m+l), t) += DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
+	    MagRef(ModeIndices[i], t) += DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
+	    ArgRef(ModeIndices[i], t) += DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
 	  }
 	}
       }
@@ -230,7 +224,6 @@ Waveform& WaveformObjects::Waveform::RotateCoordinates(const std::vector<double>
 
 /// Rotate all modes by the given quaternion data.
 Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<WaveformUtilities::Quaternion>& Q) {
-  throw("BAAHHH!");
   /// This rotates the physical system, leaving the coordinates in
   /// place -- which is just the opposite rotation compared to
   /// RotateCoordinates.  One way of thinking about this is that
@@ -270,32 +263,34 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<Wave
 	  Ds[mp+l][m+l].SetElement(l, mp, m);
 	}
       }
-      Matrix<double> DRe(2*l+1, 2*l+1);
-      Matrix<double> DIm(2*l+1, 2*l+1);
+      Matrix<double> DMag(2*l+1, 2*l+1);
+      Matrix<double> DArg(2*l+1, 2*l+1);
       // Loop through each time step
       for(unsigned int t=0; t<NTimes(); ++t) {
 	// Get the Wigner D matrix data at this time step
 	for(int m=-l; m<=l; ++m) {
 	  for(int mp=-l; mp<=l; ++mp) {
 	    Ds[mp+l][m+l].SetQuaternion(Q[t]);
-	    Ds[mp+l][m+l].ValueReIm(DRe[mp+l][m+l], DIm[mp+l][m+l]);
+	    Ds[mp+l][m+l].Value(DMag[mp+l][m+l], DArg[mp+l][m+l]);
 	  }
 	}
-	vector<double> ReData(2*l+1);
-	vector<double> ImData(2*l+1);
+	vector<double> MagData(2*l+1);
+	vector<double> ArgData(2*l+1);
 	for(int mp=-l, i=0; mp<=l; ++mp, ++i) {
-	  // Calculate the data for all m' modes at this time step
-	  ReData[mp+l] = Mag(ModeIndices[i], t)*cos(Arg(ModeIndices[i], t));
-	  ImData[mp+l] = Mag(ModeIndices[i], t)*sin(Arg(ModeIndices[i], t));
+	  // Store the data for all m' modes at this time step
+	  MagData[mp+l] = Mag(ModeIndices[i], t);
+	  ArgData[mp+l] = Arg(ModeIndices[i], t);
 	}
 	for(int m=-l, i=0; m<=l; ++m, ++i) {
 	  MagRef(ModeIndices[i], t) = 0.0;
 	  ArgRef(ModeIndices[i], t) = 0.0;
 	  for(int mp=-l; mp<=l; ++mp) {
-	    // Save the data at this time step
+	    // Compute the addition to the data at this time step
+	    const double Mag = DMag[mp+l][m+l]*MagData[mp+l];
+	    const double Arg = DArg[mp+l][m+l]+ArgData[mp+l];
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    MagRef(ModeIndices[i], t) += DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
-	    ArgRef(ModeIndices[i], t) += DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
+	    MagRef(ModeIndices[i], t) += Mag*cos(Arg);
+	    ArgRef(ModeIndices[i], t) += Mag*sin(Arg);
 	  }
 	}
       }
@@ -314,7 +309,7 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<Wave
     frame = Q;
   } else if(frame.size()==1) { // (pre-)multiply frame constant by input rotation
     frame = Q * frame[0];
-  } else { //(pre-) multiply frame data by input rotation
+  } else { // (pre-)multiply frame data by input rotation
     frame = Q * frame;
   }
   
@@ -350,7 +345,6 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
 	  throw("Incomplete mode information in Waveform; cannot rotate.");
 	}
       }
-      cout << "Mode Indices: " << RowFormat(ModeIndices) << endl;
       // Construct the D matrices
       Matrix<WignerDMatrix_Q> Ds(2*l+1, 2*l+1);
       Matrix<double> DMag(2*l+1, 2*l+1);
@@ -362,17 +356,6 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
 	  Ds[mp+l][m+l].Value(DMag[mp+l][m+l], DArg[mp+l][m+l]);
 	}
       }
-      cout << "D^{(" << l << ")} = \n[\n";
-      for(int mp=-l; mp<=l; ++mp) {
-	cout << " [ ";
-	for(int m=-l; m<l; ++m) {
-	  cout << "(" << DMag[mp+l][m+l] << "," << DArg[mp+l][m+l] << "), ";
-	}
-	cout << "(" << DMag[mp+l][2*l] << "," << DArg[mp+l][2*l] << ") ]";
-	if(mp==l) { cout << ","; }
-	cout << endl;
-      }
-      cout << "]" << endl;
       // Loop through each time step
       for(unsigned int t=0; t<NTimes(); ++t) {
 	vector<double> MagData(2*l+1);
@@ -410,7 +393,7 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
     frame = vector<Quaternion>(1,Q);
   } else if(frame.size()==1) { // (pre-)multiply frame constant by input rotation
     frame[0] = Q * frame[0];
-  } else { //(pre-) multiply frame data by input rotation
+  } else { // (pre-)multiply frame data by input rotation
     frame = Q * frame;
   }
   
