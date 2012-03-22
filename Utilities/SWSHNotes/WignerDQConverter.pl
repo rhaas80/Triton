@@ -9,8 +9,8 @@ while(<SWSHIn>) {
     $line =~ s/Power/::pow/g;
     $line =~ s/ 1\*/ /;
     $line =~ s/ -1\*/ -/;
-    $line =~ s/Mag30/Mag_Rz_3_0/g;
-    $line =~ s/Mag12/Mag_Rz_1_2/g;
+    $line =~ s/Mag30/Mag_R_0_3/g;
+    $line =~ s/Mag12/Mag_R_1_2/g;
 #     $line =~ s/([^,][0-9]+)([\/\*])/\1.0\2/g;
 #     $line =~ s/([0-9]+) ([+-]) /\1.0 \2 /g;
 #     $line =~ s/\.0\.0/.0/g;

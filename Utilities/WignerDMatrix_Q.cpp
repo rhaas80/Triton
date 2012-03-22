@@ -24,9 +24,9 @@ void WaveformUtilities::WignerD_Q(const int L, const int MP, const int M, const 
 WignerDMatrix_Q::WignerDMatrix_Q(const int iL, const int iMP, const int iM, const Quaternion iR)
   : L(-2), MP(-2), M(-2),
     Calculator(&WignerDMatrix_Q::Uninitialized),
-    R(0,0,0,0), RzRbar3(0.),
-    Mag_Rz_3_0(0.), Mag_Rz_1_2(0.),
-    Arg_Rz_3_0(0.), Arg_Rz_1_2(0.),
+    R(0,0,0,0),
+    Mag_R_0_3(0.), Mag_R_1_2(0.),
+    Arg_R_0_3(0.), Arg_R_1_2(0.),
     Recalculated(false), ValMag(0.0), ValArg(0.0)
 {
   SetQuaternion(iR);
@@ -36,9 +36,9 @@ WignerDMatrix_Q::WignerDMatrix_Q(const int iL, const int iMP, const int iM, cons
 WignerDMatrix_Q::WignerDMatrix_Q(const WignerDMatrix_Q& D)
   : L(-2), MP(-2), M(-2),
     Calculator(&WignerDMatrix_Q::Uninitialized),
-    R(0,0,0,0), RzRbar3(0.),
-    Mag_Rz_3_0(0.), Mag_Rz_1_2(0.),
-    Arg_Rz_3_0(0.), Arg_Rz_1_2(0.),
+    R(0,0,0,0),
+    Mag_R_0_3(0.), Mag_R_1_2(0.),
+    Arg_R_0_3(0.), Arg_R_1_2(0.),
     Recalculated(false), ValMag(0.0), ValArg(0.0)
 {
   SetQuaternion(D.R);
@@ -51,11 +51,10 @@ WignerDMatrix_Q::WignerDMatrix_Q(const WignerDMatrix_Q& D)
 //   M = D.M;
 //   Calculator = D.Calculator;
 //   R = D.R;
-//   RzRbar3 = D.RzRbar3;
-//   Mag_Rz_3_0 = D.Mag_Rz_3_0;
-//   Mag_Rz_1_2 = D.Mag_Rz_1_2;
-//   Arg_Rz_3_0 = D.Arg_Rz_3_0;
-//   Arg_Rz_1_2 = D.Arg_Rz_1_2;
+//   Mag_R_0_3 = D.Mag_R_0_3;
+//   Mag_R_1_2 = D.Mag_R_1_2;
+//   Arg_R_0_3 = D.Arg_R_0_3;
+//   Arg_R_1_2 = D.Arg_R_1_2;
 //   Recalculated = D.Recalculated;
 //   ValMag = D.ValMag;
 //   ValArg = D.ValArg;
@@ -71,13 +70,13 @@ void WignerDMatrix_Q::Value(double& Mag, double& Arg) {
   Mag = (this->*Calculator)();
   Arg = 0.0;
   if(std::abs(Mag)==0.0) { return; }
-  if(std::abs(Arg_Rz_3_0)>3*numeric_limits<double>::epsilon() || M+MP>0) {
-    Arg += Arg_Rz_3_0*(M+MP);
+  if(std::abs(Arg_R_0_3)>3*numeric_limits<double>::epsilon() || M+MP>0) {
+    Arg += Arg_R_0_3*(M+MP);
   }
-  if(std::abs(Arg_Rz_1_2)>3*numeric_limits<double>::epsilon() || M-MP>0) {
-    Arg += Arg_Rz_1_2*(M-MP);
+  if(std::abs(Arg_R_1_2)>3*numeric_limits<double>::epsilon() || M-MP>0) {
+    Arg += Arg_R_1_2*(M-MP);
   }
-  if(Mag<-3*numeric_limits<double>::epsilon()) {
+  if(Mag<0.0) {
     Mag *= -1;
     Arg -= M_PI;
   }
@@ -85,7 +84,7 @@ void WignerDMatrix_Q::Value(double& Mag, double& Arg) {
   // ValArg=Arg;
   // Recalculated=true;
   // std::cout << "l=" << L << "\tmp=" << MP << "\tM=" << M << std::setprecision(16) << "\tMag=" << Mag << "\tArg=" << Arg << "\t:\t"
-  // 	    << R << " " << RzRbar3 << " " << Mag_Rz_3_0 << " " << Mag_Rz_1_2 << " " << Arg_Rz_3_0 << " " << Arg_Rz_1_2 << std::endl;
+  // 	    << R << " " << Mag_R_0_3 << " " << Mag_R_1_2 << " " << Arg_R_0_3 << " " << Arg_R_1_2 << std::endl;
   return;
 }
 
@@ -103,27 +102,21 @@ void WignerDMatrix_Q::SetQuaternion(const Quaternion& iR) {
   // if(R==iRNormalized) { return; }
   Recalculated = false;
   R = iRNormalized;
-  if(std::abs(R[0])<2*numeric_limits<double>::epsilon()) { R[0]=0.0; }
-  if(std::abs(R[1])<2*numeric_limits<double>::epsilon()) { R[1]=0.0; }
-  if(std::abs(R[2])<2*numeric_limits<double>::epsilon()) { R[2]=0.0; }
-  if(std::abs(R[3])<2*numeric_limits<double>::epsilon()) { R[3]=0.0; }
-  Quaternion Rz = R*Quaternion(0,0,0,1);
-  RzRbar3 = (Rz*(R.Conjugate()))[3];
-  Mag_Rz_3_0 = sqrt(Rz[0]*Rz[0]+Rz[3]*Rz[3]);
-  Mag_Rz_1_2 = sqrt(Rz[1]*Rz[1]+Rz[2]*Rz[2]);
-  if(Mag_Rz_3_0<3*numeric_limits<double>::epsilon()) {
-    Mag_Rz_3_0 = 0.0;
-    Arg_Rz_3_0 = 0.0;
+  Mag_R_0_3 = sqrt(R[0]*R[0]+R[3]*R[3]);
+  Mag_R_1_2 = sqrt(R[1]*R[1]+R[2]*R[2]);
+  if(Mag_R_0_3<3*numeric_limits<double>::epsilon()) {
+    Mag_R_0_3 = 0.0;
+    Arg_R_0_3 = 0.0;
   } else {
-    Arg_Rz_3_0 = atan2(-Rz[0], Rz[3]);
+    Arg_R_0_3 = atan2( R[3], R[0]);
   }
-  if(Mag_Rz_1_2<3*numeric_limits<double>::epsilon()) {
-    Mag_Rz_1_2 = 0.0;
-    Arg_Rz_1_2 = 0.0;
+  if(Mag_R_1_2<3*numeric_limits<double>::epsilon()) {
+    Mag_R_1_2 = 0.0;
+    Arg_R_1_2 = 0.0;
   } else {
-    Arg_Rz_1_2 = atan2( Rz[2], Rz[1]);
+    Arg_R_1_2 = atan2(-R[1], R[2]);
   }
-  // std::cout << R << " " << RzRbar3 << " " << Mag_Rz_3_0 << " " << Mag_Rz_1_2 << " " << Arg_Rz_3_0 << " " << Arg_Rz_1_2 << std::endl;
+  // std::cout << R << " " << Mag_R_0_3 << " " << Mag_R_1_2 << " " << Arg_R_0_3 << " " << Arg_R_1_2 << std::endl;
   return;
 }
 
@@ -149,18 +142,6 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
   L=iL;
   MP=iMP;
   M=iM;
-  
-  
-  if(R[0]==1.0) { // We can test equality because the value was set precisely in SetQuaternion if applicable
-    if(MP==M) {
-      Calculator = &WignerDMatrix_Q::Identity;
-    } else {
-      Calculator = &WignerDMatrix_Q::Zero;
-    }
-    return;
-  }
-  
-  
   
   switch(L) {
   case 8:

@@ -20,9 +20,8 @@ namespace WaveformUtilities {
     int L, MP, M;
     double (WignerDMatrix_Q::*Calculator)();
     Quaternion R;
-    double RzRbar3;
-    double Mag_Rz_3_0, Mag_Rz_1_2;
-    double Arg_Rz_3_0, Arg_Rz_1_2;
+    double Mag_R_0_3, Mag_R_1_2;
+    double Arg_R_0_3, Arg_R_1_2;
     bool Recalculated;
     double ValMag, ValArg;
   private: // member functions for calculating the actual values
