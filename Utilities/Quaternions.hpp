@@ -15,7 +15,7 @@ namespace WaveformUtilities {
     Quaternion(const std::vector<double>& vec);
     Quaternion(const double alpha, const double beta, const double gamma);
   public:
-    const double& operator[](const unsigned int i) const;
+    double operator[](const unsigned int i) const;
     double& operator[](const unsigned int i);
     bool operator==(const Quaternion& p) const;
     std::vector<double> Components() const;

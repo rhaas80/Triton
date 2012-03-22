@@ -5,6 +5,7 @@
 #include "WignerDMatrix_Q.hpp"
 #include <cstdlib>
 #include <limits>
+#include <iomanip>
 #include "Utilities.hpp"
 
 using std::sqrt;
@@ -71,18 +72,20 @@ void WignerDMatrix_Q::Value(double& Mag, double& Arg) {
   Arg = 0.0;
   if(std::abs(Mag)==0.0) { return; }
   if(std::abs(Arg_Rz_3_0)>3*numeric_limits<double>::epsilon() || M+MP>0) {
-    Arg += std::pow(Arg_Rz_3_0, M+MP);
+    Arg += Arg_Rz_3_0*(M+MP);
   }
   if(std::abs(Arg_Rz_1_2)>3*numeric_limits<double>::epsilon() || M-MP>0) {
-    Arg += std::pow(Arg_Rz_1_2, M-MP);
+    Arg += Arg_Rz_1_2*(M-MP);
   }
-  if(Mag<0.0) {
+  if(Mag<-3*numeric_limits<double>::epsilon()) {
     Mag *= -1;
     Arg -= M_PI;
   }
   // ValMag=Mag;
   // ValArg=Arg;
   // Recalculated=true;
+  // std::cout << "l=" << L << "\tmp=" << MP << "\tM=" << M << std::setprecision(16) << "\tMag=" << Mag << "\tArg=" << Arg << "\t:\t"
+  // 	    << R << " " << RzRbar3 << " " << Mag_Rz_3_0 << " " << Mag_Rz_1_2 << " " << Arg_Rz_3_0 << " " << Arg_Rz_1_2 << std::endl;
   return;
 }
 

@@ -59,18 +59,14 @@ namespace WaveformUtilities {
 %include "../Utilities/Quaternions.hpp"
 %extend WaveformUtilities::Quaternion {
   //// This function is called when printing a Quaternion object
-  char *__str__() {
+  std::string __str__() {
     std::stringstream S;
     S << std::setprecision(14) << "["
       << $self->operator[](0) << ", "
       << $self->operator[](1) << ", "
       << $self->operator[](2) << ", " 
       << $self->operator[](3) << "]";
-    std::string String(S.str());
-    static std::vector<char> CharVec(String.size() + 1);
-    std::copy(String.begin(), String.end(), CharVec.begin());
-    CharVec.push_back('\0');
-    return &(CharVec[0]);
+    return S.str();
   }
  };
 namespace std {
@@ -103,7 +99,7 @@ namespace std {
 //// Make any additions to the Waveform class here
 %extend WaveformObjects::Waveform {
   //// This function is called when printing the Waveform object
-  char *__str__() {
+  std::string __str__() {
     std::stringstream S;
     S << ($self->HistoryStr()) << "###\n"
       << "### # In python:\n"
@@ -116,11 +112,7 @@ namespace std {
       }
       S << std::endl;
     }
-    std::string String(S.str());
-    static std::vector<char> CharVec(String.size() + 1);
-    std::copy(String.begin(), String.end(), CharVec.begin());
-    CharVec.push_back('\0');
-    return &(CharVec[0]);
+    return S.str();
   }
  };
 

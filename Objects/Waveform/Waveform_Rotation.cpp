@@ -340,7 +340,7 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
       // order.  This still assumes that we have each l from l=2 up to
       // some l_max, but it's better than assuming that plus assuming
       // that everything is in order.
-      vector<unsigned int> ModeIndices(2*l+1);
+      vector<int> ModeIndices(2*l+1);
       for(int m=-l, i=0; m<=l; ++m, ++i) {
 	try {
 	  ModeIndices[i] = FindModeIndex(l, m);
@@ -350,34 +350,48 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
 	  throw("Incomplete mode information in Waveform; cannot rotate.");
 	}
       }
+      cout << "Mode Indices: " << RowFormat(ModeIndices) << endl;
       // Construct the D matrices
       Matrix<WignerDMatrix_Q> Ds(2*l+1, 2*l+1);
-      Matrix<double> DRe(2*l+1, 2*l+1);
-      Matrix<double> DIm(2*l+1, 2*l+1);
+      Matrix<double> DMag(2*l+1, 2*l+1);
+      Matrix<double> DArg(2*l+1, 2*l+1);
       for(int m=-l; m<=l; ++m) {
 	for(int mp=-l; mp<=l; ++mp) {
 	  Ds[mp+l][m+l].SetElement(l, mp, m);
 	  Ds[mp+l][m+l].SetQuaternion(Q);
-	  Ds[mp+l][m+l].ValueReIm(DRe[mp+l][m+l], DIm[mp+l][m+l]);
+	  Ds[mp+l][m+l].Value(DMag[mp+l][m+l], DArg[mp+l][m+l]);
 	}
       }
+      cout << "D^{(" << l << ")} = \n[\n";
+      for(int mp=-l; mp<=l; ++mp) {
+	cout << " [ ";
+	for(int m=-l; m<l; ++m) {
+	  cout << "(" << DMag[mp+l][m+l] << "," << DArg[mp+l][m+l] << "), ";
+	}
+	cout << "(" << DMag[mp+l][2*l] << "," << DArg[mp+l][2*l] << ") ]";
+	if(mp==l) { cout << ","; }
+	cout << endl;
+      }
+      cout << "]" << endl;
       // Loop through each time step
       for(unsigned int t=0; t<NTimes(); ++t) {
-	vector<double> ReData(2*l+1);
-	vector<double> ImData(2*l+1);
+	vector<double> MagData(2*l+1);
+	vector<double> ArgData(2*l+1);
 	for(int mp=-l, i=0; mp<=l; ++mp, ++i) {
-	  // Calculate the data for all m' modes at this time step
-	  ReData[mp+l] = Mag(ModeIndices[i], t)*cos(Arg(ModeIndices[i], t));
-	  ImData[mp+l] = Mag(ModeIndices[i], t)*sin(Arg(ModeIndices[i], t));
+	  // Store the data for all m' modes at this time step
+	  MagData[mp+l] = Mag(ModeIndices[i], t);
+	  ArgData[mp+l] = Arg(ModeIndices[i], t);
 	}
 	for(int m=-l, i=0; m<=l; ++m, ++i) {
 	  MagRef(ModeIndices[i], t) = 0.0;
 	  ArgRef(ModeIndices[i], t) = 0.0;
 	  for(int mp=-l; mp<=l; ++mp) {
-	    // Save the data at this time step
+	    // Compute the addition to the data at this time step
+	    const double Mag = DMag[mp+l][m+l]*MagData[mp+l];
+	    const double Arg = DArg[mp+l][m+l]+ArgData[mp+l];
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    MagRef(ModeIndices[i], t) += DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
-	    ArgRef(ModeIndices[i], t) += DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
+	    MagRef(ModeIndices[i], t) += Mag*cos(Arg);
+	    ArgRef(ModeIndices[i], t) += Mag*sin(Arg);
 	  }
 	}
       }

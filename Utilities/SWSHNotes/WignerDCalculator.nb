@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       145,          7]
-NotebookDataLength[    409542,      10614]
+NotebookDataLength[    409543,      10614]
 NotebookOptionsPosition[    406842,      10522]
-NotebookOutlinePosition[    407199,      10538]
-CellTagsIndexPosition[    407156,      10535]
+NotebookOutlinePosition[    407200,      10538]
+CellTagsIndexPosition[    407157,      10535]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -157,7 +157,7 @@ Cell[BoxData[{
           RowBox[{
            RowBox[{"2", "l"}], "-", 
            RowBox[{"2", "\[Rho]"}], "+", "m", "+", "mp"}]]}], " ", ")"}]}], 
-      "]"}]}]}], ";"}], "\[IndentingNewLine]", "\n"}], "\n", 
+      "]"}]}]}], ";"}], "\n", "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
   "SetDirectory", "[", "\"\</Users/boyle/Research/Triton/Utilities/\>\"", 
@@ -534,7 +534,7 @@ Cell[BoxData[{
            RowBox[{"(", 
             RowBox[{"1", "-", "QzQbarZ"}], ")"}], 
            RowBox[{"l", "-", "\[Rho]", "+", "mp"}]]}], " ", ")"}]}]}], 
-      "]"}]}]}], ";"}], "\n", 
+      "]"}]}]}], ";"}], "\[IndentingNewLine]", 
   RowBox[{"(*", "  ", 
    RowBox[{
     RowBox[{"Note", ":", " ", "Mag30"}], "=", 
@@ -551,7 +551,7 @@ Cell[BoxData[{
        RowBox[{"Qz", "[", "1", "]"}], "+", 
        RowBox[{"\[ImaginaryI]", " ", 
         RowBox[{"Qz", "[", "2", "]"}]}]}], "]"}]}]}], "  ", "*)"}], 
-  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{
   "SetDirectory", "[", "\"\</Users/boyle/Research/Triton/Utilities/\>\"", 
@@ -10521,7 +10521,7 @@ c4gamma = c2gamma*c2gamma-s2gamma*s2gamma;\n    const double s4gamma = \
 }, Open  ]]
 },
 WindowSize->{1811, 1108},
-WindowMargins->{{Automatic, 0}, {Automatic, 0}},
+WindowMargins->{{Automatic, 48}, {Automatic, 0}},
 FrontEndVersion->"8.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (February 23, \
 2011)",
 StyleDefinitions->"Default.nb"

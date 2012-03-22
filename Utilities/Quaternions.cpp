@@ -35,7 +35,7 @@ Quaternion::Quaternion(const double alpha, const double beta, const double gamma
     q3(  cos(beta/2.)*sin((alpha + gamma)/2.))
 { }
 
-const double& Quaternion::operator[](const unsigned int i) const {
+double Quaternion::operator[](const unsigned int i) const {
   if(i>3) { cerr << "\ni=" << i << endl; throw("Bad Quaternion index"); }
   if(i==0) { return q0; }
   else if(i==1) { return q1; }
