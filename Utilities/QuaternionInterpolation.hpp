@@ -6,13 +6,13 @@
 #include <vector>
 
 namespace WaveformUtilities {
-
+  
   //// Slerp is spherical linear interpolation of quaternions.  The
   //// input value t∈[0,1] gives the extent of interpolation from q0
   //// to q1.  If you only have two Quaternions (as in hybridization),
   //// this is the method to choose.
   WaveformUtilities::Quaternion Slerp(double t, const WaveformUtilities::Quaternion& q0, const WaveformUtilities::Quaternion& q1, bool shortest=true);
-
+  
   //// Squad interpolates between Quaternions, paying attention to the
   //// speed of the curve leaving q0 and arriving at q1.  This is
   //// useful, e.g., when there are more than 2 Quaternions.  We can

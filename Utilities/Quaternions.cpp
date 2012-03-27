@@ -63,6 +63,14 @@ bool Quaternion::operator==(const Quaternion& p) const {
   return true;
 }
 
+bool Quaternion::operator!=(const Quaternion& p) const {
+  if(q0!=p.q0) { return true; }
+  if(q1!=p.q1) { return true; }
+  if(q2!=p.q2) { return true; }
+  if(q3!=p.q3) { return true; }
+  return false;
+}
+
 vector<double> Quaternion::Components() const {
   vector<double> v(4, 0.0);
   v[0] = q0;
@@ -279,10 +287,26 @@ vector<Quaternion> operator*(const Quaternion& P, const vector<Quaternion>& Q) {
   return PQ;
 }
 
+vector<Quaternion> operator/(const Quaternion& P, const vector<Quaternion>& Q) {
+  vector<Quaternion> PQ(Q.size());
+  for(unsigned int i=0; i<Q.size(); ++i) {
+    PQ[i] = P/Q[i];
+  }
+  return PQ;
+}
+
 vector<Quaternion> operator*(const vector<Quaternion>& Q, const Quaternion& P) {
   vector<Quaternion> QP(Q.size());
   for(unsigned int i=0; i<Q.size(); ++i) {
     QP[i] = Q[i]*P;
+  }
+  return QP;
+}
+
+vector<Quaternion> operator/(const vector<Quaternion>& Q, const Quaternion& P) {
+  vector<Quaternion> QP(Q.size());
+  for(unsigned int i=0; i<Q.size(); ++i) {
+    QP[i] = Q[i]/P;
   }
   return QP;
 }
@@ -295,6 +319,18 @@ vector<Quaternion> operator*(const vector<Quaternion>& P, const vector<Quaternio
   vector<Quaternion> PQ(Q.size());
   for(unsigned int i=0; i<Q.size(); ++i) {
     PQ[i] = P[i]*Q[i];
+  }
+  return PQ;
+}
+
+vector<Quaternion> operator/(const vector<Quaternion>& P, const vector<Quaternion>& Q) {
+  if(P.size() != Q.size()) {
+    cerr << "\nP.size()=" << P.size() << "\tQ.size()=" << Q.size() << endl;
+    throw("vector<Quaternion> size mismatch");
+  }
+  vector<Quaternion> PQ(Q.size());
+  for(unsigned int i=0; i<Q.size(); ++i) {
+    PQ[i] = P[i]/Q[i];
   }
   return PQ;
 }

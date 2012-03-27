@@ -2,6 +2,7 @@
 #define QUATERNIONS_HPP
 
 #include <vector>
+#include <iostream>
 
 namespace WaveformUtilities {
   
@@ -18,6 +19,7 @@ namespace WaveformUtilities {
     double operator[](const unsigned int i) const;
     double& operator[](const unsigned int i);
     bool operator==(const Quaternion& p) const;
+    bool operator!=(const Quaternion& p) const;
     std::vector<double> Components() const;
     const double& Re() const { return q0; }
     std::vector<double> Vector() const;
@@ -65,8 +67,11 @@ WaveformUtilities::Quaternion operator*(const double a, const WaveformUtilities:
 WaveformUtilities::Quaternion operator/(const double a, const WaveformUtilities::Quaternion& Q);
 
 std::vector<WaveformUtilities::Quaternion> operator*(const WaveformUtilities::Quaternion& P, const std::vector<WaveformUtilities::Quaternion>& Q);
+std::vector<WaveformUtilities::Quaternion> operator/(const WaveformUtilities::Quaternion& P, const std::vector<WaveformUtilities::Quaternion>& Q);
 std::vector<WaveformUtilities::Quaternion> operator*(const std::vector<WaveformUtilities::Quaternion>& Q, const WaveformUtilities::Quaternion& P);
+std::vector<WaveformUtilities::Quaternion> operator/(const std::vector<WaveformUtilities::Quaternion>& Q, const WaveformUtilities::Quaternion& P);
 std::vector<WaveformUtilities::Quaternion> operator*(const std::vector<WaveformUtilities::Quaternion>& P, const std::vector<WaveformUtilities::Quaternion>& Q);
+std::vector<WaveformUtilities::Quaternion> operator/(const std::vector<WaveformUtilities::Quaternion>& P, const std::vector<WaveformUtilities::Quaternion>& Q);
 std::vector<WaveformUtilities::Quaternion> operator-(const std::vector<WaveformUtilities::Quaternion>& Q);
 
 std::ostream& operator<<(std::ostream& out, const WaveformUtilities::Quaternion& q);

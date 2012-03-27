@@ -50,6 +50,7 @@ Waveform& WaveformObjects::Waveform::DropBefore(const double time) {
   unsigned int i=0;
   while(i<NTimes()-1 && T(i+1)<=time) { ++i; }
   if(R().size()==NTimes()) { RRef().erase(RRef().begin(), (RRef().begin())+i); }
+  if(Frame().size()==NTimes()) { FrameRef().erase(FrameRef().begin(), (FrameRef().begin())+i); }
   t.erase(t.begin(), t.begin()+i);
   for(unsigned int j=0; j<NModes(); ++j) {
     MagRef(j).erase(MagRef(j).begin(), MagRef(j).begin()+i);
@@ -63,7 +64,8 @@ Waveform& WaveformObjects::Waveform::DropAfter(const double time) {
   History() << "### this->DropAfter(" << setprecision(16) << time << ");" << endl;
   unsigned int i=NTimes()-1;
   while(i>0 && T(i)>time) { --i; }
-  if(RRef().size()==NTimes()) { RRef().erase(RRef().begin()+i, RRef().end()); }
+  if(RRef().size()==NTimes()) { RRef().erase((RRef().begin())+i, RRef().end()); }
+  if(Frame().size()==NTimes()) { FrameRef().erase((FrameRef().begin())+i, FrameRef().begin()); }
   TRef().erase(TRef().begin()+i, TRef().end());
   for(unsigned int j=0; j<NModes(); ++j) {
     MagRef(j).erase(MagRef(j).begin()+i, MagRef(j).end());

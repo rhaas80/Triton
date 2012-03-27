@@ -204,6 +204,8 @@ namespace WaveformObjects {
     // Radiation-frame utilities
     Waveform& TransformToSchmidtFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
     Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
+    Waveform& TransformToStandardFrame();
+    Waveform& TransformToStationaryFrame(const WaveformUtilities::Quaternion Q=WaveformUtilities::Quaternion(1,0,0,0));
     
     // Nice, easy way of compressing and outputting to NINJA
     Waveform& MinimalGrid(const double MagTol=1.e-5, const double ArgTol=1.e-5);

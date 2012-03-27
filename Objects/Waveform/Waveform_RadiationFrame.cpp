@@ -188,3 +188,24 @@ Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const doubl
   this->RotateCoordinates(alpha, beta, gamma);
   return *this;
 }
+
+/// Transform the Waveform back to the original frame.
+Waveform& WaveformObjects::Waveform::TransformToStandardFrame() {
+  /// Simply reverses the total rotation given to the Waveform up to
+  /// this point.  Assuming all such rotations have been correctly
+  /// recorded in the Waveform object (which should not require any
+  /// user intervention), this should return the Waveform as
+  /// originally measured in the simulation code's frame, modulo any
+  /// time-regridding, rescaling, etc.
+  this->RotateCoordinates(this->Frame());
+  return *this;
+}
+
+/// Transform the Waveform back to a stationary frame.
+Waveform& WaveformObjects::Waveform::TransformToStationaryFrame(const WaveformUtilities::Quaternion Q) {
+  /// The input quaternion may be used to specify the orientation of
+  /// the final frame relative to the frame in which the Waveform was
+  /// originally measured.  Compare `TransformToStandardFrame()`.
+  this->RotateCoordinates(WaveformUtilities::Conjugate(Q)*(this->Frame()));
+  return *this;
+}

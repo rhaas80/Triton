@@ -658,33 +658,43 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
   return;
 }
 
+// x
 // Operators
 //   These functions are defined in Waveform/Waveform_Operators.cpp
 
+// 
 // Extract features
 //   These functions are defined in Waveform/Waveform_Features.cpp
 
+// x
 // Interpolation routines
 //   These functions are defined in Waveform/Waveform_Interpolate.cpp
 
+// x
 // Adjust time axis
 //   These functions are defined in Waveform/Waveform_AdjustTime.cpp
 
+// 
 // Physical conversions for extrapolations or conversion to frequency space
 //   These functions are defined in Waveform/Waveform_PhysicalConversions.cpp
 
+// 
 // Manipulate (l,m) modes
 //   These functions are defined in Waveform/Waveform_ManipulateModes.cpp
 
+// 
 // Align and hybridize waveforms
 //   These functions are defined in Waveform/Waveform_AlignAndHybridize.cpp
 
+// x
 // Rotate by the given Euler angles or Quaternion
 //   These functions are defined in Waveform/Waveform_Rotation.cpp
 
+// 
 // Output functions (members and non-members)
 //   These functions are defined in Waveform/Waveform_Output.cpp
 
+// x
 // Radiation-frame utilities
 //   These functions are defined in Waveform/Waveform_RadiationFrame.cpp
 

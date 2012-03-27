@@ -66,6 +66,8 @@ Quaternion WU::QuaternionInterpolator::RawInterpolate(int jlo, double t) {
 }
 
 double WU::QuaternionInterpolator::rawinterp(int jlo, double t) {
-  // This just has to be here to override the empty default in the base class
+  // This just has to be here to override the empty default in the
+  // base class.  The virtual function returns a double; we want to
+  // return a Quaternion.
   return 0.;
 }

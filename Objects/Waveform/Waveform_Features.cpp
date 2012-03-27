@@ -69,9 +69,12 @@ double WaveformObjects::Waveform::Peak22Time() const {
   return T(Peak22TimeIndex());
 }
 
-///
+/// Return the frequency of the (2,-2) mode.
 std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const double t2) const {
-  
+  /// In standard configuration, this quantity will typically be
+  /// increasing; the (2,2) frequency will typically be decreasing
+  /// because of the definitions of h and Psi4 and the definition of
+  /// the frequency as the derivative of `arg`.
   
   // Find 2,2 component
   int TwomTwo = -1;
@@ -129,8 +132,14 @@ std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const d
 bool WaveformObjects::Waveform::HasNaNs() const {
   bool hasnans = false;
   for(unsigned int i=0; i<NTimes(); ++i) {
-    if(t[i]!=t[i]) {
+    if(Time(i)!=Time(i)) {
       cerr << "\nChecking Waveform, a NaN was detected in the Time at index i=" << i << "." << endl;
+      hasnans = true;
+    }
+  }
+  for(unsigned int i=0; i<NTimes(); ++i) {
+    if(Frame(i)!=Frame(i)) {
+      cerr << "\nChecking Waveform, a NaN was detected in the Frame at index i=" << i << "." << endl;
       hasnans = true;
     }
   }
@@ -153,10 +162,22 @@ bool WaveformObjects::Waveform::HasNaNs() const {
   return hasnans;
 }
 
+/// Calculate the GW flux.
 std::vector<double> WaveformObjects::Waveform::Flux() const {
+  /// NB: This function can only be used on Waveform data of type
+  /// `rhdot`.  To calculate the flux from data of type `rh`, simply
+  /// apply the Differentiate() function first, but remember that that
+  /// function operates in place, so you may wish to make a copy of
+  /// the Waveform first.  For example, you may wish to use
+  /// `Waveform(bla).Differentiate().Flux()`.
   if(TypeIndex()%3!=1) {
     cerr << "\nType = " << Type() << endl;
     throw("Can't get Flux() for Waveform of Type other than rhdot.  Maybe you should use Differentiate().");
+  }
+  if(Frame().size()>1) {
+    Waveform W(*this);
+    W.TransformToStandardFrame();
+    return W.Flux();
   }
   vector<double> Flux(NTimes(), 0.0);
   //ORIENTATION!!! Following loop
@@ -172,6 +193,13 @@ Waveform& WaveformObjects::Waveform::Differentiate() {
     cerr << "\nType=" << Type() << endl;
     throw("Derivative of Psi4 not supported.");
   }
+  vector<Quaternion> OriginalFrame;
+  bool Transformed = false;
+  if(Frame().size()>1) {
+    Transformed = true;
+    OriginalFrame = this->Frame();
+    W.TransformToStandardFrame();
+  }
   TypeIndexRef() -= 1;
   vector<double> magdot(NTimes()), argdot(NTimes());
   // Loop over each component, doing the differentiation
@@ -182,5 +210,6 @@ Waveform& WaveformObjects::Waveform::Differentiate() {
     MagRef(iMode) = sqrt(magdot*magdot + Mag(iMode)*Mag(iMode)*argdot*argdot);
     ArgRef(iMode) = Arg(iMode) + Unwrap(atan2(Mag(iMode)*argdot, magdot));
   }
+  if(Transformed) { W.RotatePhysicalSystem(OriginalFrame); }
   return *this;
 }

@@ -20,7 +20,7 @@
 /// \var t
 /// \var r
 /// \var frame Vector of quaternions.  This represents the rotation
-///            applied to the coordinates to go from the standard
+///            applied to the physical system to go from the standard
 ///            inertial frame to the frame in which the Waveform is
 ///            decomposed.  If this vector has length 0, the frame is
 ///            assumed to be constant, and the standard frame.  If
