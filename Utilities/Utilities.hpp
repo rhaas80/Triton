@@ -3,8 +3,10 @@
 
 #ifndef THROW_REPLACEMENT
 #define THROW_REPLACEMENT
+#include <iostream>
 #define throw(message) \
-  { fprintf(stderr, "ERROR: %s\n       in file %s at line %d\n", message, __FILE__, __LINE__); throw(1); }
+  { std::cerr << "ERROR: " << message << "\n       in file " << __FILE__ << " at line " << __LINE__ << std::endl; throw(1); }
+//  { fprintf(stderr, "ERROR: %s\n       in file %s at line %d\n", message, __FILE__, __LINE__); throw(1); }
 #endif // THROW_REPLACEMENT
 
 #ifndef EulerGamma

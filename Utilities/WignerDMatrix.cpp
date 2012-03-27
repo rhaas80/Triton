@@ -5,7 +5,7 @@
 #include "Utilities.hpp"
 
 void WaveformUtilities::WignerD(const int L, const int MP, const int M, const double alpha, const double beta, const double gamma, double& mag, double& arg) {
-  WaveformUtilities::WignerDMatrix::WignerDMatrix D(L, MP, M, alpha, beta, gamma);
+  WaveformUtilities::WignerDMatrix D(L, MP, M, alpha, beta, gamma);
   D.Value(mag, arg);
   return;
 }
