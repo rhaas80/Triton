@@ -132,7 +132,7 @@ std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const d
 bool WaveformObjects::Waveform::HasNaNs() const {
   bool hasnans = false;
   for(unsigned int i=0; i<NTimes(); ++i) {
-    if(Time(i)!=Time(i)) {
+    if(T(i)!=T(i)) {
       cerr << "\nChecking Waveform, a NaN was detected in the Time at index i=" << i << "." << endl;
       hasnans = true;
     }
@@ -177,6 +177,7 @@ std::vector<double> WaveformObjects::Waveform::Flux() const {
   if(Frame().size()>1) {
     Waveform W(*this);
     W.TransformToStandardFrame();
+    W.FrameRef().clear();
     return W.Flux();
   }
   vector<double> Flux(NTimes(), 0.0);
@@ -187,8 +188,19 @@ std::vector<double> WaveformObjects::Waveform::Flux() const {
   return (Flux/(16.0*M_PI));
 }
 
-// Mostly useful for getting the flux
+/// Differentiate the Waveform.
 Waveform& WaveformObjects::Waveform::Differentiate() {
+  /// Most useful for finding the Flux, or (when used twice) for
+  /// comparing h to Psi4.
+  /// 
+  /// This function only works on data of type h or hdot (or multiples
+  /// thereof).  In particular, the code does not know what data type
+  /// Psi4 should be after being differentiated.
+  /// 
+  /// Also note that if the Waveform is in a rotating frame, the data
+  /// is first transformed to a stationary frame, then differentiated,
+  /// then transformed back into the original rotating frame.
+  History() << "### this->Differentiate();" << endl;
   if(TypeIndex()%3==0) {
     cerr << "\nType=" << Type() << endl;
     throw("Derivative of Psi4 not supported.");
@@ -198,7 +210,7 @@ Waveform& WaveformObjects::Waveform::Differentiate() {
   if(Frame().size()>1) {
     Transformed = true;
     OriginalFrame = this->Frame();
-    W.TransformToStandardFrame();
+    this->TransformToStandardFrame();
   }
   TypeIndexRef() -= 1;
   vector<double> magdot(NTimes()), argdot(NTimes());
@@ -210,6 +222,6 @@ Waveform& WaveformObjects::Waveform::Differentiate() {
     MagRef(iMode) = sqrt(magdot*magdot + Mag(iMode)*Mag(iMode)*argdot*argdot);
     ArgRef(iMode) = Arg(iMode) + Unwrap(atan2(Mag(iMode)*argdot, magdot));
   }
-  if(Transformed) { W.RotatePhysicalSystem(OriginalFrame); }
+  if(Transformed) { this->RotatePhysicalSystem(OriginalFrame); }
   return *this;
 }

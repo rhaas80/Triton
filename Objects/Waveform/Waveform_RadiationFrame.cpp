@@ -206,6 +206,6 @@ Waveform& WaveformObjects::Waveform::TransformToStationaryFrame(const WaveformUt
   /// The input quaternion may be used to specify the orientation of
   /// the final frame relative to the frame in which the Waveform was
   /// originally measured.  Compare `TransformToStandardFrame()`.
-  this->RotateCoordinates(WaveformUtilities::Conjugate(Q)*(this->Frame()));
+  this->RotateCoordinates(Q.Conjugate()*(this->Frame()));
   return *this;
 }
