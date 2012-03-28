@@ -73,9 +73,9 @@ def Extrapolate(FileName="", Dictionary={}) :
         
         # Make sure there are enough radii to do the requested extrapolations
         if((len(Radii) <= max(ExtrapolationOrders)) and (max(ExtrapolationOrders)>-1)) :
-            raise InputError("Not enough data sets ({0}) for max extrapolation order (N={1}).".format(len(Radii), max(ExtrapolationOrders)))
+            raise ValueError("Not enough data sets ({0}) for max extrapolation order (N={1}).".format(len(Radii), max(ExtrapolationOrders)))
         if(-len(Radii)>min(ExtrapolationOrders)) :
-            raise InputError("Not enough data sets ({0}) for min extrapolation order (N={1}).".format(len(Radii), min(ExtrapolationOrders)))
+            raise ValueError("Not enough data sets ({0}) for min extrapolation order (N={1}).".format(len(Radii), min(ExtrapolationOrders)))
         
         # Read in the Waveforms and set things up nicely
         Ws = PyGW.Waveforms(npy.array([float(s) for s in Radii]), InputDirectory+DataFile, InputDirectory+AreaFile, InputDirectory+LapseFile, ADMMass, ChMass, False);
@@ -111,18 +111,21 @@ def Extrapolate(FileName="", Dictionary={}) :
                 sys.stdout.flush()
                 PyGW.Output(OutputDirectory+"/"+DifferenceFile, Diff)
                 print("☺")
+                sys.stdout.write("Plotting... ")
+                sys.stdout.flush()
                 import PyGW.plot
                 import matplotlib.pyplot as plt
                 fig = plt.figure()
                 Diff.plot('LogMag', Modes=[[2,2]])
-                fig.legend()
+                plt.legend()
                 fig.savefig('{0}/ExtrapConvergence_Mag_N{1}-N{2}.pdf'.format(OutputDirectory, ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
                 plt.close(fig)
                 fig = plt.figure()
                 Diff.plot('LogArg', Modes=[[2,2]])
-                fig.legend()
-                fig.savefig(OutputDirectory+'/ExtrapConvergence_Arg.pdf')
+                plt.legend()
+                fig.savefig('{0}/ExtrapConvergence_Arg_N{1}-N{2}.pdf'.format(OutputDirectory, ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
                 plt.close(fig)
+                print("☺")
             
             # Save this one for the convergence plots
             Last.swap(Extrap);
