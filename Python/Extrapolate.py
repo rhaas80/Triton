@@ -138,6 +138,7 @@ def Extrapolate(FileName="", Dictionary={}) :
         plt.figure(2)
         plt.legend(loc=2)
         plt.gca().ylim(1e-8, 10)
+        plt.gca().axvline(x=MaxFluxTime, ls='--')
         figarg.savefig('{0}/ExtrapConvergence_Arg.pdf'.format(OutputDirectory))
         plt.close(figarg)
         
