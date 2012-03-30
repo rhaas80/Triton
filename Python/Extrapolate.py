@@ -117,20 +117,20 @@ def Extrapolate(FileName="", Dictionary={}) :
                 print("☺")
                 sys.stdout.write("Plotting... ")
                 sys.stdout.flush()
-                plt.figure(figmag)
+                plt.figure(1)
                 Diff.plot('LogMag', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
-                plt.figure(figarg)
+                plt.figure(2)
                 Diff.plot('LogArg', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
                 print("☺")
             
             # Save this one for the convergence plots
             Last.swap(Extrap);
         
-        plt.figure(figmag)
+        plt.figure(1)
         plt.legend()
         figmag.savefig('{0}/ExtrapConvergence_Mag.pdf'.format(OutputDirectory))
         plt.close(figmag)
-        plt.figure(figarg)
+        plt.figure(2)
         plt.legend()
         figarg.savefig('{0}/ExtrapConvergence_Arg.pdf'.format(OutputDirectory))
         plt.close(figarg)
