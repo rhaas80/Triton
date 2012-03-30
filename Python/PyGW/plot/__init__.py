@@ -105,7 +105,10 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
             Labels = ['(' + str(this.L(mode)) + ', ' + str(this.M(mode)) + ')' for mode in range(this.NModes())]
     elif ((len(Modes)==2) and (type(Modes[0])==int and type(Modes[1])==int)) :
         Lines = styledplot(this.T(), transpose(AbsOrNot(quantity(this.FindModeIndex(Modes[0], Modes[1])))), *pyplot_args, **pyplot_kwargs)
-        Labels = ['(' + str(this.L(Modes[0])) + ', ' + str(this.M(Modes[1])) + ')']
+        if ('label' in pyplot_kwargs) :
+            Labels = [pyplot_kwargs['label']]
+        else :
+            Labels = ['(' + str(this.L(Modes[0])) + ', ' + str(this.M(Modes[1])) + ')']
     else :
         Modes = array(Modes)
         Data = empty([Modes.shape[0], this.NTimes()], dtype=float)

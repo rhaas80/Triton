@@ -83,7 +83,11 @@ def Extrapolate(FileName="", Dictionary={}) :
         Ws.FixNonOscillatingData();
         
         # Loop over all the ExtrapolationOrders, doing the dirty business
+        import PyGW.plot
+        import matplotlib.pyplot as plt
         Last = PyGW.Waveform()
+        figmag = plt.figure()
+        figarg = plt.figure()
         for i in range(len(ExtrapolationOrders)) :
             print("Extrapolating with order N={}.".format(ExtrapolationOrders[i]))
             
@@ -113,23 +117,24 @@ def Extrapolate(FileName="", Dictionary={}) :
                 print("☺")
                 sys.stdout.write("Plotting... ")
                 sys.stdout.flush()
-                import PyGW.plot
-                import matplotlib.pyplot as plt
-                fig = plt.figure()
-                Diff.plot('LogMag', Modes=[[2,2]])
-                plt.legend()
-                fig.savefig('{0}/ExtrapConvergence_Mag_N{1}-N{2}.pdf'.format(OutputDirectory, ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
-                plt.close(fig)
-                fig = plt.figure()
-                Diff.plot('LogArg', Modes=[[2,2]])
-                plt.legend()
-                fig.savefig('{0}/ExtrapConvergence_Arg_N{1}-N{2}.pdf'.format(OutputDirectory, ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
-                plt.close(fig)
+                plt.figure(figmag)
+                Diff.plot('LogMag', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
+                plt.figure(figarg)
+                Diff.plot('LogArg', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
                 print("☺")
             
             # Save this one for the convergence plots
             Last.swap(Extrap);
-            
+        
+        plt.figure(figmag)
+        plt.legend()
+        figmag.savefig('{0}/ExtrapConvergence_Mag.pdf'.format(OutputDirectory))
+        plt.close(figmag)
+        plt.figure(figarg)
+        plt.legend()
+        figarg.savefig('{0}/ExtrapConvergence_Arg.pdf'.format(OutputDirectory))
+        plt.close(figarg)
+        
 
 if __name__ == "__main__":
     import sys
