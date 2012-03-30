@@ -548,6 +548,23 @@ Return a copy of the Waveform with only the requested mode.
   
 """
 
+%feature("docstring") RadiationAxis """
+
+
+  Parameters
+  ----------
+    const Waveform& W
+    vector<double>& alpha
+    vector<double>& beta
+    const double alphaGuess = 0.0
+    const double betaGuess = 0.0
+  
+  Returns
+  -------
+    void
+  
+"""
+
 %feature("docstring") WaveformObjects::Waveform::Mag """
 Return the magnitude of mode 'Mode' at time index 'Time'.
 =========================================================
@@ -634,20 +651,22 @@ namespace WaveformUtilities
 ===========================
 """
 
-%feature("docstring") RadiationAxis """
-
-
+%feature("docstring") WaveformObjects::Waveform::TransformToStationaryFrame """
+Transform the Waveform back to a stationary frame.
+==================================================
   Parameters
   ----------
-    const Waveform& W
-    vector<double>& alpha
-    vector<double>& beta
-    const double alphaGuess = 0.0
-    const double betaGuess = 0.0
+    const Quaternion Q = Quaternion(1, 0, 0, 0)
   
   Returns
   -------
-    void
+    Waveform&
+  
+  Description
+  -----------
+    The input quaternion may be used to specify the orientation of the final
+    frame relative to the frame in which the Waveform was originally measured.
+    Compare `TransformToStandardFrame()`.
   
 """
 
@@ -836,8 +855,8 @@ Align phases of two Waveforms to within 2*pi at a fractional time in this Wavefo
 """
 
 %feature("docstring") WaveformObjects::Waveform::Omega2m2 """
-
-
+Return the frequency of the (2,-2) mode.
+========================================
   Parameters
   ----------
     const double t1 = -1e300
@@ -846,6 +865,12 @@ Align phases of two Waveforms to within 2*pi at a fractional time in this Wavefo
   Returns
   -------
     vector<double>
+  
+  Description
+  -----------
+    In standard configuration, this quantity will typically be increasing; the
+    (2,2) frequency will typically be decreasing because of the definitions of
+    h and Psi4 and the definition of the frequency as the derivative of `arg`.
   
 """
 
@@ -992,27 +1017,24 @@ Return the argument (phase) of all modes as a function of time.
   
 """
 
-%feature("docstring") GetFileFormat """
-
-
+%feature("docstring") WaveformObjects::Waveform::TransformToStandardFrame """
+Transform the Waveform back to the original frame.
+==================================================
   Parameters
   ----------
-    const vector<string>& Header
+    (none)
   
   Returns
   -------
-    string
+    Waveform&
   
-
-
-
-  Parameters
-  ----------
-    const vector<string>& Header
-  
-  Returns
-  -------
-    string
+  Description
+  -----------
+    Simply reverses the total rotation given to the Waveform up to this point.
+    Assuming all such rotations have been correctly recorded in the Waveform
+    object (which should not require any user intervention), this should return
+    the Waveform as originally measured in the simulation code's frame, modulo
+    any time-regridding, rescaling, etc.
   
 """
 
@@ -1115,8 +1137,8 @@ Delete data from the Waveform occurring at or before the input time.
 """
 
 %feature("docstring") WaveformObjects::Waveform::Flux """
-
-
+Calculate the GW flux.
+======================
   Parameters
   ----------
     (none)
@@ -1124,6 +1146,14 @@ Delete data from the Waveform occurring at or before the input time.
   Returns
   -------
     vector<double>
+  
+  Description
+  -----------
+    NB: This function can only be used on Waveform data of type `rhdot`. To
+    calculate the flux from data of type `rh`, simply apply the Differentiate()
+    function first, but remember that that function operates in place, so you
+    may wish to make a copy of the Waveform first. For example, you may wish to
+    use `Waveform(bla).Differentiate().Flux()`.
   
 """
 
@@ -1792,8 +1822,8 @@ Return a reference to the argument (phase) of all modes as a function of time.
 """
 
 %feature("docstring") WaveformObjects::Waveform::Differentiate """
-
-
+Differentiate the Waveform.
+===========================
   Parameters
   ----------
     (none)
@@ -1801,6 +1831,19 @@ Return a reference to the argument (phase) of all modes as a function of time.
   Returns
   -------
     Waveform&
+  
+  Description
+  -----------
+    Most useful for finding the Flux, or (when used twice) for comparing h to
+    Psi4.
+    
+    This function only works on data of type h or hdot (or multiples thereof).
+    In particular, the code does not know what data type Psi4 should be after
+    being differentiated.
+    
+    Also note that if the Waveform is in a rotating frame, the data is first
+    transformed to a stationary frame, then differentiated, then transformed
+    back into the original rotating frame.
   
 """
 
@@ -2730,6 +2773,30 @@ Return a reference to the magnitude of all modes as a function of time.
   Returns
   -------
     double
+  
+"""
+
+%feature("docstring") GetFileFormat """
+
+
+  Parameters
+  ----------
+    const vector<string>& Header
+  
+  Returns
+  -------
+    string
+  
+
+
+
+  Parameters
+  ----------
+    const vector<string>& Header
+  
+  Returns
+  -------
+    string
   
 """
 
