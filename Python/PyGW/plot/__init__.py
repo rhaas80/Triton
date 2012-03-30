@@ -24,11 +24,11 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
     >>> W.plot('Mag', Modes=[[2,2], [2,-2]], c='r')
     
     where W is a Waveform object.  The first parameter should be a
-    string --- one of ('Mag', 'LogMag', 'LogLogMag', 'Arg', 'Omega').
-    The second (optional) parameter is a list (using square brackets),
-    where each element is some [l,m].  Only modes included in this
-    list will be plotted, unless the list is empty (the default), in
-    which case all modes are plotted.
+    string --- one of ['Mag', 'LogMag', 'LogLogMag', 'Arg', 'LogArg',
+    'Omega'].  The second (optional) parameter is a list (using square
+    brackets), where each element is some [l,m].  Only modes included
+    in this list will be plotted, unless the list is empty (the
+    default), in which case all modes are plotted.
     
     All following arguments are passed to the usual pyplot.plot (or
     semilogx, semilogy, or loglog) function; in the example above, the
