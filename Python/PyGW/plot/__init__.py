@@ -110,7 +110,7 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
         Modes = array(Modes)
         Data = empty([Modes.shape[0], this.NTimes()], dtype=float)
         for i in range(Modes.shape[0]) :
-            print("\t{}".Format(i));
+            print("\t{}".format(i));
             ModeIndex = this.FindModeIndex(int(Modes[i][0]), int(Modes[i][1]))
             Labels.append('(' + str(Modes[i][0]) + ', ' + str(Modes[i][1]) + ')')
             Data[i] = quantity(ModeIndex)
