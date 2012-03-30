@@ -60,6 +60,7 @@ def Extrapolate(FileName="", Dictionary={}) :
     from time import time
     import sys
     import os
+    MaxFluxTime = -1000.0;
     for DataFile in DataFiles :
         # If the list of radii is empty, try to find the files
         if(Radii==[]) :
@@ -88,7 +89,8 @@ def Extrapolate(FileName="", Dictionary={}) :
         Last = PyGW.Waveform()
         figmag = plt.figure()
         figarg = plt.figure()
-        MaxFluxTime = 0.0;
+        MaxFluxTime = -1000.0;
+        WFType = ''
         for i in range(len(ExtrapolationOrders)) :
             print("Extrapolating with order N={}.".format(ExtrapolationOrders[i]))
             
@@ -110,10 +112,12 @@ def Extrapolate(FileName="", Dictionary={}) :
             
             # Compare to the last one
             if(i==0) :
-                Extrap_hdot = PyGW.Waveform(Extrap)
-                Extrap_hdot.Differentiate()
-                MaxFluxTime = Extrap_hdot.PeakFluxTime()
-                del Extrap_hdot
+                if(not 'Psi4' in Extrap.Type()) :
+                    Extrap_hdot = PyGW.Waveform(Extrap)
+                    Extrap_hdot.Differentiate()
+                    MaxFluxTime = Extrap_hdot.PeakFluxTime()
+                    del Extrap_hdot
+                WFType = Extrap.Type()
             else :
                 Diff = Extrap/Last;
                 DifferenceFile = (Extrap.Type() + "_" + DifferenceFiles) % (ExtrapolationOrders[i], ExtrapolationOrders[i-1])
@@ -136,13 +140,13 @@ def Extrapolate(FileName="", Dictionary={}) :
         plt.legend(loc=2)
         plt.gca().set_ylim(1e-8, 10)
         plt.gca().axvline(x=MaxFluxTime, ls='--')
-        figmag.savefig('{0}/ExtrapConvergence_Mag.pdf'.format(OutputDirectory))
+        figmag.savefig('{0}/ExtrapConvergence_Mag_{1}.pdf'.format(OutputDirectory, WFType))
         plt.close(figmag)
         plt.figure(2)
         plt.legend(loc=2)
         plt.gca().set_ylim(1e-8, 10)
         plt.gca().axvline(x=MaxFluxTime, ls='--')
-        figarg.savefig('{0}/ExtrapConvergence_Arg.pdf'.format(OutputDirectory))
+        figarg.savefig('{0}/ExtrapConvergence_Arg_{1}.pdf'.format(OutputDirectory, WFType))
         plt.close(figarg)
         
 
