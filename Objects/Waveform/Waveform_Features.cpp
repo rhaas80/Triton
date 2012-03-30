@@ -69,6 +69,16 @@ double WaveformObjects::Waveform::Peak22Time() const {
   return T(Peak22TimeIndex());
 }
 
+/// Return the time index at which the GW flux peaks.
+unsigned int WaveformObjects::Waveform::PeakFluxTimeIndex() const {
+  return (unsigned int)(maxIndex(Flux()));
+}
+
+/// Return the time at which the GW flux peaks.
+double WaveformObjects::Waveform::PeakFluxTime() const {
+  return T(PeakFluxTimeIndex());
+}
+
 /// Return the frequency of the (2,-2) mode.
 std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const double t2) const {
   /// In standard configuration, this quantity will typically be

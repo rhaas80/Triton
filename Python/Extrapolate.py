@@ -88,6 +88,7 @@ def Extrapolate(FileName="", Dictionary={}) :
         Last = PyGW.Waveform()
         figmag = plt.figure()
         figarg = plt.figure()
+        MaxFluxTime = 0.0;
         for i in range(len(ExtrapolationOrders)) :
             print("Extrapolating with order N={}.".format(ExtrapolationOrders[i]))
             
@@ -108,7 +109,9 @@ def Extrapolate(FileName="", Dictionary={}) :
             print("☺")
             
             # Compare to the last one
-            if(i>0) :
+            if(i==0) :
+                MaxFluxTime = Extrap.PeakFluxTime()
+            else :
                 Diff = Extrap/Last;
                 DifferenceFile = (Extrap.Type() + "_" + DifferenceFiles) % (ExtrapolationOrders[i], ExtrapolationOrders[i-1])
                 sys.stdout.write("Writing {}... ".format(OutputDirectory+"/"+DifferenceFile))
@@ -127,11 +130,14 @@ def Extrapolate(FileName="", Dictionary={}) :
             Last.swap(Extrap);
         
         plt.figure(1)
-        plt.legend()
+        plt.legend(loc=2)
+        plt.gca().ylim(1e-8, 10)
+        plt.gca().axvline(x=MaxFluxTime, ls='--')
         figmag.savefig('{0}/ExtrapConvergence_Mag.pdf'.format(OutputDirectory))
         plt.close(figmag)
         plt.figure(2)
-        plt.legend()
+        plt.legend(loc=2)
+        plt.gca().ylim(1e-8, 10)
         figarg.savefig('{0}/ExtrapConvergence_Arg.pdf'.format(OutputDirectory))
         plt.close(figarg)
         

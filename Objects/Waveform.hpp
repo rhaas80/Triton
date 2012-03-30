@@ -137,8 +137,8 @@ namespace WaveformObjects {
     unsigned int FindModeIndex(const int L, const int M) const;
     unsigned int Peak22TimeIndex() const;
     double Peak22Time() const;
-    //unsigned int PeakFluxTimeIndex() const;
-    //double PeakFluxTime() const;
+    unsigned int PeakFluxTimeIndex() const;
+    double PeakFluxTime() const;
     std::vector<double> Omega2m2(const double t1=-1e300, const double t2=1e300) const;
     bool HasNaNs() const;
     std::vector<double> Flux() const;
