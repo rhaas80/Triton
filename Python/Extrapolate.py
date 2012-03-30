@@ -110,7 +110,10 @@ def Extrapolate(FileName="", Dictionary={}) :
             
             # Compare to the last one
             if(i==0) :
-                MaxFluxTime = PyGW.Waveform(Extrap).Differentiate().PeakFluxTime()
+                Extrap_hdot = PyGW.Waveform(Extrap)
+                Extrap_hdot.Differentiate()
+                MaxFluxTime = Extrap_hdot.PeakFluxTime()
+                del Extrap_hdot
             else :
                 Diff = Extrap/Last;
                 DifferenceFile = (Extrap.Type() + "_" + DifferenceFiles) % (ExtrapolationOrders[i], ExtrapolationOrders[i-1])

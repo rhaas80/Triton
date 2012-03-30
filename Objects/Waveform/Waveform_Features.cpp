@@ -193,7 +193,6 @@ std::vector<double> WaveformObjects::Waveform::Flux() const {
   vector<double> Flux(NTimes(), 0.0);
   //ORIENTATION!!! Following loop
   for(unsigned int i=0; i<NModes(); ++i) {
-    cerr << "Flux.size()=" << Flux.size() << "\tMag(i).size()=" << Mag(i).size() << endl;
     Flux += Mag(i)*Mag(i);
   }
   return (Flux/(16.0*M_PI));
