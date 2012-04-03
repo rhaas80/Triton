@@ -87,8 +87,8 @@ def Extrapolate(FileName="", Dictionary={}) :
         import PyGW.plot
         import matplotlib.pyplot as plt
         Last = PyGW.Waveform()
-        figmag = plt.figure()
-        figarg = plt.figure()
+        figmag = plt.figure('Mag')
+        figarg = plt.figure('Arg')
         MaxFluxTime = -1000.0;
         WFType = ''
         for i in range(len(ExtrapolationOrders)) :
@@ -127,22 +127,22 @@ def Extrapolate(FileName="", Dictionary={}) :
                 print("☺")
                 sys.stdout.write("Plotting... ")
                 sys.stdout.flush()
-                plt.figure(1)
+                plt.figure('Mag')
                 Diff.plot('LogMag', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
-                plt.figure(2)
+                plt.figure('Arg')
                 Diff.plot('LogArg', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(ExtrapolationOrders[i], ExtrapolationOrders[i-1]))
                 print("☺")
             
             # Save this one for the convergence plots
             Last.swap(Extrap);
         
-        plt.figure(1)
+        plt.figure('Mag')
         plt.legend(loc=2)
         plt.gca().set_ylim(1e-8, 10)
         plt.gca().axvline(x=MaxFluxTime, ls='--')
         figmag.savefig('{0}/ExtrapConvergence_Mag_{1}.pdf'.format(OutputDirectory, WFType))
         plt.close(figmag)
-        plt.figure(2)
+        plt.figure('Arg')
         plt.legend(loc=2)
         plt.gca().set_ylim(1e-8, 10)
         plt.gca().axvline(x=MaxFluxTime, ls='--')
