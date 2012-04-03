@@ -185,6 +185,10 @@ std::vector<double> WaveformObjects::Waveform::Flux() const {
   /// Also, if the frame is non-constant, the Waveform is copied, the
   /// copy is transformed into the original frame, and the flux is
   /// calculated for that copy.
+  if(TypeIndex()%3==2) {
+    Waveform W(*this);
+    return W.Differentiate().Flux();
+  }
   if(TypeIndex()%3!=1) {
     cerr << "\nType = " << Type() << endl;
     throw("Can't get Flux() for Waveform of Type other than rhdot.  Maybe you should use Differentiate().");
