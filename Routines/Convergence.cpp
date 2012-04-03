@@ -124,7 +124,7 @@ int main() {
 	cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
 	Diff[0] = Waveform(LastFile, WaveformFormat);
 	Diff[1] = Waveform(NextFile, WaveformFormat);
-	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
+	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT2!=3.0e300) {
 	  if( ! MutualAlignmentApproximant.empty()) {
 	    Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
 	    PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
@@ -158,7 +158,7 @@ int main() {
 	cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
 	Diff[0] = Waveform(LastFile, WaveformFormat);
 	Diff[1] = Waveform(NextFile, WaveformFormat);
-	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
+	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT2!=3.0e300) {
 	  if( ! MutualAlignmentApproximant.empty()) {
 	    Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
 	    PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
@@ -225,7 +225,7 @@ int main() {
       cout << "Computing " << Higher << " - " << Lower << "... " << flush;
       Diff[0] = Waveform(Higher, WaveformFormat);
       Diff[1] = Waveform(Lower, WaveformFormat);
-      if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
+      if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT2!=3.0e300) {
 	if( ! MutualAlignmentApproximant.empty()) {
 	  Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
 	  PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
@@ -259,7 +259,7 @@ int main() {
       cout << "Computing " << Higher << " - " << Lower << "... " << flush;
       Diff[0] = Waveform(Higher, WaveformFormat);
       Diff[1] = Waveform(Lower, WaveformFormat);
-      if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
+      if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT2!=3.0e300) {
 	if( ! MutualAlignmentApproximant.empty()) {
 	  Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
 	  PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
