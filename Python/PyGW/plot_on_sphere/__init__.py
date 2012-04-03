@@ -113,6 +113,48 @@ def plot_sphere(W, TimeIndex, Normalization=0, Quantities=['real', 'imag', 'mag'
     return Figs
 
 
+from multiprocessing import Pool
+def plot_spheres(WL, WR, TimeIndex, Normalization=0, Quantities=['real', 'imag', 'mag'],
+                 ThetaSteps=100, PhiSteps=200, vartheta=array(()), varphi=array(()), x=array(()), y=array(()), z=array(()),
+                 NJobs=1) :
+    """
+    This plots the real or imaginary part or magnitude of the complex
+    Waveform data from two Waveforms on a pair of spheres.
+    
+    """
+    if ((vartheta.size==0) or (varphi.size==0)) :
+        vartheta, varphi = sphere_coordinates(ThetaSteps, PhiSteps)
+    ComplexDataOnSphereL = data_on_sphere(WL, TimeIndex, vartheta, varphi)
+    ComplexDataOnSphereR = data_on_sphere(WR, TimeIndex, vartheta, varphi)
+    if (Normalization<=0.0) : Normalization = max( abs(ComplexDataOnSphereL).max(), abs(ComplexDataOnSphereR).max() )
+    ColorsL = colors_on_sphere(ComplexDataOnSphereL, Normalization, Quantities)
+    ColorsR = colors_on_sphere(ComplexDataOnSphereR, Normalization, Quantities)
+    xyzshape = (len(vartheta),len(varphi))
+    if ((x.size==0) or (y.size==0) or (z.size==0) or (x.shape!=xyzshape) or (y.shape!=xyzshape) or (z.shape!=xyzshape)) :
+        x,y,z = sphere_points(vartheta, varphi)
+    Figs = []
+    def loop(i) :
+        fig = figure()
+        axL = fig.add_subplot(121, projection='3d')
+        axL.set_xticks(())
+        axL.set_yticks(())
+        axL.set_zticks(())
+        axR = fig.add_subplot(122, projection='3d')
+        axR.set_xticks(())
+        axR.set_yticks(())
+        axR.set_zticks(())
+        fig.tight_layout(pad=0.1)
+        Surface = axL.plot_surface(x, y, z,  rstride=1, cstride=1, linewidth=0, antialiased=False, facecolors=ColorsL[i])
+        Surface = axR.plot_surface(x, y, z,  rstride=1, cstride=1, linewidth=0, antialiased=False, facecolors=ColorsR[i])
+        TimeText = axL.text2D(0.05, 0.92, r'$t = '+str(round(WL.T(TimeIndex),1))+'$\n'+Quantities[i], transform=axL.transAxes)
+        Figs.append(fig)
+    # p = Pool(NJobs)
+    # p.map(loop, [i for i in range(len(Quantities))])
+    for i,quantity in enumerate(Quantities) :
+        loop(i)
+    return Figs
+
+
 from matplotlib.pyplot import ion
 from matplotlib.pyplot import ioff
 def animate_sphere(W, OutputFileName, TimeSteps = 500, PhiSteps = 200, ThetaSteps = 100, Quantities=['real', 'imag', 'mag'], DPI=250) :
