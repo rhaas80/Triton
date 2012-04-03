@@ -139,6 +139,7 @@ std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const d
   }
 }
 
+/// Check various data for NaNs.
 bool WaveformObjects::Waveform::HasNaNs() const {
   bool hasnans = false;
   for(unsigned int i=0; i<NTimes(); ++i) {
@@ -180,6 +181,10 @@ std::vector<double> WaveformObjects::Waveform::Flux() const {
   /// function operates in place, so you may wish to make a copy of
   /// the Waveform first.  For example, you may wish to use
   /// `Waveform(bla).Differentiate().Flux()`.
+  /// 
+  /// Also, if the frame is non-constant, the Waveform is copied, the
+  /// copy is transformed into the original frame, and the flux is
+  /// calculated for that copy.
   if(TypeIndex()%3!=1) {
     cerr << "\nType = " << Type() << endl;
     throw("Can't get Flux() for Waveform of Type other than rhdot.  Maybe you should use Differentiate().");

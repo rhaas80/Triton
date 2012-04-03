@@ -662,7 +662,7 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
 // Operators
 //   These functions are defined in Waveform/Waveform_Operators.cpp
 
-// 
+// x
 // Extract features
 //   These functions are defined in Waveform/Waveform_Features.cpp
 
