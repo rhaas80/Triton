@@ -27,11 +27,11 @@ class Convergence :
         self.SetParameter('LevList', ['../Lev4', '../Lev5', '../Lev6'])
         self.SetParameter('BestLev', self.LevList[-1])
         self.SetParameter('Psi4Files', '')
-        self.SetParameter('RWZFiles', 'rhOverM_ExtrapolatedN%d.dat')
+        self.SetParameter('RWZFiles', 'rhOverM_ExtrapolatedN{ExtrapOrder}.dat')
         self.SetParameter('FluxFiles', '')
         self.SetParameter('WaveformFormat', 'MagArg')
         self.SetParameter('ExtrapolationOrders', [-1, 2, 3, 4, 5, 6, 7, 8])
-        self.SetParameter('DifferenceFiles', '%s-%s_%s.dat')
+        self.SetParameter('DifferenceFiles', '{DataType}_{Quantity1}-{Quantity2}_{Constant}.dat')
         self.SetParameter('ConvergenceAlignmentT1', 3.0e300)
         self.SetParameter('ConvergenceAlignmentT2', 3.0e300)
         self.SetParameter('OutputNSamplesPerCycle22', 0)
@@ -50,183 +50,96 @@ class Convergence :
         
         # Do the Lev convergence
         Diff = PyGW.Waveforms(2)
-        # vector<double> FluxA(0), OmegaA(0), FluxB(0), OmegaB(0), PNFlux(0), FluxDiff(0);
         for iLev in range(1,len(LevList)) :
             LastLev = LevList[iLev-1]
             NextLev = LevList[iLev]
-            if(not Psi4Files=='') :
+            for Files in [Psi4Files, RWZFiles] :
+                if(not Files=='') :
+                    for i in range(len(ExtrapolationOrders)) :
+                        LastFile = (LastLev + "/" + Files).format(ExtrapOrder=ExtrapolationOrders[i])
+                        NextFile = (NextLev + "/" + Files).format(ExtrapOrder=ExtrapolationOrders[i])
+                        sys.stdout.write("Computing {0} - {1} ... ".format(LastFile, NextFile))
+                        sys.stdout.flush()
+                        Diff[0] = PyGW.Waveform(LastFile, WaveformFormat);
+                        Diff[1] = PyGW.Waveform(NextFile, WaveformFormat);
+                        if(ConvergenceAlignmentT1!=3.0e300 and ConvergenceAlignmentT1!=3.0e300) :
+                            if(not MutualAlignmentApproximant=='') :
+                                PN = PyGW.Waveform(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
+                                PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
+                                PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+                                Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+                            else :
+                                Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+                        Diff.AlignPhases();
+                        DiffFile = DifferenceFiles.format(DataType=Diff[0].Type(),
+                                                          Quantity1=LastLev[LastLev.rfind("/")+1],
+                                                          Quantity2=NextLev[NextLev.rfind("/")+1],
+                                                          Constant=("N"+str(ExtrapolationOrders[i])))
+                        sys.stdout.write("and printing {} ... ".format(DiffFile))
+                        sys.stdout.flush()
+                        Diff[0] = Diff[0]/Diff[1];
+                        Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
+                        if(OutputNSamplesPerCycle22!=0) : Diff[0].Interpolate(Diff[1]);
+                        if(DropBeforeTime!=-3.0e300) : Diff[0].DropBefore(DropBeforeTime);
+                        if(DropAfterTime!=3.0e300) : Diff[0].DropAfter(DropAfterTime);
+                        Output(DiffFile, Diff[0]);
+                        print("☺")
+            if(not FluxFiles=='') :
                 for i in range(len(ExtrapolationOrders)) :
-                    LastFile = (LastLev + "/" + Psi4Files) % ExtrapolationOrders[i]
-                    NextFile = (NextLev + "/" + Psi4Files) % ExtrapolationOrders[i]
+                    from numpy import genfromtxt, savetxt
+                    LastFile = (LastLev + "/" + Files).format(ExtrapOrder=ExtrapolationOrders[i])
+                    NextFile = (NextLev + "/" + Files).format(ExtrapOrder=ExtrapolationOrders[i])
                     sys.stdout.write("Computing {0} - {1} ... ".format(LastFile, NextFile))
                     sys.stdout.flush()
-                    Diff[0] = PyGW.Waveform(LastFile, WaveformFormat);
-                    Diff[1] = PyGW.Waveform(NextFile, WaveformFormat);
-        if(ConvergenceAlignmentT1!=3.0e300 and ConvergenceAlignmentT1!=3.0e300) {
-          if( not MutualAlignmentApproximant=='') {
-            PN = PyGW.Waveform(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
-            PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
-            PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-            Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-          } else {
-            Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-          }
-        }
-  #       Diff.AlignPhases();
-  #       sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
-  #       	LastLev.substr(LastLev.rfind("/")+1).c_str(),
-  #       	NextLev.substr(NextLev.rfind("/")+1).c_str(),
-  #       	("N"+DoubleToString(ExtrapolationOrders[i])).c_str());
-  #       cout << "and printing " << DiffFile << "... " << flush;
-  #       Diff[0] = Diff[0]/Diff[1];
-  #       Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
-  #       if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
-  #       if(DropBeforeTime!=-3.0e300) { Diff[0].DropBefore(DropBeforeTime); }
-  #       if(DropAfterTime!=3.0e300) { Diff[0].DropAfter(DropAfterTime); }
-  #       ofstream ofs(DiffFile, ofstream::out);
-  #       ofs << setprecision(14) << flush;
-  #       ofs << Diff[0];
-  #       ofs.close();
-  #       cout << "☺" << endl;
-  #     }
-                    
-  #   if(!RWZFiles.empty()) for(unsigned int i=0; i<ExtrapolationOrders.size(); ++i) {
-  #       char NextFile[1000], LastFile[1000], DiffFile[1000];
-  #       sprintf(LastFile, (LastLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
-  #       sprintf(NextFile, (NextLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
-  #       cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
-  #       Diff[0] = Waveform(LastFile, WaveformFormat);
-  #       Diff[1] = Waveform(NextFile, WaveformFormat);
-  #       if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
-  #         if( ! MutualAlignmentApproximant.empty()) {
-  #           Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
-  #           PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
-  #           PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #           Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #         } else {
-  #           Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #         }
-  #       }
-  #       Diff.AlignPhases();
-  #       sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
-  #       	LastLev.substr(LastLev.rfind("/")+1).c_str(),
-  #       	NextLev.substr(NextLev.rfind("/")+1).c_str(),
-  #       	("N"+DoubleToString(ExtrapolationOrders[i])).c_str());
-  #       cout << "and printing " << DiffFile << "... " << flush;
-  #       Diff[0] = Diff[0]/Diff[1];
-  #       Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
-  #       if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
-  #       if(DropBeforeTime!=-3.0e300) { Diff[0].DropBefore(DropBeforeTime); }
-  #       if(DropAfterTime!=3.0e300) { Diff[0].DropAfter(DropAfterTime); }
-  #       ofstream ofs(DiffFile, ofstream::out);
-  #       ofs << setprecision(14) << flush;
-  #       ofs << Diff[0];
-  #       ofs.close();
-  #       cout << "☺" << endl;
-  #     }
-  #   if(!FluxFiles.empty()) for(unsigned int i=0; i<ExtrapolationOrders.size(); ++i) {
-  #       char NextFile[1000], LastFile[1000], DiffFile[1000];
-  #       string Header="";
-  #       vector<double> T, NormalizedFlux;
-  #       sprintf(LastFile, (LastLev + "/" + FluxFiles).c_str(), ExtrapolationOrders[i]);
-  #       sprintf(NextFile, (NextLev + "/" + FluxFiles).c_str(), ExtrapolationOrders[i]);
-  #       cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
-  #       ReadFluxFile(LastFile, Header, T, OmegaB, FluxB, PNFlux, NormalizedFlux);
-  #       ReadFluxFile(NextFile, Header, T, OmegaA, FluxA, PNFlux, NormalizedFlux);
-  #       FluxDiff = FluxA - Interpolate(OmegaB, FluxB, OmegaA);
-  #       sprintf(DiffFile, ("Flux_" + DifferenceFiles).c_str(),
-  #       	LastLev.substr(LastLev.rfind("/")+1).c_str(),
-  #       	NextLev.substr(NextLev.rfind("/")+1).c_str(),
-  #       	("N"+DoubleToString(ExtrapolationOrders[i])).c_str());
-  #       cout << "and printing " << DiffFile << "... " << flush;
-  #       ofstream ofs(DiffFile, ofstream::out);
-  #       ofs << "# [1] = M*omega_hdot(2,-2)\n"
-  #           << "# [2] = FluxA-FluxB\n"
-  #           << "# [3] = (FluxA-FluxB)/PNFluxA\n"
-  #           << setprecision(8) << flush;
-  #       for(unsigned int j=0; j<OmegaA.size(); ++j) {
-  #         ofs << OmegaA[j] << " " << FluxDiff[j] << " " << FluxDiff[j]/PNFlux[j] << endl;
-  #       }
-  #       ofs.close();
-  #       cout << "☺" << endl;
-  #     }
-  #   LastLev = NextLev;
-  #   A = B+1;
-  #   B = LevList.find(" ", B+1);
-  #   NextLev = LevList.substr(A,B-A);
-  
-  # // Do the extrapolation convergence
-  # if(!Psi4Files.empty() && !BestLev.empty()) for(unsigned int i=1; i<ExtrapolationOrders.size(); ++i) {
-  #     char Higher[5000], Lower[5000], DiffFile[5000];
-  #     sprintf(Higher, (BestLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i]);
-  #     sprintf(Lower,  (BestLev + "/" + Psi4Files).c_str(), ExtrapolationOrders[i-1]);
-  #     cout << "Computing " << Higher << " - " << Lower << "... " << flush;
-  #     Diff[0] = Waveform(Higher, WaveformFormat);
-  #     Diff[1] = Waveform(Lower, WaveformFormat);
-  #     if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
-  #       if( ! MutualAlignmentApproximant.empty()) {
-  #         Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
-  #         PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
-  #         PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #         Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #       } else {
-  #         Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #       }
-  #     }
-  #     Diff.AlignPhases();
-  #     sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
-  #             ("N"+DoubleToString(ExtrapolationOrders[i])).c_str(),
-  #             ("N"+DoubleToString(ExtrapolationOrders[i-1])).c_str(),
-  #             (BestLev.substr(BestLev.rfind("/")+1)).c_str());
-  #     cout << "and printing " << DiffFile << "... " << flush;
-  #     Diff[0] = Diff[0]/Diff[1];
-  #     Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
-  #     if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
-  #     if(DropBeforeTime!=-3.0e300) { Diff[0].DropBefore(DropBeforeTime); }
-  #     if(DropAfterTime!=3.0e300) { Diff[0].DropAfter(DropAfterTime); }
-  #     ofstream ofs(DiffFile, ofstream::out);
-  #     ofs << setprecision(14) << flush;
-  #     ofs << Diff[0];
-  #     ofs.close();
-  #     cout << "☺" << endl;
-  #   }
-  # if(!RWZFiles.empty() && !BestLev.empty()) for(unsigned int i=1; i<ExtrapolationOrders.size(); ++i) {
-  #     char Higher[1000], Lower[1000], DiffFile[1000];
-  #     sprintf(Higher, (BestLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i]);
-  #     sprintf(Lower,  (BestLev + "/" + RWZFiles).c_str(), ExtrapolationOrders[i-1]);
-  #     cout << "Computing " << Higher << " - " << Lower << "... " << flush;
-  #     Diff[0] = Waveform(Higher, WaveformFormat);
-  #     Diff[1] = Waveform(Lower, WaveformFormat);
-  #     if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT1!=3.0e300) {
-  #       if( ! MutualAlignmentApproximant.empty()) {
-  #         Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
-  #         PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
-  #         PN = PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #         Diff[1] = Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #       } else {
-  #         Diff[1] = Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
-  #       }
-  #     }
-  #     Diff.AlignPhases();
-  #     sprintf(DiffFile, (Diff[0].Type() + "_" + DifferenceFiles).c_str(),
-  #             ("N"+DoubleToString(ExtrapolationOrders[i])).c_str(),
-  #             ("N"+DoubleToString(ExtrapolationOrders[i-1])).c_str(),
-  #             (BestLev.substr(BestLev.rfind("/")+1)).c_str());
-  #     cout << "and printing " << DiffFile << "... " << flush;
-  #     Diff[0] = Diff[0]/Diff[1];
-  #     Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
-  #     if(OutputNSamplesPerCycle22!=0) { Diff[0].Interpolate(Diff[1]); }
-  #     if(DropBeforeTime!=-3.0e300) { Diff[0].DropBefore(DropBeforeTime); }
-  #     if(DropAfterTime!=3.0e300) { Diff[0].DropAfter(DropAfterTime); }
-  #     ofstream ofs(DiffFile, ofstream::out);
-  #     ofs << setprecision(14) << flush;
-  #     ofs << Diff[0];
-  #     ofs.close();
-  #     cout << "☺" << endl;
-  #   }
-  
+                    T,OmegaB,FluxB,PNFlux,NormalizedFlux = transpose(genfromtxt(LastFile))
+                    T,OmegaA,FluxA,PNFlux,NormalizedFlux = transpose(genfromtxt(NextFile))
+                    del T, NormalizedFlux
+                    from scipy.interpolate import UnivariateSpline
+                    FluxDiff = FluxA - UnivariateSpline(OmegaB, FluxB, s=0)(OmegaA)
+                    DiffFile = DifferenceFiles.format(DataType='Flux',
+                                                      Quantity1=LastLev[LastLev.rfind("/")+1],
+                                                      Quantity2=NextLev[NextLev.rfind("/")+1],
+                                                      Constant=("N"+str(ExtrapolationOrders[i])))
+                    sys.stdout.write("and printing {} ... ".format(DiffFile))
+                    sys.stdout.flush()
+                    DiffFileHandle = open(DiffFile, 'w')
+                    DiffFileHandle.write("# [1] = M*omega_hdot(2,-2)\n# [2] = FluxA-FluxB\n# [3] = (FluxA-FluxB)/PNFluxA\n")
+                    savetxt(DiffFileHandle, transpose((OmegaA, FluxDiff, FluxDiff/PNFlux)))
+                    DiffFileHandle.close()
+                    print("☺")
         
-
+        # // Do the extrapolation convergence
+        for Files in [Psi4Files, RWZFiles] :
+            if( (not Files=='') and (not BestLev=='') ) :
+                for i in range(1,len(ExtrapolationOrders)) :
+                    Higher = (BestLev + "/" + Files).format(ExtrapOrder=ExtrapolationOrders[i])
+                    Lower  = (BestLev + "/" + Files).format(ExtrapOrder=ExtrapolationOrders[i-1])
+                    sys.stdout.write("Computing {0} - {1} ... ".format(Higher, Lower))
+                    sys.stdout.flush()
+                    Diff[0] = PyGW.Waveform(Higher, WaveformFormat);
+                    Diff[1] = PyGW.Waveform(Lower, WaveformFormat);
+                    if( (ConvergenceAlignmentT1!=3.0e300) and (ConvergenceAlignmentT1!=3.0e300) ) :
+                        if(not MutualAlignmentApproximant=='') :
+                            PN = PyGW.Waveform(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
+                            PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
+                            PN.AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+                            Diff[1].AlignTo(PN, ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+                        else :
+                            Diff[1].AlignTo(Diff[0], ConvergenceAlignmentT1, ConvergenceAlignmentT2);
+                    Diff.AlignPhases();
+                    DiffFile = DifferenceFiles.format(DataType=Diff[0].Type(),
+                                                      Quantity1=("N"+str(ExtrapolationOrders[i])),
+                                                      Quantity2=("N"+str(ExtrapolationOrders[i-1])),
+                                                      Constant=BestLev[BestLev.rfind("/")+1])
+                    sys.stdout.write("and printing {0} ... ".format(DiffFile))
+                    sys.stdout.flush()
+                    Diff[0] = Diff[0]/Diff[1];
+                    Diff[1].NSamplesPerCycle22(OutputNSamplesPerCycle22);
+                    if(OutputNSamplesPerCycle22!=0) : Diff[0].Interpolate(Diff[1]);
+                    if(DropBeforeTime!=-3.0e300) : Diff[0].DropBefore(DropBeforeTime);
+                    if(DropAfterTime!=3.0e300) : Diff[0].DropAfter(DropAfterTime);
+                    Output(DiffFile, Diff[0])
+                    print("☺")
 
 
 
@@ -238,7 +151,7 @@ if __name__ == "__main__":
         OriginalDir = os.getcwd()
         for filename in sys.argv[1:] :
             os.chdir(os.path.dirname(filename))
-            Convergence(filename)
+            Convergence(os.path.basename(filename))
             os.chdir(OriginalDir)
     else :
         Convergence()
