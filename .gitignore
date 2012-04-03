@@ -1,6 +1,7 @@
 .gitignore
 Python/PyGW/WaveformObjects.py
 Python/SWSHs.py
+Test/Input
 MachineDef
 xml
 lib*.so

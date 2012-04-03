@@ -224,6 +224,7 @@ void SplineInterpolator::sety2(VecDoub_I &xv, VecDoub_I &yv, Doub yp1, Doub ypn)
   for (k=n-2;k>=0;k--)
     y2[k]=y2[k]*y2[k+1]+u[k];
 }
+
 Doub SplineInterpolator::rawinterp(Int jl, Doub x)
 {
   Int klo=jl,khi=jl+1;
