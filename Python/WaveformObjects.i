@@ -54,8 +54,8 @@ namespace WaveformUtilities {
 };
 //// I need to use my Quaternion class, to pass arguments into PyGW
 %ignore WaveformUtilities::Quaternion::operator=;
-%ignore WaveformUtilities::Quaternion::operator[];
 %rename(__getitem__) WaveformUtilities::Quaternion::operator[] const;
+%rename(__setitem__) WaveformUtilities::Quaternion::operator[];
 %include "../Utilities/Quaternions.hpp"
 %extend WaveformUtilities::Quaternion {
   //// This function is called when printing a Quaternion object
@@ -126,5 +126,12 @@ namespace std {
 };
 //// Ignore this, as neither const nor non-const will work (copy constructor issues?)
 %ignore WaveformObjects::Waveforms::operator[];
+%rename(__getitem__) WaveformObjects::Waveforms::operator[] const;
 //// Parse the header file to generate wrappers
 %include "../Objects/Waveforms.hpp"
+%extend WaveformObjects::Waveforms {
+  void __setitem__(int i, const WaveformObjects::Waveform& W) {
+    $self->operator[](i) = W;
+    return;
+  }
+ };
