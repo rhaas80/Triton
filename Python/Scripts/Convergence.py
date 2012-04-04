@@ -36,18 +36,18 @@ class Convergence :
         self.SetParameter('BestExtrapolationh', self.BestLev+'/'+(self.RWZFiles.format(ExtrapOrder=self.ExtrapolationOrders[0])))
         self.SetParameter('ConvergenceAlignmentT1', 3.0e300)
         self.SetParameter('ConvergenceAlignmentT2', 3.0e300)
-        AlignmentString = ''
-        if(self.ConvergenceAlignmentT1!=3.0e300 and self.ConvergenceAlignmentT2!=3.0e300) :
-            AlignmentString = '_Aligned_{0}--{1}'.format(self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2)
-        self.SetParameter('DifferenceFiles', '{DataType}_{Quantity1}-{Quantity2}_{Constant}'+AlignmentString+'.dat')
-        self.SetParameter('OutputNSamplesPerCycle22', 0)
-        self.SetParameter('DropBeforeTime', -3.0e300)
-        self.SetParameter('DropAfterTime', 3.0e300)
         self.SetParameter('MutualAlignmentApproximant', '')
         self.SetParameter('delta', 0.0)
         self.SetParameter('chis', 0.0)
         self.SetParameter('chia', 0.0)
         self.SetParameter('v0', 0.144)
+        AlignmentString = ''
+        if(self.ConvergenceAlignmentT1!=3.0e300 and self.ConvergenceAlignmentT2!=3.0e300) :
+            AlignmentString = '_Aligned{2}_{0}--{1}'.format(self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2, self.MutualAlignmentApproximant)
+        self.SetParameter('DifferenceFiles', '{DataType}_{Quantity1}-{Quantity2}_{Constant}'+AlignmentString+'.dat')
+        self.SetParameter('OutputNSamplesPerCycle22', 0)
+        self.SetParameter('DropBeforeTime', -3.0e300)
+        self.SetParameter('DropAfterTime', 3.0e300)
         
         # If there's an input file, read it in, which may reset some
         # of the above values.
@@ -83,18 +83,19 @@ class Convergence :
                         Diff[1] = PyGW.Waveform(NextFile, self.WaveformFormat);
                         if(self.ConvergenceAlignmentT1!=3.0e300 and self.ConvergenceAlignmentT2!=3.0e300) :
                             if(self.MutualAlignmentApproximant!='') :
-                                PN = PyGW.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0, Diff[0].LM());
-                                PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
-                                PN = PN.AlignTo(Diff[0], self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
-                                Diff[1] = Diff[1].AlignTo(PN, self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
+                                PN = PyGW.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0,
+                                                   tuple(tuple(x) for x in Diff[0].LM()));
+                                PN.AddToTime(Diff[0].Peak22Time()-PN.T(PN.NTimes()-1));
+                                PN.AlignTo(Diff[0], self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
+                                Diff[1].AlignTo(PN, self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
                             else :
-                                Diff[1] = Diff[1].AlignTo(Diff[0], self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
+                                Diff[1].AlignTo(Diff[0], self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
                         Diff.AlignPhases();
                         DiffFile = self.DifferenceFiles.format(DataType=Diff[0].Type(),
                                                                Quantity1=LastLev[LastLev.rfind("/")+1:],
                                                                Quantity2=NextLev[NextLev.rfind("/")+1:],
                                                                Constant=("N"+str(self.ExtrapolationOrders[i])))
-                        sys.stdout.write("and printing {} ... ".format(DiffFile))
+                        sys.stdout.write("\n\tand printing {} ... ".format(DiffFile))
                         sys.stdout.flush()
                         Diff[0] = Diff[0]/Diff[1];
                         Diff[1].NSamplesPerCycle22(self.OutputNSamplesPerCycle22);
@@ -102,13 +103,13 @@ class Convergence :
                         if(self.DropBeforeTime!=-3.0e300) : Diff[0].DropBefore(self.DropBeforeTime);
                         if(self.DropAfterTime!=3.0e300) : Diff[0].DropAfter(self.DropAfterTime);
                         PyGW.Output(DiffFile, Diff[0]);
-                        sys.stdout.write("and plotting ... ")
+                        sys.stdout.write("\n\tand plotting ... ")
                         sys.stdout.flush()
                         plt.figure('Mag')
                         Diff[0].plot('LogMag', Modes=[[2,2]], label=r'({0})$ - $({1})'.format(LastLev, NextLev))
                         plt.figure('Arg')
                         Diff[0].plot('LogArg', Modes=[[2,2]], label=r'({0})$ - $({1})'.format(LastLev, NextLev))
-                        print("☺")
+                        print("\n\t☺")
                     
                     plt.figure('Mag')
                     plt.legend(loc=2)
@@ -149,17 +150,17 @@ class Convergence :
                                                            Quantity1=LastLev[LastLev.rfind("/")+1:],
                                                            Quantity2=NextLev[NextLev.rfind("/")+1:],
                                                            Constant=("N"+str(self.ExtrapolationOrders[i])))
-                    sys.stdout.write("and printing {} ... ".format(DiffFile))
+                    sys.stdout.write("\n\tand printing {} ... ".format(DiffFile))
                     sys.stdout.flush()
                     DiffFileHandle = open(DiffFile, 'w')
                     DiffFileHandle.write("# [1] = M*omega_hdot(2,-2)\n# [2] = FluxA-FluxB\n# [3] = (FluxA-FluxB)/PNFluxA\n")
                     savetxt(DiffFileHandle, transpose((OmegaA, FluxDiff, FluxDiff/PNFlux)))
                     DiffFileHandle.close()
-                    sys.stdout.write("and plotting ... ")
+                    sys.stdout.write("\n\tand plotting ... ")
                     sys.stdout.flush()
                     plt.figure('Flux')
                     plt.plot(OmegaA, FluxDiff/PNFlux, label='({0})$ - $({1})'.format(LastLev[LastLev.rfind("/")+1:], NextLev[NextLev.rfind("/")+1:]))
-                    print("☺")
+                    print("\n\t☺")
                 plt.figure('Flux')
                 plt.legend(loc=2)
                 plt.gca().set_xlim(0, 1)
@@ -184,7 +185,8 @@ class Convergence :
                     Diff[1] = PyGW.Waveform(Lower, self.WaveformFormat);
                     if( (self.ConvergenceAlignmentT1!=3.0e300) and (self.ConvergenceAlignmentT2!=3.0e300) ) :
                         if(self.MutualAlignmentApproximant!='') :
-                            PN = PyGW.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0, Diff[0].LM());
+                            PN = PyGW.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0,
+                                               tuple(tuple(x) for x in Diff[0].LM()));
                             PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
                             PN.AlignTo(Diff[0], self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
                             Diff[1].AlignTo(PN, self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
@@ -195,7 +197,7 @@ class Convergence :
                                                            Quantity1=("N"+str(self.ExtrapolationOrders[i])),
                                                            Quantity2=("N"+str(self.ExtrapolationOrders[i-1])),
                                                            Constant=self.BestLev[self.BestLev.rfind("/")+1:])
-                    sys.stdout.write("and printing {0} ... ".format(DiffFile))
+                    sys.stdout.write("\n\tand printing {0} ... ".format(DiffFile))
                     sys.stdout.flush()
                     Diff[0] = Diff[0]/Diff[1];
                     Diff[1].NSamplesPerCycle22(self.OutputNSamplesPerCycle22);
@@ -203,13 +205,13 @@ class Convergence :
                     if(self.DropBeforeTime!=-3.0e300) : Diff[0].DropBefore(self.DropBeforeTime);
                     if(self.DropAfterTime!=3.0e300) : Diff[0].DropAfter(self.DropAfterTime);
                     PyGW.Output(DiffFile, Diff[0])
-                    sys.stdout.write("and plotting ... ")
+                    sys.stdout.write("\n\tand plotting ... ")
                     sys.stdout.flush()
                     plt.figure('Mag')
                     Diff[0].plot('LogMag', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(self.ExtrapolationOrders[i], self.ExtrapolationOrders[i-1]))
                     plt.figure('Arg')
                     Diff[0].plot('LogArg', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(self.ExtrapolationOrders[i], self.ExtrapolationOrders[i-1]))
-                    print("☺")
+                    print("\n\t☺")
                 plt.figure('Mag')
                 plt.legend(loc=2)
                 plt.gca().set_ylim(1e-8, 10)
