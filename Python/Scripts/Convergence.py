@@ -58,8 +58,10 @@ class Convergence :
         MaxFluxTime=3.0e300;
         if(self.BestExtrapolationh!='') :
             FluxW = PyGW.Waveform(self.BestExtrapolationh, self.WaveformFormat)
-            FluxW.Differentiate()
+            #FluxW.Differentiate()
+            FluxW.DropBefore(200)
             MaxFluxTime = FluxW.PeakFluxTime()
+            print("MaxFluxTime={}".format(MaxFluxTime))
         
         # Do the Lev convergence
         # Diff0 = PyGW.Waveform()
@@ -103,14 +105,14 @@ class Convergence :
                         sys.stdout.write("and plotting ... ")
                         sys.stdout.flush()
                         plt.figure('Mag')
-                        Diff[0].plot('LogMag', Modes=[[2,2]], label=r'$({0}) - ({1})$'.format(LastLev, NextLev))
+                        Diff[0].plot('LogMag', Modes=[[2,2]], label=r'({0})$ - $({1})'.format(LastLev, NextLev))
                         plt.figure('Arg')
-                        Diff[0].plot('LogArg', Modes=[[2,2]], label=r'$({0}) - ({1})$'.format(LastLev, NextLev))
+                        Diff[0].plot('LogArg', Modes=[[2,2]], label=r'({0})$ - $({1})'.format(LastLev, NextLev))
                         print("☺")
                     
                     plt.figure('Mag')
                     plt.legend(loc=2)
-                    plt.gca().set_ylim(1e-8, 10)
+                    plt.gca().set_ylim(1e-8, 100)
                     if(MaxFluxTime!=3.0e300) :
                         plt.gca().axvline(x=MaxFluxTime, ls='--')
                     figmag.savefig('{DataType}_LevConvergence_{Constant}_Mag{Alignment}.pdf'.format(DataType=Diff[0].Type(),
@@ -119,7 +121,7 @@ class Convergence :
                     plt.close(figmag)
                     plt.figure('Arg')
                     plt.legend(loc=2)
-                    plt.gca().set_ylim(1e-8, 10)
+                    plt.gca().set_ylim(1e-8, 100)
                     if(MaxFluxTime!=3.0e300) :
                         plt.gca().axvline(x=MaxFluxTime, ls='--')
                     figarg.savefig('{DataType}_LevConvergence_{Constant}_Arg{Alignment}.pdf'.format(DataType=Diff[0].Type(),
@@ -156,7 +158,7 @@ class Convergence :
                     sys.stdout.write("and plotting ... ")
                     sys.stdout.flush()
                     plt.figure('Flux')
-                    plt.plot(OmegaA, FluxDiff/PNFlux, label=''.format())
+                    plt.plot(OmegaA, FluxDiff/PNFlux, label='({0})$ - $({1})'.format(LastLev[LastLev.rfind("/")+1:], NextLev[NextLev.rfind("/")+1:]))
                     print("☺")
                 plt.figure('Flux')
                 plt.legend(loc=2)
@@ -219,7 +221,7 @@ class Convergence :
                 plt.close(figmag)
                 plt.figure('Arg')
                 plt.legend(loc=2)
-                plt.gca().set_ylim(1e-8, 10)
+                plt.gca().set_ylim(1e-8, 100)
                 if(MaxFluxTime!=3.0e300) :
                     plt.gca().axvline(x=MaxFluxTime, ls='--')
                 figarg.savefig('{DataType}_ExtrapConvergence_{Constant}_Arg{Alignment}.pdf'.format(DataType=Diff[0].Type(),
