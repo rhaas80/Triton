@@ -537,7 +537,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   mag.resize(lm.nrows(), t.size());
   arg.resize(lm.nrows(), t.size());
   WaveformAmplitudes PNAmp(delta, chis, chia);
-  if(lm.nrows()>0) {
+  if(LM.nrows()>0) {
     for(unsigned int m=0; m<NModes(); ++m) {
       PNAmp.rhOverM(L(m), M(m), v, Phi, mag[m], arg[m]);
     }
@@ -616,7 +616,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   mag.resize(lm.nrows(), t.size());
   arg.resize(lm.nrows(), t.size());
   WaveformAmplitudes PNAmp(delta, chis[0], chia[0]);
-  if(lm.nrows()>0) {
+  if(LM.nrows()>0) {
     for(unsigned int m=0; m<NModes(); ++m) {
       PNAmp.rhOverM(L(m), M(m), v, Phi, chis, chia, mag[m], arg[m]);
     }
