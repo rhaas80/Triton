@@ -742,10 +742,14 @@ std::string GetFileFormat(const std::vector<std::string>& Header) {
   for(unsigned int j=0; j<Header.size(); ++j) {
     if(tolower(Header[j]).find(tolower("Mag{")) != string::npos || tolower(Header[j]).find(tolower("Abs{")) != string::npos || tolower(Header[j]).find(tolower("Amp{")) != string::npos) {
       DetectedFormat = "MagArg";
-      break;
+      if(Header[j].substr(0,2).compare("##")!=0) { 
+	break;
+      }
     } else if(tolower(Header[j]).find(tolower("r*Re")) != string::npos) {
       DetectedFormat = "ReIm";
-      break;
+      if(Header[j].substr(0,2).compare("##")!=0) { 
+	break;
+      }
     }
   }
   
