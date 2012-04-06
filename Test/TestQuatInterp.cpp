@@ -44,10 +44,14 @@ int main() {
   const unsigned int NSteps = 40;
   vector<double> tOut(NSteps);
   for(unsigned int i=0; i<NSteps; ++i) {
-    tOut[i] = i*(tIn.back()-tIn[0])/(NSteps-1.0);
+    tOut[i] = tIn[0] + i*(tIn.back()-tIn[0])/(NSteps-1.0);
   }
   vector<Quaternion> qOut(Squad(tIn, qIn, tOut));
   
+  for(unsigned int i=0; i<5; ++i) {
+    vector<double> vec = (qIn[i]*z*qIn[i].Inverse()).Vec();
+    cout << tIn[i] << " " << vec[0] << " " << vec[1] << " " << vec[2] << endl;
+  }
   for(unsigned int i=0; i<NSteps; ++i) {
     vector<double> vec = (qOut[i]*z*qOut[i].Inverse()).Vec();
     cout << tOut[i] << " " << vec[0] << " " << vec[1] << " " << vec[2] << endl;
