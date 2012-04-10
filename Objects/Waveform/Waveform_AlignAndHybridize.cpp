@@ -148,6 +148,7 @@ Waveform& WaveformObjects::Waveform::AlignTo(const Waveform& a, const double t1,
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
     ArgRef(mode) += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis)-M(mode)*darg22/2.0)/(2.0*M_PI))) + M(mode)*darg22/2.0;
   }
+  History() << "#### this->RotatePhase(" << darg22/2.0 << ");" << endl;
   return *this;
 }
 
