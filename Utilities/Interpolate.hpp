@@ -11,6 +11,9 @@ namespace WaveformUtilities {
   void Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const std::vector<double>& X2, std::vector<double>& Y2, const double ExtrapVal);
   double Interpolate(const std::vector<double>& X1, const std::vector<double>& Y1, const double& X2);
   
+  std::vector<double> SplineIntegral(const std::vector<double>& X1, const std::vector<double>& Y1);
+  std::vector<double> SplineIntegral(const std::vector<double>& X1, const std::vector<double>& Y1, const std::vector<double>& X2);
+  double SplineCumulativeIntegral(const std::vector<double>& X1, const std::vector<double>& Y1);
   
   class Interpolator {
   protected:
@@ -29,11 +32,11 @@ namespace WaveformUtilities {
     int locate(const double x);
     int hunt(const double x);
     
-    double virtual rawinterp(int jlo, double x) = 0;
+    virtual double rawinterp(int jlo, double x) = 0;
   };
   
   
-  class PolynomialInterpolator : Interpolator {
+  class PolynomialInterpolator : public Interpolator {
     double dy;
     
   public:
@@ -43,6 +46,7 @@ namespace WaveformUtilities {
   };
   
   class SplineInterpolator : public Interpolator {
+  protected:
     std::vector<double> y2;
     
   public:
@@ -52,6 +56,33 @@ namespace WaveformUtilities {
     
     void sety2(const std::vector<double>& xv, const std::vector<double>& yv, double yp1, double ypn);
     double rawinterp(int jl, double xv);
+  };
+  
+  class SplineIntegrator : public SplineInterpolator {
+  private:
+    std::vector<double> IntegrationConstants;
+    std::vector<double> IntegrationCoefficients1, IntegrationCoefficients2,
+      IntegrationCoefficients3, IntegrationCoefficients4;
+    void SetUpIntegrationCoefficients();
+    void SetUpIntegrationConstants();
+    
+  public:
+    SplineIntegrator(const std::vector<double>& xv, const std::vector<double>& yv,
+		     double yp1=1.e99, double ypn=1.e99)
+      : SplineInterpolator(xv, yv, yp1, ypn),
+	IntegrationConstants(xv.size()),
+	IntegrationCoefficients1(xv.size()),
+	IntegrationCoefficients2(xv.size()),
+	IntegrationCoefficients3(xv.size()),
+	IntegrationCoefficients4(xv.size())
+    {
+      SetUpIntegrationCoefficients();
+      SetUpIntegrationConstants();
+    }
+    std::vector<double> operator()(const std::vector<double>& x); // Return integral at selected points
+    double operator()(const double x); // Return integral at selected points
+    std::vector<double> operator()(); // Return integral at all original data points
+    double CumulativeIntegral(); // Return the total integral over all original data points
   };
   
 } // namespace WaveformUtilities

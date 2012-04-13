@@ -9,10 +9,14 @@ namespace WU = WaveformUtilities;
 using WU::Interpolator;
 using WU::PolynomialInterpolator;
 using WU::SplineInterpolator;
+using WU::SplineIntegrator;
+using WU::Interpolate;
+using WU::SplineIntegral;
+using WU::SplineCumulativeIntegral;
 
-#undef DEBUG
+// #undef DEBUG
 
-vector<double> WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2) {
+vector<double> WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2) {
   if(X1.size()==0) { throw("X1.size()==0"); }
   if(X2.size()==0) { throw("X2.size()==0"); }
   if(Y1.size()==0) { throw("Y1.size()==0"); }
@@ -21,7 +25,7 @@ vector<double> WU::Interpolate(const vector<double>& X1, const vector<double>& Y
   return Y2;
 }
 
-void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, vector<double>& Y2) {
+void WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, vector<double>& Y2) {
   if(X1.size()==0) { throw("X1.size()==0"); }
   if(X2.size()==0) { throw("X2.size()==0"); }
   if(Y1.size()==0) { throw("Y1.size()==0"); }
@@ -47,7 +51,7 @@ void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const v
   return;
 }
 
-vector<double> WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, const double ExtrapVal) {
+vector<double> WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, const double ExtrapVal) {
   if(X1.size()==0) { throw("X1.size()==0"); }
   if(X2.size()==0) { throw("X2.size()==0"); }
   if(Y1.size()==0) { throw("Y1.size()==0"); }
@@ -56,7 +60,7 @@ vector<double> WU::Interpolate(const vector<double>& X1, const vector<double>& Y
   return Y2;
 }
 
-void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, vector<double>& Y2, const double ExtrapVal) {
+void WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, vector<double>& Y2, const double ExtrapVal) {
   if(X1.size()==0) { throw("X1.size()==0"); }
   if(X2.size()==0) { throw("X2.size()==0"); }
   if(Y1.size()==0) { throw("Y1.size()==0"); }
@@ -88,7 +92,7 @@ void WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const v
   return;
 }
 
-double WU::Interpolate(const vector<double>& X1, const vector<double>& Y1, const double& X2) {
+double WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const double& X2) {
   if(X1.size()==0) { throw("X1.size()==0"); }
   if(Y1.size()==0) { throw("Y1.size()==0"); }
   vector<double> x1(1, X2);
@@ -237,3 +241,85 @@ Doub SplineInterpolator::rawinterp(Int jl, Doub x)
 			 +(b*b*b-b)*y2[khi])*(h*h)/6.0;
   return y;
 }
+
+
+
+std::vector<double> WaveformUtilities::SplineIntegral(const std::vector<double>& X1, const std::vector<double>& Y1) {
+  SplineIntegrator I(X1, Y1);
+  return I();
+}
+
+std::vector<double> WaveformUtilities::SplineIntegral(const std::vector<double>& X1, const std::vector<double>& Y1, const std::vector<double>& X2) {
+  SplineIntegrator I(X1, Y1);
+  return I(X2);
+}
+
+double WaveformUtilities::SplineCumulativeIntegral(const std::vector<double>& X1, const std::vector<double>& Y1) {
+  SplineIntegrator I(X1, Y1);
+  return I.CumulativeIntegral();
+}
+
+void SplineIntegrator::SetUpIntegrationCoefficients() {
+  for(unsigned int j=0; j<xx.size()-1; ++j) {
+    const double xxj = xx[j];
+    const double xxjp1 = xx[j+1];
+    const double yyj = yy[j];
+    const double yyjp1 = yy[j+1];
+    const double y2j = y2[j];
+    const double y2jp1 = y2[j+1];
+    const double dxj = xxjp1-xxj;
+    
+    IntegrationCoefficients1[j] = pow(xxj,2)*xxjp1*(12.*y2j - 12.*y2jp1) + pow(xxj,3)*(-4.*y2j + 4.*y2jp1) + pow(dxj,2)*(4.*xxj*y2j - 4.*xxjp1*y2j + 8.*xxj*y2jp1 - 8.*xxjp1*y2jp1) + xxjp1*(pow(xxjp1,2)*(4.*y2j - 4.*y2jp1) + 24.*yyj - 24.*yyjp1) + dxj*(12.*pow(xxj,2)*y2jp1 - 24.*xxj*xxjp1*y2jp1 + 12.*pow(xxjp1,2)*y2jp1 + 24.*yyjp1) + xxj*(pow(xxjp1,2)*(-12.*y2j + 12.*y2jp1) - 24.*yyj + 24.*yyjp1);
+    IntegrationCoefficients2[j] = xxj*xxjp1*(12.*y2j - 12.*y2jp1) + dxj*(12.*xxj - 12.*xxjp1)*y2jp1 + pow(dxj,2)*(2.*y2j + 4.*y2jp1) + pow(xxj,2)*(-6.*y2j + 6.*y2jp1) + pow(xxjp1,2)*(-6.*y2j + 6.*y2jp1) - 12.*yyj + 12.*yyjp1;
+    IntegrationCoefficients3[j] = 4*(-xxj*y2j + xxjp1*y2j + dxj*y2jp1 + xxj*y2jp1 - xxjp1*y2jp1);
+    IntegrationCoefficients4[j] = y2jp1-y2j;
+  }
+  const unsigned int j=xx.size()-1;
+  IntegrationCoefficients1[j] = IntegrationCoefficients1[j-1]; // This value should never be used...
+  IntegrationCoefficients2[j] = IntegrationCoefficients2[j-1]; // This value should never be used...
+  IntegrationCoefficients3[j] = IntegrationCoefficients3[j-1]; // This value should never be used...
+  IntegrationCoefficients4[j] = IntegrationCoefficients4[j-1]; // This value should never be used...
+  return;
+}
+
+void SplineIntegrator::SetUpIntegrationConstants() {
+  IntegrationConstants[0] = 0.0;
+  for(unsigned int j=1; j<y2.size(); ++j) {
+    const double dxj = xx[j]-xx[j-1];
+    IntegrationConstants[j] = IntegrationConstants[j-1]
+      + (dxj*(yy[j-1] + yy[j]))/2. - (pow(dxj,3)*(y2[j-1] + y2[j]))/24.;
+  }
+  return;
+}
+
+std::vector<double> SplineIntegrator::operator()(const std::vector<double>& x) {
+  std::vector<double> Integral(x.size());
+  for(unsigned int i=0; i<x.size(); ++i) {
+    Integral[i] = this->operator()(x[i]);
+  }
+  return Integral;
+}
+
+double SplineIntegrator::operator()(const double x) {
+  const int j = cor ? hunt(x) : locate(x);
+  if(j>=xx.size()-1) { return this->CumulativeIntegral(); }
+  const double X = x-xx[j];
+  return IntegrationConstants[j]
+    + (X*(IntegrationCoefficients1[j]
+	  + X*(IntegrationCoefficients2[j]
+	       + X*(IntegrationCoefficients3[j]
+		    + X*(IntegrationCoefficients4[j])
+		    )
+	       )
+	  )
+       ) / (24.*(xx[j+1]-xx[j]));
+}
+
+std::vector<double> SplineIntegrator::operator()() {
+  return IntegrationConstants;
+}
+
+double SplineIntegrator::CumulativeIntegral() {
+  return IntegrationConstants.back();
+}
+
