@@ -45,14 +45,14 @@ vector<Quaternion> WU::Squad(const vector<double>& tIn, const vector<Quaternion>
   return qOut;
 }
 
-vector<Quaternion> WU::SquadVelocities(const vector<double>& tIn, const vector<Quaternion>& qIn) {
-  vector<Quaternion> v(tIn.size());
-  for(unsigned int i=1; i<tIn.size()-1; ++i) {
-    Adjust velocities for different dt's on each side, both here and in SetControlPoints
-    v[i] = choke;
-  }
-  return v;
-}
+// vector<Quaternion> WU::SquadVelocities(const vector<double>& tIn, const vector<Quaternion>& qIn) {
+//   vector<Quaternion> v(tIn.size());
+//   for(unsigned int i=1; i<tIn.size()-1; ++i) {
+//     Adjust velocities for different dt's on each side, both here and in SetControlPoints
+//     v[i] = choke;
+//   }
+//   return v;
+// }
 
 vector<Quaternion> WU::QuaternionInterpolator::SetControlPoints(const vector<Quaternion>& q) {
   vector<Quaternion> c(q.size());
