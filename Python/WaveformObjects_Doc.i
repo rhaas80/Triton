@@ -666,7 +666,7 @@ Transform the Waveform back to a stationary frame.
   -----------
     The input quaternion may be used to specify the orientation of the final
     frame relative to the frame in which the Waveform was originally measured.
-    Compare `TransformToStandardFrame()`.
+    Compare TransformToStandardFrame().
   
 """
 
@@ -870,7 +870,7 @@ Return the frequency of the (2,-2) mode.
   -----------
     In standard configuration, this quantity will typically be increasing; the
     (2,2) frequency will typically be decreasing because of the definitions of
-    h and Psi4 and the definition of the frequency as the derivative of `arg`.
+    h and Psi4 and the definition of the frequency as the derivative of arg.
   
 """
 
@@ -934,6 +934,19 @@ class WaveformObjects::WaveformAtAPoint
   Returns
   -------
     void
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::PeakFluxTimeIndex """
+Return the time index at which the GW flux peaks.
+=================================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    unsigned int
   
 """
 
@@ -1149,11 +1162,15 @@ Calculate the GW flux.
   
   Description
   -----------
-    NB: This function can only be used on Waveform data of type `rhdot`. To
-    calculate the flux from data of type `rh`, simply apply the Differentiate()
+    NB: This function can only be used on Waveform data of type rhdot. To
+    calculate the flux from data of type rh, simply apply the Differentiate()
     function first, but remember that that function operates in place, so you
     may wish to make a copy of the Waveform first. For example, you may wish to
-    use `Waveform(bla).Differentiate().Flux()`.
+    use Waveform(bla).Differentiate().Flux().
+    
+    Also, if the frame is non-constant, the Waveform is copied, the copy is
+    transformed into the original frame, and the flux is calculated for that
+    copy.
   
 """
 
@@ -1170,6 +1187,19 @@ Alter gamma to enforce the minimal-rotation condition.
   Returns
   -------
     void
+  
+
+Given the radiation axis, return the frame which minimizes rotation.
+====================================================================
+  Parameters
+  ----------
+    const vector<double>& alpha
+    const vector<double>& beta
+    const vector<double>& t
+  
+  Returns
+  -------
+    vector<Quaternion>
   
 """
 
@@ -2454,10 +2484,12 @@ Construct Waveform from data file.
     automatically assigned a type of 'rhOverM'. Similarly, the time scale and
     (l,m) values for the pairs of columns are deduced from the header, assuming
     standard SpEC output. That is, the header is assumed to contain lines like 
-     # [1] = (t-r*)/M 
- # [2] = Mag{rMPsi4(2,-2)} 
- # [3] = Arg{rMPsi4(2,-2)} 
-
+     [1] = (t-r*)/M
+    
+    [2] = Mag{rMPsi4(2,-2)}
+    
+    [3] = Arg{rMPsi4(2,-2)}
+    
     Finally, the data format is also deduced from the header, and a warning is
     issued if it mismatches the input parameter to this function.
   
@@ -2575,8 +2607,7 @@ PN/EOB constructor for precessing systems.
   Description
   -----------
     Constructs a PN inspiral for precessing systems using the method described
-    in [Phys. Rev. D 84, 124011
-    (2011)](http://link.aps.org/doi/10.1103/PhysRevD.84.124011)
+    in Phys. Rev. D 84, 124011 (2011)
   
 """
 
@@ -2702,8 +2733,8 @@ Set the frame to the input data.
 """
 
 %feature("docstring") WaveformObjects::Waveform::HasNaNs """
-
-
+Check various data for NaNs.
+============================
   Parameters
   ----------
     (none)
@@ -3151,6 +3182,19 @@ Return a reference to the string describing the time scale (e.g., units).
   Description
   -----------
     This function is not available via SWIG (e.g., in python).
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::PeakFluxTime """
+Return the time at which the GW flux peaks.
+===========================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    double
   
 """
 
