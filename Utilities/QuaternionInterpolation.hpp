@@ -26,7 +26,7 @@ namespace WaveformUtilities {
   std::vector<Quaternion> Squad(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn, const std::vector<double>& tOut);
   
   /// Determine the velocities at each point of a squad interpolation
-  std::vector<Quaternion> SquadVelocities(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn);
+//  std::vector<Quaternion> SquadVelocities(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn);
   
   //// This class inherits from the standard Interpolator base class,
   //// mostly for its hunt and locate functions.  The standard
