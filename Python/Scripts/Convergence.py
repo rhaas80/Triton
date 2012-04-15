@@ -4,8 +4,6 @@
 Measure convergence for a series of Cauchy resolutions, and optionally
 for a series of extrapolation orders.
 
-
-
 """
 
 ## We use a class just to be able to set the parameters nicely.  This
