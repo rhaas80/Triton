@@ -22,6 +22,7 @@
   #include <iomanip>
   #include "../Objects/Waveforms.hpp"
   #include "../Utilities/Quaternions.hpp"
+  #include "../Utilities/QuaternionInterpolation.hpp"
 %}
 
 
