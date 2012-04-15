@@ -45,13 +45,22 @@ vector<Quaternion> WU::Squad(const vector<double>& tIn, const vector<Quaternion>
   return qOut;
 }
 
+vector<Quaternion> WU::SquadVelocities(const vector<double>& tIn, const vector<Quaternion>& qIn) {
+  vector<Quaternion> v(tIn.size());
+  for(unsigned int i=1; i<tIn.size()-1; ++i) {
+    Adjust velocities for different dt's on each side, both here and in SetControlPoints
+    v[i] = choke;
+  }
+  return v;
+}
+
 vector<Quaternion> WU::QuaternionInterpolator::SetControlPoints(const vector<Quaternion>& q) {
   vector<Quaternion> c(q.size());
   c[0] = q[0];
-  std::cerr << "Warning: The squad interpolation control points may be incorrectly set at: " << __FILE__ << ": " << __LINE__+2 << std::endl;
   for(unsigned int i=1; i<c.size()-1; ++i) {
     //c[i] = q[i] * exp(-0.25 * (log(q[i+1]/q[i]) + log(q[i-1]/q[i])) ); // from http://www.sjbrown.co.uk/2002/05/01/quaternions/, but I think it's wrong
-    c[i] = (-0.25 * ((q[i+1]/q[i]).log() + (q[i-1]/q[i]).log()) ).exp() * q[i];
+    //c[i] = (-0.25 * ((q[i+1]/q[i]).log() + (q[i-1]/q[i]).log()) ).exp() * q[i]; // This should be equivalent to the following
+    c[i] = q[i] * (-0.25 * ((q[i].Inverse()*q[i+1]).log() + (q[i].Inverse()*q[i-1]).log()) ).exp();
     //c[i] = exp(-0.25 * q[i] * (WU::log(q[i+1]/q[i]) - WU::log(q[i]/q[i-1])) / q[i] ) * q[i];
   }
   c[c.size()-1] = q[q.size()-1];
