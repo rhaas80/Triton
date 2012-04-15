@@ -4,6 +4,22 @@ as methods with Waveform objects.
 
 """
 
+TypeDict = {
+    "rMPsi4" : r'r M \Psi_4',
+    "rhdot" : r'r \dot{h}',
+    "rhOverM" : r'r h / M',
+    "rPsi4" : r'r \Psi_4',
+    "rhdot" : r'r \dot{h}',
+    "rh" : r'r h',
+    "MPsi4" : r'M \Psi_4',
+    "hdot" : r'\dot{h}',
+    "hOverM" : r'h/M',
+    "Psi4" : r'\Psi_4',
+    "hdot" : r'\dot{h}',
+    "h": r'h'
+    }
+
+
 from matplotlib.pyplot import plot as matplotlibpyplotplot
 from matplotlib.pyplot import semilogx as matplotlibpyplotsemilogx
 from matplotlib.pyplot import semilogy as matplotlibpyplotsemilogy
@@ -39,21 +55,6 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
     legend is not shown by default).
     
     """
-    
-    TypeDict = {
-        "rMPsi4" : r'r M \Psi_4',
-        "rhdot" : r'r \dot{h}',
-        "rhOverM" : r'r h / M',
-        "rPsi4" : r'r \Psi_4',
-        "rhdot" : r'r \dot{h}',
-        "rh" : r'r h',
-        "MPsi4" : r'M \Psi_4',
-        "hdot" : r'\dot{h}',
-        "hOverM" : r'h/M',
-        "Psi4" : r'\Psi_4',
-        "hdot" : r'\dot{h}',
-        "h": r'h'
-        }
     
     XLabel = r'$(t-r_\ast)/M$'
     YLabel = ''
@@ -104,22 +105,24 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
         else :
             Labels = ['(' + str(this.L(mode)) + ', ' + str(this.M(mode)) + ')' for mode in range(this.NModes())]
     elif ( (len(Modes)==2) and (type(Modes[0])==int and type(Modes[1])==int) ) :
-        Lines = styledplot(this.T(), transpose(AbsOrNot(quantity(this.FindModeIndex(Modes[0], Modes[1])))), *pyplot_args, **pyplot_kwargs)
+        ModeIndex = this.FindModeIndex(Modes[0], Modes[1])
+        Lines = styledplot(this.T(), transpose(AbsOrNot(quantity(ModeIndex))), *pyplot_args, **pyplot_kwargs)
         if ('label' in pyplot_kwargs) :
             Labels = [pyplot_kwargs['label']]
         else :
-            Labels = ['(' + str(this.L(Modes[0])) + ', ' + str(this.M(Modes[1])) + ')']
+            Labels = ['(' + str(this.L(ModeIndex)) + ', ' + str(this.M(ModeIndex)) + ')']
     elif ( (len(Modes)==1) and (type(Modes[0])==list) and (type(Modes[0][0])==int and type(Modes[0][1])==int) ) :
-        Lines = styledplot(this.T(), transpose(AbsOrNot(quantity(this.FindModeIndex(Modes[0][0], Modes[0][1])))), *pyplot_args, **pyplot_kwargs)
+        ModeIndex = this.FindModeIndex(Modes[0][0], Modes[0][1])
+        Lines = styledplot(this.T(), transpose(AbsOrNot(quantity(ModeIndex))), *pyplot_args, **pyplot_kwargs)
         if ('label' in pyplot_kwargs) :
             Labels = [pyplot_kwargs['label']]
         else :
-            Labels = ['(' + str(this.L(Modes[0])) + ', ' + str(this.M(Modes[1])) + ')']
+            Labels = ['(' + str(this.L(ModeIndex)) + ', ' + str(this.M(ModeIndex)) + ')']
     else :
         Modes = array(Modes, dtype=int)
         for i in range(Modes.shape[0]) :
             ModeIndex = this.FindModeIndex(int(Modes[i][0]), int(Modes[i][1]))
-            print(ModeIndex, Modes[i][0], Modes[i][1])
+            #print(ModeIndex, Modes[i][0], Modes[i][1])
             Labels.append('(' + str(Modes[i][0]) + ', ' + str(Modes[i][1]) + ')')
             Lines = styledplot(this.T(), AbsOrNot(quantity(ModeIndex)).transpose(), *pyplot_args, **pyplot_kwargs)
     
