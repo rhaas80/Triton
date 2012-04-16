@@ -58,7 +58,6 @@ namespace WaveformUtilities {
 %rename(__getitem__) WaveformUtilities::Quaternion::operator[] const;
 %rename(__setitem__) WaveformUtilities::Quaternion::operator[];
 %include "../Utilities/Quaternions.hpp"
-%include "../Utilities/QuaternionInterpolation.hpp"
 %extend WaveformUtilities::Quaternion {
   //// This function is called when printing a Quaternion object
   std::string __str__() {
@@ -74,6 +73,7 @@ namespace WaveformUtilities {
 namespace std {
   %template(vectorq) vector<WaveformUtilities::Quaternion>;
 }
+%include "../Utilities/QuaternionInterpolation.hpp"
 
 //////////////////////////////////////////////////////////////////////
 
