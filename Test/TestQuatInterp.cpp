@@ -36,7 +36,7 @@ int main() {
   qIn[3] = Quaternion(M_PI/2., y).Normalized();
   qIn[4] = Quaternion(8*M_PI/20., x+y).Normalized();
   vector<double> tIn(5);
-  tIn[0] = 0.0;
+  tIn[0] = -10.0;
   tIn[1] = 5.0;
   tIn[2] = 10.0;
   tIn[3] = 15.0;
