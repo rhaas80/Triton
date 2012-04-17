@@ -1024,14 +1024,12 @@ vector<double> WU::cumtrapz(const vector<double>& t, const vector<double>& f) {
 vector<double> WU::dydx(const vector<double>& y, const vector<double>& x) {
   if(! DimensionsAgree(y,x)) { throw("Size disagreement"); }
   if(y.size()<3) { cerr << "\nsize=" << y.size() << endl; throw("Not enough points for a derivative"); }
-  //if(y.size()==0) { return vector<double>(0); }
   vector<double> D = y;
   const unsigned int i1 = y.size()-1;
   double hprev = x[1]-x[0];
   D[0] = (y[1]-y[0]) / hprev;
   for(unsigned int i=1; i<i1; ++i) {
     const double hnext = x[i+1]-x[i];
-//     D[i] = (y[i+1]-y[i-1]) / (x[i+1]-x[i-1]);
     /// Sundquist and Veronis, Tellus XXII (1970), 1
     D[i] = (y[i+1] - y[i-1]*WU::square(hnext/hprev) - y[i]*(1-WU::square(hnext/hprev))) / (hnext*(1+hnext/hprev));
     hprev = hnext;
