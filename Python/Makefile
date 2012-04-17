@@ -31,7 +31,7 @@ realclean:
 
 PyGW : _WaveformObjects.so
 
-_WaveformObjects.so : WaveformObjects.i
+_WaveformObjects.so : WaveformObjects.i ../Utilities/libUtilities.so ../PostNewtonian/libPostNewtonian.so ../Objects/libObjects.so
 	swig -c++ -python -outdir PyGW WaveformObjects.i
 	@:
 	$(C++) -DSWIG -c $(IFLAGS) `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
