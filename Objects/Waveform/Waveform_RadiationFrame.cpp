@@ -18,6 +18,7 @@
 #include "PostNewtonian.hpp"
 #include "WignerDMatrix.hpp"
 #include "Quaternions.hpp"
+#include "QuaternionInterpolation.hpp"
 #include "Minimize_MultiDim.hpp"
 
 using namespace WaveformUtilities;
@@ -142,6 +143,54 @@ void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>
   return;
 }
 
+/// Given the radiation axis, return the frame which minimizes rotation.
+std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& t) {
+  if(alpha.size() != beta.size() || alpha.size() != t.size()) {
+    cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tt.size()=" << t.size() << endl;
+    throw("Size mismatch in MinimalRotation.");
+  }
+  
+  // Find the minimal-rotation frame using the Euler-angle method
+  vector<double> gammaDot = -dydx(alpha, t)*cos(beta);
+  vector<double> gamma = -alpha*cos(beta) + cumtrapz(t, -sin(beta)*dydx(beta,t)*alpha);
+  vector<WaveformUtilities::Quaternion> MinRotFrame = WaveformUtilities::Quaternions(alpha, beta, gamma);
+  
+  // Now use that frame with the quaternion method for better(?) numerics
+  const Quaternion z(0.,0.,0.,1.);
+  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  gamma = SplineIntegral(t, gammaDot);
+  cerr << "The correction to gamma is:\n" << gamma << endl;
+  for(unsigned int i=0; i<gamma.size(); ++i) {
+    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  }
+  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  gamma = SplineIntegral(t, gammaDot);
+  cerr << "\n\n\n\n\n\n\nThe second correction to gamma is:\n" << gamma << endl;
+  for(unsigned int i=0; i<gamma.size(); ++i) {
+    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  }
+  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  gamma = SplineIntegral(t, gammaDot);
+  cerr << "\n\n\n\n\n\n\nThe third correction to gamma is:\n" << gamma << endl;
+  for(unsigned int i=0; i<gamma.size(); ++i) {
+    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  }
+  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  gamma = SplineIntegral(t, gammaDot);
+  cerr << "\n\n\n\n\n\n\nThe fourth correction to gamma is:\n" << gamma << endl;
+  for(unsigned int i=0; i<gamma.size(); ++i) {
+    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  }
+  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  gamma = SplineIntegral(t, gammaDot);
+  cerr << "\n\n\n\n\n\n\nThe fifth correction to gamma is:\n" << gamma << endl;
+  for(unsigned int i=0; i<gamma.size(); ++i) {
+    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  }
+  
+  return MinRotFrame;
+}
+
 
 /// Transform the Waveform to the naive radiation frame.
 Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(const double alpha0Guess, const double beta0Guess) {
@@ -172,7 +221,7 @@ Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const doubl
   /// rotates the coordinates in which the physical system is
   /// expressed (by calling RotateCoordinates) to align with that
   /// frame.
-  ///
+  /// 
   /// We define the Euler angles (alpha, beta, gamma) using the
   /// z-y'-z'' convention, where the first rotation is through an
   /// angle alpha about the z axis, the second through beta about the
@@ -184,8 +233,10 @@ Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const doubl
   history << "### this->TransformToMinimalRotationFrame(" << alpha0Guess << ", " << beta0Guess << ");" << endl;
   vector<double> alpha(NTimes(), 0.0), beta(NTimes(), 0.0), gamma(NTimes(), 0.0);
   RadiationAxis(*this, alpha, beta, alpha0Guess, beta0Guess);
-  MinimalRotation(alpha, beta, gamma, T());
-  this->RotateCoordinates(alpha, beta, gamma);
+  // MinimalRotation(alpha, beta, gamma, T());
+  // this->RotateCoordinates(alpha, beta, gamma);
+  vector<Quaternion> MinRotFrame = MinimalRotation(alpha, beta, T());
+  this->RotateCoordinates(MinRotFrame);
   return *this;
 }
 
