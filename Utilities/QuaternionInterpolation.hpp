@@ -31,7 +31,7 @@ namespace WaveformUtilities {
   //// This class inherits from the standard Interpolator base class,
   //// mostly for its hunt and locate functions.  The standard
   //// functions can't be used, because they expect to return doubles.
-  class QuaternionInterpolator : Interpolator {
+  class QuaternionInterpolator : public Interpolator {
     const std::vector<Quaternion> &Q;
     std::vector<Quaternion> A, B;
   public:
