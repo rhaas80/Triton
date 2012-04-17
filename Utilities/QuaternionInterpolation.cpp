@@ -7,71 +7,87 @@ using namespace std;
 namespace WU = WaveformUtilities;
 using WU::Quaternion;
 
-Quaternion WU::Slerp(double t, const Quaternion& q0, const Quaternion& q1, bool shortest) {
+Quaternion WU::Slerp(double t, const Quaternion& Q0, const Quaternion& Q1, bool shortest) {
   double o,so,a,b;
-  bool neg_q1 = false;   // Does q1 have to be negated (so that the shortest path is taken)?
+  bool neg_Q1 = false;   // Does Q1 have to be negated (so that the shortest path is taken)?
   
-  double ca = q0.Dot(q1);
+  double ca = Q0.Dot(Q1);
   if (shortest && ca<0) {
     ca = -ca;
-    neg_q1 = true;
+    neg_Q1 = true;
   }
   o = acos(ca);
   so = sin(o);
   
   if (abs(so)<numeric_limits<double>::epsilon()) {
-    return q0;
+    return Q0;
   }
   
   a = sin(o*(1.0-t)) / so;
   b = sin(o*t) / so;
-  if (neg_q1) {
-    return q0*a - q1*b;
+  if (neg_Q1) {
+    return Q0*a - Q1*b;
   } else {
-    return q0*a + q1*b;
+    return Q0*a + Q1*b;
   }
 }
 
-Quaternion WU::Squad(double t, const Quaternion& q0, const Quaternion& c0, const Quaternion& c1, const Quaternion& q1) {
-  return WU::Slerp(2*t*(1.0-t), WU::Slerp(t,q0,q1), WU::Slerp(t,c0,c1));
+Quaternion WU::Squad(double t, const Quaternion& Q0, const Quaternion& c0, const Quaternion& c1, const Quaternion& Q1) {
+  return WU::Slerp(2*t*(1.0-t), WU::Slerp(t,Q0,Q1), WU::Slerp(t,c0,c1));
 }
 
-vector<Quaternion> WU::Squad(const vector<double>& tIn, const vector<Quaternion>& qIn, const vector<double>& tOut) {
-  vector<Quaternion> qOut(tOut.size());
-  QuaternionInterpolator qInterp(tIn, qIn);
-  for(unsigned int i=0; i<qOut.size(); ++i) {
-    qOut[i] = qInterp.Interpolate(tOut[i]);
+vector<Quaternion> WU::Squad(const vector<double>& tIn, const vector<Quaternion>& QIn, const vector<double>& tOut) {
+  vector<Quaternion> QOut(tOut.size());
+  QuaternionInterpolator QInterp(tIn, QIn);
+  for(unsigned int i=0; i<QOut.size(); ++i) {
+    QOut[i] = QInterp.Interpolate(tOut[i]);
   }
-  return qOut;
+  return QOut;
 }
 
-// vector<Quaternion> WU::SquadVelocities(const vector<double>& tIn, const vector<Quaternion>& qIn) {
-//   vector<Quaternion> v(tIn.size());
-//   for(unsigned int i=1; i<tIn.size()-1; ++i) {
-//     Adjust velocities for different dt's on each side, both here and in SetControlPoints
-//     v[i] = choke;
-//   }
-//   return v;
-// }
+vector<Quaternion> WU::SquadVelocities(const vector<double>& tIn, const vector<Quaternion>& QIn) {
+  cerr << "\n\nWARNING!!!  SquadVelocities may still assume evenly spaced samples!!!  (This needs to be checked.)\n" << endl;
+  if(tIn.size()<2) {
+    cerr << "\ntIn.size()=" << tIn.size() << endl;
+    throw("Can't take derivative of fewer than 2 points.");
+  }
+  if(tIn.size()!=QIn.size()) {
+    cerr << "\ntIn.size()=" << tIn.size() << "  QIn.size()=" << QIn.size() << endl;
+    throw("Input size mismatch in SquadVelocities");
+  }
+  vector<Quaternion> v(tIn.size());
+  v[0] = (QIn[0] * (QIn[0].Inverse()*QIn[1]).log()) * (1.0/(tIn[1]-tIn[0]));
+  for(unsigned int i=1; i<tIn.size()-1; ++i) {
+    v[i] = QIn[i] * (0.5 * ((QIn[i].Inverse()*QIn[i+1]).log()/(tIn[i+1]-tIn[i]) + (QIn[i-1].Inverse()*QIn[i]).log()/(tIn[i]-tIn[i-1])) );
+  }
+  v[v.size()-1] = (QIn.back() * (QIn[QIn.size()-2].Inverse()*QIn.back()).log()) * (1.0/(tIn[tIn.size()-2]-tIn.back()));
+  return v;
+}
 
-vector<Quaternion> WU::QuaternionInterpolator::SetControlPoints(const vector<Quaternion>& q) {
-  vector<Quaternion> c(q.size());
-  c[0] = q[0];
-  for(unsigned int i=1; i<c.size()-1; ++i) {
+void WU::QuaternionInterpolator::SetControlPoints() {
+  A[0] = Q[0];
+  B[0] = Q[0]; // Even though this should never be used...
+  double DtLast = xx[1]-xx[0];
+  for(unsigned int i=1; i<A.size()-1; ++i) {
+    // The following three formulas are only valid for unequally spaced time steps
     //c[i] = q[i] * exp(-0.25 * (log(q[i+1]/q[i]) + log(q[i-1]/q[i])) ); // from http://www.sjbrown.co.uk/2002/05/01/quaternions/, but I think it's wrong
     //c[i] = (-0.25 * ((q[i+1]/q[i]).log() + (q[i-1]/q[i]).log()) ).exp() * q[i]; // This should be equivalent to the following
-    c[i] = q[i] * (-0.25 * ((q[i].Inverse()*q[i+1]).log() + (q[i].Inverse()*q[i-1]).log()) ).exp();
-    //c[i] = exp(-0.25 * q[i] * (WU::log(q[i+1]/q[i]) - WU::log(q[i]/q[i-1])) / q[i] ) * q[i];
+    //c[i] = q[i] * ((-0.5/(xx[i+1]-xx[i-1])) * ((xx[i]-xx[i-1])*(q[i].Inverse()*q[i+1]).log() + (xx[i+1]-xx[i])*(q[i].Inverse()*q[i-1]).log()) ).exp();
+    const double DtThis = xx[i+1]-xx[i];
+    const Quaternion ExponentTerm = (Q[i].Inverse()*Q[i+1]).log()/DtThis - (Q[i-1].Inverse()*Q[i]).log()/DtLast;
+    A[i] = Q[i] * ( (-DtThis/4.0) * ExponentTerm ).exp();
+    B[i] = Q[i] * ( (-DtLast/4.0) * ExponentTerm ).exp();
+    DtLast = DtThis;
   }
-  c[c.size()-1] = q[q.size()-1];
-  return c;
+  A[A.size()-1] = Q[Q.size()-1]; // Even though this should never be used...
+  B[B.size()-1] = Q[Q.size()-1];
 }
 
 Quaternion WU::QuaternionInterpolator::RawInterpolate(int jlo, double t) {
-  if(t<=xx[0]) return q[0];
-  if(t>=xx[xx.size()-1]) return q[q.size()-1];
+  if(t<=xx[0]) return Q[0];
+  if(t>=xx[xx.size()-1]) return Q[Q.size()-1];
   const double tFrac = (t - xx[jlo])/(xx[jlo+1]-xx[jlo]);
-  return WU::Squad(tFrac, q[jlo], c[jlo], c[jlo+1], q[jlo+1]);
+  return WU::Squad(tFrac, Q[jlo], A[jlo], B[jlo+1], Q[jlo+1]);
 }
 
 double WU::QuaternionInterpolator::rawinterp(int jlo, double t) {

@@ -26,18 +26,21 @@ namespace WaveformUtilities {
   std::vector<Quaternion> Squad(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn, const std::vector<double>& tOut);
   
   /// Determine the velocities at each point of a squad interpolation
-//  std::vector<Quaternion> SquadVelocities(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn);
+  std::vector<Quaternion> SquadVelocities(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn);
   
   //// This class inherits from the standard Interpolator base class,
   //// mostly for its hunt and locate functions.  The standard
   //// functions can't be used, because they expect to return doubles.
   class QuaternionInterpolator : Interpolator {
-    const std::vector<Quaternion> &q;
-    const std::vector<Quaternion> c;
+    const std::vector<Quaternion> &Q;
+    std::vector<Quaternion> A, B;
   public:
-    QuaternionInterpolator(const std::vector<double>& xv, const std::vector<Quaternion>& Q)
-      : Interpolator(xv,xv,2), q(Q), c(SetControlPoints(Q)) { }
-    std::vector<Quaternion> SetControlPoints(const std::vector<Quaternion>& Q);
+    QuaternionInterpolator(const std::vector<double>& xv, const std::vector<Quaternion>& q)
+      : Interpolator(xv,xv,2), Q(q), A(q.size()), B(q.size())
+    {
+      SetControlPoints();
+    }
+    void SetControlPoints();
     Quaternion Interpolate(double t) {
       int jlo = cor ? hunt(t) : locate(t);
       return RawInterpolate(jlo,t);
