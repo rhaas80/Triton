@@ -143,6 +143,7 @@ namespace WaveformObjects {
     bool HasNaNs() const;
     std::vector<double> Flux() const;
     std::vector<double> L2Norm() const;
+    std::vector<double> L2NormDifference(const Waveform& b) const;
     Waveform& Differentiate();
     
     // Interpolation routines

@@ -57,9 +57,10 @@ Waveform WaveformObjects::Waveform::operator/(const Waveform& b) const {
   /// The two Waveforms are interpolated onto their intersection, then
   /// the second is subtracted from this Waveform, and the difference
   /// in magnitudes is normalized by the magnitude of the second
-  /// Waveform.  The two Waveforms are assumed to have identical (l,m)
-  /// modes, and any alignment should be done before calling this
-  /// function.
+  /// Waveform.  [Note that subtraction in this case means subtraction
+  /// of Mag and Arg data, rather than Real and Imaginary data.]  The
+  /// two Waveforms are assumed to have identical (l,m) modes, and any
+  /// alignment should be done before calling this function.
   if(b.NModes() != NModes() || b.LM().RawData() != LM().RawData()) {
     throw("Trying to divide Waveform objects with mismatched LM data");
   }

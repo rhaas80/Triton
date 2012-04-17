@@ -211,6 +211,12 @@ inline double sqr(const double t) { return t*t; }
 
 /// Calculate the L2 norm of the data.
 std::vector<double> WaveformObjects::Waveform::L2Norm() const {
+  /// This is as suggested by Mark Scheel, Tony Chu, and Béla
+  /// Szilagyi, per Mark's description at
+  /// https://www.ninja-project.org/doku.php?id=nrar:internal:nr_measure_accuracy#another_idea_for_measuring_errors
+  /// The L2 norm can be useful when measuring fractional errors in
+  /// modes whose amplitude goes through zero (such as m=0 modes, or
+  /// any mode in highly precessing systems).
   vector<double> L2(NTimes());
   for(unsigned int t=0; t<L2.size(); ++t) {
     L2[t] = 0.0;
@@ -220,6 +226,39 @@ std::vector<double> WaveformObjects::Waveform::L2Norm() const {
     L2[t] = sqrt(L2[t]);
   }
   return L2;
+}
+
+/// Calculate the difference normalized by the average L2 norm.
+std::vector<double> WaveformObjects::Waveform::L2NormDifference(const Waveform& b) const {
+  /// This is as suggested by Mark Scheel, Tony Chu, and Béla
+  /// Szilagyi, per Mark's description at
+  /// https://www.ninja-project.org/doku.php?id=nrar:internal:nr_measure_accuracy#another_idea_for_measuring_errors
+  /// with the only difference being that the average L2 norm is used
+  /// to normalize, rather than the sum.  This can be useful when
+  /// measuring fractional errors in modes whose amplitude goes
+  /// through zero (such as m=0 modes, or any mode in highly
+  /// precessing systems).
+  if(b.NModes() != NModes() || b.LM().RawData() != LM().RawData()) {
+    throw("Trying to compare Waveform objects with mismatched LM data");
+  }
+  Waveform c = *this;
+  Waveform d = b;
+  vector<double> NewTime = Intersection(c.T(), d.T(), 5e-8, -1e300);
+  c.Interpolate(NewTime);
+  d.Interpolate(NewTime);
+  vector<double> L2c = c.L2Norm();
+  vector<double> L2d = d.L2Norm();
+  vector<double> diff(NewTime.size());
+  for(unsigned int t=0; t<NewTime.size(); ++t) {
+    diff[t] = 0.0;
+    for(unsigned int m=0; m<c.NModes(); ++m) {
+      const double Re = c.Mag(m,t)*cos(c.Arg(m,t)) - d.Mag(m,t)*cos(d.Arg(m,t));
+      const double Im = c.Mag(m,t)*sin(c.Arg(m,t)) - d.Mag(m,t)*sin(d.Arg(m,t));
+      diff[t] += Re*Re + Im*Im;
+    }
+    diff[t] = sqrt(diff[t]) / ((L2c[t]+L2d[t])/2.0);
+  }
+  return diff;
 }
 
 
