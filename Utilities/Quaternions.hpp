@@ -60,6 +60,11 @@ namespace WaveformUtilities {
   std::vector<WaveformUtilities::Quaternion> dQdt(const std::vector<WaveformUtilities::Quaternion>& Q, const std::vector<double>& t);
   std::vector<double> Re(const std::vector<WaveformUtilities::Quaternion>& Q);
   
+  std::vector<double> Component(const std::vector<WaveformUtilities::Quaternion>& Q, const unsigned int i);
+  std::vector<double> Component0(const std::vector<WaveformUtilities::Quaternion>& Q);
+  std::vector<double> Component1(const std::vector<WaveformUtilities::Quaternion>& Q);
+  std::vector<double> Component2(const std::vector<WaveformUtilities::Quaternion>& Q);
+  std::vector<double> Component3(const std::vector<WaveformUtilities::Quaternion>& Q);
 }
 
 #ifndef SWIG
