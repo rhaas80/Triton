@@ -10,8 +10,10 @@ libs:
 
 clean:
 	@for d in $(SUBDIRS); do ($(MAKE) -C $$d clean ); done
+	@$(MAKE) -C Python clean
 
 realclean:
 	@for d in $(SUBDIRS); do ($(MAKE) -C $$d realclean ); done
+	@$(MAKE) -C Python realclean
 
 allclean: realclean
