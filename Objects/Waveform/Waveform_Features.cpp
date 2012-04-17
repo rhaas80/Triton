@@ -207,6 +207,22 @@ std::vector<double> WaveformObjects::Waveform::Flux() const {
   return (Flux/(16.0*M_PI));
 }
 
+inline double sqr(const double t) { return t*t; }
+
+/// Calculate the L2 norm of the data.
+std::vector<double> WaveformObjects::Waveform::L2Norm() const {
+  vector<double> L2(NTimes());
+  for(unsigned int t=0; t<L2.size(); ++t) {
+    L2[t] = 0.0;
+    for(unsigned int mode=0; mode<NModes(); ++mode) {
+      L2[t] += sqr(Mag(mode, t));
+    }
+    L2[t] = sqrt(L2[t]);
+  }
+  return L2;
+}
+
+
 /// Differentiate the Waveform.
 Waveform& WaveformObjects::Waveform::Differentiate() {
   /// Most useful for finding the Flux, or (when used twice) for
