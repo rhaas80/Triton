@@ -105,13 +105,16 @@ public:
   double darg(const double dt, const unsigned int mode) const {
     vector<double> argA = WaveformUtilities::Interpolate(a.T(), a.Arg(mode), t);
     vector<double> argB = WaveformUtilities::Interpolate(b.T(), b.Arg(mode), t-dt);
-    return trapz(t, argA-argB) / (t.back()-t[0]);
+    // return trapz(t, argA-argB) / (t.back()-t[0]);
+    return SplineCumulativeIntegral(t, argA-argB) / (t.back()-t[0]);
   }
   
   double operator()(const double dt) const {
     vector<double> argb = WaveformUtilities::Interpolate(b.T(), b.Arg(LMb), t-dt);
-    double darg = trapz(t, arga-argb) / (t.back()-t[0]);
-    return trapz(t, (arga-argb-darg)*(arga-argb-darg));
+    // double darg = trapz(t, arga-argb) / (t.back()-t[0]);
+    // return trapz(t, (arga-argb-darg)*(arga-argb-darg));
+    double darg = SplineCumulativeIntegral(t, arga-argb) / (t.back()-t[0]);
+    return SplineCumulativeIntegral(t, (arga-argb-darg)*(arga-argb-darg));
   }
 };
 
