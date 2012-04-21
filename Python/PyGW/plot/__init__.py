@@ -27,7 +27,7 @@ from matplotlib.pyplot import loglog as matplotlibpyplotloglog
 from matplotlib.pyplot import xlabel, ylabel, tight_layout, setp
 from matplotlib.pyplot import isinteractive, ioff, ion, draw, show, gcf
 from warnings import warn
-from numpy import array, empty, transpose
+from numpy import array, empty, transpose, sin, cos
 
 def NotAbs(Anything) :
     return Anything
@@ -41,10 +41,10 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
     
     where W is a Waveform object.  The first parameter should be a
     string --- one of ['Mag', 'LogMag', 'LogLogMag', 'Arg', 'LogArg',
-    'Omega'].  The second (optional) parameter is a list (using square
-    brackets), where each element is some [l,m].  Only modes included
-    in this list will be plotted, unless the list is empty (the
-    default), in which case all modes are plotted.
+    'Re', Im'].  The second (optional) parameter is a list (using
+    square brackets), where each element is some [l,m].  Only modes
+    included in this list will be plotted, unless the list is empty
+    (the default), in which case all modes are plotted.
     
     All following arguments are passed to the usual pyplot.plot (or
     semilogx, semilogy, or loglog) function; in the example above, the
@@ -60,6 +60,12 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
     YLabel = ''
     
     Labels = []
+    
+    def Re(ModeIndex) :
+        return this.Mag(ModeIndex) * cos(this.Arg(ModeIndex))
+    
+    def Im(ModeIndex) :
+        return this.Mag(ModeIndex) * sin(this.Arg(ModeIndex))
     
     WasInteractive = isinteractive()
     ioff()
@@ -90,6 +96,16 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
         styledplot = matplotlibpyplotsemilogy
         quantity = this.Arg
         AbsOrNot = abs
+    elif (WaveformPart.lower()=='real' or WaveformPart.lower()=='re') :
+        YLabel =r'$\mathrm{Re} \left( ' + TypeDict[this.Type()] + r' \right) $'
+        styledplot = matplotlibpyplotplot
+        quantity = Re
+        AbsOrNot = NotAbs
+    elif (WaveformPart.lower()=='imaginary' or WaveformPart.lower()=='imag' or WaveformPart.lower()=='im') :
+        YLabel =r'$\mathrm{Im} \left( ' + TypeDict[this.Type()] + r' \right) $'
+        styledplot = matplotlibpyplotplot
+        quantity = Im
+        AbsOrNot = NotAbs
     else :
         print("Unsupported data type %s" % WaveformPart)
         return []
