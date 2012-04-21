@@ -79,6 +79,16 @@ double WaveformObjects::Waveform::PeakFluxTime() const {
   return T(PeakFluxTimeIndex());
 }
 
+/// Return the time index at which the L2 norm of the waveform peaks.
+unsigned int WaveformObjects::Waveform::PeakL2TimeIndex() const {
+  return (unsigned int)(maxIndex(L2Norm()));
+}
+
+/// Return the time at which the L2 norm of the waveform peaks.
+double WaveformObjects::Waveform::PeakL2Time() const {
+  return T(PeakL2TimeIndex());
+}
+
 /// Return the frequency of the (2,-2) mode.
 std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const double t2) const {
   /// In standard configuration, this quantity will typically be

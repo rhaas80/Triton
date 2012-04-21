@@ -139,6 +139,8 @@ namespace WaveformObjects {
     double Peak22Time() const;
     unsigned int PeakFluxTimeIndex() const;
     double PeakFluxTime() const;
+    unsigned int PeakL2TimeIndex() const;
+    double PeakL2Time() const;
     std::vector<double> Omega2m2(const double t1=-1e300, const double t2=1e300) const;
     bool HasNaNs() const;
     std::vector<double> Flux() const;
