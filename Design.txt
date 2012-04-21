@@ -24,22 +24,13 @@
 
 
 * To do
-** Smarter differentiation of quaternions
 ** Get h5 import/export working
 *** Add ability to only import particular mode or modes
-** Convert Routines to python scripts
+*** Support frame data
 ** Add Quaternion function of time to Waveform data
 *** Check all member functions for the new 'frame' member data
-**** Flux: check frame; if not constant, rotate before calculating
-**** operator= : make sure the frame data is copied
-**** operator/ : rotate into a common frame? or return W1.frame * W2.frame.Inverse() ?
-*** New member functions:
-**** PeakFluxTimeIndex
-**** PeakFluxTime
-**** WaveformInStationaryFrame
-*** Add frame data to I/O
+**** Precessing PN needs smart frame management
 ** Add data about format of each mode (ReIm|MagArg)
-** Change typeIndex to enum
+** Change typeIndex data to enum
 *** Add 'Unknown' type
 ** Implement better exceptions
-** Add directors to use for_each method on Waveforms with python-defined function
