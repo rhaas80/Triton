@@ -658,6 +658,9 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
   return;
 }
 
+// 
+// Constructors
+
 // x
 // Operators
 //   These functions are defined in Waveform/Waveform_Operators.cpp
@@ -674,11 +677,11 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
 // Adjust time axis
 //   These functions are defined in Waveform/Waveform_AdjustTime.cpp
 
-// 
+// x
 // Physical conversions for extrapolations or conversion to frequency space
 //   These functions are defined in Waveform/Waveform_PhysicalConversions.cpp
 
-// 
+// x
 // Manipulate (l,m) modes
 //   These functions are defined in Waveform/Waveform_ManipulateModes.cpp
 
