@@ -60,6 +60,7 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
     YLabel = ''
     
     Labels = []
+    Lines = []
     
     def Re(ModeIndex) :
         return this.Mag(ModeIndex) * cos(this.Arg(ModeIndex))
@@ -140,7 +141,7 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
             ModeIndex = this.FindModeIndex(int(Modes[i][0]), int(Modes[i][1]))
             #print(ModeIndex, Modes[i][0], Modes[i][1])
             Labels.append('(' + str(Modes[i][0]) + ', ' + str(Modes[i][1]) + ')')
-            Lines = styledplot(this.T(), AbsOrNot(quantity(ModeIndex)).transpose(), *pyplot_args, **pyplot_kwargs)
+            Lines.append(styledplot(this.T(), AbsOrNot(quantity(ModeIndex)).transpose(), *pyplot_args, **pyplot_kwargs))
     
     xlabel(XLabel)
     ylabel(YLabel)
