@@ -68,12 +68,6 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
     def Im(ModeIndex) :
         return this.Mag(ModeIndex) * sin(this.Arg(ModeIndex))
     
-    def Re(ModeIndex) :
-        return this.Mag(ModeIndex) * cos(this.Arg(ModeIndex))
-    
-    def Im(ModeIndex) :
-        return this.Mag(ModeIndex) * sin(this.Arg(ModeIndex))
-    
     WasInteractive = isinteractive()
     ioff()
     
