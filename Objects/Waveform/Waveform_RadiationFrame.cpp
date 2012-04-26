@@ -157,36 +157,45 @@ std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<dou
   
   // Now use that frame with the quaternion method for better(?) numerics
   const Quaternion z(0.,0.,0.,1.);
-  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
-  gamma = SplineIntegral(t, gammaDot);
-  cerr << "The correction to gamma is:\n" << gamma << endl;
-  for(unsigned int i=0; i<gamma.size(); ++i) {
-    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  for(unsigned int iteration=0; iteration<5; ++iteration) {
+    const vector<double> negativegammaover2Dot = Component0( Conjugate(MinRotFrame) * SquadVelocities(t, MinRotFrame) * z );
+    const vector<double> negativegammaover2 = SplineIntegral(t, negativegammaover2Dot);
+    cerr << "The correction to gamma is:\n" << -2*negativegammaover2 << endl;
+    for(unsigned int i=0; i<negativegammaover2.size(); ++i) {
+      MinRotFrame[i] = MinRotFrame[i] * (-negativegammaover2[i]*z).exp();
+    }
   }
-  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
-  gamma = SplineIntegral(t, gammaDot);
-  cerr << "\n\n\n\n\n\n\nThe second correction to gamma is:\n" << gamma << endl;
-  for(unsigned int i=0; i<gamma.size(); ++i) {
-    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
-  }
-  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
-  gamma = SplineIntegral(t, gammaDot);
-  cerr << "\n\n\n\n\n\n\nThe third correction to gamma is:\n" << gamma << endl;
-  for(unsigned int i=0; i<gamma.size(); ++i) {
-    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
-  }
-  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
-  gamma = SplineIntegral(t, gammaDot);
-  cerr << "\n\n\n\n\n\n\nThe fourth correction to gamma is:\n" << gamma << endl;
-  for(unsigned int i=0; i<gamma.size(); ++i) {
-    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
-  }
-  gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
-  gamma = SplineIntegral(t, gammaDot);
-  cerr << "\n\n\n\n\n\n\nThe fifth correction to gamma is:\n" << gamma << endl;
-  for(unsigned int i=0; i<gamma.size(); ++i) {
-    MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
-  }
+  
+  // gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  // gamma = SplineIntegral(t, gammaDot);
+  // cerr << "The correction to gamma is:\n" << gamma << endl;
+  // for(unsigned int i=0; i<gamma.size(); ++i) {
+  //   MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  // }
+  // gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  // gamma = SplineIntegral(t, gammaDot);
+  // cerr << "\n\n\n\n\n\n\nThe second correction to gamma is:\n" << gamma << endl;
+  // for(unsigned int i=0; i<gamma.size(); ++i) {
+  //   MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  // }
+  // gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  // gamma = SplineIntegral(t, gammaDot);
+  // cerr << "\n\n\n\n\n\n\nThe third correction to gamma is:\n" << gamma << endl;
+  // for(unsigned int i=0; i<gamma.size(); ++i) {
+  //   MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  // }
+  // gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  // gamma = SplineIntegral(t, gammaDot);
+  // cerr << "\n\n\n\n\n\n\nThe fourth correction to gamma is:\n" << gamma << endl;
+  // for(unsigned int i=0; i<gamma.size(); ++i) {
+  //   MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  // }
+  // gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
+  // gamma = SplineIntegral(t, gammaDot);
+  // cerr << "\n\n\n\n\n\n\nThe fifth correction to gamma is:\n" << gamma << endl;
+  // for(unsigned int i=0; i<gamma.size(); ++i) {
+  //   MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
+  // }
   
   return MinRotFrame;
 }
