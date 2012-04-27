@@ -1,3 +1,22 @@
+
+
+
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
+#!! NOTE: The LevConvergence script has mostly been deprecated in   !!#
+#!!       favor of the Convergence script.  You may want to switch  !!#
+#!!       now, before this routine disappears suddenly.             !!#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
+
+
+
+
+
+
+
+
+
+
 ## This file contains all the recognized options to the 'LevConvergence' routine.
 ## All lines are optional, and contain the default values commented below.
 ## In the directory with the data files, use this with the command line
