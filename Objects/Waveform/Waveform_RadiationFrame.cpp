@@ -144,7 +144,8 @@ void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>
 }
 
 /// Given the radiation axis, return the frame which minimizes rotation.
-std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& t) {
+std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta,
+							   const std::vector<double>& t, const unsigned int NIterations=5) {
   if(alpha.size() != beta.size() || alpha.size() != t.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tt.size()=" << t.size() << endl;
     throw("Size mismatch in MinimalRotation.");
@@ -157,13 +158,19 @@ std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<dou
   
   // Now use that frame with the quaternion method for better(?) numerics
   const Quaternion z(0.,0.,0.,1.);
-  for(unsigned int iteration=0; iteration<5; ++iteration) {
-    const vector<double> negativegammaover2Dot = Component0( Conjugate(MinRotFrame) * SquadVelocities(t, MinRotFrame) * z );
-    const vector<double> negativegammaover2 = SplineIntegral(t, negativegammaover2Dot);
-    cerr << "The correction to gamma is:\n" << -2*negativegammaover2 << endl;
+  for(unsigned int iteration=0; iteration<NIterations; ++iteration) {
+    // Note that Component0 gives -1 times the dot product in this case
+    const vector<double> negativegammaover2 = SplineIntegral(t, Component0( Conjugate(MinRotFrame) * SquadVelocities(t, MinRotFrame) * z ));
     for(unsigned int i=0; i<negativegammaover2.size(); ++i) {
-      MinRotFrame[i] = MinRotFrame[i] * (-negativegammaover2[i]*z).exp();
+      MinRotFrame[i] = MinRotFrame[i] * (negativegammaover2[i]*z).exp();
     }
+    string FileName = "MinRotPhaseConvergence_" + DoubleToString(iteration+1) + "of" + DoubleToString(NIterations) + ".dat";
+    ofstream File(FileName.c_str());
+    File << "# [1] = t\n# [2] = gamma\n";
+    for(unsigned int i=0; i<negativegammaover2.size(); ++i) {
+      File << t[i] << " " << -2*negativegammaover2[i] << endl;
+    }
+    File.close();
   }
   
   // gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
@@ -225,7 +232,7 @@ Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(const double alpha0
 }
 
 /// Transform the Waveform to the minimal-rotation radiation frame.
-Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const double alpha0Guess, const double beta0Guess) {
+Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const double alpha0Guess, const double beta0Guess, const unsigned int NIterations) {
   /// This function finds the minimal-rotation radiation axis, then
   /// rotates the coordinates in which the physical system is
   /// expressed (by calling RotateCoordinates) to align with that
@@ -239,12 +246,12 @@ Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const doubl
   /// order about the fixed set of axes z-y-z.
   /// 
   /// See PRD 84, 124011 (2011) for more details.
-  history << "### this->TransformToMinimalRotationFrame(" << alpha0Guess << ", " << beta0Guess << ");" << endl;
+  history << "### this->TransformToMinimalRotationFrame(" << alpha0Guess << ", " << beta0Guess << ", " << NIterations << ");" << endl;
   vector<double> alpha(NTimes(), 0.0), beta(NTimes(), 0.0), gamma(NTimes(), 0.0);
   RadiationAxis(*this, alpha, beta, alpha0Guess, beta0Guess);
   // MinimalRotation(alpha, beta, gamma, T());
   // this->RotateCoordinates(alpha, beta, gamma);
-  vector<Quaternion> MinRotFrame = MinimalRotation(alpha, beta, T());
+  vector<Quaternion> MinRotFrame = MinimalRotation(alpha, beta, T(), NIterations);
   this->RotateCoordinates(MinRotFrame);
   return *this;
 }

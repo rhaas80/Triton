@@ -206,7 +206,7 @@ namespace WaveformObjects {
     
     // Radiation-frame utilities
     Waveform& TransformToSchmidtFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
-    Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
+    Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0, const unsigned int NIterations=5);
     Waveform& TransformToStandardFrame();
     Waveform& TransformToStationaryFrame(const WaveformUtilities::Quaternion Q=WaveformUtilities::Quaternion(1,0,0,0));
     
