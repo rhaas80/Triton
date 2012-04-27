@@ -41,6 +41,12 @@ def Extrapolate(FileName="", Dictionary={}) :
     DifferenceFiles = "ExtrapConvergence_N%d-N%d.dat"
     if 'DifferenceFiles' in Dictionary :
         DifferenceFiles = Dictionary['DifferenceFiles']
+    SigmaFiles = "SigmaN%d.dat"
+    if 'SigmaFiles' in Dictionary :
+        SigmaFiles = Dictionary['SigmaFiles']
+    UseSVD = True
+    if 'UseSVD' in Dictionary :
+        UseSVD = Dictionary['UseSVD']
     
     # If there's an input file, read it in
     if(FileName!="") :
@@ -89,14 +95,14 @@ def Extrapolate(FileName="", Dictionary={}) :
         Last = PyGW.Waveform()
         figmag = plt.figure('Mag')
         figarg = plt.figure('Arg')
-        MaxFluxTime = -1000.0;
         WFType = ''
         for i in range(len(ExtrapolationOrders)) :
             print("Extrapolating with order N={}.".format(ExtrapolationOrders[i]))
             
             # Extrapolate
             Time1 = time()
-            Extrap = Ws.Extrapolate(ExtrapolationOrders[i]);
+            Sigma = PyGW.Waveform()
+            Extrap = Ws.Extrapolate(Sigma, ExtrapolationOrders[i], UseSVD);
             Time2 = time()
             Extrap.UnfixNonOscillatingData();
             
@@ -108,6 +114,10 @@ def Extrapolate(FileName="", Dictionary={}) :
             if not os.path.exists(OutputDirectory) :
                 os.makedirs(OutputDirectory)
             PyGW.Output(OutputDirectory+"/"+ExtrapolatedFile, Extrap)
+            if(ExtrapolationOrders[i]>=0) :
+                sys.stdout.write("and {}... ".format(OutputDirectory+"/"+SigmaFile))
+                sys.stdout.flush()
+                PyGW.Output(OutputDirectory+"/"+SigmaFile, Sigma)
             print("☺")
             
             # Compare to the last one
@@ -137,14 +147,14 @@ def Extrapolate(FileName="", Dictionary={}) :
             Last.swap(Extrap);
         
         plt.figure('Mag')
-        plt.legend(loc=2)
-        plt.gca().set_ylim(1e-8, 10)
+        plt.legend(borderpad=.2, labelspacing=0.1, handlelength=1.5, handletextpad=0.1, loc='lower left', prop={'size':'small'})
+        plt.gca().set_ylim(1e-11, 10)
         plt.gca().axvline(x=MaxFluxTime, ls='--')
         figmag.savefig('{0}/ExtrapConvergence_Mag_{1}.pdf'.format(OutputDirectory, WFType))
         plt.close(figmag)
         plt.figure('Arg')
-        plt.legend(loc=2)
-        plt.gca().set_ylim(1e-8, 10)
+        plt.legend(borderpad=.2, labelspacing=0.1, handlelength=1.5, handletextpad=0.1, loc='lower left', prop={'size':'small'})
+        plt.gca().set_ylim(1e-11, 10)
         plt.gca().axvline(x=MaxFluxTime, ls='--')
         figarg.savefig('{0}/ExtrapConvergence_Arg_{1}.pdf'.format(OutputDirectory, WFType))
         plt.close(figarg)
