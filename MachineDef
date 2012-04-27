@@ -1,5 +1,17 @@
 # -*- makefile -*-  This makes emacs see this file as a Makefile
 
+SHELL := /bin/bash
+
+ifndef OSTYPE
+  $(warning The OSTYPE variable needs to be defined.)
+  $(warning If this is defined in your normal shell,)
+  $(warning something has happened to make it disappear)
+  $(warning for make.  You may just want to manually )
+  $(warning select the relevant section in MachineDef)
+  $(warning that uses this variable.)
+  $(error Cannot proceed)
+endif
+
 ifndef HDF5_HOME
   $(warning You need to define the HDF5_HOME variable pointing to)
   $(warning the root of the hdf5 'include' and 'lib' directories.)
@@ -18,6 +30,9 @@ ifeq ($(OSTYPE),darwin)
 	SHARED	= -dynamiclib -undefined dynamic_lookup -single_module
 	INSTALL_NAME_TOOL = install_name_tool -id $(CURDIR)/../lib/lib$(THISDIR).so lib$(THISDIR).so
 else ifeq ($(OSTYPE),linux)
+	SHARED	= -shared -Wl,-soname,lib$(THISDIR).so
+	INSTALL_NAME_TOOL =
+else ifeq ($(OSTYPE),linux-gnu)
 	SHARED	= -shared -Wl,-soname,lib$(THISDIR).so
 	INSTALL_NAME_TOOL =
 else
