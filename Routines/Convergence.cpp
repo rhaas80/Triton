@@ -49,6 +49,7 @@ int main() {
   string DifferenceFiles = "%s-%s_%s.dat";
   double ConvergenceAlignmentT1=3.0e300;
   double ConvergenceAlignmentT2=3.0e300;
+  bool AlignPeaks = false;
   unsigned int OutputNSamplesPerCycle22=0;
   double DropBeforeTime=-3.0e300;
   double DropAfterTime=3.0e300;
@@ -86,6 +87,8 @@ int main() {
       ConvergenceAlignmentT1 = StringToDouble(Values[i]);
     } else if(Keys[i].compare("ConvergenceAlignmentT2")==0) {
       ConvergenceAlignmentT2 = StringToDouble(Values[i]);
+    } else if(Keys[i].compare("AlignPeaks")==0) {
+      AlignPeaks = StringToBool(Values[i]);
     } else if(Keys[i].compare("OutputNSamplesPerCycle22")==0) {
       OutputNSamplesPerCycle22 = StringToInt(Values[i]);
     } else if(Keys[i].compare("DropBeforeTime")==0) {
@@ -124,6 +127,9 @@ int main() {
 	cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
 	Diff[0] = Waveform(LastFile, WaveformFormat);
 	Diff[1] = Waveform(NextFile, WaveformFormat);
+	if( AlignPeaks ) {
+	  Diff[1] = Diff[1].AddToTime(Diff[0].Peak22Time() - Diff[1].Peak22Time());
+	}
 	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT2!=3.0e300) {
 	  if( ! MutualAlignmentApproximant.empty()) {
 	    Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
@@ -158,6 +164,9 @@ int main() {
 	cout << "Computing " << LastFile << " - " << NextFile << "... " << flush;
 	Diff[0] = Waveform(LastFile, WaveformFormat);
 	Diff[1] = Waveform(NextFile, WaveformFormat);
+	if( AlignPeaks ) {
+	  Diff[1] = Diff[1].AddToTime(Diff[0].Peak22Time() - Diff[1].Peak22Time());
+	}
 	if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT2!=3.0e300) {
 	  if( ! MutualAlignmentApproximant.empty()) {
 	    Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
@@ -225,6 +234,9 @@ int main() {
       cout << "Computing " << Higher << " - " << Lower << "... " << flush;
       Diff[0] = Waveform(Higher, WaveformFormat);
       Diff[1] = Waveform(Lower, WaveformFormat);
+      if( AlignPeaks ) {
+	Diff[1] = Diff[1].AddToTime(Diff[0].Peak22Time() - Diff[1].Peak22Time());
+      }
       if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT2!=3.0e300) {
 	if( ! MutualAlignmentApproximant.empty()) {
 	  Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
@@ -259,6 +271,9 @@ int main() {
       cout << "Computing " << Higher << " - " << Lower << "... " << flush;
       Diff[0] = Waveform(Higher, WaveformFormat);
       Diff[1] = Waveform(Lower, WaveformFormat);
+      if( AlignPeaks ) {
+	Diff[1] = Diff[1].AddToTime(Diff[0].Peak22Time() - Diff[1].Peak22Time());
+      }
       if(ConvergenceAlignmentT1!=3.0e300 && ConvergenceAlignmentT2!=3.0e300) {
 	if( ! MutualAlignmentApproximant.empty()) {
 	  Waveform PN(MutualAlignmentApproximant, delta, chis, chia, v0, Diff[0].LM());
