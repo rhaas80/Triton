@@ -386,8 +386,8 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas, const int Ext
       //// Evaluate at 0 and set the relevant component of Extrap
       Extrap.MagRef(j,i) = ampFit.a[0];
       Extrap.ArgRef(j,i) = phiFit.a[0];
-      Sigmas.MagRef(j,i) = ampFit.covar[0][0] * sqrt(ampFit.chisq/DOF);
-      Sigmas.ArgRef(j,i) = phiFit.covar[0][0] * sqrt(phiFit.chisq/DOF);
+      Sigmas.MagRef(j,i) = sqrt(ampFit.covar[0][0] * ampFit.chisq/DOF);
+      Sigmas.ArgRef(j,i) = sqrt(phiFit.covar[0][0] * phiFit.chisq/DOF);
     }
   }
   Extrap.RRef() = vector<double>(1, numeric_limits<double>::infinity( ) );
