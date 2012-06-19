@@ -41,6 +41,9 @@ def Extrapolate(FileName="", Dictionary={}) :
     DifferenceFiles = "ExtrapConvergence_N%d-N%d.dat"
     if 'DifferenceFiles' in Dictionary :
         DifferenceFiles = Dictionary['DifferenceFiles']
+    SigmaFiles = "SigmaN%d.dat"
+    if 'SigmaFiles' in Dictionary :
+        SigmaFiles = Dictionary['SigmaFiles']
     
     # If there's an input file, read it in
     if(FileName!="") :
@@ -96,18 +99,23 @@ def Extrapolate(FileName="", Dictionary={}) :
             
             # Extrapolate
             Time1 = time()
-            Extrap = Ws.Extrapolate(ExtrapolationOrders[i]);
+            Sigmas = PyGW.Waveform()
+            Extrap = Ws.Extrapolate(Sigmas, ExtrapolationOrders[i]);
             Time2 = time()
             Extrap.UnfixNonOscillatingData();
             
             # Output the data
             print("Finished N={0} in {1} seconds.".format(ExtrapolationOrders[i], Time2-Time1))
             ExtrapolatedFile = "{0}_{1}".format(Extrap.Type(), ExtrapolatedFiles) % ExtrapolationOrders[i]
+            SigmaFile = "{0}_{1}".format(Extrap.Type(), SigmaFiles) % ExtrapolationOrders[i]
             sys.stdout.write("Writing {}... ".format(OutputDirectory+"/"+ExtrapolatedFile))
             sys.stdout.flush()
             if not os.path.exists(OutputDirectory) :
                 os.makedirs(OutputDirectory)
             PyGW.Output(OutputDirectory+"/"+ExtrapolatedFile, Extrap)
+            sys.stdout.write("and {}... ".format(OutputDirectory+"/"+SigmaFile))
+            sys.stdout.flush()
+            PyGW.Output(OutputDirectory+"/"+SigmaFile, Extrap)
             print("☺")
             
             # Compare to the last one
