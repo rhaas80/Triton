@@ -44,6 +44,9 @@ def Extrapolate(FileName="", Dictionary={}) :
     SigmaFiles = "SigmaN%d.dat"
     if 'SigmaFiles' in Dictionary :
         SigmaFiles = Dictionary['SigmaFiles']
+    UseSVD = True
+    if 'UseSVD' in Dictionary :
+        UseSVD = Dictionary['UseSVD']
     
     # If there's an input file, read it in
     if(FileName!="") :
@@ -100,7 +103,7 @@ def Extrapolate(FileName="", Dictionary={}) :
             # Extrapolate
             Time1 = time()
             Sigmas = PyGW.Waveform()
-            Extrap = Ws.Extrapolate(Sigmas, ExtrapolationOrders[i]);
+            Extrap = Ws.Extrapolate(Sigmas, ExtrapolationOrders[i], UseSVD);
             Time2 = time()
             Extrap.UnfixNonOscillatingData();
             
@@ -145,14 +148,14 @@ def Extrapolate(FileName="", Dictionary={}) :
             Last.swap(Extrap);
         
         plt.figure('Mag')
-        plt.legend(loc=2)
-        plt.gca().set_ylim(1e-8, 10)
+        plt.legend(borderpad=.2, labelspacing=0.1, handlelength=1.5, handletextpad=0.1, loc='lower left', prop={'size':'small'})
+        plt.gca().set_ylim(1e-11, 10)
         plt.gca().axvline(x=MaxFluxTime, ls='--')
         figmag.savefig('{0}/ExtrapConvergence_Mag_{1}.pdf'.format(OutputDirectory, WFType))
         plt.close(figmag)
         plt.figure('Arg')
-        plt.legend(loc=2)
-        plt.gca().set_ylim(1e-8, 10)
+        plt.legend(borderpad=.2, labelspacing=0.1, handlelength=1.5, handletextpad=0.1, loc='lower left', prop={'size':'small'})
+        plt.gca().set_ylim(1e-11, 10)
         plt.gca().axvline(x=MaxFluxTime, ls='--')
         figarg.savefig('{0}/ExtrapConvergence_Arg_{1}.pdf'.format(OutputDirectory, WFType))
         plt.close(figarg)
