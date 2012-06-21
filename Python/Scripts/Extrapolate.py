@@ -102,8 +102,8 @@ def Extrapolate(FileName="", Dictionary={}) :
             
             # Extrapolate
             Time1 = time()
-            Sigmas = PyGW.Waveform()
-            Extrap = Ws.Extrapolate(Sigmas, ExtrapolationOrders[i], UseSVD);
+            Sigma = PyGW.Waveform()
+            Extrap = Ws.Extrapolate(Sigma, ExtrapolationOrders[i]);
             Time2 = time()
             Extrap.UnfixNonOscillatingData();
             
@@ -116,9 +116,10 @@ def Extrapolate(FileName="", Dictionary={}) :
             if not os.path.exists(OutputDirectory) :
                 os.makedirs(OutputDirectory)
             PyGW.Output(OutputDirectory+"/"+ExtrapolatedFile, Extrap)
-            sys.stdout.write("and {}... ".format(OutputDirectory+"/"+SigmaFile))
-            sys.stdout.flush()
-            PyGW.Output(OutputDirectory+"/"+SigmaFile, Extrap)
+            if(ExtrapolationOrders[i]>=0) :
+                sys.stdout.write("and {}... ".format(OutputDirectory+"/"+SigmaFile))
+                sys.stdout.flush()
+                PyGW.Output(OutputDirectory+"/"+SigmaFile, Sigma)
             print("☺")
             
             # Compare to the last one
