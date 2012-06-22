@@ -95,7 +95,6 @@ def Extrapolate(FileName="", Dictionary={}) :
         Last = PyGW.Waveform()
         figmag = plt.figure('Mag')
         figarg = plt.figure('Arg')
-        MaxFluxTime = -1000.0;
         WFType = ''
         for i in range(len(ExtrapolationOrders)) :
             print("Extrapolating with order N={}.".format(ExtrapolationOrders[i]))
@@ -103,7 +102,7 @@ def Extrapolate(FileName="", Dictionary={}) :
             # Extrapolate
             Time1 = time()
             Sigma = PyGW.Waveform()
-            Extrap = Ws.Extrapolate(Sigma, ExtrapolationOrders[i]);
+            Extrap = Ws.Extrapolate(Sigma, ExtrapolationOrders[i], UseSVD);
             Time2 = time()
             Extrap.UnfixNonOscillatingData();
             
