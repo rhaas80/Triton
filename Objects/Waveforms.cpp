@@ -7,6 +7,7 @@
 #include <sys/param.h>
 
 //#include <fstream>
+//using std::ofstream;
 
 #include "VectorFunctions.hpp"
 #include "EasyParser.hpp"
@@ -287,7 +288,7 @@ void WaveformObjects::Waveforms::AlignPhases(const double& AlignmentPoint) {
 }
 
 Waveform WaveformObjects::Waveforms::Extrapolate(const int ExtrapolationOrder, const bool UseSVD) {
-  history << "### this->Extrapolate(" << ExtrapolationOrder << ");" << endl;
+  history << "### this->Extrapolate(" << ExtrapolationOrder << ", " << UseSVD << ");" << endl;
   
   if(!PhasesAligned) { AlignPhases(); }
   if(ExtrapolationOrder<0) { return Ws[Ws.size() + ExtrapolationOrder]; }
@@ -352,7 +353,7 @@ Waveform WaveformObjects::Waveforms::Extrapolate(const int ExtrapolationOrder, c
 }
 
 Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas, const int ExtrapolationOrder, const bool UseSVD) {
-  history << "### this->Extrapolate(Sigmas, " << ExtrapolationOrder << ");" << endl;
+  history << "### this->Extrapolate(Sigmas, " << ExtrapolationOrder << ", " << UseSVD << ");" << endl;
   
   if(!PhasesAligned) { AlignPhases(); }
   if(ExtrapolationOrder<0) { return Ws[Ws.size() + ExtrapolationOrder]; }
@@ -373,9 +374,13 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas, const int Ext
   Fit<PolynomialBasisFunctions> ampFit(oor, amp, sig, Poly);
   Fit<PolynomialBasisFunctions> phiFit(oor, phi, sig, Poly);
   double DOF = Ws.size() - (ExtrapolationOrder+1);
+
+// ofstream myfile ((Extrap.Type()+"_chisquared_N"+DoubleToString(ExtrapolationOrder)+".dat").c_str(), std::ios::out);
+// myfile << "# [1] = (t-r*)/M\n# [2] = chi^2(amp)\n# [3] = chi^2(phi)" << endl;
   
   // Loop over time
   for(unsigned int i=0; i<Extrap.NTimes(); ++i) {
+// myfile << Extrap.T(i);
     if(i % 1000 == 0) {
       cout << "Time = " << setprecision(5) << Extrap.T(i) << "\tStep " << i << " of " << Extrap.NTimes() << endl;
     }
@@ -403,6 +408,8 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas, const int Ext
 	Extrap.ArgRef(j,i) = phiFit.a[0];
 	Sigmas.MagRef(j,i) = sqrt(ampFit.covar[0][0] * ampFit.chisq/DOF);
 	Sigmas.ArgRef(j,i) = sqrt(phiFit.covar[0][0] * phiFit.chisq/DOF);
+
+// myfile << " " << ampFit.chisq << " " << phiFit.chisq;
       } else {
 	//// FitSVD to polynomial in 1/R
 	ampFitSVD.fit();
@@ -413,9 +420,12 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas, const int Ext
 	Extrap.ArgRef(j,i) = phiFitSVD.a[0];
 	Sigmas.MagRef(j,i) = sqrt(ampFitSVD.covar[0][0] * ampFitSVD.chisq/DOF);
 	Sigmas.ArgRef(j,i) = sqrt(phiFitSVD.covar[0][0] * phiFitSVD.chisq/DOF);
+// myfile << " " << ampFitSVD.chisq << " " << phiFitSVD.chisq;
       }
     }
+// myfile << endl;
   }
+// myfile.close();
   Extrap.RRef() = vector<double>(1, numeric_limits<double>::infinity( ) );
   Sigmas.RRef() = vector<double>(1, 0.0 );
   
