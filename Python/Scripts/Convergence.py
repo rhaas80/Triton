@@ -89,9 +89,21 @@ class Convergence :
                             else :
                                 Diff[1].AlignTo(Diff[0], self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
                         Diff.AlignPhases();
+                        Index1 = LastLev.rfind("/")
+                        Index2 = NextLev.rfind("/")
+                        Quantity1 = LastLev[Index1+1:]
+                        Quantity2 = LastLev[Index2+1:]
+                        while(Quantity1==Quantity2) :
+                            Index1Old = Index1
+                            Index2Old = Index2
+                            Index1 = LastLev[:Index1].rfind("/")
+                            Index2 = NextLev[:Index2].rfind("/")
+                            Quantity1 = LastLev[Index1+1:Index1Old]
+                            Quantity2 = NextLev[Index2+1:Index2Old]
+                            if(Index1==-1 or Index2==-1) : break
                         DiffFile = self.DifferenceFiles.format(DataType=Diff[0].Type(),
-                                                               Quantity1=LastLev[LastLev.rfind("/")+1:],
-                                                               Quantity2=NextLev[NextLev.rfind("/")+1:],
+                                                               Quantity1=Quantity1,
+                                                               Quantity2=Quantity2,
                                                                Constant=("N"+str(self.ExtrapolationOrders[i])))
                         sys.stdout.write("\n\tand printing {} ... ".format(DiffFile))
                         sys.stdout.flush()
