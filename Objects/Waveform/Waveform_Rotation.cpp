@@ -89,13 +89,13 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, co
 	  // Do the sum
 	  for(int mp=-l; mp<=l; ++mp) {
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    if((m+mp)%2==0) { // (-1)^{m+mp}
+	    // if((m+mp)%2==0) { // (-1)^{m+mp}
 	      MagRef(ModeIndices[i], t) +=  DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
 	      ArgRef(ModeIndices[i], t) +=  DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
-	    } else {
-	      MagRef(ModeIndices[i], t) += -DRe[mp+l][m+l]*ReData[mp+l] + DIm[mp+l][m+l]*ImData[mp+l];
-	      ArgRef(ModeIndices[i], t) += -DIm[mp+l][m+l]*ReData[mp+l] - DRe[mp+l][m+l]*ImData[mp+l];
-	    }
+	    // } else {
+	    //   MagRef(ModeIndices[i], t) += -DRe[mp+l][m+l]*ReData[mp+l] + DIm[mp+l][m+l]*ImData[mp+l];
+	    //   ArgRef(ModeIndices[i], t) += -DIm[mp+l][m+l]*ReData[mp+l] - DRe[mp+l][m+l]*ImData[mp+l];
+	    // }
 	  }
 	}
       }
@@ -196,13 +196,13 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<doub
 	  // Do the sum
 	  for(int mp=-l; mp<=l; ++mp) {
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    if((m+mp)%2==0) { // (-1)^{m+mp}
+	    // if((m+mp)%2==0) { // (-1)^{m+mp}
 	      MagRef((l*l-4)+(m+l), t) +=  DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
 	      ArgRef((l*l-4)+(m+l), t) +=  DIm[mp+l][m+l]*ReData[mp+l] + DRe[mp+l][m+l]*ImData[mp+l];
-	    } else {
-	      MagRef((l*l-4)+(m+l), t) += -DRe[mp+l][m+l]*ReData[mp+l] + DIm[mp+l][m+l]*ImData[mp+l];
-	      ArgRef((l*l-4)+(m+l), t) += -DIm[mp+l][m+l]*ReData[mp+l] - DRe[mp+l][m+l]*ImData[mp+l];
-	    }
+	    // } else {
+	    //   MagRef((l*l-4)+(m+l), t) += -DRe[mp+l][m+l]*ReData[mp+l] + DIm[mp+l][m+l]*ImData[mp+l];
+	    //   ArgRef((l*l-4)+(m+l), t) += -DIm[mp+l][m+l]*ReData[mp+l] - DRe[mp+l][m+l]*ImData[mp+l];
+	    // }
 	  }
 	}
       }
@@ -303,13 +303,13 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<Wave
 	    const double Mag = DMag[mp+l][m+l]*MagData[mp+l];
 	    const double Arg = DArg[mp+l][m+l]+ArgData[mp+l];
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    if((m+mp)%2==0) { // (-1)^{m+mp}
+	    // if((m+mp)%2==0) { // (-1)^{m+mp}
 	      MagRef(ModeIndices[i], t) += Mag*cos(Arg);
 	      ArgRef(ModeIndices[i], t) += Mag*sin(Arg);
-	    } else {
-	      MagRef(ModeIndices[i], t) -= Mag*cos(Arg);
-	      ArgRef(ModeIndices[i], t) -= Mag*sin(Arg);
-	    }
+	    // } else {
+	    //   MagRef(ModeIndices[i], t) -= Mag*cos(Arg);
+	    //   ArgRef(ModeIndices[i], t) -= Mag*sin(Arg);
+	    // }
 	  }
 	}
       }
@@ -394,13 +394,13 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
 	    const double Mag = DMag[mp+l][m+l]*MagData[mp+l];
 	    const double Arg = DArg[mp+l][m+l]+ArgData[mp+l];
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    if((m+mp)%2==0) { // (-1)^{m+mp}
+	    // if((m+mp)%2==0) { // (-1)^{m+mp}
 	      MagRef(ModeIndices[i], t) += Mag*cos(Arg);
 	      ArgRef(ModeIndices[i], t) += Mag*sin(Arg);
-	    } else {
-	      MagRef(ModeIndices[i], t) -= Mag*cos(Arg);
-	      ArgRef(ModeIndices[i], t) -= Mag*sin(Arg);
-	    }
+	    // } else {
+	    //   MagRef(ModeIndices[i], t) -= Mag*cos(Arg);
+	    //   ArgRef(ModeIndices[i], t) -= Mag*sin(Arg);
+	    // }
 	  }
 	}
       }
