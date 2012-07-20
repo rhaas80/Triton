@@ -7,10 +7,10 @@ called as a script, the docstrings are output in SWIG format.
 
 Usage:
 
-  Doc.py ../xml/index.xml WaveformObjects_Doc.i
+  doxygen2docstring.py ../xml/index.xml WaveformObjects_Doc.i
 
-index.xml is your doxygen generated XML file and output.i is where the
-output will be written (the file will be clobbered).
+index.xml is your doxygen generated XML file and WaveformObjects_Doc.i
+is where the output will be written (the file will be clobbered).
 
 There are a few specializations to the WaveformObjects module in this
 file.  For example, deletion of 'WaveformObjects::' and
