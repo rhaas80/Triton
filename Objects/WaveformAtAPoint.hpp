@@ -25,12 +25,14 @@ namespace WaveformObjects {
     ~WaveformAtAPoint() { }
     
   public: // Member functions
-    inline double& VarthetaRef() { return vartheta; }
-    inline double& VarphiRef() { return varphi; }
+    //inline double& VarthetaRef() { return vartheta; }
+    //inline double& VarphiRef() { return varphi; }
+    #ifndef SWIG // Exclude the following from SWIG
     inline double& ReRef(const unsigned int i) { return MagRef(0,i); }
     inline double& ImRef(const unsigned int i) { return ArgRef(0,i); }
     inline std::vector<double>& ReRef() { return MagRef(0); }
     inline std::vector<double>& ImRef() { return ArgRef(0); }
+    #endif
     
   public:  // Member functions
     inline const double Vartheta() const { return vartheta; }

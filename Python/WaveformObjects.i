@@ -20,6 +20,8 @@
   #include <iostream>
   #include <sstream>
   #include <iomanip>
+  #include "../Objects/WaveformAtAPoint.hpp"
+  #include "../Objects/WaveformAtAPointFT.hpp"
   #include "../Objects/Waveforms.hpp"
   #include "../Utilities/Quaternions.hpp"
   #include "../Utilities/QuaternionInterpolation.hpp"
@@ -78,9 +80,9 @@ namespace std {
 //////////////////////////////////////////////////////////////////////
 
 
-//////////////////////////////////////////
-//// This reads in the Waveform class ////
-//////////////////////////////////////////
+////////////////////////////////////
+//// Read in the Waveform class ////
+////////////////////////////////////
 //// Ignore things that don't translate well...
 %ignore operator<<;
 %ignore WaveformObjects::Waveform::operator=;
@@ -119,9 +121,23 @@ namespace std {
  };
 
 
-///////////////////////////////////////////
-//// This reads in the Waveforms class ////
-///////////////////////////////////////////
+////////////////////////////////////////////
+//// Read in the WaveformAtAPoint class ////
+////////////////////////////////////////////
+//// Parse the header file to generate wrappers
+%include "../Objects/WaveformAtAPoint.hpp"
+
+
+//////////////////////////////////////////////
+//// Read in the WaveformAtAPointFT class ////
+//////////////////////////////////////////////
+//// Parse the header file to generate wrappers
+%include "../Objects/WaveformAtAPointFT.hpp"
+
+
+/////////////////////////////////////
+//// Read in the Waveforms class ////
+/////////////////////////////////////
 //// Make sure vectors of Waveform are understood
 namespace std {
   %template(vectorW) vector<WaveformObjects::Waveform>;
