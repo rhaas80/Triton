@@ -257,6 +257,19 @@ Return the vector of radii of the measured data.
   
 """
 
+%feature("docstring") WaveformObjects::Waveforms::AlignPhases """
+
+
+  Parameters
+  ----------
+    const double& AlignmentPoint = 0.5
+  
+  Returns
+  -------
+    void
+  
+"""
+
 %feature("docstring") WaveformObjects::Waveform::Peak22Time """
 Return the time at which the (2,2) mode peaks.
 ==============================================
@@ -442,6 +455,26 @@ Set the radius vector to the input data.
   
 """
 
+%feature("docstring") MaximizeMagSum """
+class MaximizeMagSum
+====================
+  Member variables
+  ----------------
+    const WaveformObjects::Waveform& W
+    unsigned int t
+    double hRe2Neg2
+    double hIm2Neg2
+    double hRe2Neg1
+    double hIm2Neg1
+    double hRe20
+    double hIm20
+    double hRe21
+    double hIm21
+    double hRe22
+    double hIm22
+  
+"""
+
 %feature("docstring") WaveformObjects::Waveform::TypeIndex """
 Return the index for the Type of the data.
 ==========================================
@@ -499,6 +532,32 @@ Return the index for the Type of the data.
   Returns
   -------
     void
+  
+"""
+
+%feature("docstring") MaximizeMagSum::MaximizeMagSum """
+
+
+  Parameters
+  ----------
+    const WaveformObjects::Waveform& iW
+  
+  Returns
+  -------
+    MaximizeMagSum
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::L2Norm """
+Calculate the L2 norm of the data.
+==================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    vector<double>
   
 """
 
@@ -666,7 +725,7 @@ Transform the Waveform back to a stationary frame.
   -----------
     The input quaternion may be used to specify the orientation of the final
     frame relative to the frame in which the Waveform was originally measured.
-    Compare TransformToStandardFrame().
+    Compare `TransformToStandardFrame()`.
   
 """
 
@@ -714,7 +773,7 @@ Construct from a vector of radii and corresponding data file names.
     This constructor is used for extrapolation, primarily. The various file
     names are expected to be printf-formatted strings, where each radius is the
     quantity used in the printf statement. Thus, for example, '(100, 110, ...)'
-    and 'rPsi4_R%04.0fm_U8+.dat' may be input, where the file names are
+    and 'rPsi4_R04.0fm_U8+.dat' may be input, where the file names are
     'rPsi4_R0100m_U8+.dat', 'rPsi4_R0110m_U8+.dat', etc. The input AreaFile and
     LapseFile are treated similarly.
   
@@ -870,7 +929,7 @@ Return the frequency of the (2,-2) mode.
   -----------
     In standard configuration, this quantity will typically be increasing; the
     (2,2) frequency will typically be decreasing because of the definitions of
-    h and Psi4 and the definition of the frequency as the derivative of arg.
+    h and Psi4 and the definition of the frequency as the derivative of `arg`.
   
 """
 
@@ -963,43 +1022,17 @@ Return the time index at which the GW flux peaks.
   
 """
 
-%feature("docstring") WaveformObjects::Waveform::Arg """
-Return the argument (phase) of mode 'Mode' at time index 'Time'.
-================================================================
-  Parameters
-  ----------
-    const unsigned int Mode
-    const unsigned int Time
-  
-  Returns
-  -------
-    const double
-  
+%feature("docstring") MaximizeMagSum::df """
 
-Return the argument (phase) of mode 'Mode' as a function of time.
-=================================================================
-  Parameters
-  ----------
-    const unsigned int Mode
-  
-  Returns
-  -------
-    const vector<double>&
-  
 
-Return the argument (phase) of all modes as a function of time.
-===============================================================
   Parameters
   ----------
-    (none)
+    const vector<double>& x
+    vector<double>& dfdx
   
   Returns
   -------
-    const vector<vector<double>>&
-  
-  Description
-  -----------
-    The return value is actually a Matrix when called from c++.
+    void
   
 """
 
@@ -1162,11 +1195,11 @@ Calculate the GW flux.
   
   Description
   -----------
-    NB: This function can only be used on Waveform data of type rhdot. To
-    calculate the flux from data of type rh, simply apply the Differentiate()
+    NB: This function can only be used on Waveform data of type `rhdot`. To
+    calculate the flux from data of type `rh`, simply apply the Differentiate()
     function first, but remember that that function operates in place, so you
     may wish to make a copy of the Waveform first. For example, you may wish to
-    use Waveform(bla).Differentiate().Flux().
+    use `Waveform(bla).Differentiate().Flux()`.
     
     Also, if the frame is non-constant, the Waveform is copied, the copy is
     transformed into the original frame, and the flux is calculated for that
@@ -1187,19 +1220,6 @@ Alter gamma to enforce the minimal-rotation condition.
   Returns
   -------
     void
-  
-
-Given the radiation axis, return the frame which minimizes rotation.
-====================================================================
-  Parameters
-  ----------
-    const vector<double>& alpha
-    const vector<double>& beta
-    const vector<double>& t
-  
-  Returns
-  -------
-    vector<Quaternion>
   
 """
 
@@ -1382,16 +1402,19 @@ class WaveformObjects::WaveformAtAPointFT
   
 """
 
-%feature("docstring") WaveformObjects::WaveformAtAPoint::VarthetaRef """
+%feature("docstring") WaveformAligner::WaveformAligner """
 
 
   Parameters
   ----------
-    (none)
+    const Waveform& A
+    const Waveform& B
+    const double t1
+    const double t2
   
   Returns
   -------
-    double&
+    WaveformAligner
   
 """
 
@@ -1408,6 +1431,32 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     Waveform&
+  
+"""
+
+%feature("docstring") MaximizeMagSum::operator() """
+
+
+  Parameters
+  ----------
+    const vector<double>& x
+  
+  Returns
+  -------
+    double
+  
+"""
+
+%feature("docstring") WaveformAtAPointFT::operator * """
+
+
+  Parameters
+  ----------
+    const double b
+  
+  Returns
+  -------
+    WaveformAtAPointFT
   
 """
 
@@ -1434,6 +1483,19 @@ class WaveformObjects::WaveformAtAPointFT
   Returns
   -------
     WaveformAtAPointFT
+  
+"""
+
+%feature("docstring") WaveformObjects::WaveformAtAPoint::VarthetaRef """
+
+
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    double&
   
 """
 
@@ -1696,6 +1758,7 @@ class WaveformObjects::Waveform
   
   Member variables
   ----------------
+    vector<string> Types
     stringstream history
     unsigned int typeIndex
     string timeScale
@@ -1705,7 +1768,6 @@ class WaveformObjects::Waveform
     Matrix<int> lm
     Matrix<double> mag
     Matrix<double> arg
-    vector<string> Types
   
 """
 
@@ -2056,19 +2118,6 @@ Replace the Waveform history with the input string.
   
 """
 
-%feature("docstring") WaveformAtAPointFT::operator* """
-
-
-  Parameters
-  ----------
-    const double b
-  
-  Returns
-  -------
-    WaveformAtAPointFT
-  
-"""
-
 %feature("docstring") MinimalGrid_Check """
 
 
@@ -2131,6 +2180,54 @@ Return a string describing the Type of the data.
   Returns
   -------
     const string
+  
+"""
+
+%feature("docstring") WaveformAligner """
+class WaveformAligner
+=====================
+  Member variables
+  ----------------
+    const Waveform& a
+    const Waveform b
+    vector<double> t
+    vector<double> arga
+    int LMa
+    int LMb
+  
+"""
+
+%feature("docstring") WaveformAtAPointFT::Match """
+
+
+  Parameters
+  ----------
+    const WaveformAtAPointFT& B
+    const vector<double>& InversePSD
+  
+  Returns
+  -------
+    double
+  
+  Description
+  -----------
+    The return from ifft is just the bare FFT sum, so we multiply by df to get
+    the continuum-analog FT. This is correct because the input data (re,im) are
+    the continuum-analog data, rather than just the return from the bare FFT
+    sum. See, e.g., Eq. (A.33) [rather than Eq. (A.35)] of
+    http://etd.caltech.edu/etd/available/etd-01122009-143851/
+  
+
+
+
+  Parameters
+  ----------
+    const WaveformAtAPointFT& B
+    const string& Detector = 'AdvLIGO_ZeroDet_HighP'
+  
+  Returns
+  -------
+    double
   
 """
 
@@ -2484,12 +2581,10 @@ Construct Waveform from data file.
     automatically assigned a type of 'rhOverM'. Similarly, the time scale and
     (l,m) values for the pairs of columns are deduced from the header, assuming
     standard SpEC output. That is, the header is assumed to contain lines like 
-     [1] = (t-r*)/M
-    
-    [2] = Mag{rMPsi4(2,-2)}
-    
-    [3] = Arg{rMPsi4(2,-2)}
-    
+     # [1] = (t-r*)/M 
+ # [2] = Mag{rMPsi4(2,-2)} 
+ # [3] = Arg{rMPsi4(2,-2)} 
+
     Finally, the data format is also deduced from the header, and a warning is
     issued if it mismatches the input parameter to this function.
   
@@ -2562,9 +2657,9 @@ Simple PN/EOB constructor for non-precessing systems.
     in all cases, only the inspiral is returned -- EOB included. To attach a
     ringdown (though a hackish technique) see also the AttachQNMs function.
     
-    The total number of modes required for $L$ is given by \\begin{align}
-    N_{\\text{modes}}&= \\sum_{l=2}^{L} (2l+1) \\\\&= 2\\left[L\\,
-    (L-1)/2-1\\right] + (L-2) \\\\&= (L+3)\\, (L-1) \\end{align}
+    The total number of modes required for $L$ is given by \\begin{align}{ ///
+    N_{\\text{modes}} ///&= \\sum_{l=2}^{L} (2l+1) \\\\ ///&= 2\\left[L\\,
+    (L-1)/2-1\\right] + (L-2) \\\\ ///&= (L+3)\\, (L-1) /// \\end{align}
   
 
 PN/EOB constructor for precessing systems.
@@ -2607,7 +2702,8 @@ PN/EOB constructor for precessing systems.
   Description
   -----------
     Constructs a PN inspiral for precessing systems using the method described
-    in Phys. Rev. D 84, 124011 (2011)
+    in [Phys. Rev. D 84, 124011
+    (2011)](http://link.aps.org/doi/10.1103/PhysRevD.84.124011)
   
 """
 
@@ -2695,16 +2791,16 @@ Set the frame to the input data.
   
 """
 
-%feature("docstring") WaveformObjects::Waveforms::AlignPhases """
+%feature("docstring") WaveformAligner::operator() """
 
 
   Parameters
   ----------
-    const double& AlignmentPoint = 0.5
+    const double dt
   
   Returns
   -------
-    void
+    double
   
 """
 
@@ -3015,6 +3111,59 @@ Rotate all modes by the given quaternion data.
   
 """
 
+%feature("docstring") sqr """
+
+
+  Parameters
+  ----------
+    const double t
+  
+  Returns
+  -------
+    double
+  
+"""
+
+%feature("docstring") WaveformObjects::Waveform::Arg """
+Return the argument (phase) of mode 'Mode' at time index 'Time'.
+================================================================
+  Parameters
+  ----------
+    const unsigned int Mode
+    const unsigned int Time
+  
+  Returns
+  -------
+    const double
+  
+
+Return the argument (phase) of mode 'Mode' as a function of time.
+=================================================================
+  Parameters
+  ----------
+    const unsigned int Mode
+  
+  Returns
+  -------
+    const vector<double>&
+  
+
+Return the argument (phase) of all modes as a function of time.
+===============================================================
+  Parameters
+  ----------
+    (none)
+  
+  Returns
+  -------
+    const vector<vector<double>>&
+  
+  Description
+  -----------
+    The return value is actually a Matrix when called from c++.
+  
+"""
+
 %feature("docstring") WaveformAtAPointFT::Normalize """
 
 
@@ -3064,6 +3213,19 @@ Return the time index at which the (2,2) mode peaks.
   Returns
   -------
     unsigned int
+  
+"""
+
+%feature("docstring") MaximizeMagSum::SetT """
+
+
+  Parameters
+  ----------
+    const unsigned int T
+  
+  Returns
+  -------
+    void
   
 """
 
@@ -3198,37 +3360,30 @@ Return the time at which the GW flux peaks.
   
 """
 
-%feature("docstring") WaveformAtAPointFT::Match """
+%feature("docstring") WaveformAligner::darg """
 
 
   Parameters
   ----------
-    const WaveformAtAPointFT& B
-    const vector<double>& InversePSD
+    const double dt
+    const unsigned int mode
   
   Returns
   -------
     double
   
-  Description
-  -----------
-    The return from ifft is just the bare FFT sum, so we multiply by df to get
-    the continuum-analog FT. This is correct because the input data (re,im) are
-    the continuum-analog data, rather than just the return from the bare FFT
-    sum. See, e.g., Eq. (A.33) [rather than Eq. (A.35)] of
-    http://etd.caltech.edu/etd/available/etd-01122009-143851/
-  
+"""
 
+%feature("docstring") WaveformAligner::LM_a """
 
 
   Parameters
   ----------
-    const WaveformAtAPointFT& B
-    const string& Detector = 'AdvLIGO_ZeroDet_HighP'
+    (none)
   
   Returns
   -------
-    double
+    int
   
 """
 
