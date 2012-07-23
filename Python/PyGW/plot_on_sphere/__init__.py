@@ -113,7 +113,7 @@ def plot_sphere(W, TimeIndex, Normalization=0, Quantities=['real', 'imag', 'mag'
     return Figs
 
 
-from multiprocessing import Pool
+#from multiprocessing import Pool
 def plot_spheres(WL, WR, TimeIndex, Normalization=0, Quantities=['real', 'imag', 'mag'],
                  ThetaSteps=100, PhiSteps=200, vartheta=array(()), varphi=array(()), x=array(()), y=array(()), z=array(()),
                  NJobs=1) :
