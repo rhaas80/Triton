@@ -115,9 +115,9 @@ def Extrapolate(FileName="", Dictionary={}) :
                 os.makedirs(OutputDirectory)
             PyGW.Output(OutputDirectory+"/"+ExtrapolatedFile, Extrap)
             if(ExtrapolationOrders[i]>=0) :
-                sys.stdout.write("and {}... ".format(OutputDirectory+"/"+SigmaFile))
+                sys.stdout.write("and {}... ".format(OutputDirectory+"/"+SigmaFiles))
                 sys.stdout.flush()
-                PyGW.Output(OutputDirectory+"/"+SigmaFile, Sigma)
+                PyGW.Output(OutputDirectory+"/"+SigmaFiles, Sigma)
             print("☺")
             
             # Compare to the last one
