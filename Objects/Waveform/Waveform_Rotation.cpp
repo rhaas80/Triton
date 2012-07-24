@@ -281,23 +281,16 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<Wave
 	  MagData[mp+l] = Mag(ModeIndices[i], t);
 	  ArgData[mp+l] = Arg(ModeIndices[i], t);
 	}
-	// Loop over each mode
 	for(int m=-l, i=0; m<=l; ++m, ++i) {
 	  MagRef(ModeIndices[i], t) = 0.0;
 	  ArgRef(ModeIndices[i], t) = 0.0;
-	  // Do the sum
 	  for(int mp=-l; mp<=l; ++mp) {
 	    // Compute the addition to the data at this time step
 	    const double Mag = DMag[mp+l][m+l]*MagData[mp+l];
 	    const double Arg = DArg[mp+l][m+l]+ArgData[mp+l];
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    if((m+mp)%2==0) { // (-1)^{m+mp}
-	      MagRef(ModeIndices[i], t) += Mag*cos(Arg);
-	      ArgRef(ModeIndices[i], t) += Mag*sin(Arg);
-	    } else {
-	      MagRef(ModeIndices[i], t) -= Mag*cos(Arg);
-	      ArgRef(ModeIndices[i], t) -= Mag*sin(Arg);
-	    }
+	    MagRef(ModeIndices[i], t) += Mag*cos(Arg);
+	    ArgRef(ModeIndices[i], t) += Mag*sin(Arg);
 	  }
 	}
       }
@@ -372,23 +365,16 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
 	  MagData[mp+l] = Mag(ModeIndices[i], t);
 	  ArgData[mp+l] = Arg(ModeIndices[i], t);
 	}
-	// Loop over each mode
 	for(int m=-l, i=0; m<=l; ++m, ++i) {
 	  MagRef(ModeIndices[i], t) = 0.0;
 	  ArgRef(ModeIndices[i], t) = 0.0;
-	  // Do the sum
 	  for(int mp=-l; mp<=l; ++mp) {
 	    // Compute the addition to the data at this time step
 	    const double Mag = DMag[mp+l][m+l]*MagData[mp+l];
 	    const double Arg = DArg[mp+l][m+l]+ArgData[mp+l];
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
-	    if((m+mp)%2==0) { // (-1)^{m+mp}
-	      MagRef(ModeIndices[i], t) += Mag*cos(Arg);
-	      ArgRef(ModeIndices[i], t) += Mag*sin(Arg);
-	    } else {
-	      MagRef(ModeIndices[i], t) -= Mag*cos(Arg);
-	      ArgRef(ModeIndices[i], t) -= Mag*sin(Arg);
-	    }
+	    MagRef(ModeIndices[i], t) += Mag*cos(Arg);
+	    ArgRef(ModeIndices[i], t) += Mag*sin(Arg);
 	  }
 	}
       }
