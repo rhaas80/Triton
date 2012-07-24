@@ -109,15 +109,16 @@ def Extrapolate(FileName="", Dictionary={}) :
             # Output the data
             print("Finished N={0} in {1} seconds.".format(ExtrapolationOrders[i], Time2-Time1))
             ExtrapolatedFile = "{0}_{1}".format(Extrap.Type(), ExtrapolatedFiles) % ExtrapolationOrders[i]
+            SigmaFile = "{0}_{1}".format(Extrap.Type(), SigmaFiles) % ExtrapolationOrders[i]
             sys.stdout.write("Writing {}... ".format(OutputDirectory+"/"+ExtrapolatedFile))
             sys.stdout.flush()
             if not os.path.exists(OutputDirectory) :
                 os.makedirs(OutputDirectory)
             PyGW.Output(OutputDirectory+"/"+ExtrapolatedFile, Extrap)
             if(ExtrapolationOrders[i]>=0) :
-                sys.stdout.write("and {}... ".format(OutputDirectory+"/"+SigmaFiles))
+                sys.stdout.write("and {}... ".format(OutputDirectory+"/"+SigmaFile))
                 sys.stdout.flush()
-                PyGW.Output(OutputDirectory+"/"+SigmaFiles, Sigma)
+                PyGW.Output(OutputDirectory+"/"+SigmaFile, Sigma)
             print("☺")
             
             # Compare to the last one
