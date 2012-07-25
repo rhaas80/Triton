@@ -508,7 +508,8 @@ Waveform WaveformObjects::Waveforms::ExtrapolateAndPreserveResiduals(Waveform& S
 	
 	//// Loop over input Waveforms, evaluating residual of fit
 	for(unsigned int k=0; k<Ws.size(); ++k) {
-	  Ws[k].MagRef(j,i) = Ws[k].Mag(j,i) - Poly(ampFitSVD.a, oor[k]);
+	  const double Mag = Ws[k].Mag(j,i);
+	  Ws[k].MagRef(j,i) = (Mag - Poly(ampFitSVD.a, oor[k]))/Mag;
 	  Ws[k].ArgRef(j,i) = Ws[k].Arg(j,i) - Poly(phiFitSVD.a, oor[k]);
 	}
       }
