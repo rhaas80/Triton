@@ -367,7 +367,7 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas, const int Ext
   vector<double> oor(Ws.size(), 0.0);  // one over radii
   vector<double> amp(Ws.size(), 0.0);
   vector<double> phi(Ws.size(), 0.0);
-  const vector<double> sig(Ws.size(), 1.0);  // These sigmas should never be less than 3e-6.
+  vector<double> sig(Ws.size(), 1.0);  // These sigmas should never be less than 3e-6.
   PolynomialBasisFunctions Poly(ExtrapolationOrder);
   FitSVD<PolynomialBasisFunctions> ampFitSVD(oor, amp, sig, Poly);
   FitSVD<PolynomialBasisFunctions> phiFitSVD(oor, phi, sig, Poly);
@@ -453,7 +453,7 @@ Waveform WaveformObjects::Waveforms::ExtrapolateAndPreserveResiduals(Waveform& S
   vector<double> oor(Ws.size(), 0.0);  // one over radii
   vector<double> amp(Ws.size(), 0.0);
   vector<double> phi(Ws.size(), 0.0);
-  const vector<double> sig(Ws.size(), 1.0);  // These sigmas should never be less than 3e-6.
+  vector<double> sig(Ws.size(), 1.0);  // These sigmas should never be less than 3e-6.
   PolynomialBasisFunctions Poly(ExtrapolationOrder);
   FitSVD<PolynomialBasisFunctions> ampFitSVD(oor, amp, sig, Poly);
   FitSVD<PolynomialBasisFunctions> phiFitSVD(oor, phi, sig, Poly);
