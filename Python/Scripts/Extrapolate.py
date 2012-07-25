@@ -14,7 +14,7 @@ class Extrapolate :
         else :
             setattr(self, VariableName, DefaultValue)
     
-    def __init__ (FileName="", Dictionary={}) :
+    def __init__ (self, FileName="", Dictionary={}) :
         import PyGW
         import PyGW.plot
         import numpy as npy
@@ -64,20 +64,20 @@ class Extrapolate :
                 self.Radii = [r.replace(r"""{0}/{1}_R""".format(self.InputDirectory, FilePrefix),'').replace('m.dat','') for r in self.Radii]
                 if(self.Radii==[]) : # If there are no such files, just issue an error and exit
                     raise IOError("Could not find any files starting with '{0}_' in {1}.".format(FilePrefix, self.InputDirectory))
-
+            
             # Make sure there are enough radii to do the requested extrapolations
             if((len(self.Radii) <= max(self.ExtrapolationOrders)) and (max(self.ExtrapolationOrders)>-1)) :
                 raise ValueError("Not enough data sets ({0}) for max extrapolation order (N={1}).".format(len(self.Radii), max(self.ExtrapolationOrders)))
             if(-len(self.Radii)>min(self.ExtrapolationOrders)) :
                 raise ValueError("Not enough data sets ({0}) for min extrapolation order (N={1}).".format(len(self.Radii), min(self.ExtrapolationOrders)))
-
+            
             # Read in the Waveforms and set things up nicely
             Ws = PyGW.Waveforms(npy.array([float(s) for s in self.Radii]),
                                 self.InputDirectory+DataFile, self.InputDirectory+self.AreaFile, self.InputDirectory+self.LapseFile,
                                 self.ADMMass, self.ChMass, False);
             Ws.SetCommonTime();
             Ws.FixNonOscillatingData();
-
+            
             # Loop over all the ExtrapolationOrders, doing the dirty business
             import PyGW.plot
             import matplotlib.pyplot as plt
@@ -87,14 +87,14 @@ class Extrapolate :
             WFType = ''
             for i in range(len(self.ExtrapolationOrders)) :
                 print("Extrapolating with order N={}.".format(self.ExtrapolationOrders[i]))
-
+                
                 # Extrapolate
                 Time1 = time()
                 Sigma = PyGW.Waveform()
                 Extrap = Ws.Extrapolate(Sigma, self.ExtrapolationOrders[i], self.UseSVD);
                 Time2 = time()
                 Extrap.UnfixNonOscillatingData();
-
+                
                 # Output the data
                 print("Finished N={0} in {1} seconds.".format(self.ExtrapolationOrders[i], Time2-Time1))
                 ExtrapolatedFile = "{0}_{1}".format(Extrap.Type(), self.ExtrapolatedFiles) % self.ExtrapolationOrders[i]
@@ -109,7 +109,7 @@ class Extrapolate :
                     sys.stdout.flush()
                     PyGW.Output(self.OutputDirectory+"/"+SigmaFile, Sigma)
                 print("☺")
-
+                
                 # Compare to the last one
                 if(i==0) :
                     if(not 'Psi4' in Extrap.Type()) :
@@ -132,10 +132,10 @@ class Extrapolate :
                     plt.figure('Arg')
                     Diff.plot('LogArg', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(self.ExtrapolationOrders[i], self.ExtrapolationOrders[i-1]))
                     print("☺")
-
+                
                 # Save this one for the convergence plots
                 Last.swap(Extrap);
-
+            
             plt.figure('Mag')
             plt.legend(borderpad=.2, labelspacing=0.1, handlelength=1.5, handletextpad=0.1, loc='lower left', prop={'size':'small'})
             plt.gca().set_ylim(1e-11, 10)
@@ -148,7 +148,7 @@ class Extrapolate :
             plt.gca().axvline(x=MaxFluxTime, ls='--')
             figarg.savefig('{0}/ExtrapConvergence_Arg_{1}.pdf'.format(self.OutputDirectory, WFType))
             plt.close(figarg)
-        
+
 
 if __name__ == "__main__":
     import sys
