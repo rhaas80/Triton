@@ -168,7 +168,8 @@ namespace WaveformObjects {
     Waveform& SetArealRadius(const std::string& AreaFileName);
     Waveform& RescaleMagForRadius(const double OldRadius);
     Waveform& SetTimeFromLapseSurfaceIntegral(const std::string& LapseFileName, const double ADMMass);
-    Waveform& TortoiseOffset(const double ADMMass);
+    Waveform& TortoiseRetard(const double ADMMass);
+    Waveform& TortoiseAdvance(const double ADMMass);
     Waveform& SetTotalMassToOne(const double TotalMassInCurrentUnits);
     Waveform& SetPhysicalMassAndDistance(const double TotalMassInSolarMasses, const double DistanceInMegaparsecs);
     

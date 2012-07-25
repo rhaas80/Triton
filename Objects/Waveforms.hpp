@@ -36,6 +36,7 @@ namespace WaveformObjects {
     void AlignPhases(const double& AlignmentPoint=0.5);
     Waveform Extrapolate(const int ExtrapolationOrder=5, const bool UseSVD=true);
     Waveform Extrapolate(Waveform& Sigmas, const int ExtrapolationOrder=5, const bool UseSVD=true);
+    Waveform ExtrapolateAndPreserveResiduals(Waveform& Sigmas, const int ExtrapolationOrder=5, const bool UseSVD=true);
     Waveform Merge(const double& MinStep=0.0, const double& MinTime=0.0);
     void clear() { Ws.clear(); CommonTimeSet=false; PhasesAligned=false; }
     inline unsigned int size() { return Ws.size(); }
