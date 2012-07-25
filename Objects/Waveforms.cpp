@@ -385,9 +385,12 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas, const int Ext
       cout << "Time = " << setprecision(5) << Extrap.T(i) << "\tStep " << i << " of " << Extrap.NTimes() << endl;
     }
     
-    //// Set the radii at this time
+    //// Set the radii and input sigmas at this time
+    const double MinRadius = Ws[0].R(i)
     for(unsigned int k=0; k<Ws.size(); ++k) {
-      oor[k] = 1.0 / Ws[k].R(i);
+      const double Radius = Ws[k].R(i);
+      oor[k] = 1.0 / Radius;
+      sig[k] = Radius/MinRadius;
     }
     
     //// Loop over components
@@ -464,9 +467,12 @@ Waveform WaveformObjects::Waveforms::ExtrapolateAndPreserveResiduals(Waveform& S
       cout << "Time = " << setprecision(5) << Extrap.T(i) << "\tStep " << i << " of " << Extrap.NTimes() << endl;
     }
     
-    //// Set the radii at this time
+    //// Set the radii and input sigmas at this time
+    const double MinRadius = Ws[0].R(i)
     for(unsigned int k=0; k<Ws.size(); ++k) {
-      oor[k] = 1.0 / Ws[k].R(i);
+      const double Radius = Ws[k].R(i);
+      oor[k] = 1.0 / Radius;
+      sig[k] = Radius/MinRadius;
     }
     
     //// Loop over components
