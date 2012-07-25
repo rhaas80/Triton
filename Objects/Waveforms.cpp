@@ -386,7 +386,7 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas, const int Ext
     }
     
     //// Set the radii and input sigmas at this time
-    const double MinRadius = Ws[0].R(i)
+    const double MinRadius = Ws[0].R(i);
     for(unsigned int k=0; k<Ws.size(); ++k) {
       const double Radius = Ws[k].R(i);
       oor[k] = 1.0 / Radius;
@@ -468,7 +468,7 @@ Waveform WaveformObjects::Waveforms::ExtrapolateAndPreserveResiduals(Waveform& S
     }
     
     //// Set the radii and input sigmas at this time
-    const double MinRadius = Ws[0].R(i)
+    const double MinRadius = Ws[0].R(i);
     for(unsigned int k=0; k<Ws.size(); ++k) {
       const double Radius = Ws[k].R(i);
       oor[k] = 1.0 / Radius;
