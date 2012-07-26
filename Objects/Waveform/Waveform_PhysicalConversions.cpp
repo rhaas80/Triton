@@ -126,8 +126,12 @@ Waveform& WaveformObjects::Waveform::TortoiseRetard(const double ADMMass) {
   History() << "### this->TortoiseRetard(" << setprecision(16) << ADMMass << ");" << endl;
   if(TimeScale().compare("(t+r*)")==0) {
     TimeScaleRef() = "(t)";
+  } else if(TimeScale().compare("(t+r*)/M")==0) {
+    TimeScaleRef() = "(t)/M";
   } else if(TimeScale().compare("(t)")==0 || TimeScale().compare("Time")==0) {
     TimeScaleRef() = "(t-r*)";
+  } else if(TimeScale().compare("(t)/M")==0) {
+    TimeScaleRef() = "(t-r*)/M";
   } else {
     TimeScaleRef() = "(" + TimeScale() + ")-r*";
   }
@@ -141,11 +145,15 @@ Waveform& WaveformObjects::Waveform::TortoiseRetard(const double ADMMass) {
 }
 
 Waveform& WaveformObjects::Waveform::TortoiseAdvance(const double ADMMass) {
-  History() << "### this->TortoiseRetard(" << setprecision(16) << ADMMass << ");" << endl;
+  History() << "### this->TortoiseAdvance(" << setprecision(16) << ADMMass << ");" << endl;
   if(TimeScale().compare("(t-r*)")==0) {
     TimeScaleRef() = "(t)";
+  } else if(TimeScale().compare("(t-r*)/M")==0) {
+    TimeScaleRef() = "(t)/M";
   } else if(TimeScale().compare("(t)")==0 || TimeScale().compare("Time")==0) {
     TimeScaleRef() = "(t+r*)";
+  } else if(TimeScale().compare("(t)/M")==0) {
+    TimeScaleRef() = "(t+r*)/M";
   } else {
     TimeScaleRef() = "(" + TimeScale() + ")+r*";
   }

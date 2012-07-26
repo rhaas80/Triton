@@ -287,6 +287,18 @@ void WaveformObjects::Waveforms::AlignPhases(const double& AlignmentPoint) {
   return;
 }
 
+void WaveformObjects::Waveforms::TortoiseAdvance(const double ADMMass, const bool ResetCommonTime) {
+  history << "### this->TortoiseAdvance(" << ResetCommonTime << ");" << endl;
+  for(unsigned int i=0; i<Ws.size(); ++i) {
+    Ws[i].TortoiseAdvance(ADMMass);
+  }
+  CommonTimeSet = false;
+  if(ResetCommonTime) {
+    SetCommonTime();
+  }
+  return;
+}
+
 Waveform WaveformObjects::Waveforms::Extrapolate(const int ExtrapolationOrder, const bool UseSVD) {
   history << "### this->Extrapolate(" << ExtrapolationOrder << ", " << UseSVD << ");" << endl;
   
@@ -543,6 +555,7 @@ Waveform WaveformObjects::Waveforms::Merge(const double& MinStep, const double& 
   Waveform Merged = Ws[0];
   Merged.SetHistory(history.str());
   Merged.History() << "#### NOTE: This object is now a single Waveform (merged from a 'Waveforms' object)." << endl;
+  Merged.History() << "#" << history;
   Merged.LMRef().resize(Ws.size(), 2);
   Merged.MagRef().resize(Ws.size(), Ws[0].NTimes());
   Merged.ArgRef().resize(Ws.size(), Ws[0].NTimes());
