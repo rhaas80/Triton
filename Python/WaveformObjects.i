@@ -118,6 +118,33 @@ namespace std {
     }
     return S.str();
   }
+  //// Allow Waveform objects to be pickled
+  %insert("python") %{
+    def __getstate__(self) :
+      return (self.HistoryStr(),
+	      self.TypeIndex(),
+	      self.TimeScale(),
+	      self.T(),
+	      self.R(),
+	      self.Frame(),
+	      self.LM(),
+	      self.Mag(),
+	      self.Arg()
+	      )
+    __safe_for_unpickling__ = True
+    def __reduce__(self) :
+        return (Waveform, (), self.__getstate__())
+    def __setstate__(self, data) :
+      self.SetHistory(data[0])
+      self.SetTypeIndex(data[1])
+      self.SetTimeScale(data[2])
+      self.SetT(data[3])
+      self.SetR(data[4])
+      self.SetFrame(data[5])
+      self.SetLM(MatrixInt(data[6].tolist()))
+      self.SetMag(MatrixDouble(data[7]))
+      self.SetArg(MatrixDouble(data[8]))
+  %}
  };
 
 
