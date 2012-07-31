@@ -113,7 +113,7 @@ def plot_sphere(W, TimeIndex, Normalization=0, Quantities=['real', 'imag', 'mag'
     return Figs
 
 
-from IPython.parallel import Client
+#from IPython.parallel import Client
 def plot_spheres(WL, WR, TimeIndex, Normalization=0, Quantities=['real', 'imag', 'mag'],
                  ThetaSteps=100, PhiSteps=200, vartheta=array(()), varphi=array(()), x=array(()), y=array(()), z=array(()),
                  NJobs=1) :
@@ -175,13 +175,16 @@ def animate_sphere(W, OutputFileName, TimeSteps = 500, PhiSteps = 200, ThetaStep
     ion()
 
 
-def _animate_spheres_loop(Args, FrameIndex, t) :
-    WL, WR, TIndexStep, Normalization, OutputFileName, TimeSteps, vartheta, varphi, x, y, z, Quantities, DPI = Args
+from multiprocessing import Pool
+def _animate_spheres_loop(Args) :
+    WL, WR, TIndexStep, Normalization, OutputFileName, TimeSteps, vartheta, varphi, x, y, z, Quantities, DPI = Args[0]
+    FrameIndex, t = Args[1:]
+    print("{0} of {1}".format(t/TIndexStep, TimeSteps))
     Figs = plot_spheres(WL, WR, t, Normalization, Quantities, vartheta=vartheta, varphi=varphi, x=x, y=y, z=z)
     for i in range(len(Figs)) :
         Figs[i].savefig(OutputFileName + '_' + Quantities[i].lower() + '_Frame%04d.png' % FrameIndex, dpi=DPI, transparent=True)
     return [t/TIndexStep, TimeSteps]
-def animate_spheres(WL, WR, OutputFileName, TimeSteps = 500, PhiSteps = 200, ThetaSteps = 100, Quantities=['real', 'imag', 'mag'], DPI=250) :
+def animate_spheres(WL, WR, OutputFileName, TimeSteps = 500, PhiSteps = 200, ThetaSteps = 100, Quantities=['real', 'imag', 'mag'], DPI=250, NJobs=1) :
         vartheta, varphi = sphere_coordinates(ThetaSteps, PhiSteps)
         x,y,z = sphere_points(vartheta, varphi)
         # Normalization = max(
@@ -192,12 +195,10 @@ def animate_spheres(WL, WR, OutputFileName, TimeSteps = 500, PhiSteps = 200, The
         
         ioff()
         TIndexStep = WL.NTimes()/int(TimeSteps)
-        rc = Client()
-        lview = rc.load_balanced_view()
-        lview.block = True
+        p = Pool(NJobs)
         tList = range(0, WL.NTimes(), TIndexStep)
         FrameIndexList = range(len(tList))
-        print(lview.map(_animate_spheres_loop,
-                        [(WL, WR, TIndexStep, Normalization, OutputFileName, TimeSteps, vartheta, varphi, x, y, z, Quantities, DPI)]*len(tList),
-                        FrameIndexList, tList))
+        print(p.map(_animate_spheres_loop,
+                    zip([(WL, WR, TIndexStep, Normalization, OutputFileName, TimeSteps, vartheta, varphi, x, y, z, Quantities, DPI)]*len(tList),
+                        FrameIndexList, tList)))
         ion()
