@@ -165,8 +165,10 @@ namespace WaveformObjects {
     Waveform& NSamplesPerCycle22(const unsigned int N=20);
     
     // Physical conversions for extrapolations or conversion to frequency space
+    Waveform& SetArealRadius(const std::vector<double>& ArealRadius);
     Waveform& SetArealRadius(const std::string& AreaFileName);
     Waveform& RescaleMagForRadius(const double OldRadius);
+    Waveform& SetTimeFromAverageLapse(const std::vector<double>& AverageLapse, const double ADMMass);
     Waveform& SetTimeFromLapseSurfaceIntegral(const std::string& LapseFileName, const double ADMMass);
     Waveform& TortoiseRetard(const double ADMMass);
     Waveform& TortoiseAdvance(const double ADMMass);

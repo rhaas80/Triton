@@ -1,6 +1,7 @@
 // -*- c++ -*-
 
 %module WaveformObjects
+#pragma SWIG nowarn=401
 
 %exception {
   try {
@@ -57,8 +58,8 @@ namespace WaveformUtilities {
 };
 //// I need to use my Quaternion class, to pass arguments into PyGW
 %ignore WaveformUtilities::Quaternion::operator=;
-%rename(__getitem__) WaveformUtilities::Quaternion::operator[] const;
-%rename(__setitem__) WaveformUtilities::Quaternion::operator[];
+%rename(__getitem__) WaveformUtilities::Quaternion::operator [](unsigned int const) const;
+%rename(__setitem__) WaveformUtilities::Quaternion::operator [](unsigned int const);
 %include "../Utilities/Quaternions.hpp"
 %extend WaveformUtilities::Quaternion {
   //// This function is called when printing a Quaternion object
@@ -180,3 +181,61 @@ namespace std {
     return;
   }
  };
+
+
+//// Add a function to read the new h5 format for multiple radii
+//// Note that this is defined in the PyGW namespace
+%insert("python") %{
+
+def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5') :
+    import h5py
+    import PyGW
+    import re
+    import numpy
+    YlmRegex = re.compile(r"""Y_l(?P<L>[0-9]+)_m(?P<M>[-0-9]+)\.dat""")
+    f = h5py.File(Dir+'/'+File, 'r')
+    WaveformNames = list(f)
+    NWaveforms = len(WaveformNames)
+    Ws = PyGW.Waveforms(NWaveforms)
+    TempW = PyGW.Waveform()
+    for n in range(NWaveforms) :
+        W = f[WaveformNames[n]]
+        NTimes = W['AverageLapse.dat'].shape[0]
+        T = W['AverageLapse.dat'][:,0]
+        if( not (W['ArealRadius.dat'].shape[0]==NTimes) ) :
+            raise ValueError("The number of time steps in this dataset should be {0}; ".format(NTimes) +
+                             "it is {0} in ArealRadius.dat.".format(W['ArealRadius.dat'].shape[0]))
+        ArealRadius = W['ArealRadius.dat'][:,1]
+        AverageLapse = W['AverageLapse.dat'][:,1]
+        CoordRadius = W['CoordRadius.dat'][0,1]
+        InitialAdmEnergy = W['InitialAdmEnergy.dat'][0,1]
+        LM = [[int(m.group('L')), int(m.group('M'))] for DataSet in list(W) for m in [YlmRegex.search(DataSet)] if m]
+        NModes = len(LM)
+        Mag = numpy.empty((NModes, NTimes))
+        Arg = numpy.empty((NModes, NTimes))
+        m = 0
+        for DataSet in list(W) :
+            if(YlmRegex.search(DataSet)) :
+                if( not (W[DataSet].shape[0]==NTimes) ) :
+                    raise ValueError("The number of time steps in this dataset should be {0}; ".format(NTimes) +
+                                     "it is {0} in {1}.".format(W[DataSet].shape[0], DataSet))
+                Mag[m,:] = W[DataSet][:,1]
+                Arg[m,:] = W[DataSet][:,2]
+                m += 1
+                #print("n={0}; m={1}; DataSet={2}".format(n, m, DataSet))
+        TempW.AppendHistory("### # Python read from {}.".format(WaveformNames[n]))
+        TempW.SetT(T)
+        TempW.SetLM(PyGW.MatrixInt(LM))
+        TempW.SetMag(PyGW.MatrixDouble(Mag))
+        TempW.SetArg(PyGW.MatrixDouble(Arg))
+        TempW.SetArealRadius(ArealRadius)
+        TempW.RescaleMagForRadius(CoordRadius*ChMass)
+        TempW.SetTimeFromAverageLapse(AverageLapse, InitialAdmEnergy)
+        TempW.TortoiseRetard(InitialAdmEnergy)
+        if(ChMass != 1.0) : TempW.SetTotalMassToOne(ChMass)
+        Ws[n] = TempW
+    f.close()
+    Ws.AppendHistory("### PyGW.ReadFiniteRadiusData(ChMass={0}, Dir='{1}', File='{2}')".format(ChMass, Dir, File))
+    return Ws
+
+  %}

@@ -55,6 +55,12 @@ double ScaleMag(const double S, const unsigned int typeIndex) {
 }
 
 // Used in extrapolation
+Waveform& WaveformObjects::Waveform::SetArealRadius(const vector<double>& ArealRadius) {
+  History() << "### this->SetArealRadius(ArealRadius);" << endl;
+  RRef() = ArealRadius;
+  return *this;
+}
+
 Waveform& WaveformObjects::Waveform::SetArealRadius(const string& AreaFileName) {
   History() << "### this->SetArealRadius(\"" << AreaFileName << "\");" << endl;
   //// Read data files
@@ -92,6 +98,21 @@ Waveform& WaveformObjects::Waveform::RescaleMagForRadius(const double OldRadius)
 	MagRef(mode,t) *= R(t)/OldRadius;
       }
     }
+  }
+  return *this;
+}
+
+Waveform& WaveformObjects::Waveform::SetTimeFromAverageLapse(const vector<double>& AverageLapse, const double ADMMass) {
+  if(R().size()==0) { throw("Bad size for radius data."); }
+  History() << "### this->SetTimeFromLapseSurfaceIntegral(AverageLapse);" << endl;
+  if(AverageLapse.size() != R().size() && R().size()!=1) {
+    cerr << "\nAverageLapse.size()=" << AverageLapse.size() << "\tR().size()=" << R().size() << endl;
+    throw("Bad size for AverageLapse data");
+  }
+  if(R().size()==1) {
+    TRef() = cumtrapz(T(), AverageLapse/sqrt(((-2.0*ADMMass)/R(0)) + 1.0)) + T(0);
+  } else {
+    TRef() = cumtrapz(T(), AverageLapse/sqrt(((-2.0*ADMMass)/R()) + 1.0)) + T(0);
   }
   return *this;
 }
