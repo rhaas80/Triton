@@ -5,15 +5,17 @@
 #include <ctime>
 #include <unistd.h>
 #include <sys/param.h>
+#include <H5Cpp.h>
 
-//#include <fstream>
-//using std::ofstream;
+#include <fstream>
+using std::ifstream;
 
 #include "VectorFunctions.hpp"
 #include "EasyParser.hpp"
 #include "Fit.hpp"
 #include "Interpolate.hpp"
 
+using namespace H5;
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
 using std::string;
@@ -36,10 +38,22 @@ WaveformObjects::Waveforms::Waveforms(const Waveforms& In) :
 
 /// Nearly-empty constructor of N empty objects.
 WaveformObjects::Waveforms::Waveforms(const int N) :
-  history("### Waveforms(); // empty constructor\n"),
-  Ws(N), CommonTimeSet(false), PhasesAligned(false)
+  history(""), Ws(N), CommonTimeSet(false), PhasesAligned(false)
 {
-  history.seekp(0, ios_base::end);
+  char path[MAXPATHLEN];
+  getcwd(path, MAXPATHLEN);
+  string pwd = path;
+  char host[MAXHOSTNAMELEN];
+  gethostname(host, MAXHOSTNAMELEN);
+  string hostname = host;
+  time_t rawtime;
+  time ( &rawtime );
+  string date = asctime ( localtime ( &rawtime ) );
+  history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
+	  << "### pwd = " << pwd << endl
+	  << "### hostname = " << hostname << endl
+	  << "### date = " << date // comes with a newline
+	  << "### Waveforms(" << N << ");" << endl;
 }
 
 /// Construct from a vector of radii and corresponding data file names.
@@ -103,11 +117,11 @@ WaveformObjects::Waveforms::Waveforms(const std::vector<double>& Radii, const st
 
 /// Construct Waveforms from multiple [*-data] .bbh sections.
 WaveformObjects::Waveforms::Waveforms(const std::string& BBHFileName,
-				      const WaveformUtilities::Matrix<int> LM) :
+				      const WaveformUtilities::Matrix<int> LM,
+				      const std::vector<double> Radii,
+				      std::string Format) :
   history(""), Ws(0), CommonTimeSet(false), PhasesAligned(false)
 {
-  //cout << "Calling Waveforms(const std::string& BBHFileName, ...)" << endl;
-  
   // Record the construction of this object
   {
     char path[MAXPATHLEN];
@@ -123,18 +137,51 @@ WaveformObjects::Waveforms::Waveforms(const std::string& BBHFileName,
 	    << "### pwd = " << pwd << endl
 	    << "### hostname = " << hostname << endl
 	    << "### date = " << date // comes with a newline
-	    << "### Waveforms(" << BBHFileName << ", " << RowFormat(LM) << ");" << endl;
+	    << "### Waveforms(" << BBHFileName << ", " << RowFormat(LM) << ", " << RowFormat(Radii) << ");" << endl;
   }
   
-  // Loop through the .bbh file getting the various DataSections
-  vector<vector<string> > BBHDataSections;
-  vector<string> Dirs;
-  
-  
-  // Construct the vector, and read data into each element
-  Ws = vector<Waveform>(BBHDataSections.size());
-  for(unsigned int i=0; i<Ws.size(); ++i) {
-    Ws[i] = Waveform(BBHDataSections[i], Dirs[i], LM.RawData());
+  // If the FileName points to an h5 file, assume that it contains the full set of radii
+  if(BBHFileName.find(".h5:")!=string::npos) {
+    throw("Not yet implemented in c++; try python.");
+  } else {
+    // Loop through the .bbh file getting the various DataSections
+    vector<vector<string> > BBHDataSections;
+    vector<string> Dirs;
+    vector<string> BBHFile;
+    std::vector<string> Pair(2,"");
+    string Line="";
+    ifstream f(BBHFileName.c_str(), ifstream::in);
+    string line;
+    while(f>>line) { BBHFile.push_back(line); }
+    f.close();
+    int i=0;
+    while(i<BBHFile.size()) {
+      string LineCharsStripped = TrimWhiteSpace(StripComments(BBHFile[i]));
+      while(LineCharsStripped.find("-data]")!=string::npos) {
+	++i;
+	LineCharsStripped = TrimWhiteSpace(StripComments(BBHFile[i]));
+      }
+      vector<string> BBHDataSection(0);
+      while(i<BBHFile.size()) {
+	// Parse this line
+	LineCharsStripped = TrimWhiteSpace(StripComments(BBHFile[i]));
+	if(LineCharsStripped.length()==0) { ++i; continue; } // skip empty lines
+	if(LineCharsStripped.find("-data]")!=string::npos) { break; } // end if we've reached another [*-data] section
+	Pair = split(Line.assign(LineCharsStripped), '=');
+	if(Pair[0].find("extraction-radius")!=string::npos) { ++i; continue; } // ignore extraction-radius line
+	BBHDataSection.push_back(LineCharsStripped+"\n");
+	++i;
+      }
+      BBHDataSections.push_back(BBHDataSection);
+      Dirs.push_back("");
+      ++i;
+    }
+    
+    // Construct the vector, and read data into each element
+    Ws = vector<Waveform>(BBHDataSections.size());
+    for(unsigned int i=0; i<Ws.size(); ++i) {
+      Ws[i] = Waveform(BBHDataSections[i], Dirs[i], LM.RawData());
+    }
   }
 }
 

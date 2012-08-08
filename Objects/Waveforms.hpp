@@ -20,7 +20,9 @@ namespace WaveformObjects {
 	      const std::string& AreaFile, const std::string& LapseFile,
 	      const double& ADMMass, const double& ChMass, const bool ZeroEnds=false);
     Waveforms(const std::string& BBHFileName,
-	      const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
+	      const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+	      const std::vector<double> Radii=std::vector<double>(0),
+	      std::string Format="ht");
     Waveforms(const std::vector<std::string>& BBHDataSection,
 	      const std::string Dir = "",
 	      const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
