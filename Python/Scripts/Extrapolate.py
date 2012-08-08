@@ -39,6 +39,7 @@ class Extrapolate :
         self.SetParameter('DifferenceFiles', "ExtrapConvergence_N%d-N%d.dat")
         self.SetParameter('SigmaFiles', "SigmaN%d.dat")
         self.SetParameter('UseSVD', True)
+        self.SetParameter('UseOmegas', True)
         
         # If there's an input file, read it in
         if(FileName!="") :
@@ -91,7 +92,10 @@ class Extrapolate :
                 # Extrapolate
                 Time1 = time()
                 Sigma = PyGW.Waveform()
-                Extrap = Ws.Extrapolate(Sigma, self.ExtrapolationOrders[i], self.UseSVD);
+                if(UseOmegas) :
+                    Extrap = Ws.Extrapolate(Sigma, Ws[0].T(), -0.5*Ws[0].Omega2m2(), self.ExtrapolationOrders[i], self.UseSVD);
+                else :
+                    Extrap = Ws.Extrapolate(Sigma, self.ExtrapolationOrders[i], self.UseSVD);
                 Time2 = time()
                 Extrap.UnfixNonOscillatingData();
                 

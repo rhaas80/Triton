@@ -44,6 +44,11 @@ namespace WaveformObjects {
     Waveform Extrapolate(Waveform& Sigmas,
 			 const int ExtrapolationOrder=5,
 			 const bool UseSVD=true);
+    Waveform Extrapolate(Waveform& Sigmas,
+			 const std::vector<double>& Times,
+			 const std::vector<double>& Omegas,
+			 const int ExtrapolationOrder=5,
+			 const bool UseSVD=true);
     Waveform ExtrapolateAndPreserveResiduals(Waveform& Sigmas,
 					     const int ExtrapolationOrder=5,
 					     const bool UseSVD=true);
