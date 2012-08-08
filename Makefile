@@ -1,9 +1,9 @@
-LIBDIRS:= Utilities PostNewtonian Objects WaveformManip
+LIBDIRS:= Utilities PostNewtonian Objects
 EXECDIRS:= Routines
-SUBDIRS:= $(LIBDIRS) $(EXECDIRS)
+SUBDIRS:= $(LIBDIRS) #$(EXECDIRS)
 
 all:
-	@for d in $(EXECDIRS); do ($(MAKE) -C $$d); done
+	@for d in $(SUBDIRS); do ($(MAKE) -C $$d); done
 
 libs:
 	@for d in $(LIBDIRS); do ($(MAKE) -C $$d); done
