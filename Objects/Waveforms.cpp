@@ -5,7 +5,6 @@
 #include <ctime>
 #include <unistd.h>
 #include <sys/param.h>
-#include <H5Cpp.h>
 
 #include <fstream>
 using std::ifstream;
@@ -15,7 +14,6 @@ using std::ifstream;
 #include "Fit.hpp"
 #include "Interpolate.hpp"
 
-using namespace H5;
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
 using std::string;
