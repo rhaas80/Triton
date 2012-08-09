@@ -92,7 +92,7 @@ class Extrapolate :
                 # Extrapolate
                 Time1 = time()
                 Sigma = PyGW.Waveform()
-                if(UseOmegas) :
+                if(self.UseOmegas) :
                     Extrap = Ws.Extrapolate(Sigma, Ws[0].T(), -0.5*Ws[0].Omega2m2(), self.ExtrapolationOrders[i], self.UseSVD);
                 else :
                     Extrap = Ws.Extrapolate(Sigma, self.ExtrapolationOrders[i], self.UseSVD);
