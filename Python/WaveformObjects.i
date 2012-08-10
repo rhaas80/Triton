@@ -43,6 +43,7 @@
 namespace std {
   %template(vectori) vector<int>;
   %template(vectord) vector<double>;
+  %template(vectors) vector<string>;
   %template(vectorvectori) vector<vector<int> >;
   %template(vectorvectord) vector<vector<double> >;
 };
@@ -187,6 +188,14 @@ namespace std {
 //// Note that this is defined in the PyGW namespace
 %insert("python") %{
 
+def PickChMass(File='Horizons.h5') :
+    import h5py
+    f=h5py.File(File)
+    ChMass = f['AhA.dir/ChristodoulouMass.dat'][:,1]+f['AhB.dir/ChristodoulouMass.dat'][:,1]
+    f.close()
+    hist, bins = numpy.histogram(ChMass, bins=len(ChMass))
+    return bins[hist.argmax()]
+
 def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5') :
     import h5py
     import PyGW
@@ -233,9 +242,15 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
         TempW.SetTimeFromAverageLapse(AverageLapse, InitialAdmEnergy)
         TempW.TortoiseRetard(InitialAdmEnergy)
         if(ChMass != 1.0) : TempW.SetTotalMassToOne(ChMass)
+        TempW.MakeTimeMonotonic()
+        TempW.ConvertReImToMagArg()
+        for i,type in enumerate(TempW.Types) :
+            if(File.find(type)>-1) :
+                TempW.SetTypeIndex(i)
+                break
         Ws[n] = TempW
     f.close()
     Ws.AppendHistory("### PyGW.ReadFiniteRadiusData(ChMass={0}, Dir='{1}', File='{2}')".format(ChMass, Dir, File))
-    return Ws
+    return Ws,InitialAdmEnergy
 
   %}
