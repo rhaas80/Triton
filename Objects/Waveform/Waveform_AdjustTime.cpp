@@ -139,3 +139,24 @@ Waveform& WaveformObjects::Waveform::NSamplesPerCycle22(const unsigned int N) {
   this->Interpolate(NewTime);
   return *this;
 }
+
+/// Erase earliest data that overlaps later data.
+Waveform& WaveformObjects::Waveform::MakeTimeMonotonic() {
+  History() << "### this->MakeTimeMonotonic();" << endl << "#";
+  vector<double> NewTime(T());
+  int Size = NewTime.size();
+  int i=1;
+  while(i<Size) {
+    if(NewTime[i]<=NewTime[i-1]) {
+      int j=0;
+      while(NewTime[j]<NewTime[i]) { ++j; }
+      // erase data from j (inclusive) to i (exclusive)
+      NewTime.erase(NewTime.begin()+j, NewTime.begin()+i);
+      Size = NewTime.size();
+      i = j-1;
+    }
+    ++i;
+  }
+  this->Interpolate(NewTime);
+  return *this;
+}

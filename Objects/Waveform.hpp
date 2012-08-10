@@ -163,6 +163,7 @@ namespace WaveformObjects {
     Waveform& UniformTimeToPowerOfTwo();
     Waveform& UniformTime(const unsigned int N=200);
     Waveform& NSamplesPerCycle22(const unsigned int N=20);
+    Waveform& MakeTimeMonotonic();
     
     // Physical conversions for extrapolations or conversion to frequency space
     Waveform& SetArealRadius(const std::vector<double>& ArealRadius);
@@ -185,6 +186,8 @@ namespace WaveformObjects {
     Waveform& HackOddLPlusM(); // Change sign of mode if l+m is odd (Hack to fix RWZ extraction)
     Waveform& FixNonOscillatingData(); // If M=0, convert to ReIm from MagArg
     Waveform& UnfixNonOscillatingData(); // If M=0, convert from ReIm to MagArg
+    Waveform& ConvertReImToMagArg();
+    Waveform& ConvertMagArgToReIm();
     
     // Align and hybridize waveforms
     Waveform& AlignPhasesToTwoPi(const Waveform& a, const double tFrac=0.25);
