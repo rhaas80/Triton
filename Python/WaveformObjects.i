@@ -196,6 +196,23 @@ def PickChMass(File='Horizons.h5') :
     hist, bins = numpy.histogram(ChMass, bins=len(ChMass))
     return bins[hist.argmax()]
 
+def MonotonicIndices(T) :
+    import numpy
+    Ind = range(len(T))
+    Size = len(Ind)
+    i=1
+    while(i<Size) :
+        if(T[Ind[i]]<=T[Ind[i-1]]) :
+            j=0
+            while(T[Ind[j]]<T[Ind[i]]) :
+                j += 1
+            # erase data from j (inclusive) to i (exclusive)
+            Ind = numpy.delete(Ind, range(j,i))
+            Size = len(Ind)
+            i = j-1
+        i+=1
+    return Ind
+
 def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5') :
     import h5py
     import PyGW
@@ -233,17 +250,18 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
                 m += 1
                 #print("n={0}; m={1}; DataSet={2}".format(n, m, DataSet))
         TempW.AppendHistory("### # Python read from {}.".format(WaveformNames[n]))
-        TempW.SetT(T)
+        Indices = MonotonicIndices(T)
+        BadIndices = numpy.setdiff1d(range(len(T)), Indices)
+        TempW.SetT(T[Indices])
         TempW.SetLM(PyGW.MatrixInt(LM))
-        TempW.SetMag(PyGW.MatrixDouble(Mag))
-        TempW.SetArg(PyGW.MatrixDouble(Arg))
-        TempW.SetArealRadius(ArealRadius)
+        TempW.SetMag(PyGW.MatrixDouble(numpy.delete(Mag, BadIndices, 1)))
+        TempW.SetArg(PyGW.MatrixDouble(numpy.delete(Arg, BadIndices, 1)))
+        TempW.ConvertReImToMagArg()
+        TempW.SetArealRadius(ArealRadius[Indices])
         TempW.RescaleMagForRadius(CoordRadius*ChMass)
-        TempW.SetTimeFromAverageLapse(AverageLapse, InitialAdmEnergy)
+        TempW.SetTimeFromAverageLapse(AverageLapse[Indices], InitialAdmEnergy)
         TempW.TortoiseRetard(InitialAdmEnergy)
         if(ChMass != 1.0) : TempW.SetTotalMassToOne(ChMass)
-        TempW.MakeTimeMonotonic()
-        TempW.ConvertReImToMagArg()
         for i,type in enumerate(TempW.Types) :
             if(File.find(type)>-1) :
                 TempW.SetTypeIndex(i)
