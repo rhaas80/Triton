@@ -13,6 +13,12 @@ ifndef OSTYPE
 endif
 
 ifndef HDF5_HOME
+  ifdef HDF5_DIR
+    HDF5_HOME = ${HDF5_DIR}
+  endif
+endif
+
+ifndef HDF5_HOME
   $(warning You need to define the HDF5_HOME variable pointing to)
   $(warning the root of the hdf5 'include' and 'lib' directories.)
   $(warning On zwicky, do something like 'module add HDF5'.)
