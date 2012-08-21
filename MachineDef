@@ -19,9 +19,10 @@ ifndef HDF5_HOME
 endif
 
 ifndef HDF5_HOME
-  $(warning You need to define the HDF5_HOME variable pointing to)
-  $(warning the root of the hdf5 'include' and 'lib' directories.)
-  $(warning On zwicky, do something like 'module add HDF5'.)
+  $(warning You need to define the HDF5_HOME or HDF5_DIR variable pointing)
+  $(warning to the root of the hdf5 'include' and 'lib' directories.)
+  $(warning On zwicky, do something like 'module add gcc/4.6.1 HDF5 python/2.7.2-gcc-4.6.1'.)
+  $(warning On prawn, do something like 'module add gcc hdf5 python/2.7.1'.)
   $(error Cannot proceed)
 endif
 
