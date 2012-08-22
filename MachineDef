@@ -61,4 +61,4 @@ DIFF		= diff
 
 ## Use this for standard builds
 OPENMP		= -fopenmp
-C++FLAGS	= ${H5INC} -fpic -O3 ${OPENMP}
+C++FLAGS	= ${H5INC} -fPIC -O3 ${OPENMP}
