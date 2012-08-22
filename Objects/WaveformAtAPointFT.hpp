@@ -5,9 +5,10 @@
 
 namespace WaveformObjects {
   
-  /// The WaveformAtAPointFT class is a derived class, constructed from waveforms evaluated at a
-  /// point, using the given complex detector response (F+ + i*Fx) -- or more particularly,
-  /// its amplitude and phase.
+  /// The WaveformAtAPointFT class is a derived class, constructed
+  /// from waveforms evaluated at a point, using the given complex
+  /// detector response (F+ + i*Fx) -- or more particularly, its
+  /// amplitude and phase.
   class WaveformAtAPointFT : public WaveformAtAPoint {
   private:  // Member data
     bool Normalized;

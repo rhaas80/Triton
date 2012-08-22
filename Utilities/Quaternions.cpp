@@ -1,4 +1,5 @@
 #include "Quaternions.hpp"
+#include "QuaternionInterpolation.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -260,6 +261,25 @@ std::vector<WaveformUtilities::Quaternion> WaveformUtilities::dQdt(const std::ve
     }
   }
   return dQ;
+}
+
+std::vector<WaveformUtilities::Quaternion> WaveformUtilities::MinimalRotation(const std::vector<WaveformUtilities::Quaternion>& Q,
+									      const std::vector<double>& t,
+									      const unsigned int NIterations) {
+  if(Q.size() != t.size()) {
+    cerr << "\nQ.size()=" << Q.size() << "\tt.size()=" << t.size() << endl;
+    throw("std::vector size mismatch");
+  }
+  std::vector<Quaternion> MinRot(Q);
+  const Quaternion z(0.,0.,0.,1.);
+  for(unsigned int iteration=0; iteration<NIterations; ++iteration) {
+    // Note that Component0 gives -1 times the dot product of two vectors
+    const vector<double> negativegammaover2 = SplineIntegral(t, Component0( Conjugate(MinRot) * dQdt_Squad(MinRot,t) * z ));
+    for(unsigned int i=0; i<negativegammaover2.size(); ++i) {
+      MinRot[i] = MinRot[i] * (negativegammaover2[i]*z).exp();
+    }
+  }
+  return MinRot;
 }
 
 std::vector<double> WaveformUtilities::Re(const std::vector<WaveformUtilities::Quaternion>& Q) {

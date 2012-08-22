@@ -32,7 +32,7 @@ void WU::ReadDatFile(const string& FileName, vector<vector<double> >& Data,
   // If the FileName points to an h5 file and dataset, just get that
   if(FileName.find(".h5:")!=string::npos) {
     if(!Transpose) {
-      throw("Don't yet know how to return un-transposed h5 file.");
+      throw("Don't yet know how to return un-transposed h5 file.  It shouldn't be hard to implement...");
     }
     size_t found = FileName.find(".h5:");
     std::string FILE_NAME = FileName.substr(0, found+3);

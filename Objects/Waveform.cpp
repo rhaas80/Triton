@@ -78,11 +78,26 @@ void SetWaveformTypes() {
 
 /// Default constructor for an empty object
 WaveformObjects::Waveform::Waveform() :
-  history("### Waveform(); // empty constructor\n"), typeIndex(0), timeScale("Time"),
+  history(""), typeIndex(0), timeScale("Time"),
   t(0), r(0), frame(0), lm(0, 2), mag(0, 0), arg(0, 0)
 {
-  history.seekp(0, ios_base::end);
   SetWaveformTypes();
+  {
+    char path[MAXPATHLEN];
+    getcwd(path, MAXPATHLEN);
+    string pwd = path;
+    char host[MAXHOSTNAMELEN];
+    gethostname(host, MAXHOSTNAMELEN);
+    string hostname = host;
+    time_t rawtime;
+    time ( &rawtime );
+    string date = asctime ( localtime ( &rawtime ) );
+    history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
+	    << "### pwd = " << pwd << endl
+	    << "### hostname = " << hostname << endl
+	    << "### date = " << date // comes with a newline
+	    << "### Waveform(); // empty constructor" << endl;
+  }
 }
 
 /// Copy constructor
@@ -658,6 +673,9 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
   return;
 }
 
+// 
+// Constructors
+
 // x
 // Operators
 //   These functions are defined in Waveform/Waveform_Operators.cpp
@@ -674,11 +692,11 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
 // Adjust time axis
 //   These functions are defined in Waveform/Waveform_AdjustTime.cpp
 
-// 
+// x
 // Physical conversions for extrapolations or conversion to frequency space
 //   These functions are defined in Waveform/Waveform_PhysicalConversions.cpp
 
-// 
+// x
 // Manipulate (l,m) modes
 //   These functions are defined in Waveform/Waveform_ManipulateModes.cpp
 

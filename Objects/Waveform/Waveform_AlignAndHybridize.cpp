@@ -105,13 +105,16 @@ public:
   double darg(const double dt, const unsigned int mode) const {
     vector<double> argA = WaveformUtilities::Interpolate(a.T(), a.Arg(mode), t);
     vector<double> argB = WaveformUtilities::Interpolate(b.T(), b.Arg(mode), t-dt);
-    return trapz(t, argA-argB) / (t.back()-t[0]);
+    // return trapz(t, argA-argB) / (t.back()-t[0]);
+    return SplineCumulativeIntegral(t, argA-argB) / (t.back()-t[0]);
   }
   
   double operator()(const double dt) const {
     vector<double> argb = WaveformUtilities::Interpolate(b.T(), b.Arg(LMb), t-dt);
-    double darg = trapz(t, arga-argb) / (t.back()-t[0]);
-    return trapz(t, (arga-argb-darg)*(arga-argb-darg));
+    // double darg = trapz(t, arga-argb) / (t.back()-t[0]);
+    // return trapz(t, (arga-argb-darg)*(arga-argb-darg));
+    double darg = SplineCumulativeIntegral(t, arga-argb) / (t.back()-t[0]);
+    return SplineCumulativeIntegral(t, (arga-argb-darg)*(arga-argb-darg));
   }
 };
 
@@ -148,7 +151,7 @@ Waveform& WaveformObjects::Waveform::AlignTo(const Waveform& a, const double t1,
   for(unsigned int mode=0; mode<a.NModes() && mode<NModes(); ++mode) {
     ArgRef(mode) += (2.0 * M_PI * round((a.Arg(mode,Ia)-Arg(mode,Ithis)-M(mode)*darg22/2.0)/(2.0*M_PI))) + M(mode)*darg22/2.0;
   }
-  History() << "#### this->RotatePhase(" << darg22/2.0 << ");" << endl;
+  History() << "#### this->RotatePhase(" << darg22/2.0 << "); # Pseudo-command: Add (m times this phase) to each mode's phase." << endl;
   return *this;
 }
 

@@ -45,6 +45,24 @@ vector<Quaternion> WU::Squad(const vector<double>& tIn, const vector<Quaternion>
   return QOut;
 }
 
+vector<Quaternion> WU::dQdt_Squad(const vector<Quaternion>& QIn, const vector<double>& tIn) {
+  if(tIn.size()<2) {
+    cerr << "\ntIn.size()=" << tIn.size() << endl;
+    throw("Can't take derivative of fewer than 2 points.");
+  }
+  if(tIn.size()!=QIn.size()) {
+    cerr << "\ntIn.size()=" << tIn.size() << "  QIn.size()=" << QIn.size() << endl;
+    throw("Input size mismatch in dQdt_Squad");
+  }
+  vector<Quaternion> QOut(QIn.size());
+  QOut[0] = (QIn[0] * (QIn[0].Inverse()*QIn[1]).log()) * (1.0/(tIn[1]-tIn[0]));
+  for(unsigned int i=1; i<tIn.size()-1; ++i) {
+    QOut[i] = ( QIn[i] * ( (QIn[i].Inverse()*QIn[i+1]).log() - (QIn[i].Inverse()*QIn[i-1]).log()) ) / (tIn[i+1]-tIn[i-1]);
+  }
+  QOut[QOut.size()-1] = (QIn[QIn.size()-1] * (QIn[QIn.size()-2].Inverse()*QIn[QIn.size()-1]).log()) * (1.0/(tIn[tIn.size()-1]-tIn[tIn.size()-2]));
+  return QOut;
+}
+
 vector<Quaternion> WU::SquadVelocities(const vector<double>& tIn, const vector<Quaternion>& QIn) {
   cerr << "\n\nWARNING!!!  SquadVelocities may still assume evenly spaced samples!!!  (This needs to be checked.)\n" << endl;
   if(tIn.size()<2) {
@@ -60,7 +78,7 @@ vector<Quaternion> WU::SquadVelocities(const vector<double>& tIn, const vector<Q
   for(unsigned int i=1; i<tIn.size()-1; ++i) {
     v[i] = QIn[i] * (0.5 * ((QIn[i].Inverse()*QIn[i+1]).log()/(tIn[i+1]-tIn[i]) + (QIn[i-1].Inverse()*QIn[i]).log()/(tIn[i]-tIn[i-1])) );
   }
-  v[v.size()-1] = (QIn.back() * (QIn[QIn.size()-2].Inverse()*QIn.back()).log()) * (1.0/(tIn[tIn.size()-2]-tIn.back()));
+  v[v.size()-1] = (QIn.back() * (QIn[QIn.size()-2].Inverse()*QIn.back()).log()) * (1.0/(tIn.back()-tIn[tIn.size()-2]));
   return v;
 }
 

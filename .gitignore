@@ -11,4 +11,4 @@ _*.so
 *.d
 *.o
 *~
-
+*CalculatorOutput.cpp

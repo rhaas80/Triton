@@ -139,6 +139,8 @@ namespace WaveformObjects {
     double Peak22Time() const;
     unsigned int PeakFluxTimeIndex() const;
     double PeakFluxTime() const;
+    unsigned int PeakL2TimeIndex() const;
+    double PeakL2Time() const;
     std::vector<double> Omega2m2(const double t1=-1e300, const double t2=1e300) const;
     bool HasNaNs() const;
     std::vector<double> Flux() const;
@@ -161,12 +163,16 @@ namespace WaveformObjects {
     Waveform& UniformTimeToPowerOfTwo();
     Waveform& UniformTime(const unsigned int N=200);
     Waveform& NSamplesPerCycle22(const unsigned int N=20);
+    Waveform& MakeTimeMonotonic();
     
     // Physical conversions for extrapolations or conversion to frequency space
+    Waveform& SetArealRadius(const std::vector<double>& ArealRadius);
     Waveform& SetArealRadius(const std::string& AreaFileName);
     Waveform& RescaleMagForRadius(const double OldRadius);
+    Waveform& SetTimeFromAverageLapse(const std::vector<double>& AverageLapse, const double ADMMass);
     Waveform& SetTimeFromLapseSurfaceIntegral(const std::string& LapseFileName, const double ADMMass);
-    Waveform& TortoiseOffset(const double ADMMass);
+    Waveform& TortoiseRetard(const double ADMMass);
+    Waveform& TortoiseAdvance(const double ADMMass);
     Waveform& SetTotalMassToOne(const double TotalMassInCurrentUnits);
     Waveform& SetPhysicalMassAndDistance(const double TotalMassInSolarMasses, const double DistanceInMegaparsecs);
     
@@ -180,6 +186,8 @@ namespace WaveformObjects {
     Waveform& HackOddLPlusM(); // Change sign of mode if l+m is odd (Hack to fix RWZ extraction)
     Waveform& FixNonOscillatingData(); // If M=0, convert to ReIm from MagArg
     Waveform& UnfixNonOscillatingData(); // If M=0, convert from ReIm to MagArg
+    Waveform& ConvertReImToMagArg();
+    Waveform& ConvertMagArgToReIm();
     
     // Align and hybridize waveforms
     Waveform& AlignPhasesToTwoPi(const Waveform& a, const double tFrac=0.25);
@@ -205,7 +213,7 @@ namespace WaveformObjects {
     
     // Radiation-frame utilities
     Waveform& TransformToSchmidtFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
-    Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
+    Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0, const unsigned int NIterations=5);
     Waveform& TransformToStandardFrame();
     Waveform& TransformToStationaryFrame(const WaveformUtilities::Quaternion Q=WaveformUtilities::Quaternion(1,0,0,0));
     

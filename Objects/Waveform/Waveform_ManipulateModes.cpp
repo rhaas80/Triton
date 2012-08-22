@@ -183,10 +183,32 @@ Waveform& WaveformObjects::Waveform::UnfixNonOscillatingData() {
   //ORIENTATION!!! following loop
   for(unsigned int i=0; i<NModes(); ++i) { // Loop over components
     if(M(i)==0) {
-      vector<double> Re = mag[i];
+      vector<double> Re = Mag(i);
       vector<double> Im = Arg(i);
       MagArg(Re, Im, MagRef(i), ArgRef(i));
     }
+  }
+  return *this;
+}
+
+Waveform& WaveformObjects::Waveform::ConvertReImToMagArg() {
+  History() << "### this->ConvertReImToMagArg();" << endl;
+  //ORIENTATION!!! following loop
+  for(unsigned int i=0; i<NModes(); ++i) { // Loop over components
+    vector<double> Re = Mag(i);
+    vector<double> Im = Arg(i);
+    MagArg(Re, Im, MagRef(i), ArgRef(i));
+  }
+  return *this;
+}
+
+Waveform& WaveformObjects::Waveform::ConvertMagArgToReIm() {
+  History() << "### this->ConvertMagArgToReIm();" << endl;
+  //ORIENTATION!!! following loop
+  for(unsigned int i=0; i<NModes(); ++i) { // Loop over components
+    const vector<double> Im = Mag(i) * sin(Arg(i));
+    MagRef(i) = Mag(i) * cos(Arg(i));
+    ArgRef(i) = Im;
   }
   return *this;
 }

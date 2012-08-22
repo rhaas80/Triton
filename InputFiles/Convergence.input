@@ -44,6 +44,12 @@ BestLev = <BestLevGoesHere>;
 #ConvergenceAlignmentT1 = 3.0e300; ## Before doing convergence tests, align over this time range.
 #ConvergenceAlignmentT2 = 3.0e300; ## Ranges with either end at 3.0e300 will not attempt to align
 
+## If this flag is true, the peaks of the (2,2) modes will be aligned
+## before any other alignment takes place.  This is probably a good
+## idea in most cases, but for backwards compatibility the default is
+## false.  Also, it might be fooled if the junk radiation is huge.
+#AlignPeaks = false;
+
 ## If this is set to something greater than 0, all outputs will only
 ## contain (roughly) this many samples per cycle of the (2,2) mode.
 #OutputNSamplesPerCycle22 = 0;
