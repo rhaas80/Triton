@@ -552,7 +552,6 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas,
 	phi[k] = Ws[k].Arg(j,i);
       }
       
->>>>>>> release-1.1
       if(!UseSVD) {
 	//// Fit to polynomial in 1/R
 	ampFit.fit();
