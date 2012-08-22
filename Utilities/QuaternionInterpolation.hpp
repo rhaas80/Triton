@@ -25,6 +25,9 @@ namespace WaveformUtilities {
   /// Perform Squad interpolation, automatically setting the appropriate speeds.
   std::vector<Quaternion> Squad(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn, const std::vector<double>& tOut);
   
+  /// Evaluate time derivatives at each point, assuming squad interpolation.
+  std::vector<Quaternion> dQdt_Squad(const std::vector<Quaternion>& QIn, const std::vector<double>& tIn);
+  
   /// Determine the velocities at each point of a squad interpolation
   std::vector<Quaternion> SquadVelocities(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn);
   

@@ -156,7 +156,7 @@ std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<dou
   vector<double> gamma = -alpha*cos(beta) + cumtrapz(t, -sin(beta)*dydx(beta,t)*alpha);
   vector<WaveformUtilities::Quaternion> MinRotFrame = WaveformUtilities::Quaternions(alpha, beta, gamma);
   
-  // Now use that frame with the quaternion method for better(?) numerics
+  // Now use that frame with the quaternion method for better numerics
   const Quaternion z(0.,0.,0.,1.);
   for(unsigned int iteration=0; iteration<NIterations; ++iteration) {
     // Note that Component0 gives -1 times the dot product of two vectors 
