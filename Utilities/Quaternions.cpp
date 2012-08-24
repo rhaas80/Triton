@@ -274,9 +274,9 @@ std::vector<WaveformUtilities::Quaternion> WaveformUtilities::MinimalRotation(co
   const Quaternion z(0.,0.,0.,1.);
   for(unsigned int iteration=0; iteration<NIterations; ++iteration) {
     // Note that Component0 gives -1 times the dot product of two vectors
-    const vector<double> negativegammaover2 = SplineIntegral(t, Component0( Conjugate(MinRot) * dQdt_Squad(MinRot,t) * z ));
-    for(unsigned int i=0; i<negativegammaover2.size(); ++i) {
-      MinRot[i] = MinRot[i] * (negativegammaover2[i]*z).exp();
+    const vector<double> gammaover2 = SplineIntegral(t, Component0( Conjugate(MinRot) * dQdt_Squad(MinRot,t) * z ));
+    for(unsigned int i=0; i<gammaover2.size(); ++i) {
+      MinRot[i] = MinRot[i] * (gammaover2[i]*z).exp();
     }
   }
   return MinRot;
