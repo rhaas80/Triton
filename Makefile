@@ -1,4 +1,4 @@
-LIBDIRS:= Utilities PostNewtonian Objects
+LIBDIRS:= Utilities PostNewtonian Objects Python
 EXECDIRS:= Routines
 SUBDIRS:= $(LIBDIRS) #$(EXECDIRS)
 

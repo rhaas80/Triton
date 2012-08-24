@@ -82,12 +82,11 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, co
 	  ReData[mp+l] = Mag(ModeIndices[i], t)*cos(Arg(ModeIndices[i], t));
 	  ImData[mp+l] = Mag(ModeIndices[i], t)*sin(Arg(ModeIndices[i], t));
 	}
-	// Loop over each mode
 	for(int m=-l, i=0; m<=l; ++m, ++i) {
 	  MagRef(ModeIndices[i], t) = 0.0;
 	  ArgRef(ModeIndices[i], t) = 0.0;
-	  // Do the sum
 	  for(int mp=-l; mp<=l; ++mp) {
+	    // Save the data at this time step
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
 	    // if((m+mp)%2==0) { // (-1)^{m+mp}
 	      MagRef(ModeIndices[i], t) +=  DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
@@ -189,12 +188,11 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<doub
 	  ReData[mp+l] = Mag((l*l-4)+(mp+l), t)*cos(Arg((l*l-4)+(mp+l), t));
 	  ImData[mp+l] = Mag((l*l-4)+(mp+l), t)*sin(Arg((l*l-4)+(mp+l), t));
 	}
-	// Loop over each mode
 	for(int m=-l; m<=l; ++m) {
 	  MagRef((l*l-4)+(m+l), t) = 0.0;
 	  ArgRef((l*l-4)+(m+l), t) = 0.0;
-	  // Do the sum
 	  for(int mp=-l; mp<=l; ++mp) {
+	    // Save the data at this time step
 	    // NB: Mag and Arg are temporarily storing Re and Im data!
 	    // if((m+mp)%2==0) { // (-1)^{m+mp}
 	      MagRef((l*l-4)+(m+l), t) +=  DRe[mp+l][m+l]*ReData[mp+l] - DIm[mp+l][m+l]*ImData[mp+l];
@@ -293,11 +291,9 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<Wave
 	  MagData[mp+l] = Mag(ModeIndices[i], t);
 	  ArgData[mp+l] = Arg(ModeIndices[i], t);
 	}
-	// Loop over each mode
 	for(int m=-l, i=0; m<=l; ++m, ++i) {
 	  MagRef(ModeIndices[i], t) = 0.0;
 	  ArgRef(ModeIndices[i], t) = 0.0;
-	  // Do the sum
 	  for(int mp=-l; mp<=l; ++mp) {
 	    // Compute the addition to the data at this time step
 	    const double Mag = DMag[mp+l][m+l]*MagData[mp+l];
@@ -384,11 +380,9 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
 	  MagData[mp+l] = Mag(ModeIndices[i], t);
 	  ArgData[mp+l] = Arg(ModeIndices[i], t);
 	}
-	// Loop over each mode
 	for(int m=-l, i=0; m<=l; ++m, ++i) {
 	  MagRef(ModeIndices[i], t) = 0.0;
 	  ArgRef(ModeIndices[i], t) = 0.0;
-	  // Do the sum
 	  for(int mp=-l; mp<=l; ++mp) {
 	    // Compute the addition to the data at this time step
 	    const double Mag = DMag[mp+l][m+l]*MagData[mp+l];
