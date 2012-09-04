@@ -9,13 +9,93 @@ for a series of extrapolation orders.
 ## We use a class just to be able to set the parameters nicely.  This
 ## should be treated basically like a function.
 class Convergence :
+    """
+    Class to evaluate convergence of numerical waveforms.
+    
+    Construct this object to read Waveform data from various files,
+    corresponding to different Levs and/or extrapolation orders.
+    Various options are available for aligning the waveforms.  (This
+    feature in particular makes this script useful for evaluating
+    convergence with extrapolation order, whereas the extrapolation
+    itself does no alignment when calculating convergence.)
+    
+    Options	 	        Defaults
+    =================================================================
+    LevList                     ['../Lev4', '../Lev5', '../Lev6']
+        List of strings corresponding to (relative or absolute) path
+        names for directories containing the waveform data.
+    
+    BestLev                     LevList[-1]
+        This should be a string (probably from the list above)
+        corresponding to the best Lev, for which convergence of the
+        extrapolation will be calculated.  If this is the empty
+        string, that step will be skipped.
+    
+    RWZFiles                    'rhOverM_ExtrapolatedN{ExtrapOrder}.dat'
+    Psi4Files                   ''
+    FluxFiles                   ''
+        Python-formatted file names for the data sets.
+    
+    WaveformFormat              'MagArg'
+        A string containing the waveform's format, which can be either
+        'MagArg' or 'ReIm'.
+    
+    ExtrapolationOrders         [-1, 5]
+        List of extrapolation orders to be compared for convergence of
+        the Levs.  That is, each of these numbers is held fixed, and
+        the Levs are compared.
+    
+    BestExtrapolationh          self.BestLev+'/'+(self.RWZFiles.format(ExtrapOrder=self.ExtrapolationOrders[0]))
+        If this is non-empty, this file will be read, and the flux
+        will be measured as a function of time.  The corresponding
+        time will be marked on the output plots.
+    
+    ConvergenceAlignmentT1      3.0e300
+    ConvergenceAlignmentT2      3.0e300
+        If these numbers do not have their default values, they will
+        be used as the time windows over which the waveforms should be
+        aligned.
+    
+    MutualAlignmentApproximant  ''
+    delta                       0.0
+    chis                        0.0
+    chia                        0.0
+    v0                          0.144
+        If these parameters are given, a PN waveform will be
+        constructed with the given parameters and aligned to the first
+        waveform.  The second waveform will then be alligned to this
+        shifted PN waveform.
+    
+    DifferenceFiles             '{DataType}_{Quantity1}-{Quantity2}_{Constant}'+AlignmentString+'.dat'
+        Python-formatted string naming the output difference files.
+        Named arguments are DataType as the waveform's type (such as
+        'rhOverM').  Quantity1 and Quantity2 are the last distinct
+        elements of the input paths.  Constant is the quantity held
+        constant in the two cases, such as extrapolation order or Lev.
+    
+    OutputNSamplesPerCycle22    0
+        Output data at roughly a certain number of samples per cycle
+        of the 2,2 mode, rather than at (roughly) the input times.
+        This helps reduce ridiculous file sizes, and improve the speed
+        of PDF files.  But high-frequency features may be lost.  If
+        this is 0, all input samples will be output.
+    
+    DropBeforeTime              -3.0e300
+        Drop data before this time.  (Might correspond to a
+        junk-radiation time, for example.)
+    
+    DropAfterTime               3.0e300
+        Drop data after this time.
+    
+    """
+    
     def SetParameter(self, VariableName, DefaultValue) :
         if VariableName in self.ParameterDictionary :
             setattr(self, VariableName, self.ParameterDictionary[VariableName])
         else :
             setattr(self, VariableName, DefaultValue)
     
-    def __init__ (self, FileName="", Dictionary={}) :
+    def __init__ (self, Dictionary={}, FileName="") :
         import PyGW
         import PyGW.plot
         import sys
@@ -251,7 +331,7 @@ if __name__ == "__main__":
         OriginalDir = os.getcwd()
         for filename in sys.argv[1:] :
             os.chdir(os.path.dirname(filename))
-            Convergence(os.path.basename(filename))
+            Convergence(FileName=os.path.basename(filename))
             os.chdir(OriginalDir)
     else :
         Convergence()

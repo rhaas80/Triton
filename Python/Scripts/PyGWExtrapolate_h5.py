@@ -213,7 +213,7 @@ if __name__ == "__main__":
         OriginalDir = os.getcwd()
         for filename in sys.argv[1:] :
             os.chdir(os.path.dirname(filename))
-            Extrapolate(os.path.basename(filename))
+            Extrapolate(FileName=os.path.basename(filename))
             os.chdir(OriginalDir)
     else :
         Extrapolate()
