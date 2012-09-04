@@ -32,7 +32,7 @@ realclean:
 PyGW : _WaveformObjects.so
 
 _WaveformObjects.so : WaveformObjects.i ../Utilities/libUtilities.so ../PostNewtonian/libPostNewtonian.so ../Objects/libObjects.so
-	swig -c++ -python -outdir PyGW WaveformObjects.i
+	${SWIG} -c++ -python -outdir PyGW WaveformObjects.i
 	@:
 	$(C++) -DSWIG -c $(IFLAGS) -fPIC `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
 		-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/ \
@@ -45,7 +45,7 @@ _WaveformObjects.so : WaveformObjects.i ../Utilities/libUtilities.so ../PostNewt
 SWSHs : _SWSHs.so
 
 _SWSHs.so : SWSHs.i
-	swig -c++ -python SWSHs.i
+	${SWIG} -c++ -python SWSHs.i
 	@:
 	$(C++) -DSWIG -c $(IFLAGS) -fPIC `python-config --cflags | perl -pe 's/ -Wstrict-prototypes//'` \
 		-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/ \

@@ -2,6 +2,45 @@
 
 SHELL := /bin/bash
 
+# ifndef HDF5_HOME
+#   ifdef HDF5_DIR
+#     HDF5_HOME = ${HDF5_DIR}
+#   endif
+# endif
+
+# ifndef HDF5_HOME
+#   $(warning You need to define the HDF5_HOME or HDF5_DIR variable pointing)
+#   $(warning to the root of the hdf5 'include' and 'lib' directories.)
+#   $(warning On zwicky, do something like 'module add gcc/4.6.1 HDF5 python/2.7.2-gcc-4.6.1'.)
+#   $(warning On prawn, do something like 'module add gcc hdf5 python/2.7.1'.)
+#   $(error Cannot proceed)
+# endif
+
+# H5INC		= -I${HDF5_HOME}/include/
+# H5LIB		= -L${HDF5_HOME}/lib/ -lhdf5 -lhdf5_cpp
+
+H5INC = 
+H5LIB = 
+
+## For intel compilers:
+# C++		= icpc
+# OPENMP		= -openmp
+
+## For gcc compilers:
+C++		= g++
+OPENMP		= -fopenmp
+
+## These options should work with all compilers
+C++LINK		= ${C++} ${H5LIB}
+MAKEDEPEND	= ${C++} -MM
+C++FLAGS	= ${H5INC} -fPIC -O3 ${OPENMP}
+
+## Use these for debug builds
+# OPENMP		= 
+# C++FLAGS	= -Wall -pg -g ${OPENMP} -DDEBUG
+
+
+
 ifndef OSTYPE
   $(warning The OSTYPE variable needs to be defined.)
   $(warning If this is defined in your normal shell,)
@@ -12,28 +51,13 @@ ifndef OSTYPE
   $(error Cannot proceed)
 endif
 
-ifndef HDF5_HOME
-  ifdef HDF5_DIR
-    HDF5_HOME = ${HDF5_DIR}
-  endif
-endif
-
-ifndef HDF5_HOME
-  $(warning You need to define the HDF5_HOME or HDF5_DIR variable pointing)
-  $(warning to the root of the hdf5 'include' and 'lib' directories.)
-  $(warning On zwicky, do something like 'module add gcc/4.6.1 HDF5 python/2.7.2-gcc-4.6.1'.)
-  $(warning On prawn, do something like 'module add gcc hdf5 python/2.7.1'.)
-  $(error Cannot proceed)
-endif
-
-H5INC		= -I${HDF5_HOME}/include/
-H5LIB		= -L${HDF5_HOME}/lib/ -lhdf5 -lhdf5_cpp
-
-C++		= g++
-C++LINK		= g++ ${H5LIB}
-MAKEDEPEND	= g++ -MM
-
 ifeq ($(OSTYPE),darwin)
+	SHARED	= -dynamiclib -undefined dynamic_lookup -single_module
+	INSTALL_NAME_TOOL = install_name_tool -id $(CURDIR)/../lib/lib$(THISDIR).so lib$(THISDIR).so
+else ifeq ($(OSTYPE),darwin11)
+	SHARED	= -dynamiclib -undefined dynamic_lookup -single_module
+	INSTALL_NAME_TOOL = install_name_tool -id $(CURDIR)/../lib/lib$(THISDIR).so lib$(THISDIR).so
+else ifeq ($(OSTYPE),darwin12)
 	SHARED	= -dynamiclib -undefined dynamic_lookup -single_module
 	INSTALL_NAME_TOOL = install_name_tool -id $(CURDIR)/../lib/lib$(THISDIR).so lib$(THISDIR).so
 else ifeq ($(OSTYPE),linux)
@@ -54,11 +78,4 @@ ECHO		= echo
 LN		= ln -sf
 SED		= sed
 DIFF		= diff
-
-## Use this for debug builds
-# OPENMP		= 
-# C++FLAGS	= -Wall -pg -g ${OPENMP} -DDEBUG
-
-## Use this for standard builds
-OPENMP		= -fopenmp
-C++FLAGS	= ${H5INC} -fPIC -O3 ${OPENMP}
+SWIG		= swig
