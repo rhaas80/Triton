@@ -81,7 +81,7 @@ class Extrapolate :
         else :
             setattr(self, VariableName, DefaultValue)
     
-    def __init__ (self, FileName="", Dictionary={}) :
+    def __init__ (self, Dictionary={}, FileName="") :
         import PyGW
         import numpy as npy
         from time import time
