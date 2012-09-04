@@ -189,6 +189,9 @@ namespace std {
 %insert("python") %{
 
 def PickChMass(File='Horizons.h5') :
+    """
+    Deduce the best Christodoulou mass by finding the mode.
+    """
     import h5py
     f=h5py.File(File)
     ChMass = f['AhA.dir/ChristodoulouMass.dat'][:,1]+f['AhB.dir/ChristodoulouMass.dat'][:,1]
@@ -197,6 +200,9 @@ def PickChMass(File='Horizons.h5') :
     return bins[hist.argmax()]
 
 def MonotonicIndices(T) :
+    """
+    Given an array of times, return the indices that make the array strictly monotonic.
+    """
     import numpy
     Ind = range(len(T))
     Size = len(Ind)
@@ -213,7 +219,10 @@ def MonotonicIndices(T) :
         i+=1
     return Ind
 
-def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5') :
+def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5', Radii=[]) :
+    """
+    Read data at various radii, and offset by tortoise coordinate.
+    """
     import h5py
     import PyGW
     import re
@@ -221,6 +230,12 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     YlmRegex = re.compile(r"""Y_l(?P<L>[0-9]+)_m(?P<M>[-0-9]+)\.dat""")
     f = h5py.File(Dir+'/'+File, 'r')
     WaveformNames = list(f)
+    if(not Radii) :
+        # If the list of Radii is empty, figure out what they are
+        Radii = [m.group('r') for Name in list(f) for m in [re.compile(r"""R(?P<r>.*?)\.dir""").search(Name)] if m]
+    else :
+        # Pare down the WaveformNames list appropriately
+        WaveformNames = [Name for Name in WaveformNames for Radius in Radii for m in [re.compile(Radius).search(Name)] if m]
     NWaveforms = len(WaveformNames)
     Ws = PyGW.Waveforms(NWaveforms)
     TempW = PyGW.Waveform()
@@ -269,6 +284,6 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
         Ws[n] = TempW
     f.close()
     Ws.AppendHistory("### PyGW.ReadFiniteRadiusData(ChMass={0}, Dir='{1}', File='{2}')".format(ChMass, Dir, File))
-    return Ws,InitialAdmEnergy
+    return Ws,InitialAdmEnergy,Radii
 
   %}
