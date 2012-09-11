@@ -32,7 +32,20 @@ using std::setprecision;
 
 int BufferSize = 1000;
 
+string Deprecated = "\n\n\n"
+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+"!!!!! Warning: This script is deprecated, and may !!!!!"
+"!!!!! not be supported.  The currently supported  !!!!!"
+"!!!!! scripts is PyGWExtrapolate*.py in the       !!!!!"
+"!!!!! Python/Scripts directory.                   !!!!!"
+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+"\n\n\n";
+
 int main () {
+  cerr << Deprecated << endl;
+  
   //// Set up input parameters
   vector<double> Radii(0);
   vector<int> ExtrapolationOrders(StringToVectorInt("-1 2 3 4 5 6 7 8"));
@@ -157,6 +170,8 @@ int main () {
       Last = Extrap;
     } catch(...) { cout << "Bad extrapolation ☹\n" << endl; }
   }
+  
+  cerr << Deprecated << endl;
   
   return 0;
 }
