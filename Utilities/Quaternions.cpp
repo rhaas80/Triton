@@ -183,15 +183,16 @@ std::vector<double> Quaternion::EulerAnglesZYZ() const {
 
 Quaternion Quaternion::exp() const {
   Quaternion P;
-  double b = sqrt(q1*q1 + q2*q2 + q3*q3);
+  const double b = sqrt(q1*q1 + q2*q2 + q3*q3);
   if (b<=3*numeric_limits<double>::epsilon()) {
     P[0] = ::exp(q0);
   } else {
-    double f = sin(b)/b;
-    P[0] = ::exp(q0)*cos(b);
-    P[1] = f*q1;
-    P[2] = f*q2;
-    P[3] = f*q3;
+    const double e = ::exp(q0);
+    const double f = sin(b)/b;
+    P[0] = e*cos(b);
+    P[1] = e*f*q1;
+    P[2] = e*f*q2;
+    P[3] = e*f*q3;
   }
   return P;
 }
