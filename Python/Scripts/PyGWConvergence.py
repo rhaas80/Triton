@@ -148,8 +148,8 @@ class Convergence :
         for Files in [self.RWZFiles, self.Psi4Files] :
             if(Files!='') :
                 for i in range(len(self.ExtrapolationOrders)) :
-                    figmag = plt.figure('Mag')
-                    figarg = plt.figure('Arg')
+                    figmag = plt.figure(0)
+                    figarg = plt.figure(1)
                     for iLev in range(1,len(self.LevList)) :
                         LastLev = self.LevList[iLev-1]
                         NextLev = self.LevList[iLev]
@@ -172,7 +172,7 @@ class Convergence :
                         Index1 = LastLev.rfind("/")
                         Index2 = NextLev.rfind("/")
                         Quantity1 = LastLev[Index1+1:]
-                        Quantity2 = LastLev[Index2+1:]
+                        Quantity2 = NextLev[Index2+1:]
                         while(Quantity1==Quantity2) :
                             Index1Old = Index1
                             Index2Old = Index2
@@ -195,13 +195,13 @@ class Convergence :
                         PyGW.Output(DiffFile, Diff[0]);
                         sys.stdout.write("\n\tand plotting ... ")
                         sys.stdout.flush()
-                        plt.figure('Mag')
+                        plt.figure(0)
                         Diff[0].plot('LogMag', Modes=[[2,2]], label=r'({0})$ - $({1})'.format(LastLev, NextLev))
-                        plt.figure('Arg')
+                        plt.figure(1)
                         Diff[0].plot('LogArg', Modes=[[2,2]], label=r'({0})$ - $({1})'.format(LastLev, NextLev))
                         print("☺")
                     
-                    plt.figure('Mag')
+                    plt.figure(0)
                     plt.legend(loc=2)
                     plt.gca().set_ylim(1e-8, 100)
                     if(MaxFluxTime!=3.0e300) :
@@ -210,7 +210,7 @@ class Convergence :
                                                                                                     Constant=("N"+str(self.ExtrapolationOrders[i])),
                                                                                                     Alignment=AlignmentString))
                     plt.close(figmag)
-                    plt.figure('Arg')
+                    plt.figure(1)
                     plt.legend(loc=2)
                     plt.gca().set_ylim(1e-8, 100)
                     if(MaxFluxTime!=3.0e300) :
@@ -224,7 +224,7 @@ class Convergence :
             from scipy.interpolate import UnivariateSpline
             from numpy import genfromtxt, savetxt
             for i in range(len(self.ExtrapolationOrders)) :
-                figflux = plt.figure('Flux')
+                figflux = plt.figure(2)
                 for iLev in range(1,len(self.LevList)) :
                     LastLev = self.LevList[iLev-1]
                     NextLev = self.LevList[iLev]
@@ -248,10 +248,10 @@ class Convergence :
                     DiffFileHandle.close()
                     sys.stdout.write("\n\tand plotting ... ")
                     sys.stdout.flush()
-                    plt.figure('Flux')
+                    plt.figure(2)
                     plt.plot(OmegaA, FluxDiff/PNFlux, label='({0})$ - $({1})'.format(LastLev[LastLev.rfind("/")+1:], NextLev[NextLev.rfind("/")+1:]))
                     print("☺")
-                plt.figure('Flux')
+                plt.figure(2)
                 plt.legend(loc=2)
                 plt.gca().set_xlim(0, 1)
                 plt.gca().set_ylim(0, 2)
@@ -264,8 +264,8 @@ class Convergence :
         # Do the extrapolation convergence
         for Files in [self.RWZFiles, self.Psi4Files] :
             if( (Files!='') and (self.BestLev!='') ) :
-                figmag = plt.figure('Mag')
-                figarg = plt.figure('Arg')
+                figmag = plt.figure(0)
+                figarg = plt.figure(1)
                 for i in range(1,len(self.ExtrapolationOrders)) :
                     Higher = (self.BestLev + "/" + Files).format(ExtrapOrder=self.ExtrapolationOrders[i])
                     Lower  = (self.BestLev + "/" + Files).format(ExtrapOrder=self.ExtrapolationOrders[i-1])
@@ -297,12 +297,12 @@ class Convergence :
                     PyGW.Output(DiffFile, Diff[0])
                     sys.stdout.write("\n\tand plotting ... ")
                     sys.stdout.flush()
-                    plt.figure('Mag')
+                    plt.figure(0)
                     Diff[0].plot('LogMag', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(self.ExtrapolationOrders[i], self.ExtrapolationOrders[i-1]))
-                    plt.figure('Arg')
+                    plt.figure(1)
                     Diff[0].plot('LogArg', Modes=[[2,2]], label=r'$(N={0}) - (N={1})$'.format(self.ExtrapolationOrders[i], self.ExtrapolationOrders[i-1]))
                     print("☺")
-                plt.figure('Mag')
+                plt.figure(0)
                 plt.legend(loc=2)
                 plt.gca().set_ylim(1e-8, 10)
                 if(MaxFluxTime!=3.0e300) :
@@ -311,7 +311,7 @@ class Convergence :
                                                                                                    Constant=self.BestLev[self.BestLev.rfind("/")+1:],
                                                                                                    Alignment=AlignmentString))
                 plt.close(figmag)
-                plt.figure('Arg')
+                plt.figure(1)
                 plt.legend(loc=2)
                 plt.gca().set_ylim(1e-8, 100)
                 if(MaxFluxTime!=3.0e300) :

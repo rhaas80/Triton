@@ -34,10 +34,23 @@ using std::ifstream;
 using std::stringstream;
 using std::setprecision;
 
+string Deprecated = "\n\n\n"
+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+"!!!!! Warning: This script is deprecated, and may !!!!!"
+"!!!!! not be supported.  The currently supported  !!!!!"
+"!!!!! scripts is PyGWConvergence*.py in the       !!!!!"
+"!!!!! Python/Scripts directory.                   !!!!!"
+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+"\n\n\n";
+
 void ReadFluxFile(const string& InFileName, string& Header, vector<double>& T, vector<double>& Omega2m2,
 		  vector<double>& Flux, vector<double>& PNFlux, vector<double>& NormalizedFlux);
 
 int main() {
+  cerr << Deprecated << endl;
+  
   //// Set up input parameters
   string LevList = "../Lev4 ../Lev5 ../Lev6";
   string BestLev = "../Lev6";
@@ -302,6 +315,8 @@ int main() {
       cout << "☺" << endl;
     }
   
+  cerr << Deprecated << endl;
+  
   return 0;
 }
 
@@ -351,5 +366,6 @@ void ReadFluxFile(const string& InFileName, string& Header, vector<double>& T, v
 	 << " for reading."  << endl;
     throw("Bad file name");
   }
+  
   return;
 }

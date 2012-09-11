@@ -24,7 +24,11 @@ from matplotlib.pyplot import plot as matplotlibpyplotplot
 from matplotlib.pyplot import semilogx as matplotlibpyplotsemilogx
 from matplotlib.pyplot import semilogy as matplotlibpyplotsemilogy
 from matplotlib.pyplot import loglog as matplotlibpyplotloglog
-from matplotlib.pyplot import xlabel, ylabel, tight_layout, setp
+from matplotlib.pyplot import xlabel, ylabel, setp
+try :
+    from matplotlib.pyplot import tight_layout
+except :
+    pass
 from matplotlib.pyplot import isinteractive, ioff, ion, draw, show, gcf
 from warnings import warn
 from numpy import array, empty, transpose, sin, cos
@@ -154,7 +158,7 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
     
     try :
         tight_layout(pad=0.1)
-    except RuntimeError :
+    except :
         pass
     
     for i in range(len(Lines)) :
@@ -164,8 +168,8 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
 
 
 
-# The following allows us to write things like
-#   Waveform W
-#   W.plot('Mag', ((2,2), (2,-2)))
+### The following allows us to write things like
+###   W = PyGW.Waveform()
+###   W.plot('Mag', ((2,2), (2,-2)))
 import PyGW
 PyGW.WaveformObjects.Waveform.plot = plotWaveform

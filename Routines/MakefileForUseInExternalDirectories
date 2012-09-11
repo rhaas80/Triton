@@ -6,7 +6,7 @@ BASE = $(wildcard /Users/boyle/Research/Triton/)
 
 
 ## This is a basic executables-building makefile; the lines below shouldn't need much tweaking.
-SUBLIBS = ${BASE}WaveformManip ${BASE}Objects ${BASE}PostNewtonian ${BASE}Utilities
+SUBLIBS = ${BASE}Objects ${BASE}PostNewtonian ${BASE}Utilities
 include ${BASE}MachineDef
 
 VPATH = $(SUBLIBS)

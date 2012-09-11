@@ -111,9 +111,11 @@ class Extrapolate :
         # If there's an input file, read it in
         if(FileName!="") :
             execfile(FileName)
-            
+        
         # Don't bother loading modules unless we're plotting
         if(self.PlotFormat) :
+            import matplotlib
+            matplotlib.use('Agg')
             import PyGW.plot
             import matplotlib.pyplot as plt
         
@@ -216,13 +218,13 @@ class Extrapolate :
                 plt.legend(borderpad=.2, labelspacing=0.1, handlelength=1.5, handletextpad=0.1, loc='lower left', prop={'size':'small'})
                 plt.gca().set_ylim(1e-11, 10)
                 plt.gca().axvline(x=MaxFluxTime, ls='--')
-                figmag.savefig('{0}/ExtrapConvergence_Mag_{1}.{2}'.format(self.OutputDirectory, WFType, PlotFormat))
+                figmag.savefig('{0}/ExtrapConvergence_Mag_{1}.{2}'.format(self.OutputDirectory, WFType, self.PlotFormat))
                 plt.close(figmag)
                 plt.figure(1)
                 plt.legend(borderpad=.2, labelspacing=0.1, handlelength=1.5, handletextpad=0.1, loc='lower left', prop={'size':'small'})
                 plt.gca().set_ylim(1e-11, 10)
                 plt.gca().axvline(x=MaxFluxTime, ls='--')
-                figarg.savefig('{0}/ExtrapConvergence_Arg_{1}.{2}'.format(self.OutputDirectory, WFType, PlotFormat))
+                figarg.savefig('{0}/ExtrapConvergence_Arg_{1}.{2}'.format(self.OutputDirectory, WFType, self.PlotFormat))
                 plt.close(figarg)
 
 if __name__ == "__main__":
