@@ -66,6 +66,14 @@ class Extrapolate :
         which case no plotting is done.  Or, these can be any of the
         formats supported by your installation of matplotlib.
     
+    MinTimeStep          0.005
+        The smallest allowed time step in the output data.
+    
+    EarliestTime         -3.0e300
+        The earliest time in the output data.  For values less than 0,
+        some of the data corresponds to times when only junk radiation
+        is present.
+    
     """
     
     def SetParameter(self, VariableName, DefaultValue) :
@@ -121,7 +129,7 @@ class Extrapolate :
         for DataFile in self.DataFiles :
             # Read in the Waveforms and set things up nicely
             Ws,self.ADMMass,self.Radii = PyGW.ReadFiniteRadiusData(self.ChMass, self.InputDirectory, DataFile, self.Radii)
-            Ws.SetCommonTime();
+            Ws.SetCommonTime(self.MinTimeStep, self.EarliestTime);
             Ws.FixNonOscillatingData();
             
             # Make sure there are enough radii to do the requested extrapolations

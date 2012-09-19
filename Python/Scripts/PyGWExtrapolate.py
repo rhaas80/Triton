@@ -72,7 +72,15 @@ class Extrapolate :
         The format of output plots.  This can be the empty string, in
         which case no plotting is done.  Or, these can be any of the
         formats supported by your installation of matplotlib.
-
+    
+    MinTimeStep          0.005
+        The smallest allowed time step in the output data.
+    
+    EarliestTime         -3.0e300
+        The earliest time in the output data.  For values less than 0,
+        some of the data corresponds to times when only junk radiation
+        is present.
+    
     """
     
     def SetParameter(self, VariableName, DefaultValue) :
@@ -107,6 +115,8 @@ class Extrapolate :
         self.SetParameter('UseSVD', True)
         self.SetParameter('UseOmegas', True)
         self.SetParameter('PlotFormat', 'png')
+        self.SetParameter('MinTimeStep', 0.005)
+        self.SetParameter('EarliestTime', -3.0e300)
         
         # If there's an input file, read it in
         if(FileName!="") :
@@ -148,7 +158,7 @@ class Extrapolate :
             Ws = PyGW.Waveforms(npy.array([float(s) for s in self.Radii]),
                                 self.InputDirectory+'/'+DataFile, self.InputDirectory+'/'+self.AreaFile, self.InputDirectory+'/'+self.LapseFile,
                                 self.ADMMass, self.ChMass, False);
-            Ws.SetCommonTime();
+            Ws.SetCommonTime(self.MinTimeStep, self.EarliestTime);
             Ws.FixNonOscillatingData();
             
             # Loop over all the ExtrapolationOrders, doing the dirty business
