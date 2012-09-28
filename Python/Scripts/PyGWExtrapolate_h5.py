@@ -106,6 +106,8 @@ class Extrapolate :
         self.SetParameter('UseSVD', True)
         self.SetParameter('UseOmegas', True)
         self.SetParameter('PlotFormat', 'png')
+        self.SetParameter('MinTimeStep', 0.005)
+        self.SetParameter('EarliestTime', -3.0e300)
         
         # If there's an input file, read it in
         if(FileName!="") :

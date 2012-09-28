@@ -18,9 +18,8 @@ To extrapolate non-H5 files, see the similar file named
 from PyGWExtrapolate_h5 import Extrapolate
 
 D = {}
-D['InputDirectory'] = '/path/to/data/directory'  # May be relative
-D['OutputDirectory'] = '/path/to/output/directory'  # May be relative
-D['ADMMass'] = 1.01  # In the same units as the input data
+D['InputDirectory'] = '/path/to/data/directory'  # May be relative or absolute
+D['OutputDirectory'] = '/path/to/output/directory'  # May be relative or absolute
 D['ChMass'] = 0.99  # In the same units as the input data
 
 Extrapolate(Dictionary=D)
