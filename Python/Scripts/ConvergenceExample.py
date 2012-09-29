@@ -6,9 +6,10 @@ Demonstrate usage of the convergence script.
 This is an example script to demonstrate how to run convergence.  The
 variables below should be set to other values so that they make sense.
 But otherwise, this is a working example.  To run, simply make this
-script executable and run from the command prompt.  For a list of
-other options that may be adjusted, see the help text of the
-'Convergence' class in PyGWConvergence.py.
+script executable and run from the command prompt.
+
+Note that numerous other options are avilable; see the docstring in
+Triton/Python/Scripts/PyGWConvergence.py for more information.
 
 """
 
