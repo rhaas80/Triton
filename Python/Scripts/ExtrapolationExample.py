@@ -10,6 +10,9 @@ this script executable and run from the command prompt.
 For a list of other options that may be adjusted, see the help text of
 the 'Extrapolate' class in PyGWExtrapolate.py.
 
+Note that numerous other options are avilable; see the docstring in
+Triton/Python/Scripts/PyGWExtrapolate for more information.
+
 To extrapolate H5 files, see the similar file named
 'ExtrapolationExample_h5.py'.
 

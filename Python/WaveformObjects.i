@@ -193,6 +193,9 @@ def PickChMass(File='Horizons.h5') :
     Deduce the best Christodoulou mass by finding the mode.
     """
     import h5py
+    import os
+    if(os.path.isdir(File)) :
+        File = File + 'Horizons.h5'
     f=h5py.File(File, 'r')
     ChMass = f['AhA.dir/ChristodoulouMass.dat'][:,1]+f['AhB.dir/ChristodoulouMass.dat'][:,1]
     f.close()

@@ -137,6 +137,10 @@ class Extrapolate :
         else :
             self.DataFiles = [DataFile]
         
+        # If directory names are empty strings, assume they are "./"
+        if(not self.InputDirectory)  : self.InputDirectory  = "./"
+        if(not self.OutputDirectory) : self.OutputDirectory = "./"
+        
         # Do the extrapolation, looping over the different types of data in DataFiles
         MaxFluxTime = -1000.0;
         for DataFile in self.DataFiles :
