@@ -34,7 +34,10 @@ class Convergence :
     RWZFiles                    'rhOverM_ExtrapolatedN{ExtrapOrder}.dat'
     Psi4Files                   ''
     FluxFiles                   ''
-        Python-formatted file names for the data sets.
+        Python-formatted file names for the data sets.  Note that
+        '{ExtrapOrder}' should NOT be removed or replaced; it is
+        automatically converted into the number of the relevant
+        extrapolation order.
     
     WaveformFormat              'MagArg'
         A string containing the waveform's format, which can be either
@@ -68,10 +71,12 @@ class Convergence :
     
     DifferenceFiles             '{DataType}_{Quantity1}-{Quantity2}_{Constant}'+AlignmentString+'.dat'
         Python-formatted string naming the output difference files.
-        Named arguments are DataType as the waveform's type (such as
-        'rhOverM').  Quantity1 and Quantity2 are the last distinct
-        elements of the input paths.  Constant is the quantity held
-        constant in the two cases, such as extrapolation order or Lev.
+        For python, things between curly braces '{}' are replaced with
+        named arguments given below.  The named arguments are:
+        'DataType' as the waveform's type (such as 'rhOverM');
+        'Quantity1' and 'Quantity2' are the last distinct elements of
+        the input paths; 'Constant' is the quantity held constant in
+        the two cases, such as extrapolation order or Lev.
     
     OutputNSamplesPerCycle22    0
         Output data at roughly a certain number of samples per cycle
@@ -155,6 +160,10 @@ class Convergence :
                         NextLev = self.LevList[iLev]
                         LastFile = (LastLev + "/" + Files).format(ExtrapOrder=self.ExtrapolationOrders[i])
                         NextFile = (NextLev + "/" + Files).format(ExtrapOrder=self.ExtrapolationOrders[i])
+                        if(LastFile==NextFile) :
+                            raise(ValueError("LastFile=NextFile='{0}'.  These should be different.  "
+                                             "A python format string is probably missing from 'RWZFiles'={1} "
+                                             "or 'Psi4Files'".format(LastFile, self.RWZFiles, self.Psi4Files)))
                         sys.stdout.write("Computing {0} - {1} ... ".format(LastFile, NextFile))
                         sys.stdout.flush()
                         Diff[0] = PyGW.Waveform(LastFile, self.WaveformFormat);
@@ -228,8 +237,8 @@ class Convergence :
                 for iLev in range(1,len(self.LevList)) :
                     LastLev = self.LevList[iLev-1]
                     NextLev = self.LevList[iLev]
-                    LastFile = (LastLev + "/" + Files).format(ExtrapOrder=self.ExtrapolationOrders[i])
-                    NextFile = (NextLev + "/" + Files).format(ExtrapOrder=self.ExtrapolationOrders[i])
+                    LastFile = (LastLev + "/" + self.FluxFiles).format(ExtrapOrder=self.ExtrapolationOrders[i])
+                    NextFile = (NextLev + "/" + self.FluxFiles).format(ExtrapOrder=self.ExtrapolationOrders[i])
                     sys.stdout.write("Computing {0} - {1} ... ".format(LastFile, NextFile))
                     sys.stdout.flush()
                     T,OmegaB,FluxB,PNFlux,NormalizedFlux = transpose(genfromtxt(LastFile))
@@ -269,6 +278,10 @@ class Convergence :
                 for i in range(1,len(self.ExtrapolationOrders)) :
                     Higher = (self.BestLev + "/" + Files).format(ExtrapOrder=self.ExtrapolationOrders[i])
                     Lower  = (self.BestLev + "/" + Files).format(ExtrapOrder=self.ExtrapolationOrders[i-1])
+                    if(Higher==Lower) :
+                        raise(ValueError("Higher=Lower='{0}'.  These should be different.  "
+                                         "A python format string is probably missing from 'RWZFiles'={1} "
+                                         "or 'Psi4Files'={2}".format(LastFile, self.RWZFiles, self.Psi4Files)))
                     sys.stdout.write("Computing {0} - {1} ... ".format(Higher, Lower))
                     sys.stdout.flush()
                     Diff[0] = PyGW.Waveform(Higher, self.WaveformFormat);
