@@ -17,6 +17,13 @@ from PyGWConvergence import Convergence
 
 D = {}
 D['LevList'] = ['../Lev1', '../Lev2', '../Lev3']  # Paths may be relative
+
 D['RWZFiles'] = 'rh_ExtrapolatedN{ExtrapOrder}.dat'
+# Note: In the above '{ExtrapOrder}' should NOT be removed or replaced
+#       with anything else; this is a python format string, and is
+#       automatically replaced by a number corresponding to the
+#       extrapolation orders you give as D['ExtrapolationOrders'],
+#       which defaults to [-1,5].  See the docstring in
+#       PyGWConvergence.py for more information.
 
 Convergence(Dictionary=D)
