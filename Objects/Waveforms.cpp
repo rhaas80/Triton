@@ -542,7 +542,11 @@ Waveform WaveformObjects::Waveforms::Extrapolate(Waveform& Sigmas,
       const int M = Ws[0].M(j);
       for(unsigned int k=0; k<Ws.size(); ++k) {
 	const double Radius = Ws[k].R(i);
-	oor[k] = (M*lambdabar) / Radius;
+	if(M==0) {
+	  oor[k] = 1.0 / Radius;
+	} else {
+	  oor[k] = (M*lambdabar) / Radius;
+	}
 	sig[k] = Radius/MinRadius;
       }
       
@@ -722,7 +726,11 @@ Waveform WaveformObjects::Waveforms::ExtrapolateAndPreserveResiduals(Waveform& S
       const int M = Ws[0].M(j);
       for(unsigned int k=0; k<Ws.size(); ++k) {
 	const double Radius = Ws[k].R(i);
-	oor[k] = (M*lambdabar) / Radius;
+	if(M==0) {
+	  oor[k] = 1.0 / Radius;
+	} else {
+	  oor[k] = (M*lambdabar) / Radius;
+	}
 	sig[k] = Radius/MinRadius;
       }
     
