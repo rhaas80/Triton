@@ -141,8 +141,8 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
   /// the header, assuming standard SpEC output.  That is, the header
   /// is assumed to contain lines like \n
   ///     # [1] = (t-r*)/M \n
-  ///     # [2] = Mag{rMPsi4(2,-2)} \n
-  ///     # [3] = Arg{rMPsi4(2,-2)} \n
+  ///         # [2] = Mag{rMPsi4(2,-2)} \n
+  ///         # [3] = Arg{rMPsi4(2,-2)} \n
   /// Finally, the data format is also deduced from the header, and a
   /// warning is issued if it mismatches the input parameter to this
   /// function.

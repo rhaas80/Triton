@@ -253,20 +253,21 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
         AverageLapse = W['AverageLapse.dat'][:,1]
         CoordRadius = W['CoordRadius.dat'][0,1]
         InitialAdmEnergy = W['InitialAdmEnergy.dat'][0,1]
-        LM = [[int(m.group('L')), int(m.group('M'))] for DataSet in list(W) for m in [YlmRegex.search(DataSet)] if m]
+        YLMdata = [DataSet for DataSet in list(W) for m in [YlmRegex.search(DataSet)] if m]
+        YLMdata = sorted(YLMdata, key=lambda DataSet : [int(YlmRegex.search(DataSet).group('L')), int(YlmRegex.search(DataSet).group('M'))])
+        LM = sorted([[int(m.group('L')), int(m.group('M'))] for DataSet in YLMdata for m in [YlmRegex.search(DataSet)] if m])
         NModes = len(LM)
         Mag = numpy.empty((NModes, NTimes))
         Arg = numpy.empty((NModes, NTimes))
         m = 0
-        for DataSet in list(W) :
-            if(YlmRegex.search(DataSet)) :
-                if( not (W[DataSet].shape[0]==NTimes) ) :
-                    raise ValueError("The number of time steps in this dataset should be {0}; ".format(NTimes) +
-                                     "it is {0} in {1}.".format(W[DataSet].shape[0], DataSet))
-                Mag[m,:] = W[DataSet][:,1]
-                Arg[m,:] = W[DataSet][:,2]
-                m += 1
-                #print("n={0}; m={1}; DataSet={2}".format(n, m, DataSet))
+        for DataSet in YLMdata :
+            if( not (W[DataSet].shape[0]==NTimes) ) :
+                raise ValueError("The number of time steps in this dataset should be {0}; ".format(NTimes) +
+                                 "it is {0} in {1}.".format(W[DataSet].shape[0], DataSet))
+            Mag[m,:] = W[DataSet][:,1]
+            Arg[m,:] = W[DataSet][:,2]
+            m += 1
+            #print("n={0}; m={1}; DataSet={2}".format(n, m, DataSet))
         TempW.AppendHistory("### # Python read from {}.".format(WaveformNames[n]))
         Indices = MonotonicIndices(T)
         BadIndices = numpy.setdiff1d(range(len(T)), Indices)
