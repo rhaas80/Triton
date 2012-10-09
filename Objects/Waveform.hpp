@@ -125,7 +125,7 @@ namespace WaveformObjects {
     inline void SetArg(const unsigned int Mode, const unsigned int Time, const double a) { arg[Mode][Time] = a; }
     inline void SetArg(const unsigned int Mode, const std::vector<double>& a) { arg[Mode] = a; }
     inline void SetArg(const WaveformUtilities::Matrix<double>& a) { arg = a; }
-    #endif // Only used above for SWIG
+    #endif // Only used above for SWIG or doxygen
     
   public:  // Operators
     Waveform& operator=(const Waveform& b);
