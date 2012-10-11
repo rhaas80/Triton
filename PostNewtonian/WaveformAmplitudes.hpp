@@ -10,7 +10,7 @@ namespace WaveformUtilities {
   private:
     double delta, nu, chis, chia, NormalizationFactor;
     double Hhat_L2_M2_Re_v0, Hhat_L2_M2_Re_v2, Hhat_L2_M2_Re_v3, Hhat_L2_M2_Re_v4, Hhat_L2_M2_Re_v5, Hhat_L2_M2_Im_v5,
-      Hhat_L2_M2_Re_v6, Hhat_L2_M2_Im_v6, Hhat_L2_M2_Re_v6lnv, Hhat_L2_M1_Im_v1, Hhat_L2_M1_Im_v2, Hhat_L2_M1_Im_v3,
+      Hhat_L2_M2_Re_v6, Hhat_L2_M2_Im_v6, Hhat_L2_M2_Re_v6lnv, Hhat_L2_M2_Re_v7, Hhat_L2_M2_Im_v7, Hhat_L2_M1_Im_v1, Hhat_L2_M1_Im_v2, Hhat_L2_M1_Im_v3,
       Hhat_L2_M1_Re_v4, Hhat_L2_M1_Im_v4, Hhat_L2_M1_Im_v5, Hhat_L2_M1_Re_v6, Hhat_L2_M1_Im_v6, Hhat_L2_M0_Re_v0,
       Hhat_L3_M3_Im_v1, Hhat_L3_M3_Im_v3, Hhat_L3_M3_Re_v4, Hhat_L3_M3_Im_v4, Hhat_L3_M3_Im_v5, Hhat_L3_M3_Re_v6,
       Hhat_L3_M3_Im_v6, Hhat_L3_M2_Re_v2, Hhat_L3_M2_Re_v3, Hhat_L3_M2_Re_v4, Hhat_L3_M2_Re_v5, Hhat_L3_M2_Im_v5,
@@ -40,7 +40,7 @@ namespace WaveformUtilities {
   private:
     double NormalizationFactor;
     double Sum_v0, Sum_v2, Sum_v3, Sum_v4, Sum_v5, Sum_v6, Sum_v6lnv, Sum_v7, Sum_v8, Sum_v8lnv, Sum_v9, Sum_v9lnv,
-      Sum_v10, Sum_v10lnv, Sum_v11, Sum_v11lnv, Sum_v12, Sum_v12lnv, Sum_v12lnv2;
+      Sum_v10, Sum_v10lnv, Sum_v11, Sum_v11lnv, Sum_v12, Sum_v12lnv, Sum_v12lnvSquared, Sum_v13, Sum_v13lnv, Sum_v14;
   public:
     WaveformAmplitudesSumMMagSquared(const WaveformAmplitudes& WA);
     double SumMMagSquared(const double v) const;
