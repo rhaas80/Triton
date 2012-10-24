@@ -31,6 +31,21 @@ namespace WaveformUtilities {
   /// Determine the velocities at each point of a squad interpolation
   std::vector<Quaternion> SquadVelocities(const std::vector<double>& tIn, const std::vector<Quaternion>& qIn);
   
+  /// Return the minimal-rotation frame by initially rotating about the z axis.
+  std::vector<Quaternion> MinimalRotation(const std::vector<Quaternion>& R, const std::vector<double>& T, const unsigned int NIterations=5);
+  
+  /// Return the frame implied by positions of the x' and y' axes.
+  std::vector<Quaternion> FrameFromXY(const std::vector<Quaternion>& X, const std::vector<Quaternion>& Y);
+  
+  /// Return the minimal-rotation frame with input Z as z' axis.
+  std::vector<Quaternion> FrameFromZ(const std::vector<Quaternion>& Z, const std::vector<double>& T, const unsigned int NIterations=5);
+  
+  /// Ensure continuity of rotors by flipping signs when necessary.
+  std::vector<Quaternion> UnflipRotors(const std::vector<Quaternion>& R, const double discont=1.4142135623730951);
+  
+  /// Return the difference between vectors, modulo some fiducial instant.
+  std::vector<Quaternion> RDelta(const std::vector<Quaternion>& R1, const std::vector<Quaternion>& R2, const unsigned int IndexOfFiducialTime=0);
+  
   //// This class inherits from the standard Interpolator base class,
   //// mostly for its hunt and locate functions.  The standard
   //// functions can't be used, because they expect to return doubles.
