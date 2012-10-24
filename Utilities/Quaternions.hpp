@@ -3,8 +3,14 @@
 
 #include <vector>
 #include <cmath>
+#include <iostream>
 
-namespace GWFrames {
+// This file is taken from the GWFrames code I wrote for my paper on
+// frames.  I've changed the namespace, and removed the final two
+// functions.  Otherwise, though, I'm trying to make sure that they're
+// just the same.
+
+namespace WaveformUtilities {
   
   // The class for an individual quaternion
   class Quaternion {
@@ -42,8 +48,7 @@ namespace GWFrames {
     inline Quaternion normalized() const { return (*this)/abs(); }
     inline double     normsquared() const { return (w*w+x*x+y*y+z*z); }
     inline Quaternion sqrtOfRotor() const { return (*this+1)/std::sqrt(2+2*w); }
-  };
-  // Helper functions
+  }; // Helper (non-member) functions for single Quaternions follow
   inline Quaternion operator+(const double a, const Quaternion& Q) { return Q+a; }
   inline Quaternion operator-(const double a, const Quaternion& Q) { return Q-a; }
   inline Quaternion operator*(const double a, const Quaternion& Q) { return Q*a; }
@@ -62,6 +67,7 @@ namespace GWFrames {
   inline double     normsquared(const Quaternion& Q) { return Q.normsquared(); }
   inline Quaternion sqrtOfRotor(const Quaternion& Q) { return Q.sqrtOfRotor(); }
   inline Quaternion Slerp(const double tau, const Quaternion& Qa, const Quaternion& Qb) { return ( pow((Qb/Qa), tau) * Qa ); }
+  std::ostream& operator<<(std::ostream& out, const WaveformUtilities::Quaternion& q);
   
   
   // Functions for arrays of Quaternion objects
@@ -113,10 +119,6 @@ namespace GWFrames {
   std::vector<double>     normsquared(const std::vector<Quaternion>& Q);
   std::vector<Quaternion> sqrtOfRotor(const std::vector<Quaternion>& Q);
   
-  // A couple useful scalar functions
-  std::vector<double> ScalarDerivative(const std::vector<double>& f, const std::vector<double>& t);
-  std::vector<double> ScalarIntegral(const std::vector<double>& fdot, const std::vector<double>& t);
-  
-} // namespace GWFrames
+} // namespace WaveformUtilities
 
 #endif // QUATERNIONS_HPP
