@@ -31,7 +31,7 @@ WaveformUtilities::WaveformAmplitudes::WaveformAmplitudes(const double idelta, c
     Hhat_L2_M1_Re_v4(0.6287647870399635*delta),
     Hhat_L2_M1_Im_v4(1.0471975511965976*delta),
     Hhat_L2_M1_Im_v5(0.0006613756613756613*delta*(-172. - 2036.*nu + 237.*Power(nu,2))),
-    Hhat_L2_M1_Re_v6(0.001984126984126984*delta*(-192.40202483422883 + 2039.906597000316*nu)),
+    Hhat_L2_M1_Re_v6(0.001984126984126984*delta*(-192.40202483422883 + 2167.906597000316*nu)),
     Hhat_L2_M1_Im_v6(0.03739991254273563*delta*(-17. + 6.*nu)),
     Hhat_L2_M0_Re_v0(-0.1458029608799511),
     Hhat_L3_M3_Im_v1(-0.7763237542601484*delta),
