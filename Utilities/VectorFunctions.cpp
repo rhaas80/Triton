@@ -850,6 +850,14 @@ double WU::norm(const vector<double>& x) {
   return sqrt(b);
 }
 
+vector<double> WU::norm(const vector<vector<double> >& x) {
+  vector<double> y(x.size());
+  for(unsigned int i=0; i<y.size(); ++i) {
+    y[i] = WU::norm(x[i]);
+  }
+  return y;
+}
+
 inline vector<double> WU::square(const vector<double>& x) {
   vector<double> y(x.size());
   for(unsigned int i=0; i<x.size(); ++i) {
