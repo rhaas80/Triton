@@ -26,13 +26,18 @@ namespace WaveformUtilities {
   public:
     double NormSquared() const;
     double Norm() const;
-    Quaternion operator-() const;
-    Quaternion operator*(const double x) const;
-    Quaternion operator/(const double x) const;
+    inline Quaternion operator-() const { return Quaternion(-q0, -q1, -q2, -q3); }
+    inline Quaternion operator+(const double t) const { return Quaternion(q0+t, q1, q2, q3); }
+    inline Quaternion operator-(const double t) const { return Quaternion(q0-t, q1, q2, q3); }
+    inline Quaternion operator*(const double t) const { return Quaternion(q0*t, q1*t, q2*t, q3*t); }
+    inline Quaternion operator/(const double t) const { return Quaternion(q0/t, q1/t, q2/t, q3/t); }
+    inline Quaternion operator+(const Quaternion& Q) const { return Quaternion(q0+Q.q0,q1+Q.q1,q2+Q.q2,q3+Q.q3); }
+    inline Quaternion operator-(const Quaternion& Q) const { return Quaternion(q0-Q.q0,q1-Q.q1,q2-Q.q2,q3-Q.q3); }
     Quaternion operator*(const Quaternion& Q) const;
-    Quaternion operator/(const Quaternion& Q) const;
-    Quaternion operator+(const Quaternion& Q) const;
-    Quaternion operator-(const Quaternion& Q) const;
+    inline Quaternion operator/(const Quaternion& Q) const { return (*this)*(Q.Inverse()); }
+    inline Quaternion pow(const double t) const { return (this->log() * t).exp(); }
+    inline Quaternion pow(const Quaternion& Q) const { return (this->log() * Q).exp(); }
+    inline double     abs() const { return std::sqrt(NormSquared()); }
     double Dot(const Quaternion& Q) const { return q0*Q.q0+q1*Q.q1+q2*Q.q2+q3*Q.q3; }
     Quaternion Conjugate() const;
     Quaternion Inverse() const;
@@ -44,6 +49,8 @@ namespace WaveformUtilities {
     Quaternion exp() const;
     Quaternion log() const;
     //Quaternion pow(const double x) const;
+    inline double     angle() const { return 2*log().abs(); }
+    inline Quaternion sqrtOfRotor() const { return (*this+1)/std::sqrt(2+2*q0); }
   };
   
   // const Quaternion Quaternion1(1.0,0.0,0.0,0.0);
@@ -57,9 +64,9 @@ namespace WaveformUtilities {
   
   std::vector<WaveformUtilities::Quaternion> Quaternions(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
   std::vector<WaveformUtilities::Quaternion> Conjugate(const std::vector<WaveformUtilities::Quaternion>& Q);
-  std::vector<WaveformUtilities::Quaternion> dQdt(const std::vector<WaveformUtilities::Quaternion>& Q, const std::vector<double>& t);
-  std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<WaveformUtilities::Quaternion>& Q, const std::vector<double>& t,
-							     const unsigned int NIterations=5);
+  // std::vector<WaveformUtilities::Quaternion> dQdt(const std::vector<WaveformUtilities::Quaternion>& Q, const std::vector<double>& t);
+  // std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<WaveformUtilities::Quaternion>& Q, const std::vector<double>& t,
+  // 							     const unsigned int NIterations=5);
   
   std::vector<double> Re(const std::vector<WaveformUtilities::Quaternion>& Q);
   std::vector<double> Component(const std::vector<WaveformUtilities::Quaternion>& Q, const unsigned int i);
