@@ -18,7 +18,6 @@
 #include "PostNewtonian.hpp"
 #include "WignerDMatrix.hpp"
 #include "Quaternions.hpp"
-#include "QuaternionInterpolation.hpp"
 #include "Minimize_MultiDim.hpp"
 
 using namespace WaveformUtilities;
@@ -160,7 +159,7 @@ std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<dou
   const Quaternion z(0.,0.,0.,1.);
   for(unsigned int iteration=0; iteration<NIterations; ++iteration) {
     // Note that Component0 gives -1 times the dot product of two vectors 
-    const vector<double> negativegammaover2 = SplineIntegral(t, Component0( Conjugate(MinRotFrame) * SquadVelocities(t, MinRotFrame) * z ));
+    const vector<double> negativegammaover2 = SplineIntegral(t, Component0( conjugate(MinRotFrame) * CenteredDifferencing(MinRotFrame, t) * z ));
     for(unsigned int i=0; i<negativegammaover2.size(); ++i) {
       MinRotFrame[i] = MinRotFrame[i] * (negativegammaover2[i]*z).exp();
     }
@@ -273,6 +272,6 @@ Waveform& WaveformObjects::Waveform::TransformToStationaryFrame(const WaveformUt
   /// The input quaternion may be used to specify the orientation of
   /// the final frame relative to the frame in which the Waveform was
   /// originally measured.  Compare `TransformToStandardFrame()`.
-  this->RotateCoordinates(Q.Conjugate()*(this->Frame()));
+  this->RotateCoordinates(Q.conjugate()*(this->Frame()));
   return *this;
 }

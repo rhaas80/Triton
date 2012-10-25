@@ -335,7 +335,7 @@ Doub StepperDopr853<D>::error(const Doub h) {
   deno=err+0.01*err2;
   if (deno <= 0.0)
     deno=1.0;
-  return std::abs(h)*err*sqrt(1.0/(n*deno));
+  return std::abs(h)*err*std::sqrt(1.0/(n*deno));
 }
 template <class D>
 StepperDopr853<D>::Controller::Controller() : errold(1.0e-4), reject(false) {}

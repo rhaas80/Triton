@@ -100,6 +100,19 @@ WaveformUtilities::Quaternion::Quaternion(const std::vector<double>& q) {
   }
 }
 
+/// Constructor from axis-angle.
+WaveformUtilities::Quaternion::Quaternion(const double angle, const std::vector<double>& axis)
+  : w(std::cos(angle/2.)), x(std::sin(angle/2.)*axis[0]), y(std::sin(angle/2.)*axis[1]), z(std::sin(angle/2.)*axis[2])
+{
+  /// 
+  /// \param angle Single number giving the rotation angle
+  /// \param axis Three-component vector (assumed to be normalized) giving the axis
+  /// 
+  /// This constructs a rotor (assuming 'axis' is normalized)
+  /// corresponding to rotation about the given axis through the given
+  /// angle.
+}
+
 /// Get component of Quaternion.
 double WaveformUtilities::Quaternion::operator[](const unsigned int i) const {
   switch(i) {
@@ -522,6 +535,62 @@ std::vector<Quaternion> WaveformUtilities::operator/(const std::vector<double>& 
   }
   return R;
 }
+std::vector<Quaternion> WaveformUtilities::operator+(const Quaternion& a, const std::vector<Quaternion>& Q) {
+  std::vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]+a;
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator-(const Quaternion& a, const std::vector<Quaternion>& Q) {
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]-a;
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator*(const Quaternion& a, const std::vector<Quaternion>& Q) {
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]*a;
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator/(const Quaternion& a, const std::vector<Quaternion>& Q) {
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]/a;
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator+(const std::vector<Quaternion>& Q, const Quaternion& a) {
+  std::vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]+a;
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator-(const std::vector<Quaternion>& Q, const Quaternion& a) {
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]-a;
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator*(const std::vector<Quaternion>& Q, const Quaternion& a) {
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]*a;
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator/(const std::vector<Quaternion>& Q, const Quaternion& a) {
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]/a;
+  }
+  return R;
+}
 std::vector<Quaternion> WaveformUtilities::operator+(const std::vector<Quaternion>& Q, const double a) {
   std::vector<Quaternion> R(Q.size());
   for(unsigned int i=0; i<R.size(); ++i) {
@@ -612,6 +681,50 @@ std::vector<Quaternion> WaveformUtilities::operator*(const std::vector<Quaternio
   return R;
 }
 std::vector<Quaternion> WaveformUtilities::operator/(const std::vector<Quaternion>& Q, const std::vector<double>& a) {
+  if(a.size() != Q.size()) {
+    cerr << "\n\na.size()=" << a.size() << " != Q.size()=" << Q.size() << endl;
+    throw(WaveformUtilities_VectorSizeMismatch);
+  }
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]/a[i];
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator+(const std::vector<Quaternion>& Q, const std::vector<Quaternion>& a) {
+  if(a.size() != Q.size()) {
+    cerr << "\n\na.size()=" << a.size() << " != Q.size()=" << Q.size() << endl;
+    throw(WaveformUtilities_VectorSizeMismatch);
+  }
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]+a[i];
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator-(const std::vector<Quaternion>& Q, const std::vector<Quaternion>& a) {
+  if(a.size() != Q.size()) {
+    cerr << "\n\na.size()=" << a.size() << " != Q.size()=" << Q.size() << endl;
+    throw(WaveformUtilities_VectorSizeMismatch);
+  }
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]-a[i];
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator*(const std::vector<Quaternion>& Q, const std::vector<Quaternion>& a) {
+  if(a.size() != Q.size()) {
+    cerr << "\n\na.size()=" << a.size() << " != Q.size()=" << Q.size() << endl;
+    throw(WaveformUtilities_VectorSizeMismatch);
+  }
+  vector<Quaternion> R(Q.size());
+  for(unsigned int i=0; i<R.size(); ++i) {
+    R[i] = Q[i]*a[i];
+  }
+  return R;
+}
+std::vector<Quaternion> WaveformUtilities::operator/(const std::vector<Quaternion>& Q, const std::vector<Quaternion>& a) {
   if(a.size() != Q.size()) {
     cerr << "\n\na.size()=" << a.size() << " != Q.size()=" << Q.size() << endl;
     throw(WaveformUtilities_VectorSizeMismatch);
@@ -746,6 +859,70 @@ std::vector<double> WaveformUtilities::normsquared(const std::vector<Quaternion>
     R[i] = Q[i].normsquared();
   }
   return R;
+}
+
+std::vector<Quaternion> WaveformUtilities::Quaternions(const std::vector<double>& vartheta, const std::vector<double>& varphi) {
+  vector<Quaternion> Qs(vartheta.size());
+  for(unsigned int i=0; i<Qs.size(); ++i) {
+    Qs[i] = Quaternion(vartheta[i], varphi[i]);
+  }
+  return Qs;
+}
+
+std::vector<Quaternion> WaveformUtilities::Quaternions(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma) {
+  vector<Quaternion> Qs(alpha.size());
+  for(unsigned int i=0; i<Qs.size(); ++i) {
+    Qs[i] = Quaternion(alpha[i], beta[i], gamma[i]);
+  }
+  return Qs;
+}
+
+std::vector<Quaternion> WaveformUtilities::Quaternions(const std::vector<double>& w0, const std::vector<double>& x0, const std::vector<double>& y0, const std::vector<double>& z0) {
+  vector<Quaternion> Qs(w0.size());
+  for(unsigned int i=0; i<Qs.size(); ++i) {
+    Qs[i] = Quaternion(w0[i], x0[i], y0[i], z0[i]);
+  }
+  return Qs;
+}
+
+std::vector<Quaternion> WaveformUtilities::Quaternions(const std::vector<std::vector<double> >& q) {
+  vector<Quaternion> Qs(q.size());
+  for(unsigned int i=0; i<Qs.size(); ++i) {
+    Qs[i] = Quaternion(q[i]);
+  }
+  return Qs;
+}
+
+std::vector<Quaternion> WaveformUtilities::Quaternions(const std::vector<double>& angle, const std::vector<std::vector<double> >& axis) {
+  vector<Quaternion> Qs(angle.size());
+  for(unsigned int i=0; i<Qs.size(); ++i) {
+    Qs[i] = Quaternion(angle[i], axis[i]);
+  }
+  return Qs;
+}
+
+std::vector<double> WaveformUtilities::Component(const std::vector<WaveformUtilities::Quaternion>& Q, const unsigned int i) {
+  std::vector<double> v(Q.size());
+  for(unsigned int j=0; j<Q.size(); ++j) {
+    v[j] = Q[j][i];
+  }
+  return v;
+}
+
+std::vector<double> WaveformUtilities::Component0(const std::vector<WaveformUtilities::Quaternion>& Q) {
+  return Component(Q, 0);
+}
+
+std::vector<double> WaveformUtilities::Component1(const std::vector<WaveformUtilities::Quaternion>& Q) {
+  return Component(Q, 1);
+}
+
+std::vector<double> WaveformUtilities::Component2(const std::vector<WaveformUtilities::Quaternion>& Q) {
+  return Component(Q, 2);
+}
+
+std::vector<double> WaveformUtilities::Component3(const std::vector<WaveformUtilities::Quaternion>& Q) {
+  return Component(Q, 3);
 }
 
 

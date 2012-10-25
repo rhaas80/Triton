@@ -18,7 +18,6 @@
 #include "PostNewtonian.hpp"
 #include "WignerDMatrix.hpp"
 #include "Quaternions.hpp"
-#include "QuaternionInterpolation.hpp"
 
 using namespace WaveformUtilities;
 using namespace WaveformObjects;
@@ -45,7 +44,7 @@ Waveform& WaveformObjects::Waveform::Interpolate(const std::vector<double>& NewT
     RRef() = WaveformUtilities::Interpolate(T(), R(), NewTime);
   }
   if(Frame().size()>1) {
-    FrameRef() = Squad(T(), Frame(), NewTime);
+    FrameRef() = Squad(Frame(), T(), NewTime);
   }
   WaveformUtilities::Matrix<double> Newmag(NModes(), NewTime.size());
   WaveformUtilities::Matrix<double> Newarg(NModes(), NewTime.size());
@@ -67,7 +66,7 @@ Waveform& WaveformObjects::Waveform::Interpolate(const std::vector<double>& NewT
     RRef() = WaveformUtilities::Interpolate(T(), R(), NewTime, R().back());
   }
   if(Frame().size()>1) {
-    FrameRef() = Squad(T(), Frame(), NewTime);
+    FrameRef() = Squad(Frame(), T(), NewTime);
   }
   WaveformUtilities::Matrix<double> Newmag(NModes(), NewTime.size());
   WaveformUtilities::Matrix<double> Newarg(NModes(), NewTime.size());

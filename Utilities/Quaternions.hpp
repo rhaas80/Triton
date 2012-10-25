@@ -22,10 +22,13 @@ namespace WaveformUtilities {
     Quaternion(const double alpha, const double beta, const double gamma);
     Quaternion(const double w0, const double x0, const double y0, const double z0);
     Quaternion(const std::vector<double>& q);
+    Quaternion(const double angle, const std::vector<double>& axis);
   public: // Access and manipulation
     Quaternion& operator=(const Quaternion& Q) { w=Q.w; x=Q.x; y=Q.y; z=Q.z; return *this; }
     double operator[](const unsigned int i) const;
     double& operator[](const unsigned int i);
+    inline bool operator!=(const Quaternion& Q) const { if(w!=Q.w) return false; if(x!=Q.x) return false; if(y!=Q.y) return false; if(z!=Q.z) return false; return true; }
+    inline bool operator==(const Quaternion& Q) const { return !((*this) != Q); }
     inline Quaternion operator-() const { return Quaternion(-w, -x, -y, -z); }
     inline Quaternion operator+(const double t) const { return Quaternion(w+t, x, y, z); }
     inline Quaternion operator-(const double t) const { return Quaternion(w-t, x, y, z); }
@@ -48,6 +51,7 @@ namespace WaveformUtilities {
     inline Quaternion normalized() const { return (*this)/abs(); }
     inline double     normsquared() const { return (w*w+x*x+y*y+z*z); }
     inline Quaternion sqrtOfRotor() const { return (*this+1)/std::sqrt(2+2*w); }
+    inline std::vector<double> vec() const { std::vector<double> v(3); v[0]=x; v[1]=y; v[2]=z; return v; }
   }; // Helper (non-member) functions for single Quaternions follow
   inline Quaternion operator+(const double a, const Quaternion& Q) { return Q+a; }
   inline Quaternion operator-(const double a, const Quaternion& Q) { return Q-a; }
@@ -90,6 +94,14 @@ namespace WaveformUtilities {
   std::vector<Quaternion> operator-(const std::vector<double>& a, const std::vector<Quaternion>& Q);
   std::vector<Quaternion> operator*(const std::vector<double>& a, const std::vector<Quaternion>& Q);
   std::vector<Quaternion> operator/(const std::vector<double>& a, const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> operator+(const Quaternion& a, const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> operator-(const Quaternion& a, const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> operator*(const Quaternion& a, const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> operator/(const Quaternion& a, const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> operator+(const std::vector<Quaternion>& Q, const Quaternion& a);
+  std::vector<Quaternion> operator-(const std::vector<Quaternion>& Q, const Quaternion& a);
+  std::vector<Quaternion> operator*(const std::vector<Quaternion>& Q, const Quaternion& a);
+  std::vector<Quaternion> operator/(const std::vector<Quaternion>& Q, const Quaternion& a);
   std::vector<Quaternion> operator+(const std::vector<Quaternion>& Q, const double a);
   std::vector<Quaternion> operator-(const std::vector<Quaternion>& Q, const double a);
   std::vector<Quaternion> operator*(const std::vector<Quaternion>& Q, const double a);
@@ -102,6 +114,10 @@ namespace WaveformUtilities {
   std::vector<Quaternion> operator-(const std::vector<Quaternion>& Q, const std::vector<double>& a);
   std::vector<Quaternion> operator*(const std::vector<Quaternion>& Q, const std::vector<double>& a);
   std::vector<Quaternion> operator/(const std::vector<Quaternion>& Q, const std::vector<double>& a);
+  std::vector<Quaternion> operator+(const std::vector<Quaternion>& P, const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> operator-(const std::vector<Quaternion>& P, const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> operator*(const std::vector<Quaternion>& P, const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> operator/(const std::vector<Quaternion>& P, const std::vector<Quaternion>& Q);
   std::vector<Quaternion> pow(const std::vector<Quaternion>& Q, const double x);
   std::vector<Quaternion> pow(const std::vector<Quaternion>& Q, const Quaternion& P);
   std::vector<Quaternion> pow(const Quaternion& Q, const std::vector<double>& x);
@@ -118,6 +134,16 @@ namespace WaveformUtilities {
   std::vector<Quaternion> normalized(const std::vector<Quaternion>& Q);
   std::vector<double>     normsquared(const std::vector<Quaternion>& Q);
   std::vector<Quaternion> sqrtOfRotor(const std::vector<Quaternion>& Q);
+  std::vector<Quaternion> Quaternions(const std::vector<double>& vartheta, const std::vector<double>& varphi);
+  std::vector<Quaternion> Quaternions(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
+  std::vector<Quaternion> Quaternions(const std::vector<double>& w0, const std::vector<double>& x0, const std::vector<double>& y0, const std::vector<double>& z0);
+  std::vector<Quaternion> Quaternions(const std::vector<std::vector<double> >& q);
+  std::vector<Quaternion> Quaternions(const std::vector<double>& angle, const std::vector<std::vector<double> >& axis);
+  std::vector<double> Component(const std::vector<WaveformUtilities::Quaternion>& Q, const unsigned int i);
+  std::vector<double> Component0(const std::vector<WaveformUtilities::Quaternion>& Q);
+  std::vector<double> Component1(const std::vector<WaveformUtilities::Quaternion>& Q);
+  std::vector<double> Component2(const std::vector<WaveformUtilities::Quaternion>& Q);
+  std::vector<double> Component3(const std::vector<WaveformUtilities::Quaternion>& Q);
   
 } // namespace WaveformUtilities
 

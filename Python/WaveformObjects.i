@@ -25,7 +25,6 @@
   #include "../Objects/WaveformAtAPointFT.hpp"
   #include "../Objects/Waveforms.hpp"
   #include "../Utilities/Quaternions.hpp"
-  #include "../Utilities/QuaternionInterpolation.hpp"
 %}
 
 
@@ -73,11 +72,15 @@ namespace WaveformUtilities {
       << $self->operator[](3) << "]";
     return S.str();
   }
+  // This prints the Quaternion nicely at the prompt
+  %pythoncode{
+    def __repr__(self):
+        return 'PyGW.Quaternion('+repr(self[0])+', '+repr(self[1])+', '+repr(self[2])+', '+repr(self[3])+')'
+  };
  };
 namespace std {
   %template(vectorq) vector<WaveformUtilities::Quaternion>;
 }
-%include "../Utilities/QuaternionInterpolation.hpp"
 
 //////////////////////////////////////////////////////////////////////
 

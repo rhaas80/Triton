@@ -14,6 +14,8 @@
 #include "VectorFunctions.hpp"
 
 namespace WaveformUtilities {
+  using std::abs;
+  using std::sqrt;
   
   struct Output {
     Int kmax;

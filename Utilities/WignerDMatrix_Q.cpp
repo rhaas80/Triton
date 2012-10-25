@@ -98,12 +98,12 @@ void WignerDMatrix_Q::ValueReIm(double& Re, double& Im) {
 
 void WignerDMatrix_Q::SetQuaternion(const Quaternion& iR) {
   // if(R==iR) { return; }
-  const Quaternion iRNormalized = iR.Normalized();
+  const Quaternion iRNormalized = iR.normalized();
   // if(R==iRNormalized) { return; }
   Recalculated = false;
   R = iRNormalized;
-  Mag_R_0_3 = sqrt(R[0]*R[0]+R[3]*R[3]);
-  Mag_R_1_2 = sqrt(R[1]*R[1]+R[2]*R[2]);
+  Mag_R_0_3 = std::sqrt(R[0]*R[0]+R[3]*R[3]);
+  Mag_R_1_2 = std::sqrt(R[1]*R[1]+R[2]*R[2]);
   if(Mag_R_0_3<3*numeric_limits<double>::epsilon()) {
     Mag_R_0_3 = 0.0;
     Arg_R_0_3 = 0.0;
