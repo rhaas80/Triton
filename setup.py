@@ -47,18 +47,19 @@ PyGWExtension = Extension(name = '_PyGW',
 ## This function does the actual work of build everything and
 ## installing it.
 setup(name = 'PyGW',
-      version = '3',
+      version = '2',
       description = 'Python interface for manipulating Waveform objects',
       # long_description = ,
       author = 'Michael Boyle',
       author_email = 'michael.oliver.boyle@gmail.com',
       # maintainer = 'Michael Boyle',
       # maintainer_email = 'michael.oliver.boyle@gmail.com',
-      url = 'http://www.black-holes.org/',
-      # download_url = ,
+      url = 'https://www.black-holes.org/wiki/documentation/waveforms',
+      # download_url = 'https://www.black-holes.org/wiki/documentation/waveforms',
       # packages = ,
-      # py_modules = ['PyGW'],#, 'PyGW.plot', 'PyGW.plot_on_sphere'],
-      # scripts = [],
+      # py_modules = ,
+      scripts = ['PyGW/Scripts/PyGWConvergence.py', 'PyGW/Scripts/PyGWExtrapolate.py', 'PyGW/Scripts/PyGWExtrapolate_h5.py',
+                 'PyGW/Scripts/ConvergenceExample.py', 'PyGW/Scripts/ExtrapolationExample.py', 'PyGW/Scripts/ExtrapolationExample_h5.py'],
       ext_modules = [PyGWExtension],
       # classifiers = ,
       # distclass = ,
@@ -71,6 +72,6 @@ setup(name = 'PyGW',
       # cmdclass = ,
       # data_files = ,
       # package_dir = 
-      packages = ['PyGW', 'PyGW.plot', 'PyGW.plot_on_sphere'],
-      package_dir = {'PyGW':'PyGW', 'PyGW.plot':'PyGW', 'PyGW.plot_on_sphere':'PyGW'}
+      packages = ['PyGW'],#, 'PyGW.plot', 'PyGW.plot_on_sphere'],
+      # package_dir = {'PyGW':'PyGW', 'PyGW.plot':'PyGW', 'PyGW.plot_on_sphere':'PyGW'}
       )
