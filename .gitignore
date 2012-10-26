@@ -12,3 +12,4 @@ _*.so
 *.o
 *~
 *CalculatorOutput.cpp
+build
