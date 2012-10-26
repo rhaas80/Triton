@@ -7,9 +7,11 @@ xml
 lib*.so
 _*.so
 *_wrap.cxx
+*_wrap.cpp
 *.pyc
 *.d
 *.o
 *~
 *CalculatorOutput.cpp
 build
+PyGW/PyGW.py

@@ -4,109 +4,73 @@
 setup.py file for python code associated with Project Triton.
 
 To install for an individual user, run
-  python setup.py build_ext
   python setup.py install --user
-Now, 'import PyGW' may be run from a python
-instance started in any directory on the system.
+The entire code will build, be packaged up nicely, and installed in
+python's default user directory.  Now, 'import PyGW' may be run from a
+python instance started in any directory on the system.
 """
-
-from distutils.sysconfig import get_config_var
-get_config_var("PY_CFLAGS")  # make sure _config_vars is initialized
-from distutils.sysconfig import _config_vars
-
-_config_vars['PY_CFLAGS'] = _config_vars['PY_CFLAGS'].replace('-Wstrict-prototypes', '')
 
 from distutils.core import setup, Extension
 import os
+import glob
 
+## distutils doesn't build swig modules in the correct order by
+## default -- the python module is installed first.  This will pop
+## 'build_ext' to the beginning of the command list.
+from distutils.command.build import build
+build.sub_commands = sorted(build.sub_commands, key=lambda sub_command: int(sub_command[0]!='build_ext'))
+
+## This gets the list of files to build and the headers they depend on
+CPPFiles = glob.glob("Utilities/*.cpp") + glob.glob("PostNewtonian/*.cpp") + glob.glob("Objects/*.cpp") + glob.glob("Objects/Waveform/*.cpp")
+SourceFiles = CPPFiles + ['PyGW.i']
+DependencyFiles = [f.replace('.cpp','.hpp') for f in CPPFiles] + ['Utilities/WaveformUtilities_ErrorCodes.hpp']
+
+## This class tells distutils how to compile the extension.
 PyGWExtension = Extension(name = '_PyGW',
-                          sources = ['Objects/Waveform/Waveform_AdjustTime.cpp',
-                                     'Objects/Waveform/Waveform_AlignAndHybridize.cpp',
-                                     'Objects/Waveform/Waveform_Features.cpp',
-                                     'Objects/Waveform/Waveform_Interpolate.cpp',
-                                     'Objects/Waveform/Waveform_ManipulateModes.cpp',
-                                     'Objects/Waveform/Waveform_Operators.cpp',
-                                     'Objects/Waveform/Waveform_Output.cpp',
-                                     'Objects/Waveform/Waveform_PhysicalConversions.cpp',
-                                     'Objects/Waveform/Waveform_RadiationFrame.cpp',
-                                     'Objects/Waveform/Waveform_Rotation.cpp',
-                                     'Objects/Waveform.cpp',
-                                     'Objects/WaveformAtAPoint.cpp',
-                                     'Objects/WaveformAtAPointFT.cpp',
-                                     'Objects/Waveforms.cpp',
-                                     'PostNewtonian/EOBModel.cpp',
-                                     'PostNewtonian/Flux.cpp',
-                                     'PostNewtonian/OrbitalPhasing_EOB.cpp',
-                                     'PostNewtonian/OrbitalPhasing_T1.cpp',
-                                     'PostNewtonian/OrbitalPhasing_T2.cpp',
-                                     'PostNewtonian/OrbitalPhasing_T3.cpp',
-                                     'PostNewtonian/OrbitalPhasing_T4.cpp',
-                                     'PostNewtonian/OrbitalPhasing_T4_Spin.cpp',
-                                     'PostNewtonian/PostNewtonian.cpp',
-                                     'PostNewtonian/QNMs.cpp',
-                                     'PostNewtonian/WaveformAmplitudes.cpp',
-                                     'Utilities/EasyParser.cpp',
-                                     'Utilities/Eccentricity.cpp',
-                                     'Utilities/fft.cpp',
-                                     'Utilities/FileIO.cpp',
-                                     'Utilities/GaussJordanElimination.cpp',
-                                     'Utilities/Interpolate.cpp',
-                                     'Utilities/LUDecomposition.cpp',
-                                     'Utilities/NoiseCurves.cpp',
-                                     'Utilities/QRDecomposition.cpp',
-                                     'Utilities/Quaternions.cpp',
-                                     'Utilities/SingularValueDecomposition.cpp',
-                                     'Utilities/SWSHs.cpp',
-                                     'Utilities/VectorFunctions.cpp',
-                                     'Utilities/WignerDMatrix.cpp',
-                                     'Utilities/WignerDMatrix_Q.cpp',
-                                     'PyGW.i'],
-                          depends = ['Objects/Waveform.hpp',
-                                     'Objects/WaveformAtAPoint.hpp',
-                                     'Objects/WaveformAtAPointFT.hpp',
-                                     'Objects/Waveforms.hpp',
-                                     'PostNewtonian/EOBModel.hpp',
-                                     'PostNewtonian/Flux.hpp',
-                                     'PostNewtonian/OrbitalPhasing_EOB.hpp',
-                                     'PostNewtonian/OrbitalPhasing_T1.hpp',
-                                     'PostNewtonian/OrbitalPhasing_T2.hpp',
-                                     'PostNewtonian/OrbitalPhasing_T3.hpp',
-                                     'PostNewtonian/OrbitalPhasing_T4.hpp',
-                                     'PostNewtonian/OrbitalPhasing_T4_Spin.hpp',
-                                     'PostNewtonian/PostNewtonian.hpp',
-                                     'PostNewtonian/QNMs.hpp',
-                                     'PostNewtonian/WaveformAmplitudes.hpp',
-                                     'Utilities/EasyParser.hpp',
-                                     'Utilities/Eccentricity.hpp',
-                                     'Utilities/fft.hpp',
-                                     'Utilities/FileIO.hpp',
-                                     'Utilities/GaussJordanElimination.hpp',
-                                     'Utilities/Interpolate.hpp',
-                                     'Utilities/LUDecomposition.hpp',
-                                     'Utilities/NoiseCurves.hpp',
-                                     'Utilities/QRDecomposition.hpp',
-                                     'Utilities/Quaternions.hpp',
-                                     'Utilities/SingularValueDecomposition.hpp',
-                                     'Utilities/SWSHs.hpp',
-                                     'Utilities/VectorFunctions.hpp',
-                                     'Utilities/WignerDMatrix.hpp',
-                                     'Utilities/WignerDMatrix_Q.hpp'
-                                     'Utilities/WaveformUtilities_ErrorCodes.hpp'],
-                          include_dirs=['Utilities', 'PostNewtonian', 'Objects', '/opt/local/include'], 
-                          library_dirs=['/opt/local/lib'], 
+                          sources = SourceFiles,
+                          depends = DependencyFiles,
+                          include_dirs=['Utilities', 'PostNewtonian', 'Objects'], #, '/opt/local/include'], 
+                          # library_dirs=['/opt/local/lib'], 
                           # libraries=['gsl', 'gslcblas'], 
                           # runtime_library_dirs = [], 
                           define_macros = [('GitRevision', '"{0}"'.format(os.popen('git rev-parse HEAD').read().strip()))],
                           # undef_macros = [],
                           # extra_objects = [], # other things to link with
-                          # extra_compile_args = [],
+                          # extra_compile_args = ['-Wno-sign-compare', '-Wno-conversion', '-Wno-reorder', '-Wno-unused-value', '-Wno-uninitialized'],
+                          extra_compile_args = ['-w'], # turn off all warnings
                           # extra_link_args = [], 
                           # export_symbols = [], # export these symbols for shared extensions
                           language='c++',
-                          swig_opts=['-c++', '-outdir', 'build'] # '-globals', 'constants', 
+                          swig_opts=['-c++', '-outdir', 'PyGW'] # '-globals', 'constants', 
                           )
 
-setup(name="PyGW",
-      version='2',
+## This function does the actual work of build everything and
+## installing it.
+setup(name = 'PyGW',
+      version = '3',
+      description = 'Python interface for manipulating Waveform objects',
+      # long_description = ,
+      author = 'Michael Boyle',
+      author_email = 'michael.oliver.boyle@gmail.com',
+      # maintainer = 'Michael Boyle',
+      # maintainer_email = 'michael.oliver.boyle@gmail.com',
+      url = 'http://www.black-holes.org/',
+      # download_url = ,
+      # packages = ,
+      # py_modules = ['PyGW'],#, 'PyGW.plot', 'PyGW.plot_on_sphere'],
+      # scripts = [],
       ext_modules = [PyGWExtension],
-      py_modules = ["PyGW"])
+      # classifiers = ,
+      # distclass = ,
+      # script_name = ,
+      # script_args = ,
+      # options = ,
+      # license = ,
+      # keywords = ,
+      # platforms = ,
+      # cmdclass = ,
+      # data_files = ,
+      # package_dir = 
+      packages = ['PyGW', 'PyGW.plot', 'PyGW.plot_on_sphere'],
+      package_dir = {'PyGW':'PyGW', 'PyGW.plot':'PyGW', 'PyGW.plot_on_sphere':'PyGW'}
+      )
