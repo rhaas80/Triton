@@ -103,7 +103,7 @@ PyGWExtension = Extension(name = '_PyGW',
                           # extra_link_args = [], 
                           # export_symbols = [], # export these symbols for shared extensions
                           language='c++',
-                          swig_opts=['-c++'] # '-globals', 'constants', 
+                          swig_opts=['-c++', '-outdir', 'build'] # '-globals', 'constants', 
                           )
 
 setup(name="PyGW",
