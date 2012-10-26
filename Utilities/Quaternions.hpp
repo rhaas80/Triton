@@ -138,7 +138,7 @@ namespace WaveformUtilities {
   std::vector<Quaternion> Quaternions(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
   std::vector<Quaternion> Quaternions(const std::vector<double>& w0, const std::vector<double>& x0, const std::vector<double>& y0, const std::vector<double>& z0);
   std::vector<Quaternion> Quaternions(const std::vector<std::vector<double> >& q);
-  std::vector<Quaternion> Quaternions(const std::vector<double>& angle, const std::vector<std::vector<double> >& axis);
+  // std::vector<Quaternion> Quaternions(const std::vector<double>& angle, const std::vector<std::vector<double> >& axis);
   std::vector<double> Component(const std::vector<WaveformUtilities::Quaternion>& Q, const unsigned int i);
   std::vector<double> Component0(const std::vector<WaveformUtilities::Quaternion>& Q);
   std::vector<double> Component1(const std::vector<WaveformUtilities::Quaternion>& Q);

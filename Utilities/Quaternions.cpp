@@ -893,13 +893,13 @@ std::vector<Quaternion> WaveformUtilities::Quaternions(const std::vector<std::ve
   return Qs;
 }
 
-std::vector<Quaternion> WaveformUtilities::Quaternions(const std::vector<double>& angle, const std::vector<std::vector<double> >& axis) {
-  vector<Quaternion> Qs(angle.size());
-  for(unsigned int i=0; i<Qs.size(); ++i) {
-    Qs[i] = Quaternion(angle[i], axis[i]);
-  }
-  return Qs;
-}
+// std::vector<Quaternion> WaveformUtilities::Quaternions(const std::vector<double>& angle, const std::vector<std::vector<double> >& axis) {
+//   vector<Quaternion> Qs(angle.size());
+//   for(unsigned int i=0; i<Qs.size(); ++i) {
+//     Qs[i] = Quaternion(angle[i], axis[i]);
+//   }
+//   return Qs;
+// }
 
 std::vector<double> WaveformUtilities::Component(const std::vector<WaveformUtilities::Quaternion>& Q, const unsigned int i) {
   std::vector<double> v(Q.size());

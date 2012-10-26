@@ -19,7 +19,8 @@ SOURCES = $(wildcard *.cpp) $(wildcard Waveform/*.cpp)
 all: realtarget
 	@:
 
-realtarget: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
+#$(SOURCES:.cpp=.d) 
+realtarget: $(SOURCES:.cpp=.o)
 	@(make -s lib$(THISDIR).so)
 
 clean:
