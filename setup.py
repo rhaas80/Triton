@@ -23,11 +23,8 @@ from distutils.file_util import copy_file
 class build_ext(_build_ext):
     """Specialized Python source builder."""
     def run(self):
-        print("Running specialized install")
         _build_ext.run(self)
-        print("Made it to the copying step")
         copy_file('PyGW.py', 'PyGW/__init__.py')
-        print("Made it through the copying step")
 
 ## Now load the basic necessities
 from distutils.core import setup, Extension
@@ -72,7 +69,7 @@ setup(name = 'PyGW',
       # maintainer_email = 'michael.oliver.boyle@gmail.com',
       url = 'https://www.black-holes.org/wiki/documentation/waveforms',
       # download_url = 'https://www.black-holes.org/wiki/documentation/waveforms',
-      packages = ['PyGW']
+      packages = ['PyGW'],
       # py_modules = ,
       scripts = ['PyGW/Scripts/PyGWConvergence.py', 'PyGW/Scripts/PyGWExtrapolate.py', 'PyGW/Scripts/PyGWExtrapolate_h5.py',
                  'PyGW/Scripts/ConvergenceExample.py', 'PyGW/Scripts/ExtrapolationExample.py', 'PyGW/Scripts/ExtrapolationExample_h5.py'],
