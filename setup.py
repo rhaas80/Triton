@@ -10,15 +10,32 @@ python's default user directory.  Now, 'import PyGW' may be run from a
 python instance started in any directory on the system.
 """
 
-from distutils.core import setup, Extension
-import os
-import glob
-
 ## distutils doesn't build swig modules in the correct order by
 ## default -- the python module is installed first.  This will pop
 ## 'build_ext' to the beginning of the command list.
 from distutils.command.build import build
 build.sub_commands = sorted(build.sub_commands, key=lambda sub_command: int(sub_command[0]!='build_ext'))
+
+## I also need to copy the SWIG-generated python script PyGW.py to
+## PyGW/__init__.py so that it gets installed correctly.
+from distutils.command.build_ext import build_ext as _build_ext
+from distutils.file_util import copy_file
+class build_ext(_build_ext):
+    """Specialized Python source builder."""
+    def run(self):
+        print("Running specialized install")
+        _build_ext.run(self)
+        print("Made it to the copying step")
+        copy_file('PyGW.py', 'PyGW/__init__.py')
+        print("Made it through the copying step")
+
+## Now load the basic necessities
+from distutils.core import setup, Extension
+import os
+import glob
+
+
+
 
 ## This gets the list of files to build and the headers they depend on
 CPPFiles = glob.glob("Utilities/*.cpp") + glob.glob("PostNewtonian/*.cpp") + glob.glob("Objects/*.cpp") + glob.glob("Objects/Waveform/*.cpp")
@@ -36,12 +53,11 @@ PyGWExtension = Extension(name = '_PyGW',
                           define_macros = [('GitRevision', '"{0}"'.format(os.popen('git rev-parse HEAD').read().strip()))],
                           # undef_macros = [],
                           # extra_objects = [], # other things to link with
-                          # extra_compile_args = ['-Wno-sign-compare', '-Wno-conversion', '-Wno-reorder', '-Wno-unused-value', '-Wno-uninitialized'],
                           extra_compile_args = ['-w'], # turn off all warnings
                           # extra_link_args = [], 
                           # export_symbols = [], # export these symbols for shared extensions
                           language='c++',
-                          swig_opts=['-c++', '-outdir', 'PyGW'] # '-globals', 'constants', 
+                          swig_opts=['-c++'], # '-globals', 'constants', 
                           )
 
 ## This function does the actual work of build everything and
@@ -56,7 +72,7 @@ setup(name = 'PyGW',
       # maintainer_email = 'michael.oliver.boyle@gmail.com',
       url = 'https://www.black-holes.org/wiki/documentation/waveforms',
       # download_url = 'https://www.black-holes.org/wiki/documentation/waveforms',
-      # packages = ,
+      packages = ['PyGW']
       # py_modules = ,
       scripts = ['PyGW/Scripts/PyGWConvergence.py', 'PyGW/Scripts/PyGWExtrapolate.py', 'PyGW/Scripts/PyGWExtrapolate_h5.py',
                  'PyGW/Scripts/ConvergenceExample.py', 'PyGW/Scripts/ExtrapolationExample.py', 'PyGW/Scripts/ExtrapolationExample_h5.py'],
@@ -70,8 +86,7 @@ setup(name = 'PyGW',
       # keywords = ,
       # platforms = ,
       # cmdclass = ,
+      cmdclass={'build_ext': build_ext},
       # data_files = ,
       # package_dir = 
-      packages = ['PyGW'],#, 'PyGW.plot', 'PyGW.plot_on_sphere'],
-      # package_dir = {'PyGW':'PyGW', 'PyGW.plot':'PyGW', 'PyGW.plot_on_sphere':'PyGW'}
       )

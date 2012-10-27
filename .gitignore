@@ -1,4 +1,6 @@
 .gitignore
+PyGW/__init__.py
+PyGW.py
 Python/PyGW/WaveformObjects.py
 Python/SWSHs.py
 Test/Input
@@ -14,4 +16,3 @@ _*.so
 *~
 *CalculatorOutput.cpp
 build
-PyGW/PyGW.py
