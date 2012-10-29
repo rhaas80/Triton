@@ -41,6 +41,12 @@ vector<double> AdvLIGO_NSNSOptimal(const vector<double>& F, const bool Invert=fa
   return PSD;
 }
 
+#ifdef __INTEL_COMPILER
+#pragma optimize("", off)
+#endif
+#if (__GNUC__ > 3 && __GNUC_MINOR__ > 3)
+#pragma GCC optimize(0)
+#endif
 vector<double> AdvLIGO_ZeroDet_HighP(const vector<double>& F, const bool Invert=false, const double NoiseFloor=0.0) {
   #include "AdvLIGO_ZeroDet_HighP.hpp"
   vector<double> LogPSD;
@@ -50,7 +56,6 @@ vector<double> AdvLIGO_ZeroDet_HighP(const vector<double>& F, const bool Invert=
   if(Invert) { return exp(-1.0*LogPSD); }
   return exp(LogPSD);
 }
-
 vector<double> AdvLIGO_ZeroDet_LowP(const vector<double>& F, const bool Invert=false, const double NoiseFloor=0.0) {
   #include "AdvLIGO_ZeroDet_LowP.hpp"
   vector<double> LogPSD(WU::Interpolate(ZERO_DET_low_PLogF, ZERO_DET_low_PLogPSD, log(fabs(F))));
@@ -59,6 +64,12 @@ vector<double> AdvLIGO_ZeroDet_LowP(const vector<double>& F, const bool Invert=f
   if(Invert) { return exp(-1.0*LogPSD); }
   return exp(LogPSD);
 }
+#ifdef __INTEL_COMPILER
+#pragma optimize("", on)
+#endif
+#if (__GNUC__ > 3 && __GNUC_MINOR__ > 3)
+#pragma GCC optimize(3)
+#endif
 
 vector<double> IniLIGO_Approx(const vector<double>& F, const bool Invert=false, const double NoiseFloor=0.0) {
   const double FMin = max(NoiseFloor, WU::IniLIGOSeismicWall);
