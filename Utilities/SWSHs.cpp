@@ -7,9 +7,9 @@ namespace WU = WaveformUtilities;
 #ifdef __INTEL_COMPILER
 #pragma optimize("", off)
 #endif
-#if (__GNUC__ > 3 && __GNUC_MINOR__ > 3)
-#pragma GCC optimize(0)
-#endif
+// #if (__GNUC__ > 3 && __GNUC_MINOR__ > 3)
+// #pragma GCC optimize(0)
+// #endif
 
 namespace WaveformUtilities {
   #include <cmath>
@@ -4335,3 +4335,8 @@ void WU::SWSH(const vector<vector<int> >& LM, const double vartheta, const doubl
   }
   return;
 }
+
+
+#ifdef __INTEL_COMPILER
+#pragma optimize("", on)
+#endif
