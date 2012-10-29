@@ -12,7 +12,7 @@
   }
 }
 
-%include "PyGW_Doc.i"
+%include "PyGW/PyGW_Doc.i"
 
 /////////////////////////////////////////////////
 //// These will be needed by the c++ wrapper ////
@@ -26,6 +26,7 @@
   #include "Objects/WaveformAtAPointFT.hpp"
   #include "Objects/Waveforms.hpp"
   #include "Utilities/Quaternions.hpp"
+  #include "Utilities/SWSHs.hpp"
 %}
 
 
@@ -82,6 +83,13 @@ namespace WaveformUtilities {
 namespace std {
   %template(vectorq) vector<WaveformUtilities::Quaternion>;
 }
+// Make SWSHs available
+%include <typemaps.i>
+%apply double *INOUT { double& amp };
+%apply double *INOUT { double& arg };
+%feature("pythonappend") WaveformUtilities::SWSH() %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%include "Utilities/SWSHs.hpp"
+
 
 //////////////////////////////////////////////////////////////////////
 
