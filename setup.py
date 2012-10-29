@@ -21,7 +21,7 @@ build.sub_commands = sorted(build.sub_commands, key=lambda sub_command: int(sub_
 from distutils.command.build_ext import build_ext as _build_ext
 from distutils.file_util import copy_file
 class build_ext(_build_ext):
-    """Specialized Python source builder."""
+    """Specialized Python source builder for moving SWIG module."""
     def run(self):
         _build_ext.run(self)
         copy_file('PyGW.py', 'PyGW/__init__.py')
@@ -71,8 +71,7 @@ setup(name = 'PyGW',
       # download_url = 'https://www.black-holes.org/wiki/documentation/waveforms',
       packages = ['PyGW'],
       # py_modules = ,
-      scripts = ['PyGW/Scripts/PyGWConvergence.py', 'PyGW/Scripts/PyGWExtrapolate.py', 'PyGW/Scripts/PyGWExtrapolate_h5.py',
-                 'PyGW/Scripts/ConvergenceExample.py', 'PyGW/Scripts/ExtrapolationExample.py', 'PyGW/Scripts/ExtrapolationExample_h5.py'],
+      scripts = ['PyGW/Scripts/ConvergenceExample.py', 'PyGW/Scripts/ExtrapolationExample.py', 'PyGW/Scripts/ExtrapolationExample_h5.py'],
       ext_modules = [PyGWExtension],
       # classifiers = ,
       # distclass = ,
