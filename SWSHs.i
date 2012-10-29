@@ -7,7 +7,7 @@
 //// These will be needed by the c++ wrapper ////
 /////////////////////////////////////////////////
 %{
-  #include "../Utilities/SWSHs.hpp"
+  #include "Utilities/SWSHs.hpp"
 %}
 
 
@@ -35,4 +35,4 @@ namespace std {
 
 %feature("pythonappend") WaveformUtilities::SWSH() %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 
-%include "../Utilities/SWSHs.hpp"
+%include "Utilities/SWSHs.hpp"
