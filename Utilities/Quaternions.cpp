@@ -349,6 +349,13 @@ std::vector<Quaternion> WaveformUtilities::RDelta(const std::vector<Quaternion>&
     cerr << "\n\nR1.size()=" << R1.size() << " != R2.size()=" << R2.size() << endl;
     throw(WaveformUtilities_VectorSizeMismatch);
   }
+  if(R1.size()==0) {
+    return vector<Quaternion>(0);
+  }
+  if(R1.size()<=IndexOfFiducialTime) {
+    cerr << "\n\nR1.size()=" << R1.size() << " <= IndexOfFiducialTime=" << IndexOfFiducialTime << endl;
+    throw(WaveformUtilities_VectorSizeMismatch);
+  }
   const unsigned int Size=R1.size();
   vector<Quaternion> Rd(Size);
   const Quaternion Offset = R1[IndexOfFiducialTime].conjugate() * R2[IndexOfFiducialTime];
