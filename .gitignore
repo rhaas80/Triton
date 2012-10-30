@@ -1,4 +1,6 @@
 .gitignore
+PyGW/__init__.py
+PyGW.py
 Python/PyGW/WaveformObjects.py
 Python/SWSHs.py
 Test/Input
@@ -7,8 +9,10 @@ xml
 lib*.so
 _*.so
 *_wrap.cxx
+*_wrap.cpp
 *.pyc
 *.d
 *.o
 *~
 *CalculatorOutput.cpp
+build

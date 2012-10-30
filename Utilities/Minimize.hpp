@@ -35,7 +35,7 @@ namespace WaveformUtilities {
 	Doub r=(bx-ax)*(fb-fc);
 	Doub q=(bx-cx)*(fb-fa);
 	Doub u=bx-((bx-cx)*q-(bx-ax)*r)/
-	  (2.0*SIGN(MAX(abs(q-r),TINY),q-r));
+	  (2.0*SIGN(MAX(std::abs(q-r),TINY),q-r));
 	Doub ulim=bx+GLIMIT*(cx-bx);
 	if ((bx-u)*(u-cx) > 0.0) {
 	  fu=func(u);
@@ -106,21 +106,21 @@ namespace WaveformUtilities {
       fw=fv=fx=func(x);
       for (Int iter=0;iter<ITMAX;iter++) {
 	xm=0.5*(a+b);
-	tol2=2.0*(tol1=tol*abs(x)+ZEPS);
-	if (abs(x-xm) <= (tol2-0.5*(b-a))) {
+	tol2=2.0*(tol1=tol*std::abs(x)+ZEPS);
+	if (std::abs(x-xm) <= (tol2-0.5*(b-a))) {
 	  fmin=fx;
 	  return xmin=x;
 	}
-	if (abs(e) > tol1) {
+	if (std::abs(e) > tol1) {
 	  r=(x-w)*(fx-fv);
 	  q=(x-v)*(fx-fw);
 	  p=(x-v)*q-(x-w)*r;
 	  q=2.0*(q-r);
 	  if (q > 0.0) p = -p;
-	  q=abs(q);
+	  q=std::abs(q);
 	  etemp=e;
 	  e=d;
-	  if (abs(p) >= abs(0.5*q*etemp) || p <= q*(a-x)
+	  if (std::abs(p) >= std::abs(0.5*q*etemp) || p <= q*(a-x)
 	      || p >= q*(b-x))
 	    d=CGOLD*(e=(x >= xm ? a-x : b-x));
 	  else {
@@ -132,7 +132,7 @@ namespace WaveformUtilities {
 	} else {
 	  d=CGOLD*(e=(x >= xm ? a-x : b-x));
 	}
-	u=(abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
+	u=(std::abs(d) >= tol1 ? x+d : x+SIGN(tol1,d));
 	fu=func(u);
 	if (fu <= fx) {
 	  if (u >= x) a=x; else b=x;

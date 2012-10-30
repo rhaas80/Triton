@@ -254,9 +254,14 @@ ostream& operator<<(ostream& os, const Waveform& a) {
 /// Output Waveform to file.
 void Output(const std::string& FileName, const WaveformObjects::Waveform& a, const unsigned int precision) {
   ofstream ofs(FileName.c_str(), ofstream::out);
-  ofs << setprecision(precision);
-  ofs << a;
-  ofs.close();
+  if(ofs.is_open()) {
+    ofs << setprecision(precision);
+    ofs << a;
+    ofs.close();
+  } else {
+    cerr << "\n\nFailed to open '" << FileName << "' for writing.  May be write-protected." << endl;
+    throw("Unwritable file");
+  }
   return;
 }
 

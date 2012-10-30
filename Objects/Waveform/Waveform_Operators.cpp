@@ -76,7 +76,7 @@ Waveform WaveformObjects::Waveform::operator/(const Waveform& b) const {
   c.History() << "#";
   d.Interpolate(NewTime);
   c.AlignPhasesToTwoPi(d, 0.25);
-  c.FrameRef() = c.Frame() / d.Frame();
+  c.FrameRef() = RDelta(c.Frame(), d.Frame());
   c.MagRef() = (c.Mag() - d.Mag()) / d.Mag();
   c.ArgRef() = c.Arg()-d.Arg();
   return c;

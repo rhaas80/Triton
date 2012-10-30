@@ -24,9 +24,17 @@ namespace WaveformObjects {
 	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
 	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
-	     const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+	     const double v0, 
 	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
 	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
+    Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
+	     const double v0, std::vector<std::vector<double> >& S1, std::vector<std::vector<double> >& S2, std::vector<std::vector<double> >& LNHat,
+	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
+    // Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
+    // 	     const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+    // 	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+    // 	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     ~Waveform() { }
     void swap(Waveform& b);
     void clear() { t.clear(); r.clear(); lm.clear(); mag.clear(); arg.clear(); }

@@ -186,22 +186,23 @@ bool WaveformObjects::Waveform::HasNaNs() const {
 /// Calculate the GW flux.
 std::vector<double> WaveformObjects::Waveform::Flux() const {
   /// NB: This function can only be used on Waveform data of type
-  /// `rhdot`.  To calculate the flux from data of type `rh`, simply
-  /// apply the Differentiate() function first, but remember that that
-  /// function operates in place, so you may wish to make a copy of
-  /// the Waveform first.  For example, you may wish to use
-  /// `Waveform(bla).Differentiate().Flux()`.
+  /// `rhdot` or `rh`.  For `rh`, conversion to `rhdot` is done
+  /// automatically.  Because there is no automatic integration method
+  /// implemented at this time, `rPsi4` cannot be used with this
+  /// function.
   /// 
   /// Also, if the frame is non-constant, the Waveform is copied, the
   /// copy is transformed into the original frame, and the flux is
-  /// calculated for that copy.
+  /// calculated for that copy.  If you are using a constant frame for
+  /// something else, you may be better off saving that as a separate
+  /// Waveform, and applying this function to your own copy.
   if(TypeIndex()%3==2) {
     Waveform W(*this);
     return W.Differentiate().Flux();
   }
   if(TypeIndex()%3!=1) {
     cerr << "\nType = " << Type() << endl;
-    throw("Can't get Flux() for Waveform of Type other than rhdot.  Maybe you should use Differentiate().");
+    throw("Can't get Flux() for Waveform of type Psi4 -- don't know how to integrate automatically.");
   }
   if(Frame().size()>1) {
     Waveform W(*this);

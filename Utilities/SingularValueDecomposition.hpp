@@ -14,7 +14,7 @@ namespace WaveformUtilities {
       eps = std::numeric_limits<Doub>::epsilon();
       decompose();
       reorder();
-      tsh = 0.5*sqrt(m+n+1.)*w[0]*eps;
+      tsh = 0.5*std::sqrt(m+n+1.)*w[0]*eps;
     }
     
     void solve(VecDoub_I &b, VecDoub_O &x, Doub thresh);

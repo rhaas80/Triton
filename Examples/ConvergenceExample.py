@@ -13,7 +13,7 @@ Triton/Python/Scripts/PyGWConvergence.py for more information.
 
 """
 
-from PyGWConvergence import Convergence
+from PyGW.Convergence import Convergence
 
 D = {}
 D['LevList'] = ['../Lev1', '../Lev2', '../Lev3']  # Paths may be relative

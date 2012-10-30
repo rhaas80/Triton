@@ -18,7 +18,7 @@ To extrapolate H5 files, see the similar file named
 
 """
 
-from PyGWExtrapolate import Extrapolate
+from PyGW.Extrapolate import Extrapolate
 
 D = {}
 D['InputDirectory'] = '/path/to/data/directory'  # May be relative

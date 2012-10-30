@@ -19,7 +19,7 @@ To extrapolate non-H5 files, see the similar file named
 """
 
 from PyGW import PickChMass
-from PyGWExtrapolate_h5 import Extrapolate
+from PyGW.Extrapolate_h5 import Extrapolate
 
 D = {}
 D['InputDirectory'] = '/path/to/data/directory'  # May be relative or absolute

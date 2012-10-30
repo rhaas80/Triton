@@ -114,6 +114,7 @@ namespace WaveformUtilities {
   std::vector<double> dot(const std::vector<std::vector<double> >& x, const std::vector<std::vector<double> >& y);
   std::vector<double> cross(const std::vector<double>& x, const std::vector<double>& y);
   double norm(const std::vector<double>& x);
+  std::vector<double> norm(const std::vector<std::vector<double> >& x);
   
   /// NOTE!!! After optimization, the following are barely faster than pow.  These are, of course, incorrectly implemented because of the 'inline's.
   /// 

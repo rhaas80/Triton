@@ -17,11 +17,12 @@ SOURCES = $(wildcard *.cpp)
 all: realtarget
 	@:
 
-realtarget: $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
+#$(SOURCES:.cpp=.d) 
+realtarget: $(SOURCES:.cpp=.o)
 	@(make -s lib$(THISDIR).so)
 
 clean:
-	-$(RM) `ls *.o | grep -v NoiseCurves | grep -v SWSHs` *.d lib$(THISDIR).so
+	-$(RM) `ls *.o | grep -v SWSHs` *.d lib$(THISDIR).so
 
 realclean:
 	-$(RM) *.o *.d lib$(THISDIR).so
@@ -33,9 +34,10 @@ realclean:
 %.d : %.cpp
 	@$(MAKEDEPEND) $(IFLAGS) -MT '$*.o $*.d' -MF $*.d $*.cpp
 
-lib$(THISDIR).so : $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
+# $(SOURCES:.cpp=.d) $(SOURCES:.cpp=.o)
+lib$(THISDIR).so :
 	$(C++) $(SHARED) -o lib$(THISDIR).so $(SOURCES:.cpp=.o)
-	@$(LN) ../$(THISDIR)/$@ ../lib/
+	$(LN) ../$(THISDIR)/$@ ../lib/
 	$(INSTALL_NAME_TOOL)
 
 -include $(SOURCES:.cpp=.d)

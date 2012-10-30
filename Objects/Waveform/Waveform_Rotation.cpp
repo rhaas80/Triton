@@ -429,7 +429,7 @@ Waveform& WaveformObjects::Waveform::RotateCoordinates(const std::vector<Wavefor
   /// physical point that was located there is left in place.  In the
   /// new coordinates, that physical point is at Qbar*zHat*Q.
   History() << "### this->RotateCoordinates(Q);\n#";
-  return this->RotatePhysicalSystem(WaveformUtilities::Conjugate(Q));
+  return this->RotatePhysicalSystem(WaveformUtilities::conjugate(Q));
 }
 
 /// Rotate all modes by the given quaternion.
@@ -441,5 +441,5 @@ Waveform& WaveformObjects::Waveform::RotateCoordinates(const WaveformUtilities::
   /// physical point that was located there is left in place.  In the
   /// new coordinates, that physical point is at Qbar*zHat*Q.
   History() << "### this->RotateCoordinates(Q);\n#";
-  return this->RotatePhysicalSystem(Q.Conjugate());
+  return this->RotatePhysicalSystem(Q.conjugate());
 }

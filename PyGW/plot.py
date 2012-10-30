@@ -172,4 +172,4 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
 ###   W = PyGW.Waveform()
 ###   W.plot('Mag', ((2,2), (2,-2)))
 import PyGW
-PyGW.WaveformObjects.Waveform.plot = plotWaveform
+PyGW.Waveform.plot = plotWaveform

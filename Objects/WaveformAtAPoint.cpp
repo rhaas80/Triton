@@ -4,7 +4,7 @@
 
 #include "VectorFunctions.hpp"
 #include "Interpolate.hpp"
-#include "SWSHs.cpp"
+#include "SWSHs.hpp"
 #include "Utilities.hpp"
 
 using namespace WaveformUtilities;
@@ -12,6 +12,7 @@ using namespace WaveformObjects;
 using std::vector;
 using std::setprecision;
 using std::ios_base;
+using std::endl;
 
 
 WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const double Vartheta, const double Varphi)

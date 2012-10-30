@@ -1,7 +1,7 @@
 // -*- c++ -*-
 
-%module WaveformObjects
-#pragma SWIG nowarn=401
+%module PyGW
+ #pragma SWIG nowarn=401,509
 
 %exception {
   try {
@@ -12,20 +12,21 @@
   }
 }
 
-%include "WaveformObjects_Doc.i"
+%include "PyGW/PyGW_Doc.i"
 
 /////////////////////////////////////////////////
 //// These will be needed by the c++ wrapper ////
 /////////////////////////////////////////////////
 %{
+  #define SWIG 1
   #include <iostream>
   #include <sstream>
   #include <iomanip>
-  #include "../Objects/WaveformAtAPoint.hpp"
-  #include "../Objects/WaveformAtAPointFT.hpp"
-  #include "../Objects/Waveforms.hpp"
-  #include "../Utilities/Quaternions.hpp"
-  #include "../Utilities/QuaternionInterpolation.hpp"
+  #include "Objects/WaveformAtAPoint.hpp"
+  #include "Objects/WaveformAtAPointFT.hpp"
+  #include "Objects/Waveforms.hpp"
+  #include "Utilities/Quaternions.hpp"
+  #include "Utilities/SWSHs.hpp"
 %}
 
 
@@ -52,7 +53,7 @@ namespace std {
 %ignore WaveformUtilities::Matrix::operator[];
 %rename(__getitem__) WaveformUtilities::Matrix<int>::operator[] const;
 %rename(__getitem__) WaveformUtilities::Matrix<double>::operator[] const;
-%include "../Utilities/Matrix.hpp"
+%include "Utilities/Matrix.hpp"
 namespace WaveformUtilities {
   %template(MatrixInt) Matrix<int>;
   %template(MatrixDouble) Matrix<double>;
@@ -61,7 +62,7 @@ namespace WaveformUtilities {
 %ignore WaveformUtilities::Quaternion::operator=;
 %rename(__getitem__) WaveformUtilities::Quaternion::operator [](unsigned int const) const;
 %rename(__setitem__) WaveformUtilities::Quaternion::operator [](unsigned int const);
-%include "../Utilities/Quaternions.hpp"
+%include "Utilities/Quaternions.hpp"
 %extend WaveformUtilities::Quaternion {
   //// This function is called when printing a Quaternion object
   std::string __str__() {
@@ -73,11 +74,22 @@ namespace WaveformUtilities {
       << $self->operator[](3) << "]";
     return S.str();
   }
+  // This prints the Quaternion nicely at the prompt
+  %pythoncode{
+    def __repr__(self):
+        return 'PyGW.Quaternion('+repr(self[0])+', '+repr(self[1])+', '+repr(self[2])+', '+repr(self[3])+')'
+  };
  };
 namespace std {
   %template(vectorq) vector<WaveformUtilities::Quaternion>;
 }
-%include "../Utilities/QuaternionInterpolation.hpp"
+// Make SWSHs available
+%include <typemaps.i>
+%apply double *INOUT { double& amp };
+%apply double *INOUT { double& arg };
+%feature("pythonappend") WaveformUtilities::SWSH() %{ if isinstance(val, tuple) : val = numpy.array(val) %}
+%include "Utilities/SWSHs.hpp"
+
 
 //////////////////////////////////////////////////////////////////////
 
@@ -101,7 +113,7 @@ namespace std {
 %feature("pythonappend") WaveformObjects::Waveform::Omega2m2() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 %feature("pythonappend") WaveformObjects::Waveform::Flux() const %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 //// Parse the header file to generate wrappers
-%include "../Objects/Waveform.hpp"
+%include "Objects/Waveform.hpp"
 //// Make any additions to the Waveform class here
 %extend WaveformObjects::Waveform {
   //// This function is called when printing the Waveform object
@@ -154,14 +166,14 @@ namespace std {
 //// Read in the WaveformAtAPoint class ////
 ////////////////////////////////////////////
 //// Parse the header file to generate wrappers
-%include "../Objects/WaveformAtAPoint.hpp"
+%include "Objects/WaveformAtAPoint.hpp"
 
 
 //////////////////////////////////////////////
 //// Read in the WaveformAtAPointFT class ////
 //////////////////////////////////////////////
 //// Parse the header file to generate wrappers
-%include "../Objects/WaveformAtAPointFT.hpp"
+%include "Objects/WaveformAtAPointFT.hpp"
 
 
 /////////////////////////////////////
@@ -175,7 +187,7 @@ namespace std {
 %ignore WaveformObjects::Waveforms::operator[];
 %rename(__getitem__) WaveformObjects::Waveforms::operator[] const;
 //// Parse the header file to generate wrappers
-%include "../Objects/Waveforms.hpp"
+%include "Objects/Waveforms.hpp"
 %extend WaveformObjects::Waveforms {
   void __setitem__(int i, const WaveformObjects::Waveform& W) {
     $self->operator[](i) = W;

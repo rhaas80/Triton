@@ -32,7 +32,6 @@ def sphere_points(vartheta, varphi, Radius=1) :
     return (x,y,z)
 
 
-from SWSHs import SWSH
 from numpy import array
 from numpy import zeros
 from numpy import empty_like
