@@ -3,9 +3,9 @@ EXECDIRS:= Routines
 SUBDIRS:= $(LIBDIRS) #$(EXECDIRS)
 
 all:
-	@for d in $(SUBDIRS); do ($(MAKE) -C $$d); done
+	python setup.py install --user
 
-libs:
+Triton:
 	@for d in $(LIBDIRS); do ($(MAKE) -C $$d); done
 
 doc:
