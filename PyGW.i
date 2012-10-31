@@ -234,6 +234,40 @@ def MonotonicIndices(T) :
         i+=1
     return Ind
 
+def ReadSingleWaveform(File='h_R0100.h5') :
+    """
+    Read a single h5 waveform file (in, e.g., NRAR format).
+    """
+    import h5py
+    import PyGW
+    import re
+    import numpy
+    
+    YlmRegex = re.compile(r""".*_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)_.*\.dat""")
+    f = h5py.File(File, 'r')
+    datasetlist = list(f)
+    W = PyGW.Waveform()
+    
+    NTimes = f[datasetlist[0]].shape[0]
+    YLMdata = [DataSet for DataSet in datasetlist for m in [YlmRegex.search(DataSet)] if m]
+    YLMdata = sorted(YLMdata, key=lambda DataSet : [int(YlmRegex.search(DataSet).group('L')), int(YlmRegex.search(DataSet).group('M'))])
+    NModes = len(YLMdata)
+    
+    W.AppendHistory("### # Python read from {}.".format(File))
+    W.SetT(f[datasetlist[0]][:,0])
+    W.SetLM(PyGW.MatrixInt(sorted([[int(m.group('L')), int(m.group('M'))] for DataSet in YLMdata for m in [YlmRegex.search(DataSet)] if m])))
+    W.SetMag(PyGW.MatrixDouble(numpy.array([f[dataset][:,1] for dataset in datasetlist])))
+    W.SetArg(PyGW.MatrixDouble(numpy.array([f[dataset][:,2] for dataset in datasetlist])))
+    W.ConvertReImToMagArg()
+    for i,type in enumerate(W.Types) :
+        if(File.find(type)>-1) :
+            W.SetTypeIndex(i)
+            break
+    
+    f.close()
+    
+    return W
+
 def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5', Radii=[]) :
     """
     Read data at various radii, and offset by tortoise coordinate.
@@ -242,7 +276,7 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     import PyGW
     import re
     import numpy
-    YlmRegex = re.compile(r"""Y_l(?P<L>[0-9]+)_m(?P<M>[-0-9]+)\.dat""")
+    YlmRegex = re.compile(r"""Y_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)\.dat""")
     f = h5py.File(Dir+'/'+File, 'r')
     WaveformNames = list(f)
     if(not Radii) :
