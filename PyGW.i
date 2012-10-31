@@ -234,9 +234,9 @@ def MonotonicIndices(T) :
         i+=1
     return Ind
 
-def ReadSingleWaveform(File='h_R0100.h5') :
+def ReadNRARWaveform(File) :
     """
-    Read a single h5 waveform file (in, e.g., NRAR format).
+    Read a single h5 waveform file in NRAR format.
     """
     import h5py
     import PyGW
