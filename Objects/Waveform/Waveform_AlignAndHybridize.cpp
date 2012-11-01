@@ -122,7 +122,7 @@ Waveform& WaveformObjects::Waveform::AlignPhasesToTwoPi(const Waveform& a, const
     cerr << "\ntFrac=" << tFrac << endl;
     throw("Bad fraction");
   }
-  History() << "### this->AlignPhasesToTwoPi(a, " << tFrac << ");\n#" << flush;
+  History() << "### this->AlignPhasesToTwoPi(a, " << tFrac << ");\n" << flush;
   const int Ithis=int(tFrac*NTimes());
   Waveform b(a);
   b.Interpolate(T(Ithis));
