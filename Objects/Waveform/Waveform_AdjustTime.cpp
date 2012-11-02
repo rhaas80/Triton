@@ -139,15 +139,15 @@ Waveform& WaveformObjects::Waveform::NSamplesPerCycle22(const unsigned int N) {
 }
 
 /// Erase earliest data that overlaps later data.
-Waveform& WaveformObjects::Waveform::MakeTimeMonotonic() {
-  History() << "### this->MakeTimeMonotonic();" << endl << "#";
+Waveform& WaveformObjects::Waveform::MakeTimeMonotonic(const double MinTimeStep) {
+  History() << "### this->MakeTimeMonotonic(" << MinTimeStep << ");" << endl << "#";
   vector<double> NewTime(T());
   int Size = NewTime.size();
   int i=1;
   while(i<Size) {
-    if(NewTime[i]<=NewTime[i-1]) {
+    if(NewTime[i]<=NewTime[i-1]+MinTimeStep) {
       int j=0;
-      while(NewTime[j]<NewTime[i]) { ++j; }
+      while(NewTime[j]+MinTimeStep<NewTime[i]) { ++j; }
       // erase data from j (inclusive) to i (exclusive)
       NewTime.erase(NewTime.begin()+j, NewTime.begin()+i);
       Size = NewTime.size();

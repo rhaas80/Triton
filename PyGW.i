@@ -214,7 +214,7 @@ def PickChMass(File='Horizons.h5') :
     hist, bins = numpy.histogram(ChMass, bins=len(ChMass))
     return bins[hist.argmax()]
 
-def MonotonicIndices(T, MinTimeStep=1.e-4) :
+def MonotonicIndices(T, MinTimeStep=1.e-5) :
     """
     Given an array of times, return the indices that make the array strictly monotonic.
     """
@@ -225,13 +225,13 @@ def MonotonicIndices(T, MinTimeStep=1.e-4) :
     while(i<Size) :
         if(T[Ind[i]]<=T[Ind[i-1]]+MinTimeStep) :
             j=0
-            while(T[Ind[j]]<T[Ind[i]]+MinTimeStep) :
+            while(T[Ind[j]]+MinTimeStep<T[Ind[i]]) :
                 j += 1
             # erase data from j (inclusive) to i (exclusive)
             Ind = numpy.delete(Ind, range(j,i))
             Size = len(Ind)
             i = j-1
-        i+=1
+        i += 1
     return Ind
 
 def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5', Radii=[]) :

@@ -171,7 +171,7 @@ namespace WaveformObjects {
     Waveform& UniformTimeToPowerOfTwo();
     Waveform& UniformTime(const unsigned int N=200);
     Waveform& NSamplesPerCycle22(const unsigned int N=20);
-    Waveform& MakeTimeMonotonic();
+    Waveform& MakeTimeMonotonic(const double MinTimeStep=1.e-5);
     
     // Physical conversions for extrapolations or conversion to frequency space
     Waveform& SetArealRadius(const std::vector<double>& ArealRadius);
