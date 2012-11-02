@@ -1,4 +1,4 @@
-def ReadNRARWaveform(File) :
+def ReadWaveform(File) :
     """
     Read a single h5 waveform file in NRAR format.
     """
@@ -27,7 +27,7 @@ def ReadNRARWaveform(File) :
     f.close()
     return W
 
-def WriteNRARWaveform(FileName, W) :
+def WriteWaveform(FileName, W) :
     """
     Write a single h5 waveform file in NRAR format.
     
@@ -51,7 +51,6 @@ def WriteNRARWaveform(FileName, W) :
     Group = FileMatch.group('Group')
     if not File :
         raise(ValueError('No file name found in "{}".  Make sure there is content before any colon.'.format(FileName)))
-    print("File = ",File)
     f = h5py.File(File, 'w')
     if Group :
         if Group[-1] == '/' :
