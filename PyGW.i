@@ -214,7 +214,7 @@ def PickChMass(File='Horizons.h5') :
     hist, bins = numpy.histogram(ChMass, bins=len(ChMass))
     return bins[hist.argmax()]
 
-def MonotonicIndices(T) :
+def MonotonicIndices(T, MinTimeStep=1.e-4) :
     """
     Given an array of times, return the indices that make the array strictly monotonic.
     """
@@ -223,9 +223,9 @@ def MonotonicIndices(T) :
     Size = len(Ind)
     i=1
     while(i<Size) :
-        if(T[Ind[i]]<=T[Ind[i-1]]) :
+        if(T[Ind[i]]<=T[Ind[i-1]]+MinTimeStep) :
             j=0
-            while(T[Ind[j]]<T[Ind[i]]) :
+            while(T[Ind[j]]<T[Ind[i]]+MinTimeStep) :
                 j += 1
             # erase data from j (inclusive) to i (exclusive)
             Ind = numpy.delete(Ind, range(j,i))
@@ -233,40 +233,6 @@ def MonotonicIndices(T) :
             i = j-1
         i+=1
     return Ind
-
-def ReadNRARWaveform(File) :
-    """
-    Read a single h5 waveform file in NRAR format.
-    """
-    import h5py
-    import PyGW
-    import re
-    import numpy
-    
-    YlmRegex = re.compile(r""".*_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)_.*\.dat""")
-    f = h5py.File(File, 'r')
-    datasetlist = list(f)
-    W = PyGW.Waveform()
-    
-    NTimes = f[datasetlist[0]].shape[0]
-    YLMdata = [DataSet for DataSet in datasetlist for m in [YlmRegex.search(DataSet)] if m]
-    YLMdata = sorted(YLMdata, key=lambda DataSet : [int(YlmRegex.search(DataSet).group('L')), int(YlmRegex.search(DataSet).group('M'))])
-    NModes = len(YLMdata)
-    
-    W.AppendHistory("### # Python read from {}.".format(File))
-    W.SetT(f[datasetlist[0]][:,0])
-    W.SetLM(PyGW.MatrixInt(sorted([[int(m.group('L')), int(m.group('M'))] for DataSet in YLMdata for m in [YlmRegex.search(DataSet)] if m])))
-    W.SetMag(PyGW.MatrixDouble(numpy.array([f[dataset][:,1] for dataset in datasetlist])))
-    W.SetArg(PyGW.MatrixDouble(numpy.array([f[dataset][:,2] for dataset in datasetlist])))
-    W.ConvertReImToMagArg()
-    for i,type in enumerate(W.Types) :
-        if(File.find(type)>-1) :
-            W.SetTypeIndex(i)
-            break
-    
-    f.close()
-    
-    return W
 
 def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5', Radii=[]) :
     """
