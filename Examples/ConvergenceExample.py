@@ -16,6 +16,9 @@ Triton/Python/Scripts/PyGWConvergence.py for more information.
 from PyGW.Convergence import Convergence
 
 D = {}
+
+D['OutputDirectory'] = '/path/to/output/directory'  # May be relative or absolute
+
 D['LevList'] = ['../Lev1', '../Lev2', '../Lev3']  # Paths may be relative
 
 D['RWZFiles'] = 'rh_ExtrapolatedN{ExtrapOrder}.dat'
