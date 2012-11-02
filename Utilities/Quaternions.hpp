@@ -18,6 +18,7 @@ namespace WaveformUtilities {
     double w, x, y, z;
   public: // Constructors
     Quaternion();
+    Quaternion(const Quaternion& Q);
     Quaternion(const double vartheta, const double varphi);
     Quaternion(const double alpha, const double beta, const double gamma);
     Quaternion(const double w0, const double x0, const double y0, const double z0);

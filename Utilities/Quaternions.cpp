@@ -36,6 +36,10 @@ std::vector<double> ScalarIntegral(const std::vector<double>& fdot, const std::v
 WaveformUtilities::Quaternion::Quaternion()
   : w(0.0), x(0.0), y(0.0), z(0.0) { }
 
+/// Copy constructor.
+WaveformUtilities::Quaternion::Quaternion(const Quaternion& Q)
+  : w(Q.w), x(Q.x), y(Q.y), z(Q.z) { }
+
 /// Constructor from spherical coordinates.
 WaveformUtilities::Quaternion::Quaternion(const double vartheta, const double varphi) {
   /// 

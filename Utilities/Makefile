@@ -19,7 +19,7 @@ all: realtarget
 
 #$(SOURCES:.cpp=.d) 
 realtarget: $(SOURCES:.cpp=.o)
-	@(make -s lib$(THISDIR).so)
+	(make -s lib$(THISDIR).so)
 
 clean:
 	-$(RM) `ls *.o | grep -v SWSHs` *.d lib$(THISDIR).so

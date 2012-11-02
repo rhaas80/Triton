@@ -16,7 +16,6 @@
 #include "Utilities.hpp"
 #include "Units.hpp"
 #include "PostNewtonian.hpp"
-#include "WignerDMatrix.hpp"
 #include "Quaternions.hpp"
 
 using namespace WaveformUtilities;

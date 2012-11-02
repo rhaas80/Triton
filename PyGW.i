@@ -214,7 +214,7 @@ def PickChMass(File='Horizons.h5') :
     hist, bins = numpy.histogram(ChMass, bins=len(ChMass))
     return bins[hist.argmax()]
 
-def MonotonicIndices(T) :
+def MonotonicIndices(T, MinTimeStep=1.e-4) :
     """
     Given an array of times, return the indices that make the array strictly monotonic.
     """
@@ -223,9 +223,9 @@ def MonotonicIndices(T) :
     Size = len(Ind)
     i=1
     while(i<Size) :
-        if(T[Ind[i]]<=T[Ind[i-1]]) :
+        if(T[Ind[i]]<=T[Ind[i-1]]+MinTimeStep) :
             j=0
-            while(T[Ind[j]]<T[Ind[i]]) :
+            while(T[Ind[j]]<T[Ind[i]]+MinTimeStep) :
                 j += 1
             # erase data from j (inclusive) to i (exclusive)
             Ind = numpy.delete(Ind, range(j,i))
@@ -242,7 +242,7 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     import PyGW
     import re
     import numpy
-    YlmRegex = re.compile(r"""Y_l(?P<L>[0-9]+)_m(?P<M>[-0-9]+)\.dat""")
+    YlmRegex = re.compile(r"""Y_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)\.dat""")
     f = h5py.File(Dir+'/'+File, 'r')
     WaveformNames = list(f)
     if(not Radii) :
