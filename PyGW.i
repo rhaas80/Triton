@@ -288,15 +288,15 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
         TempW.SetMag(PyGW.MatrixDouble(numpy.delete(Mag, BadIndices, 1)))
         TempW.SetArg(PyGW.MatrixDouble(numpy.delete(Arg, BadIndices, 1)))
         TempW.ConvertReImToMagArg()
+        for i,type in enumerate(TempW.Types) :
+            if(File.find(type)>-1) :
+                TempW.SetTypeIndex(i)
+                break
         TempW.SetArealRadius(ArealRadius[Indices])
         TempW.RescaleMagForRadius(CoordRadius*ChMass)
         TempW.SetTimeFromAverageLapse(AverageLapse[Indices], InitialAdmEnergy)
         TempW.TortoiseRetard(InitialAdmEnergy)
         if(ChMass != 1.0) : TempW.SetTotalMassToOne(ChMass)
-        for i,type in enumerate(TempW.Types) :
-            if(File.find(type)>-1) :
-                TempW.SetTypeIndex(i)
-                break
         Ws[n] = TempW
     f.close()
     Ws.AppendHistory("### PyGW.ReadFiniteRadiusData(ChMass={0}, Dir='{1}', File='{2}')".format(ChMass, Dir, File))
