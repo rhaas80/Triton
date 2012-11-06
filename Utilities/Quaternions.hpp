@@ -24,7 +24,7 @@ namespace WaveformUtilities {
     Quaternion(const double w0, const double x0, const double y0, const double z0);
     Quaternion(const std::vector<double>& q);
     Quaternion(const double angle, const std::vector<double>& axis);
-  // public: // Access and manipulation
+  public: // Access and manipulation
     Quaternion& operator=(const Quaternion& Q) { w=Q.w; x=Q.x; y=Q.y; z=Q.z; return *this; }
     double operator[](const unsigned int i) const;
     double& operator[](const unsigned int i);
@@ -53,7 +53,8 @@ namespace WaveformUtilities {
     inline double     normsquared() const { return (w*w+x*x+y*y+z*z); }
     inline Quaternion sqrtOfRotor() const { return (*this+1)/std::sqrt(2+2*w); }
     inline std::vector<double> vec() const { std::vector<double> v(3); v[0]=x; v[1]=y; v[2]=z; return v; }
-  }; // Helper (non-member) functions for single Quaternions follow
+  };
+  // Helper (non-member) functions for single Quaternions follow
   inline Quaternion operator+(const double a, const Quaternion& Q) { return Q+a; }
   inline Quaternion operator-(const double a, const Quaternion& Q) { return Q-a; }
   inline Quaternion operator*(const double a, const Quaternion& Q) { return Q*a; }
