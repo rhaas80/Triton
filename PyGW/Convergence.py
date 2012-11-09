@@ -107,6 +107,7 @@ class Convergence :
         import PyGW
         import PyGW.plot
         import sys
+        import os
         import matplotlib.pyplot as plt
         self.ParameterDictionary=Dictionary
         
@@ -143,6 +144,10 @@ class Convergence :
         
         # If output directory name is empty string, assume it is "./"
         if(not self.OutputDirectory) : self.OutputDirectory = "./"
+        
+        # Try to make the output directory
+        if not os.path.exists(self.OutputDirectory) :
+            os.makedirs(self.OutputDirectory)
         
         # If we can, find the max flux time
         MaxFluxTime=3.0e300;
