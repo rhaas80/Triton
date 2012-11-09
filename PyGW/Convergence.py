@@ -201,14 +201,14 @@ class Convergence :
                                                                Quantity1=Quantity1,
                                                                Quantity2=Quantity2,
                                                                Constant=("N"+str(self.ExtrapolationOrders[i])))
-                        sys.stdout.write("\n\tand printing {} ... ".format(OutputDirectory+"/"+DiffFile))
+                        sys.stdout.write("\n\tand printing {} ... ".format(self.OutputDirectory+"/"+DiffFile))
                         sys.stdout.flush()
                         Diff[0] = Diff[0]/Diff[1];
                         Diff[1].NSamplesPerCycle22(self.OutputNSamplesPerCycle22);
                         if(self.OutputNSamplesPerCycle22!=0) : Diff[0].Interpolate(Diff[1]);
                         if(self.DropBeforeTime!=-3.0e300) : Diff[0].DropBefore(self.DropBeforeTime);
                         if(self.DropAfterTime!=3.0e300) : Diff[0].DropAfter(self.DropAfterTime);
-                        PyGW.Output(OutputDirectory+"/"+DiffFile, Diff[0]);
+                        PyGW.Output(self.OutputDirectory+"/"+DiffFile, Diff[0]);
                         sys.stdout.write("\n\tand plotting ... ")
                         sys.stdout.flush()
                         plt.figure(0)
@@ -222,7 +222,7 @@ class Convergence :
                     plt.gca().set_ylim(1e-8, 100)
                     if(MaxFluxTime!=3.0e300) :
                         plt.gca().axvline(x=MaxFluxTime, ls='--')
-                    figmag.savefig(OutputDirectory+"/"+'{DataType}_LevConvergence_{Constant}_Mag{Alignment}.pdf'.format(DataType=Diff[0].Type(),
+                    figmag.savefig(self.OutputDirectory+"/"+'{DataType}_LevConvergence_{Constant}_Mag{Alignment}.pdf'.format(DataType=Diff[0].Type(),
                                                                                                                         Constant=("N"+str(self.ExtrapolationOrders[i])),
                                                                                                                         Alignment=AlignmentString))
                     plt.close(figmag)
@@ -231,7 +231,7 @@ class Convergence :
                     plt.gca().set_ylim(1e-8, 100)
                     if(MaxFluxTime!=3.0e300) :
                         plt.gca().axvline(x=MaxFluxTime, ls='--')
-                    figarg.savefig(OutputDirectory+"/"+'{DataType}_LevConvergence_{Constant}_Arg{Alignment}.pdf'.format(DataType=Diff[0].Type(),
+                    figarg.savefig(self.OutputDirectory+"/"+'{DataType}_LevConvergence_{Constant}_Arg{Alignment}.pdf'.format(DataType=Diff[0].Type(),
                                                                                                                         Constant=("N"+str(self.ExtrapolationOrders[i])),
                                                                                                                         Alignment=AlignmentString))
                     plt.close(figarg)
@@ -256,9 +256,9 @@ class Convergence :
                                                            Quantity1=LastLev[LastLev.rfind("/")+1:],
                                                            Quantity2=NextLev[NextLev.rfind("/")+1:],
                                                            Constant=("N"+str(self.ExtrapolationOrders[i])))
-                    sys.stdout.write("\n\tand printing {} ... ".format(OutputDirectory+"/"+DiffFile))
+                    sys.stdout.write("\n\tand printing {} ... ".format(self.OutputDirectory+"/"+DiffFile))
                     sys.stdout.flush()
-                    DiffFileHandle = open(OutputDirectory+"/"+DiffFile, 'w')
+                    DiffFileHandle = open(self.OutputDirectory+"/"+DiffFile, 'w')
                     DiffFileHandle.write("# [1] = M*omega_hdot(2,-2)\n# [2] = FluxA-FluxB\n# [3] = (FluxA-FluxB)/PNFluxA\n")
                     savetxt(DiffFileHandle, transpose((OmegaA, FluxDiff, FluxDiff/PNFlux)))
                     DiffFileHandle.close()
@@ -273,7 +273,7 @@ class Convergence :
                 plt.gca().set_ylim(0, 2)
                 plt.xlabel(r'$M\, \omega_{\dot{h}_{2,-2}}$')
                 plt.ylabel(r'$\mathrm{Flux} / \mathrm{Flux}_{\mathrm{pN}}$')
-                figarg.savefig(OutputDirectory+"/"+'Flux_LevConvergence_{Constant}{Alignment}.pdf'.format(Constant=("N"+str(self.ExtrapolationOrders[i])),
+                figarg.savefig(self.OutputDirectory+"/"+'Flux_LevConvergence_{Constant}{Alignment}.pdf'.format(Constant=("N"+str(self.ExtrapolationOrders[i])),
                                                                                                           Alignment=AlignmentString))
                 plt.close(figflux)
         
@@ -307,14 +307,14 @@ class Convergence :
                                                            Quantity1=("N"+str(self.ExtrapolationOrders[i])),
                                                            Quantity2=("N"+str(self.ExtrapolationOrders[i-1])),
                                                            Constant=self.BestLev[self.BestLev.rfind("/")+1:])
-                    sys.stdout.write("\n\tand printing {0} ... ".format(OutputDirectory+"/"+DiffFile))
+                    sys.stdout.write("\n\tand printing {0} ... ".format(self.OutputDirectory+"/"+DiffFile))
                     sys.stdout.flush()
                     Diff[0] = Diff[0]/Diff[1];
                     Diff[1].NSamplesPerCycle22(self.OutputNSamplesPerCycle22);
                     if(self.OutputNSamplesPerCycle22!=0) : Diff[0].Interpolate(Diff[1]);
                     if(self.DropBeforeTime!=-3.0e300) : Diff[0].DropBefore(self.DropBeforeTime);
                     if(self.DropAfterTime!=3.0e300) : Diff[0].DropAfter(self.DropAfterTime);
-                    PyGW.Output(OutputDirectory+"/"+DiffFile, Diff[0])
+                    PyGW.Output(self.OutputDirectory+"/"+DiffFile, Diff[0])
                     sys.stdout.write("\n\tand plotting ... ")
                     sys.stdout.flush()
                     plt.figure(0)
@@ -327,7 +327,7 @@ class Convergence :
                 plt.gca().set_ylim(1e-8, 10)
                 if(MaxFluxTime!=3.0e300) :
                     plt.gca().axvline(x=MaxFluxTime, ls='--')
-                figmag.savefig(OutputDirectory+"/"+'{DataType}_ExtrapConvergence_{Constant}_Mag{Alignment}.pdf'.format(DataType=Diff[0].Type(),
+                figmag.savefig(self.OutputDirectory+"/"+'{DataType}_ExtrapConvergence_{Constant}_Mag{Alignment}.pdf'.format(DataType=Diff[0].Type(),
                                                                                                                        Constant=self.BestLev[self.BestLev.rfind("/")+1:],
                                                                                                                        Alignment=AlignmentString))
                 plt.close(figmag)
@@ -336,7 +336,7 @@ class Convergence :
                 plt.gca().set_ylim(1e-8, 100)
                 if(MaxFluxTime!=3.0e300) :
                     plt.gca().axvline(x=MaxFluxTime, ls='--')
-                figarg.savefig(OutputDirectory+"/"+'{DataType}_ExtrapConvergence_{Constant}_Arg{Alignment}.pdf'.format(DataType=Diff[0].Type(),
+                figarg.savefig(self.OutputDirectory+"/"+'{DataType}_ExtrapConvergence_{Constant}_Arg{Alignment}.pdf'.format(DataType=Diff[0].Type(),
                                                                                                                        Constant=self.BestLev[self.BestLev.rfind("/")+1:],
                                                                                                                        Alignment=AlignmentString))
                 plt.close(figarg)
