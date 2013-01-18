@@ -93,15 +93,21 @@ public:
     dydt[0] = (6.4*nu)*CUB(CUB(v))
       * (1.0 + v*v*(dvdt2 + v*(dvdt3 + v*(dvdt4 + v*(dvdt5 + v*(dvdt6 + dvdt6Ln4v*log(4.0*v) + v*(dvdt7) ) ) ) ) ) );
     dydt[1]=CUB(v);
-    const double Omega1 = pow(v,5) * (0.75*(1-delta) + 0.5*nu + v*v*(0.5625*(1-delta)+1.25*nu*(1+0.5*delta)-0.041666666666666667*nu*nu));
-    const double Omega2 = pow(v,5) * (0.75*(1+delta) + 0.5*nu + v*v*(0.5625*(1+delta)+1.25*nu*(1-0.5*delta)-0.041666666666666667*nu*nu));
+    const double powv5 = v*v*dydt[1];
+    // Omega_{1,2} taken from Eq. (4.5) of http://arxiv.org/abs/1212.5520v1
+    const double Omega1 = powv5 * (0.75*(1-delta) + 0.5*nu
+				   + v*v*(0.5625*(1-delta)+1.25*nu*(1+0.5*delta)-0.041666666666666667*nu*nu
+					  + v*v*(0.84375 + delta*(-0.84375 + (4.875 - 0.15625*nu)*nu) + nu*(0.1875 + (-3.28125 - 0.020833333333333332*nu)*nu))));
+    const double Omega2 = powv5 * (0.75*(1+delta) + 0.5*nu
+				   + v*v*(0.5625*(1+delta)+1.25*nu*(1-0.5*delta)-0.041666666666666667*nu*nu
+					  + v*v*(0.84375 - delta*(-0.84375 + (4.875 - 0.15625*nu)*nu) + nu*(0.1875 + (-3.28125 - 0.020833333333333332*nu)*nu))));
     const double m2overm1 = (1-delta)/(1+delta);
     const double S2Mag = sqrt(T4SpinLocal::dot(S2,S2));
     const double chi2LNHat = chisLNHat - chiaLNHat;
     const double m1overm2 = (1+delta)/(1-delta);
     const double S1Mag = sqrt(T4SpinLocal::dot(S1,S1));
     const double chi1LNHat = chisLNHat + chiaLNHat;
-    const vector<double> OmegaLN = pow(v,6) * ((2+1.5*m2overm1-1.5*(v/nu)*(S2Mag*chi2LNHat)) * S1 + (2+1.5*m1overm2-1.5*(v/nu)*(S1Mag*chi1LNHat)) * S2);
+    const vector<double> OmegaLN = v*powv5 * ((2+1.5*m2overm1-1.5*(v/nu)*(S2Mag*chi2LNHat)) * S1 + (2+1.5*m1overm2-1.5*(v/nu)*(S1Mag*chi1LNHat)) * S2);
     T4SpinLocal::cross(dydt[2], dydt[3], dydt[4], Omega1*LNHat, S1);
     T4SpinLocal::cross(dydt[5], dydt[6], dydt[7], Omega2*LNHat, S2);
     T4SpinLocal::cross(dydt[8], dydt[9], dydt[10], OmegaLN, LN);
