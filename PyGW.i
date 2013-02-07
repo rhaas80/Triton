@@ -250,7 +250,7 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     try :
         f = h5py.File(Dir+'/'+File, 'r')
     except IOError :
-        print("PickChMass could not open the file '{}'".format(File))
+        print("ReadFiniteRadiusData could not open the file '{}'".format(File))
         raise
     WaveformNames = list(f)
     if(not Radii) :
