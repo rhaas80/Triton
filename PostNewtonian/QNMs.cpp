@@ -174,7 +174,7 @@ void Initialize() {
   
   for(unsigned int i=0; i<5; ++i) {
     for(unsigned int j=0; j<8; ++j) {
-      omegasRe[i][j].assign(&omegasReArray[i][j][0], &omegasReArray[i][j][20]);
+      omegasRe[i][j].assign(&omegasReArray[i][j][0], &omegasReArray[i][j][21]);
     }
   }
   
@@ -280,7 +280,7 @@ void Initialize() {
   
   for(unsigned int i=0; i<5; ++i) {
     for(unsigned int j=0; j<8; ++j) {
-      omegasIm[i][j].assign(&omegasImArray[i][j][0], &omegasImArray[i][j][20]);
+      omegasIm[i][j].assign(&omegasImArray[i][j][0], &omegasImArray[i][j][21]);
     }
   }
   

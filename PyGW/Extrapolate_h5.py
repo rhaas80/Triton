@@ -171,11 +171,17 @@ class Extrapolate :
                 sys.stdout.flush()
                 if not os.path.exists(self.OutputDirectory) :
                     os.makedirs(self.OutputDirectory)
-                PyGW.Output(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
+                if (ExtrapolatedFile.endswith('.h5')) :
+                    PyGW.OutputToNRAR(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
+                else :
+                    PyGW.Output(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
                 if(self.ExtrapolationOrders[i]>=0) :
                     sys.stdout.write("and {}... ".format(self.OutputDirectory+"/"+SigmaFile))
                     sys.stdout.flush()
-                    PyGW.Output(self.OutputDirectory+"/"+SigmaFile, Sigma)
+                    if (SigmaFile.endswith('.h5')) :
+                        PyGW.OutputToNRAR(self.OutputDirectory+"/"+SigmaFile, Sigma)
+                    else :
+                        PyGW.Output(self.OutputDirectory+"/"+SigmaFile, Sigma)
                 print("☺")
                 
                 # Compare to the last one
@@ -191,7 +197,10 @@ class Extrapolate :
                     DifferenceFile = (Extrap.Type() + "_" + self.DifferenceFiles) % (self.ExtrapolationOrders[i], self.ExtrapolationOrders[i-1])
                     sys.stdout.write("Writing {}... ".format(self.OutputDirectory+"/"+DifferenceFile))
                     sys.stdout.flush()
-                    PyGW.Output(self.OutputDirectory+"/"+DifferenceFile, Diff)
+                    if (DifferenceFile.endswith('.h5')) :
+                        PyGW.OutputToNRAR(self.OutputDirectory+"/"+DifferenceFile, Diff)
+                    else :
+                        PyGW.Output(self.OutputDirectory+"/"+DifferenceFile, Diff)
                     print("☺")
                     if(self.PlotFormat) :
                         sys.stdout.write("Plotting... ")

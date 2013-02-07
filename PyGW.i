@@ -208,7 +208,11 @@ def PickChMass(File='Horizons.h5') :
     import os
     if(os.path.isdir(File)) :
         File = File + 'Horizons.h5'
-    f=h5py.File(File, 'r')
+    try :
+        f=h5py.File(File, 'r')
+    except IOError :
+        print("PickChMass could not open the file '{}'".format(File))
+        raise
     ChMass = f['AhA.dir/ChristodoulouMass.dat'][:,1]+f['AhB.dir/ChristodoulouMass.dat'][:,1]
     f.close()
     hist, bins = numpy.histogram(ChMass, bins=len(ChMass))
@@ -243,7 +247,11 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     import re
     import numpy
     YlmRegex = re.compile(r"""Y_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)\.dat""")
-    f = h5py.File(Dir+'/'+File, 'r')
+    try :
+        f = h5py.File(Dir+'/'+File, 'r')
+    except IOError :
+        print("ReadFiniteRadiusData could not open the file '{}'".format(File))
+        raise
     WaveformNames = list(f)
     if(not Radii) :
         # If the list of Radii is empty, figure out what they are
@@ -301,5 +309,26 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     f.close()
     Ws.AppendHistory("### PyGW.ReadFiniteRadiusData(ChMass={0}, Dir='{1}', File='{2}')".format(ChMass, Dir, File))
     return Ws,InitialAdmEnergy,Radii
+
+def OutputToNRAR(FileName, W) :
+    from h5py import File
+    from numpy import array, exp
+    # Open the file for output
+    try :
+        F = File(FileName, 'w')
+    except IOError : # If that did not work...
+        print("OutputToNRAR was unable to open the file '{}'.".format(FileName))
+        raise # re-raise the exception after the informative message above
+    # Construct a simplified waveform type string
+    Wtype = W.Type().lower().replace('over','').replace('r','').replace('m','').replace('dot','')
+    # Now write all the data to various groups in the file
+    F.attrs['History'] = W.HistoryStr() + '### OutputToNRAR(W, {})\n'.format(FileName)
+    for i_m in range(W.NModes()) : # Step through all the modes, storing the real and imaginary parts
+        ell,m = W.LM(i_m)
+        F.create_dataset("{0}_l{1}_m{2:+}_.asc".format(Wtype, ell, m),
+                         data=numpy.array( [ [t, d.real, d.imag] for t,d in zip(W.T(), W.Mag(i_m)*numpy.exp(1j*W.Arg(i_m))) ] ) )
+    # Close the file and we are done
+    F.close()
+
 
   %}
