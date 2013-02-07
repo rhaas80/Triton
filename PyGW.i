@@ -310,7 +310,7 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     Ws.AppendHistory("### PyGW.ReadFiniteRadiusData(ChMass={0}, Dir='{1}', File='{2}')".format(ChMass, Dir, File))
     return Ws,InitialAdmEnergy,Radii
 
-def OutputToNRAR(W, FileName) :
+def OutputToNRAR(FileName, W) :
     from h5py import File
     from numpy import array, exp
     # Open the file for output
