@@ -322,7 +322,7 @@ def OutputToNRAR(W, FileName) :
     # Construct a simplified waveform type string
     Wtype = W.Type().lower().replace('over','').replace('r','').replace('m','').replace('dot','')
     # Now write all the data to various groups in the file
-    F.create_dataset('History', data=W.HistoryStr()+'\n### OutputToNRAR(W, {})'.format(FileName))
+    F.attrs['History'] = W.HistoryStr() + '### OutputToNRAR(W, {})\n'.format(FileName)
     for i_m in range(W.NModes()) : # Step through all the modes, storing the real and imaginary parts
         ell,m = W.LM(i_m)
         F.create_dataset("{0}_l{1}_m{2:+}_.asc".format(Wtype, ell, m),
