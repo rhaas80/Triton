@@ -31,8 +31,12 @@ from distutils.core import setup, Extension
 import os
 import glob
 
-
-
+## Remove a compiler flag that doesn't belong there for C++
+import distutils.sysconfig as ds
+cfs=ds.get_config_vars()
+for key, value in cfs.iteritems():
+    if(type(cfs[key])==str) :
+        cfs[key] = value.replace('-Wstrict-prototypes', '')
 
 ## This gets the list of files to build and the headers they depend on
 CPPFiles = glob.glob("Utilities/*.cpp") + glob.glob("PostNewtonian/*.cpp") + glob.glob("Objects/*.cpp") + glob.glob("Objects/Waveform/*.cpp")
