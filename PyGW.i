@@ -211,7 +211,7 @@ def PickChMass(File='Horizons.h5') :
     try :
         f=h5py.File(File, 'r')
     except IOError :
-        print("PickChMass could not open the file '{}'".format(File))
+        print("PickChMass could not open the file '{0}'".format(File))
         raise
     ChMass = f['AhA.dir/ChristodoulouMass.dat'][:,1]+f['AhB.dir/ChristodoulouMass.dat'][:,1]
     f.close()
@@ -250,7 +250,7 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     try :
         f = h5py.File(Dir+'/'+File, 'r')
     except IOError :
-        print("ReadFiniteRadiusData could not open the file '{}'".format(File))
+        print("ReadFiniteRadiusData could not open the file '{0}'".format(File))
         raise
     WaveformNames = list(f)
     if(not Radii) :
@@ -288,7 +288,7 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
             Arg[m,:] = W[DataSet][:,2]
             m += 1
             #print("n={0}; m={1}; DataSet={2}".format(n, m, DataSet))
-        TempW.AppendHistory("### # Python read from {}.".format(WaveformNames[n]))
+        TempW.AppendHistory("### # Python read from {0}.".format(WaveformNames[n]))
         Indices = MonotonicIndices(T)
         BadIndices = numpy.setdiff1d(range(len(T)), Indices)
         TempW.SetT(T[Indices])
@@ -317,12 +317,12 @@ def OutputToNRAR(FileName, W) :
     try :
         F = File(FileName, 'w')
     except IOError : # If that did not work...
-        print("OutputToNRAR was unable to open the file '{}'.".format(FileName))
+        print("OutputToNRAR was unable to open the file '{0}'.".format(FileName))
         raise # re-raise the exception after the informative message above
     # Construct a simplified waveform type string
     Wtype = W.Type().lower().replace('over','').replace('r','').replace('m','').replace('dot','')
     # Now write all the data to various groups in the file
-    F.attrs['History'] = W.HistoryStr() + '### OutputToNRAR(W, {})\n'.format(FileName)
+    F.attrs['History'] = W.HistoryStr() + '### OutputToNRAR(W, {0})\n'.format(FileName)
     for i_m in range(W.NModes()) : # Step through all the modes, storing the real and imaginary parts
         ell,m = W.LM(i_m)
         F.create_dataset("{0}_l{1}_m{2:+}_.asc".format(Wtype, ell, m),

@@ -156,7 +156,7 @@ class Convergence :
             #FluxW.Differentiate()
             FluxW.DropBefore(200)
             MaxFluxTime = FluxW.PeakFluxTime()
-            print("MaxFluxTime={}".format(MaxFluxTime))
+            print("MaxFluxTime={0}".format(MaxFluxTime))
         
         # Do the Lev convergence
         # Diff0 = PyGW.Waveform()
@@ -206,7 +206,7 @@ class Convergence :
                                                                Quantity1=Quantity1,
                                                                Quantity2=Quantity2,
                                                                Constant=("N"+str(self.ExtrapolationOrders[i])))
-                        sys.stdout.write("\n\tand printing {} ... ".format(self.OutputDirectory+"/"+DiffFile))
+                        sys.stdout.write("\n\tand printing {0} ... ".format(self.OutputDirectory+"/"+DiffFile))
                         sys.stdout.flush()
                         Diff[0] = Diff[0]/Diff[1];
                         Diff[1].NSamplesPerCycle22(self.OutputNSamplesPerCycle22);
@@ -261,7 +261,7 @@ class Convergence :
                                                            Quantity1=LastLev[LastLev.rfind("/")+1:],
                                                            Quantity2=NextLev[NextLev.rfind("/")+1:],
                                                            Constant=("N"+str(self.ExtrapolationOrders[i])))
-                    sys.stdout.write("\n\tand printing {} ... ".format(self.OutputDirectory+"/"+DiffFile))
+                    sys.stdout.write("\n\tand printing {0} ... ".format(self.OutputDirectory+"/"+DiffFile))
                     sys.stdout.flush()
                     DiffFileHandle = open(self.OutputDirectory+"/"+DiffFile, 'w')
                     DiffFileHandle.write("# [1] = M*omega_hdot(2,-2)\n# [2] = FluxA-FluxB\n# [3] = (FluxA-FluxB)/PNFluxA\n")

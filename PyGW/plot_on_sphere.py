@@ -190,7 +190,7 @@ def animate_spheres(WL, WR, OutputFileName, TimeSteps = 500, PhiSteps = 200, The
         #     abs(data_on_sphere(WL, WL.Peak22TimeIndex(), vartheta, varphi)).max(),
         #     abs(data_on_sphere(WR, WR.Peak22TimeIndex(), vartheta, varphi)).max())
         Normalization = 0
-        print("Normalization = {}".format(Normalization))
+        print("Normalization = {0}".format(Normalization))
         
         ioff()
         TIndexStep = WL.NTimes()/int(TimeSteps)
