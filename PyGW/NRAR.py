@@ -14,7 +14,7 @@ def ReadWaveform(File) :
     YLMdata = [DataSet for DataSet in datasetlist for m in [YlmRegex.search(DataSet)] if m]
     YLMdata = sorted(YLMdata, key=lambda DataSet : [int(YlmRegex.search(DataSet).group('L')), int(YlmRegex.search(DataSet).group('M'))])
     NModes = len(YLMdata)
-    W.AppendHistory("### # Python read from {}.".format(File))
+    W.AppendHistory("### # Python read from {0}.".format(File))
     W.SetT(f[datasetlist[0]][:,0])
     W.SetLM(PyGW.MatrixInt(sorted([[int(m.group('L')), int(m.group('M'))] for DataSet in YLMdata for m in [YlmRegex.search(DataSet)] if m])))
     W.SetMag(PyGW.MatrixDouble(numpy.array([f[dataset][:,1] for dataset in datasetlist])))
@@ -50,7 +50,7 @@ def WriteWaveform(FileName, W) :
     File = FileMatch.group('File')
     Group = FileMatch.group('Group')
     if not File :
-        raise(ValueError('No file name found in "{}".  Make sure there is content before any colon.'.format(FileName)))
+        raise(ValueError('No file name found in "{0}".  Make sure there is content before any colon.'.format(FileName)))
     f = h5py.File(File, 'w')
     if Group :
         if Group[-1] == '/' :
@@ -61,7 +61,7 @@ def WriteWaveform(FileName, W) :
         grp = f
         FileAndGroup = "{File}:".format(File=File)
     Type = (W.Types[( W.TypeIndex() % 3 ) + 9]).lower()
-    BBHString += "\n[{}t-data]\n".format(Type)
+    BBHString += "\n[{0}t-data]\n".format(Type)
     for i,LM in enumerate(W.LM()) :
         L=LM[0]
         M=LM[1]

@@ -172,7 +172,7 @@ class Extrapolate :
                 figarg = plt.figure(1)
             WFType = ''
             for i in range(len(self.ExtrapolationOrders)) :
-                print("Extrapolating with order N={}.".format(self.ExtrapolationOrders[i]))
+                print("Extrapolating with order N={0}.".format(self.ExtrapolationOrders[i]))
                 
                 # Extrapolate
                 Time1 = time()
@@ -188,13 +188,13 @@ class Extrapolate :
                 print("Finished N={0} in {1} seconds.".format(self.ExtrapolationOrders[i], Time2-Time1))
                 ExtrapolatedFile = "{0}_{1}".format(Extrap.Type(), self.ExtrapolatedFiles) % self.ExtrapolationOrders[i]
                 SigmaFile = "{0}_{1}".format(Extrap.Type(), self.SigmaFiles) % self.ExtrapolationOrders[i]
-                sys.stdout.write("Writing {}... ".format(self.OutputDirectory+"/"+ExtrapolatedFile))
+                sys.stdout.write("Writing {0}... ".format(self.OutputDirectory+"/"+ExtrapolatedFile))
                 sys.stdout.flush()
                 if not os.path.exists(self.OutputDirectory) :
                     os.makedirs(self.OutputDirectory)
                 PyGW.Output(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
                 if(self.ExtrapolationOrders[i]>=0) :
-                    sys.stdout.write("and {}... ".format(self.OutputDirectory+"/"+SigmaFile))
+                    sys.stdout.write("and {0}... ".format(self.OutputDirectory+"/"+SigmaFile))
                     sys.stdout.flush()
                     PyGW.Output(self.OutputDirectory+"/"+SigmaFile, Sigma)
                 print("☺")
@@ -210,7 +210,7 @@ class Extrapolate :
                 else :
                     Diff = Extrap/Last;
                     DifferenceFile = (Extrap.Type() + "_" + self.DifferenceFiles) % (self.ExtrapolationOrders[i], self.ExtrapolationOrders[i-1])
-                    sys.stdout.write("Writing {}... ".format(self.OutputDirectory+"/"+DifferenceFile))
+                    sys.stdout.write("Writing {0}... ".format(self.OutputDirectory+"/"+DifferenceFile))
                     sys.stdout.flush()
                     PyGW.Output(self.OutputDirectory+"/"+DifferenceFile, Diff)
                     print("☺")
