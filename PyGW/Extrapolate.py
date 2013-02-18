@@ -129,7 +129,10 @@ class Extrapolate :
             import PyGW.plot
             import matplotlib.pyplot as plt
             import matplotlib as mpl
-            mpl.rcParams['axes.color_cycle'] = ['#000000', '#cc79a7', '#d55e00', '#0072b2', '#f0e442', '#56b4e9', '#e69f00', '#2b9f78']
+            try:
+                mpl.rcParams['axes.color_cycle'] = ['#000000', '#cc79a7', '#d55e00', '#0072b2', '#f0e442', '#56b4e9', '#e69f00', '#2b9f78']
+            except KeyError :
+                mpl.axes.set_default_color_cycle(['#000000', '#cc79a7', '#d55e00', '#0072b2', '#f0e442', '#56b4e9', '#e69f00', '#2b9f78'])
         
         # For some compatibility with old input files
         try :
