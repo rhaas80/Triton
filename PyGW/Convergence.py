@@ -152,7 +152,10 @@ class Convergence :
         # If we can, find the max flux time
         MaxFluxTime=3.0e300;
         if(self.BestExtrapolationh!='') :
-            FluxW = PyGW.Waveform(self.BestExtrapolationh, self.WaveformFormat)
+            if(self.BestExtrapolationh.endswith('.h5')) :
+                FluxW = PyGW.ReadFromNRAR(self.BestExtrapolationh)
+            else :
+                FluxW = PyGW.Waveform(self.BestExtrapolationh, self.WaveformFormat)
             #FluxW.Differentiate()
             FluxW.DropBefore(200)
             MaxFluxTime = FluxW.PeakFluxTime()
@@ -178,8 +181,14 @@ class Convergence :
                                              "or 'Psi4Files'".format(LastFile, self.RWZFiles, self.Psi4Files)))
                         sys.stdout.write("Computing {0} - {1} ... ".format(LastFile, NextFile))
                         sys.stdout.flush()
-                        Diff[0] = PyGW.Waveform(LastFile, self.WaveformFormat);
-                        Diff[1] = PyGW.Waveform(NextFile, self.WaveformFormat);
+                        if(LastFile.endswith('.h5')) :
+                            Diff[0] = PyGW.ReadFromNRAR(LastFile)
+                        else :
+                            Diff[0] = PyGW.Waveform(LastFile, self.WaveformFormat);
+                        if(NextFile.endswith('.h5')) :
+                            Diff[1] = PyGW.ReadFromNRAR(NextFile)
+                        else :
+                            Diff[1] = PyGW.Waveform(NextFile, self.WaveformFormat);
                         if(self.ConvergenceAlignmentT1!=3.0e300 and self.ConvergenceAlignmentT2!=3.0e300) :
                             if(self.MutualAlignmentApproximant!='') :
                                 PN = PyGW.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0,
@@ -296,8 +305,14 @@ class Convergence :
                                          "or 'Psi4Files'={2}".format(LastFile, self.RWZFiles, self.Psi4Files)))
                     sys.stdout.write("Computing {0} - {1} ... ".format(Higher, Lower))
                     sys.stdout.flush()
-                    Diff[0] = PyGW.Waveform(Higher, self.WaveformFormat);
-                    Diff[1] = PyGW.Waveform(Lower, self.WaveformFormat);
+                    if(Higher.endswith('.h5')) :
+                        Diff[0] = PyGW.ReadFromNRAR(Higher)
+                    else :
+                        Diff[0] = PyGW.Waveform(Higher, self.WaveformFormat);
+                    if(Lower.endswith('.h5')) :
+                        Diff[1] = PyGW.ReadFromNRAR(Lower)
+                    else :
+                        Diff[1] = PyGW.Waveform(Lower, self.WaveformFormat);
                     if( (self.ConvergenceAlignmentT1!=3.0e300) and (self.ConvergenceAlignmentT2!=3.0e300) ) :
                         if(self.MutualAlignmentApproximant!='') :
                             PN = PyGW.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0,
