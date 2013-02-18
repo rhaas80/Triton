@@ -109,6 +109,12 @@ class Convergence :
         import sys
         import os
         import matplotlib.pyplot as plt
+        import matplotlib as mpl
+        try:
+            mpl.rcParams['axes.color_cycle'] = ['#000000', '#cc79a7', '#d55e00', '#0072b2', '#f0e442', '#56b4e9', '#e69f00', '#2b9f78']
+        except KeyError :
+            mpl.axes.set_default_color_cycle(['#000000', '#cc79a7', '#d55e00', '#0072b2', '#f0e442', '#56b4e9', '#e69f00', '#2b9f78'])
+        
         self.ParameterDictionary=Dictionary
         
         # Set up the parameters, using default values or the value
