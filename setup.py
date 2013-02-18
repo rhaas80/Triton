@@ -64,7 +64,7 @@ PyGWExtension = Extension(name = '_PyGW',
 ## This function does the actual work of build everything and
 ## installing it.
 setup(name = 'PyGW',
-      version = '2.0.4',
+      version = '2.0.7',
       description = 'Python interface for manipulating Waveform objects',
       # long_description = ,
       author = 'Michael Boyle',
