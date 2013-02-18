@@ -30,6 +30,8 @@ try :
 except :
     pass
 from matplotlib.pyplot import isinteractive, ioff, ion, draw, show, gcf
+from matplotlib import rcParams
+rcParams['axes.color_cycle'] = ['#000000', '#cc79a7', '#d55e00', '#0072b2', '#f0e442', '#56b4e9', '#e69f00', '#2b9f78']
 from warnings import warn
 from numpy import array, empty, transpose, sin, cos
 
