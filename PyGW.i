@@ -330,5 +330,66 @@ def OutputToNRAR(FileName, W) :
     # Close the file and we are done
     F.close()
 
+def ReadFromNRAR(FileName) :
+    """
+    Read data from an NRAR file, as output by PyGW.
+    """
+    import h5py
+    import PyGW
+    import re
+    import numpy
+    YlmRegex = re.compile(r"""(?P<Type>.*)_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)_*\.(asc|dat)""")
+    try :
+        f = h5py.File(FileName, 'r')
+    except IOError :
+        print("ReadFromNRAR could not open the file '{0}'".format(FileName))
+        raise
+    W = PyGW.Waveform()
+    W.AppendHistory("### *this = PyGW.ReadFromNRAR(FileName='{0}')\n".format(FileName))
+    try :
+        OldHistory = f.attrs['History']
+        W.AppendHistory("##### Begin Previous History\n#" + OldHistory.replace('\n','\n#') + "#### End Previous History\n")
+    except KeyError :
+        pass # Did not find a history
+    # Get the names of all the datasets in the h5 file, and check for matches
+    YLMdata = [DataSet for DataSet in list(f) for m in [YlmRegex.search(DataSet)] if m]
+    if(len(YLMdata)==0) :
+        raise ValueError("Couldn't understand dataset names in '{0}'.".format(FileName))
+    # Sort the dataset names by increasing ell, then increasing m
+    YLMdata = sorted(YLMdata, key=lambda DataSet : [int(YlmRegex.search(DataSet).group('L')), int(YlmRegex.search(DataSet).group('M'))])
+    # List just the ell and m numbers
+    LM = sorted([[int(m.group('L')), int(m.group('M'))] for DataSet in YLMdata for m in [YlmRegex.search(DataSet)] if m])
+    NModes = len(LM)
+    # Get the time data (assuming all are equal)
+    Wdata = f[YLMdata[0]]
+    NTimes = Wdata.shape[0]
+    T = Wdata[:,0]
+    # Set up storage
+    Re = numpy.empty((NModes, NTimes))
+    Im = numpy.empty((NModes, NTimes))
+    m = 0
+    # Loop through, getting each mode
+    for DataSet in YLMdata :
+        if( not (f[DataSet].shape[0]==NTimes) ) :
+            raise ValueError("The number of time steps in this dataset should be {0}; ".format(NTimes) +
+                             "it is {0} in '{1}'.".format(f[DataSet].shape[0], DataSet))
+        Re[m,:] = f[DataSet][:,1]
+        Im[m,:] = f[DataSet][:,2]
+        m += 1
+    # Make sure time is monotonic
+    Indices = MonotonicIndices(T)
+    BadIndices = numpy.setdiff1d(range(len(T)), Indices)
+    W.SetT(T[Indices])
+    W.SetLM(PyGW.MatrixInt(LM))
+    W.SetMag(PyGW.MatrixDouble(numpy.delete(Re, BadIndices, 1)))
+    W.SetArg(PyGW.MatrixDouble(numpy.delete(Im, BadIndices, 1)))
+    W.ConvertReImToMagArg()
+    for i,type in enumerate(W.Types) :
+        if(FileName.find(type)>-1) :
+            W.SetTypeIndex(i)
+            break
+    f.close()
+    return W
+
 
   %}
