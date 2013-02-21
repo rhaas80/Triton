@@ -22,6 +22,7 @@
   #include <iostream>
   #include <sstream>
   #include <iomanip>
+  #include <complex>
   #include "Objects/WaveformAtAPoint.hpp"
   #include "Objects/WaveformAtAPointFT.hpp"
   #include "Objects/Waveforms.hpp"
@@ -39,12 +40,16 @@
   %}
 //// Make sure std::strings are dealt with appropriately
 %include "std_string.i"
+//// Make sure std::complex numbers are dealt with appropriately
+%include <std_complex.i>
 //// Make sure std::vectors are dealt with appropriately
 %include "std_vector.i"
 namespace std {
   %template(vectori) vector<int>;
   %template(vectord) vector<double>;
   %template(vectors) vector<string>;
+  %template(vectorc) vector<std::complex<double> >;
+  %template(vectorvectorc) vector<vector<std::complex<double> > >;
   %template(vectorvectori) vector<vector<int> >;
   %template(vectorvectord) vector<vector<double> >;
 };
@@ -401,13 +406,13 @@ def ReadFromNRAR(FileName) :
     return W
 
 def ConvertFromGWFrames(W_G) :
-    W_P = PyGW.Waveform()
+    W_P = Waveform()
     W_P.SetHistory(W_G.HistoryStr())
-    W_P.SetTime(W_G.T().tolist())
-    W_P.SetFrame([PyGW.Quaternion(r[0], r[1], r[2], r[3]) for r in W_G.Frame()])
-    W_P.SetLM(W_G.LM().tolist())
-    W_P.SetMag(PyGW.MatrixDouble(W_G.Re()))
-    W_P.SetArg(PyGW.MatrixDouble(W_G.Im()))
+    W_P.SetT(W_G.T().tolist())
+    W_P.SetFrame([Quaternion(r[0], r[1], r[2], r[3]) for r in W_G.Frame()])
+    W_P.SetLM(MatrixInt(W_G.LM().tolist()))
+    W_P.SetMag(MatrixDouble(W_G.Re()))
+    W_P.SetArg(MatrixDouble(W_G.Im()))
     return W_P
 
 
