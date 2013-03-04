@@ -99,7 +99,7 @@ namespace WaveformUtilities {
       Doub a,b,d=0.0,etemp,fu,fv,fw,fx;
       Doub p,q,r,tol1,tol2,u,v,w,x,xm;
       Doub e=0.0;
-	
+      
       a=(ax < cx ? ax : cx);
       b=(ax > cx ? ax : cx);
       x=w=v=bx;
