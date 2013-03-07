@@ -1,4 +1,4 @@
-SUBDIRS:= Utilities PostNewtonian Objects Python
+SUBDIRS:= Utilities PostNewtonian Objects
 
 all:
 	python setup.py install --user
