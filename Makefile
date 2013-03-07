@@ -9,11 +9,9 @@ doc:
 
 clean:
 	@for d in $(SUBDIRS); do ($(MAKE) -C $$d clean ); done
-	@$(MAKE) -C Python clean
 
 realclean:
 	@for d in $(SUBDIRS); do ($(MAKE) -C $$d realclean ); done
 	@/bin/rm -rf xml/*xml xml/*xslt xml/*xsd
-	@$(MAKE) -C Python realclean
 
 allclean: realclean
