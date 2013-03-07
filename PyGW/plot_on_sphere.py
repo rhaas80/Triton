@@ -42,6 +42,7 @@ def data_on_sphere(W, TimeIndex, vartheta, varphi) :
     coordinates (vartheta, varphi), this returns a numpy array of the
     complex data evaluated at those spherical coordinates.
     """
+    from PyGW import SWSH
     nmodes = W.NModes()
     varthetalen = len(vartheta)
     varphilen = len(varphi)
@@ -65,6 +66,7 @@ def colors_on_sphere(WaveformData, Normalization=1, Quantities=['real', 'imag', 
     (normalized by the Normalization constant) into colors.  By
     default, the real and imaginary parts and magnitude are evaluated.
     """
+    import numpy as npy
     Colors = []
     for quantity in Quantities :
         colors = empty(WaveformData.shape, dtype=tuple)
@@ -73,7 +75,9 @@ def colors_on_sphere(WaveformData, Normalization=1, Quantities=['real', 'imag', 
         elif quantity.lower() == 'imag' :
             colors = jet( 0.5 * ( (WaveformData.imag/Normalization) + 1.0 ) );
         elif quantity.lower() == 'mag' :
-            colors = jet( 0.5 * ( (abs(WaveformData)/Normalization) + 1.0 ) );
+            colors = jet( (abs(WaveformData)/Normalization) );
+        elif quantity.lower() == 'arg' :
+            colors = jet( npy.arctan2(WaveformData.imag, WaveformData.real)/(2*pi) + 0.5 );
         else :
             raise NameError('Unknown quantity: "' + quantity + '"')
         Colors.append(colors)

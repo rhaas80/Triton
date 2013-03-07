@@ -1,12 +1,7 @@
-LIBDIRS:= Utilities PostNewtonian Objects Python
-EXECDIRS:= Routines
-SUBDIRS:= $(LIBDIRS) #$(EXECDIRS)
+SUBDIRS:= Utilities PostNewtonian Objects Python
 
 all:
 	python setup.py install --user
-
-Triton:
-	@for d in $(LIBDIRS); do ($(MAKE) -C $$d); done
 
 doc:
 	@doxygen

@@ -22,6 +22,7 @@
   #include <iostream>
   #include <sstream>
   #include <iomanip>
+  #include <complex>
   #include "Objects/WaveformAtAPoint.hpp"
   #include "Objects/WaveformAtAPointFT.hpp"
   #include "Objects/Waveforms.hpp"
@@ -39,12 +40,16 @@
   %}
 //// Make sure std::strings are dealt with appropriately
 %include "std_string.i"
+//// Make sure std::complex numbers are dealt with appropriately
+%include <std_complex.i>
 //// Make sure std::vectors are dealt with appropriately
 %include "std_vector.i"
 namespace std {
   %template(vectori) vector<int>;
   %template(vectord) vector<double>;
   %template(vectors) vector<string>;
+  %template(vectorc) vector<std::complex<double> >;
+  %template(vectorvectorc) vector<vector<std::complex<double> > >;
   %template(vectorvectori) vector<vector<int> >;
   %template(vectorvectord) vector<vector<double> >;
 };
@@ -323,10 +328,14 @@ def OutputToNRAR(FileName, W) :
     Wtype = W.Type().lower().replace('over','').replace('r','').replace('m','').replace('dot','')
     # Now write all the data to various groups in the file
     F.attrs['History'] = W.HistoryStr() + '### OutputToNRAR(W, {0})\n'.format(FileName)
+    F.create_dataset("Frame",
+                     data=[ [r[0], r[1], r[2], r[3]] for r in W.Frame() ] )
     for i_m in range(W.NModes()) : # Step through all the modes, storing the real and imaginary parts
         ell,m = W.LM(i_m)
-        F.create_dataset("{0}_l{1}_m{2:+}_.asc".format(Wtype, ell, m),
-                         data=numpy.array( [ [t, d.real, d.imag] for t,d in zip(W.T(), W.Mag(i_m)*numpy.exp(1j*W.Arg(i_m))) ] ) )
+        ds = F.create_dataset("{0}_l{1}_m{2:+}_.asc".format(Wtype, ell, m),
+                              data=[ [t, d.real, d.imag] for t,d in zip(W.T(), W.Mag(i_m)*numpy.exp(1j*W.Arg(i_m))) ] )
+        ds.attrs['ell'] = ell
+        ds.attrs['m'] = m
     # Close the file and we are done
     F.close()
 
@@ -351,6 +360,11 @@ def ReadFromNRAR(FileName) :
         W.AppendHistory("##### Begin Previous History\n#" + OldHistory.replace('\n','\n#') + "#### End Previous History\n")
     except KeyError :
         pass # Did not find a history
+    try :
+        Frame = f['Frame']
+        W.SetFrame([PyGW.Quaternion(r) for r in Frame])
+    except KeyError :
+        pass # Did not find a frame
     # Get the names of all the datasets in the h5 file, and check for matches
     YLMdata = [DataSet for DataSet in list(f) for m in [YlmRegex.search(DataSet)] if m]
     if(len(YLMdata)==0) :
@@ -390,6 +404,16 @@ def ReadFromNRAR(FileName) :
             break
     f.close()
     return W
+
+def ConvertFromGWFrames(W_G) :
+    W_P = Waveform()
+    W_P.SetHistory(W_G.HistoryStr())
+    W_P.SetT(W_G.T().tolist())
+    W_P.SetFrame([Quaternion(r[0], r[1], r[2], r[3]) for r in W_G.Frame()])
+    W_P.SetLM(MatrixInt(W_G.LM().tolist()))
+    W_P.SetMag(MatrixDouble(W_G.Re()))
+    W_P.SetArg(MatrixDouble(W_G.Im()))
+    return W_P
 
 
   %}
