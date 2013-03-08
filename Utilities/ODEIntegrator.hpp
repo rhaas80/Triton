@@ -73,7 +73,7 @@ namespace WaveformUtilities {
     template <class Stepper>
     void out(const Int nstp,const Doub x,VecDoub_I &y,Stepper &s,const Doub h) {
       if (!dense)
-	throw("dense output not set in Output!");
+	Throw1WithMessage("dense output not set in Output!");
       if (nstp == -1) {
 	save(x,y);
 	xout += dxout;
@@ -194,13 +194,13 @@ namespace WaveformUtilities {
 	  out.save(x,y); /// Save last step
 	#ifdef DEBUG
 	std::cerr << "\nODE returning with small step size:  std::abs(s.hnext)=" << std::abs(s.hnext) << "\thmin=" << hmin << std::endl; // <added />
- 	//throw("Step size too small in Odeint");
+ 	//Throw1WithMessage("Step size too small in Odeint");
 	#endif
 	return;
       }
       h=s.hnext;
     }
-    throw("Too many steps in routine Odeint");
+    Throw1WithMessage("Too many steps in routine Odeint");
   }
   
   struct StepperBase {

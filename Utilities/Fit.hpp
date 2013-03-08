@@ -26,7 +26,7 @@ namespace WaveformUtilities {
       return p;
     }
     VecDoub operator()(VecDoub_I &xx) const { // This is just for testing multi-dimensional fits
-      if(Order != 2) throw("This hack was programmed only for Order==2");
+      if(Order != 2) Throw1WithMessage("This hack was programmed only for Order==2");
       VecDoub ans(6);
       Doub x=xx[0], y=xx[1];
       ans[0] = 1;
@@ -69,7 +69,7 @@ namespace WaveformUtilities {
       Doub ym,wt,sum,sig2i;
       VecDoub afunc(ma);
       for (j=0;j<ma;j++) if (ia[j]) mfit++;
-      if (mfit == 0) throw("lfit: no parameters to be fitted");
+      if (mfit == 0) Throw1WithMessage("lfit: no parameters to be fitted");
       MatDoub temp(mfit,mfit,0.),beta(mfit,1,0.);
       for (i=0;i<ndat;i++) {
 	afunc = funcs(x[i]);
@@ -262,7 +262,7 @@ namespace WaveformUtilities {
 	  chisq=ochisq;
 	}
       }
-      throw("Fitmrq too many iterations");
+      Throw1WithMessage("Fitmrq too many iterations");
     }
     
     void mrqcof(VecDoub_I &a, MatDoub_O &alpha, VecDoub_O &beta) {

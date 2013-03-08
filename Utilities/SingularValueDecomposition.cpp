@@ -5,7 +5,7 @@ using WaveformUtilities::SVD;
 void SVD::solve(VecDoub_I &b, VecDoub_O &x, Doub thresh = -1.) {
   Int i,j,jj;
   Doub s;
-  if (b.size() != m || x.size() != n) throw("SVD::solve bad sizes");
+  if (b.size() != m || x.size() != n) Throw1WithMessage("SVD::solve bad sizes");
   VecDoub tmp(n);
   tsh = (thresh >= 0. ? thresh : 0.5*sqrt(m+n+1.)*w[0]*eps);
   for (j=0;j<n;j++) {
@@ -27,7 +27,7 @@ void SVD::solve(MatDoub_I &b, MatDoub_O &x, Doub thresh = -1.)
 {
   int i,j,p=b.ncols();
   if (b.nrows() != m || x.nrows() != n || x.ncols() != p)
-    throw("SVD::solve bad sizes");
+    Throw1WithMessage("SVD::solve bad sizes");
   VecDoub xx(n),bcol(m);
   for (j=0;j<p;j++) {
     for (i=0;i<m;i++) bcol[i] = b[i][j];
@@ -195,7 +195,7 @@ void SVD::decompose() {
 	}
 	break;
       }
-      if (its == 29) throw("no convergence in 30 svdcmp iterations");
+      if (its == 29) Throw1WithMessage("no convergence in 30 svdcmp iterations");
       x=w[l];
       nm=k-1;
       y=w[nm];

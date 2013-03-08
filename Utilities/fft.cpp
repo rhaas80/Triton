@@ -12,7 +12,7 @@ vector<double> WU::TimeToFrequency(const vector<double>& Time) {
   const unsigned int N = Time.size();
   if(N&(N-1)) {
     cerr << "\nN=" << N << " is not a power of 2." << endl;
-    throw("Bad size");
+    Throw1WithMessage("Bad size");
   }
   const double df = 1.0 / (N*(Time[1]-Time[0]));
   vector<double> Freq(N, 0.0);
@@ -30,7 +30,7 @@ vector<double> WU::TimeToPositiveFrequencies(const vector<double>& Time) {
   const unsigned int N = Time.size();
   if(N&(N-1)) {
     cerr << "\nN=" << N << " is not a power of 2." << endl;
-    throw("Bad size");
+    Throw1WithMessage("Bad size");
   }
   const unsigned int n = 1 + (N/2);
   const double df = 1.0 / (N*(Time[1]-Time[0]));
@@ -44,7 +44,7 @@ vector<double> WU::TimeToPositiveFrequencies(const vector<double>& Time) {
 void WU::WrapVecDoub::validate() {
   if (n&(n-1)) {
     cerr << "\nn=" << n << endl;
-    throw("vector size n must be power of 2");
+    Throw1WithMessage("vector size n must be power of 2");
   }
 }
 
@@ -75,7 +75,7 @@ void  WU::realdft(std::vector<double>& data) {
 void four1(Doub *data, const Int n, const Int isign) {
   Int nn,mmax,m,j,istep,i;
   Doub wtemp,wr,wpr,wpi,wi,theta,tempr,tempi;
-  if (n<2 || n&(n-1)) throw("n must be power of 2 in four1");
+  if (n<2 || n&(n-1)) Throw1WithMessage("n must be power of 2 in four1");
   nn = n << 1;
   j = 1;
   for (i=1;i<nn;i+=2) {
@@ -186,16 +186,16 @@ void convlv(VecDoub_I &data, VecDoub_I &respns, const Int isign, VecDoub_O &ans)
   } else if (isign == -1) {
     for (i=2;i<n;i+=2) {
       if ((mag2=SQR(temp[i])+SQR(temp[i+1])) == 0.0)
-	throw("Deconvolving at response zero in convlv");
+	Throw1WithMessage("Deconvolving at response zero in convlv");
       tmp=ans[i];
       ans[i]=(ans[i]*temp[i]+ans[i+1]*temp[i+1])/mag2/no2;
       ans[i+1]=(ans[i+1]*temp[i]-tmp*temp[i+1])/mag2/no2;
     }
     if (temp[0] == 0.0 || temp[1] == 0.0)
-      throw("Deconvolving at response zero in convlv");
+      Throw1WithMessage("Deconvolving at response zero in convlv");
     ans[0]=ans[0]/temp[0]/no2;
     ans[1]=ans[1]/temp[1]/no2;
-  } else throw("No meaning for isign in convlv");
+  } else Throw1WithMessage("No meaning for isign in convlv");
   realft(ans,-1);
 }
 

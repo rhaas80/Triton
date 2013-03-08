@@ -46,7 +46,7 @@ void gaussj(MatDoub_IO &a, MatDoub_IO &b)
     }
     indxr[i]=irow;
     indxc[i]=icol;
-    if (a[icol][icol] == 0.0) throw("gaussj: Singular Matrix");
+    if (a[icol][icol] == 0.0) Throw1WithMessage("gaussj: Singular Matrix");
     pivinv=1.0/a[icol][icol];
     a[icol][icol]=1.0;
     for (l=0;l<n;l++) a[icol][l] *= pivinv;
@@ -120,7 +120,7 @@ void cgaussj(MatComplex_IO &a, MatComplex_IO &b)
     }
     indxr[i]=irow;
     indxc[i]=icol;
-    if (a[icol][icol] == 0.0) throw("cgaussj: Singular Matrix");
+    if (a[icol][icol] == 0.0) Throw1WithMessage("cgaussj: Singular Matrix");
     pivinv=1.0/a[icol][icol];
     //a[icol][icol]=1.0;
     a[icol][icol]=Complex(1.0, 0.0); // changed to complex

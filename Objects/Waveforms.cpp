@@ -140,7 +140,7 @@ WaveformObjects::Waveforms::Waveforms(const std::string& BBHFileName,
   
   // If the FileName points to an h5 file, assume that it contains the full set of radii
   if(BBHFileName.find(".h5:")!=string::npos) {
-    throw("Not yet implemented in c++; try python.");
+    Throw1WithMessage("Not yet implemented in c++; try python.");
   } else {
     // Loop through the .bbh file getting the various DataSections
     vector<vector<string> > BBHDataSections;
@@ -774,7 +774,7 @@ Waveform WaveformObjects::Waveforms::Merge(const double& MinStep, const double& 
   
   if(Ws.size()<2) {
     cerr << "Ws.size()=" << Ws.size() << endl;
-    throw("Cant' Merge fewer than 2 Waveforms");
+    Throw1WithMessage("Cant' Merge fewer than 2 Waveforms");
   }
   SetCommonTime(MinStep, MinTime);
   Waveform Merged = Ws[0];

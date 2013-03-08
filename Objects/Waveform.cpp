@@ -191,7 +191,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     ifstream ifs(DataFileName.c_str(), ifstream::in);
     if(!ifs.is_open()) {
       cerr << "Couldn't open '" << DataFileName << "'" << endl;
-      throw("Bad file descriptor");
+      Throw1WithMessage("Bad file descriptor");
     }
     while(ifs.getline(LineChars, LineLength, '\n')) {
       string TrimmedLine(LineChars);
@@ -336,7 +336,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       mag = Re;
       arg = Im;
     } else {
-      throw(("Unknown format " + Format).c_str());
+      Throw1WithMessage(("Unknown format " + Format).c_str());
     }
   }
 }
@@ -370,7 +370,7 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
   ifstream ifs(BBHFileName.c_str(), ifstream::in);
   if(!ifs.is_open()) {
     cerr << "Couldn't open '" << BBHFileName << "'" << endl;
-    throw("Bad file descriptor");
+    Throw1WithMessage("Bad file descriptor");
   }
   
   // Skip to the desired [*-data] section
@@ -394,7 +394,7 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
   }
   if(SectionToUseHere != 0) {
     cerr << "\nSectionToUse=" << SectionToUse << "\tSectionToUseHere=" << SectionToUseHere << endl;
-    throw("Not enough [*-data] sections in metadata file for requested section.");
+    Throw1WithMessage("Not enough [*-data] sections in metadata file for requested section.");
   }
   
   // Loop through following lines getting data
@@ -433,7 +433,7 @@ WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSecti
     }
     cerr << "\n\"\"\"\nDir = \"" << Dir
 	 << "\"\nLM = " << RowFormat(LM) << "\"" << endl;
-    throw("Found no Waveforms.");
+    Throw1WithMessage("Found no Waveforms.");
   }
   if(Ws.size()==1) {
     *this = Ws[0];
@@ -547,7 +547,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
     }
   } else {
     cerr << "Unknown approximant '" << Approximant << "'." << endl;
-    throw("Bad approximant");
+    Throw1WithMessage("Bad approximant");
   }
   mag.resize(lm.nrows(), t.size());
   arg.resize(lm.nrows(), t.size());
@@ -623,7 +623,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
     }
   } else {
     cerr << "Unknown approximant '" << Approximant << "'." << endl;
-    throw("Bad approximant");
+    Throw1WithMessage("Bad approximant");
   }
   mag.resize(lm.nrows(), t.size());
   arg.resize(lm.nrows(), t.size());
@@ -711,7 +711,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
     }
   } else {
     cerr << "Unknown approximant '" << Approximant << "'." << endl;
-    throw("Bad approximant");
+    Throw1WithMessage("Bad approximant");
   }
   // Calculate chis and chia (magnitudes) and the frame from LNHat, so
   // that we may transform back into the stationary frame.
@@ -794,7 +794,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 //     }
 //   } else {
 //     cerr << "Unknown approximant '" << Approximant << "'." << endl;
-//     throw("Bad approximant");
+//     Throw1WithMessage("Bad approximant");
 //   }
 //   mag.resize(lm.nrows(), t.size());
 //   arg.resize(lm.nrows(), t.size());
@@ -953,7 +953,7 @@ void GetWaveformTimeScaleAndLM(const std::string& FullPath, const std::vector<st
     {
       if(lm.nrows()!=1) {
 	cerr << "\nlm.nrows()=" << lm.nrows() << " but file name " << FileName << " indicates there is just one mode." << endl;
-	throw("Bad LM modes");
+	Throw1WithMessage("Bad LM modes");
       }
       size_t LBegin, LEnd, MBegin, MEnd;
       LBegin = found+2;
@@ -985,7 +985,7 @@ void GetWaveformTimeScaleAndLM(const std::string& FullPath, const std::vector<st
   }
   if(i!=lm.nrows()) {
     cerr << "i=" << i << " but lm.nrows()=" << lm.nrows() << "\nThat's bad news for the LM modes..." << endl;
-    throw("Bad LM modes");
+    Throw1WithMessage("Bad LM modes");
   }
   return;
 }

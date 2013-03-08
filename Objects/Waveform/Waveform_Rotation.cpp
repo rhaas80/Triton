@@ -59,7 +59,7 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const double alpha, co
 	} catch(char* thrown) {
 	  cerr << thrown << endl;
 	  cerr << RowFormat(LM()) << endl;
-	  throw("Incomplete mode information in Waveform; cannot rotate.");
+	  Throw1WithMessage("Incomplete mode information in Waveform; cannot rotate.");
 	}
       }
       // Construct the D matrices
@@ -130,15 +130,15 @@ Waveform& WaveformObjects::Waveform::RotateCoordinates(const double alpha, const
 Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma) {
   if(alpha.size()!=NTimes()) {
     cerr << "\nalpha.size()=" << alpha.size() << "  NTimes()=" << NTimes() << endl;
-    throw("Mismatched sizes of vectors to Rotate.");
+    Throw1WithMessage("Mismatched sizes of vectors to Rotate.");
   }
   if(beta.size()!=NTimes()) {
     cerr << "\nbeta.size()=" << beta.size() << "  NTimes()=" << NTimes() << endl;
-    throw("Mismatched sizes of vectors to Rotate.");
+    Throw1WithMessage("Mismatched sizes of vectors to Rotate.");
   }
   if(gamma.size()!=NTimes()) {
     cerr << "\ngamma.size()=" << gamma.size() << "  NTimes()=" << NTimes() << endl;
-    throw("Mismatched sizes of vectors to Rotate.");
+    Throw1WithMessage("Mismatched sizes of vectors to Rotate.");
   }
   
   // Make sure the ordering is as expected (could program something to make this unecessary...)
@@ -150,11 +150,11 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<doub
 	if(mode>=NModes()) { break; }
 	if(L(mode)!=l) {
 	  std::cerr << "\nmode=" << mode << "  L(mode)=" << L(mode) << "  l=" << l << std::endl;
-	  throw("Unrecognized mode ordering in this Waveform.");
+	  Throw1WithMessage("Unrecognized mode ordering in this Waveform.");
 	}
 	if(M(mode)!=m) {
 	  std::cerr << "\nmode=" << mode << "  M(mode)=" << M(mode) << "  m=" << m << std::endl;
-	  throw("Unrecognized mode ordering in this Waveform.");
+	  Throw1WithMessage("Unrecognized mode ordering in this Waveform.");
 	}
 	mode++;
       }
@@ -242,7 +242,7 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<Wave
   
   if(Q.size()!=NTimes()) {
     cerr << "\nQ.size()=" << Q.size() << "  NTimes()=" << NTimes() << endl;
-    throw("Mismatched sizes of vectors to RotatePhysicalSystem.");
+    Throw1WithMessage("Mismatched sizes of vectors to RotatePhysicalSystem.");
   }
   
   History() << "### this->RotatePhysicalSystem(Q); // const vector<Quaternion>& Q" << endl;
@@ -263,7 +263,7 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const std::vector<Wave
 	} catch(char* thrown) {
 	  cerr << thrown << endl;
 	  cerr << RowFormat(LM()) << endl;
-	  throw("Incomplete mode information in Waveform; cannot rotate.");
+	  Throw1WithMessage("Incomplete mode information in Waveform; cannot rotate.");
 	}
       }
       // Construct the D matrices
@@ -357,7 +357,7 @@ Waveform& WaveformObjects::Waveform::RotatePhysicalSystem(const WaveformUtilitie
 	} catch(char* thrown) {
 	  cerr << thrown << endl;
 	  cerr << RowFormat(LM()) << endl;
-	  throw("Incomplete mode information in Waveform; cannot rotate.");
+	  Throw1WithMessage("Incomplete mode information in Waveform; cannot rotate.");
 	}
       }
       // Construct the D matrices

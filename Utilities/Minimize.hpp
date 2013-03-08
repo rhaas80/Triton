@@ -151,7 +151,7 @@ namespace WaveformUtilities {
 	  }
 	}
       }
-      throw("Too many iterations in brent");
+      Throw1WithMessage("Too many iterations in brent");
     }
   };
   

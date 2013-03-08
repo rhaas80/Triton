@@ -42,7 +42,7 @@ WaveformUtilities::EOBParameters::EOBParameters(const double idelta, const doubl
     aSS = (1.5*nu*chiKerr*chistar); /// calibrated; PRD 81, 084041 Eq. (19) and p. 10
   } else {
     cerr << "PaperRef = '" << PaperRef << "'" << endl;
-    throw("Unrecognized PaperRef.  (Should be the SPIRES cite key.)");
+    Throw1WithMessage("Unrecognized PaperRef.  (Should be the SPIRES cite key.)");
   }
 }
 

@@ -42,7 +42,7 @@ vector<vector<vector<double> > > omegasIm(5, vector<vector<double> >(8, vector<d
 void WaveformUtilities::QNM(const int L, const int M, const int N, const double chi, double& omegaRe, double& omegaIm) {
   if(N>7) {
     std::cerr << "N=" << N << " has not been included in the data." << std::endl;
-    throw("Bad overtone N request.");
+    Throw1WithMessage("Bad overtone N request.");
   }
   
   if(!Initialized) Initialize();
@@ -61,7 +61,7 @@ void WaveformUtilities::QNM(const int L, const int M, const int N, const double 
     i=4;
   } else {
     cerr << "(L,M)=(" << L << "," << M << ") has not been included in the data." << endl;
-    throw("Bad (L,M) request");
+    Throw1WithMessage("Bad (L,M) request");
   }
   
   //// Interpolate each to the desired spin

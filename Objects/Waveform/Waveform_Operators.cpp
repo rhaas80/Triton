@@ -60,7 +60,7 @@ Waveform WaveformObjects::Waveform::operator/(const Waveform& b) const {
   /// two Waveforms are assumed to have identical (l,m) modes, and any
   /// alignment should be done before calling this function.
   if(b.NModes() != NModes() || b.LM().RawData() != LM().RawData()) {
-    throw("Trying to divide Waveform objects with mismatched LM data");
+    Throw1WithMessage("Trying to divide Waveform objects with mismatched LM data");
   }
   Waveform c = *this;
   Waveform d = b;

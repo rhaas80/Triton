@@ -132,7 +132,7 @@ void RadiationAxis(const Waveform& W, std::vector<double>& alpha, std::vector<do
 void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta, std::vector<double>& gamma, const std::vector<double>& t) {
   if(alpha.size() != beta.size() || alpha.size() != t.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tt.size()=" << t.size() << endl;
-    throw("Size mismatch in MinimalRotation.");
+    Throw1WithMessage("Size mismatch in MinimalRotation.");
   }
   
   vector<double> gammaDot = -dydx(alpha, t)*cos(beta);
@@ -146,7 +146,7 @@ std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<dou
 							   const std::vector<double>& t, const unsigned int NIterations=5) {
   if(alpha.size() != beta.size() || alpha.size() != t.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tt.size()=" << t.size() << endl;
-    throw("Size mismatch in MinimalRotation.");
+    Throw1WithMessage("Size mismatch in MinimalRotation.");
   }
   
   // Find the minimal-rotation frame using the Euler-angle method

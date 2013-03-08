@@ -45,7 +45,7 @@ unsigned int WaveformObjects::Waveform::FindModeIndex(const int l, const int m) 
   }
   if(ModeIndex==-1) {
     std::cerr << "\n\nl=" << l << " m=" << m << std::endl;
-    throw("Can't find the l,m component of the data!");
+    Throw1WithMessage("Can't find the l,m component of the data!");
   }
   return (unsigned int)(ModeIndex);
 }
@@ -59,7 +59,7 @@ unsigned int WaveformObjects::Waveform::Peak22TimeIndex() const {
     if(L(i)==2 && M(i)==2) { TwoTwo=i; break; }
   }
   // Error if not found
-  if(TwoTwo==-1) { throw("Can't find the 2,2 component of the data!"); }
+  if(TwoTwo==-1) { Throw1WithMessage("Can't find the 2,2 component of the data!"); }
   return (unsigned int)(maxIndex(Mag(TwoTwo)));
 }
 
@@ -108,7 +108,7 @@ std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const d
     }
     if(TwomTwo==-1) {
       cerr << "\nlm=\n" << LM() << endl;
-      throw("Bad L,M data; no (2,-2) mode.");
+      Throw1WithMessage("Bad L,M data; no (2,-2) mode.");
     }
     cerr << "\n(2,-2) mode not found; proceeding with (2,2) mode.\n" << endl;
   }
@@ -201,7 +201,7 @@ std::vector<double> WaveformObjects::Waveform::Flux() const {
   }
   if(TypeIndex()%3!=1) {
     cerr << "\nType = " << Type() << endl;
-    throw("Can't get Flux() for Waveform of type Psi4 -- don't know how to integrate automatically.");
+    Throw1WithMessage("Can't get Flux() for Waveform of type Psi4 -- don't know how to integrate automatically.");
   }
   if(Frame().size()>1) {
     Waveform W(*this);
@@ -249,7 +249,7 @@ std::vector<double> WaveformObjects::Waveform::L2NormDifference(const Waveform& 
   /// through zero (such as m=0 modes, or any mode in highly
   /// precessing systems).
   if(b.NModes() != NModes() || b.LM().RawData() != LM().RawData()) {
-    throw("Trying to compare Waveform objects with mismatched LM data");
+    Throw1WithMessage("Trying to compare Waveform objects with mismatched LM data");
   }
   Waveform c = *this;
   Waveform d = b;
@@ -287,7 +287,7 @@ Waveform& WaveformObjects::Waveform::Differentiate() {
   History() << "### this->Differentiate();" << endl;
   if(TypeIndex()%3==0) {
     cerr << "\nType=" << Type() << endl;
-    throw("Derivative of Psi4 not supported.");
+    Throw1WithMessage("Derivative of Psi4 not supported.");
   }
   vector<Quaternion> OriginalFrame;
   bool Transformed = false;

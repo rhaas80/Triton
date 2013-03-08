@@ -66,7 +66,7 @@ namespace WaveformUtilities {
       if(newData[i].size() != ncols()) {
 	std::cerr << "\nnewData.size()=" << newData.size() << "\tnewData[" << i << "].size()==" << newData[i].size() << std::endl;
 	std::cerr << "nrows()=" << nrows() << "\tncols()=" << ncols() << std::endl;
-	throw("Input data is not rectangular, or you need to resize this object");
+	Throw1WithMessage("Input data is not rectangular, or you need to resize this object");
       }
     }
     Data = newData;
@@ -78,7 +78,7 @@ namespace WaveformUtilities {
     #ifdef DEBUG
     if (i<0 || i>=nrows()) {
       std::cerr << "\ni=" << i << "\tnrows()=" << nrows() << std::endl;
-      throw("Matrix subscript out of bounds");
+      Throw1WithMessage("Matrix subscript out of bounds");
     }
     #endif
     return Data[i];
@@ -89,7 +89,7 @@ namespace WaveformUtilities {
     #ifdef DEBUG
     if (i<0 || i>=nrows()) {
       std::cerr << "\ni=" << i << "\tnrows()=" << nrows() << std::endl;
-      throw("Matrix subscript out of bounds");
+      Throw1WithMessage("Matrix subscript out of bounds");
     }
     #endif
     return Data[i];
@@ -125,11 +125,11 @@ namespace WaveformUtilities {
 //   Matrix<T> Matrix<T>::operator-(const Matrix& b) const {
 //     if(nrows() != b.nrows()) {
 //       std::cerr << "\nthis->nrows()=" << nrows() << "\tb.nrows()=" << b.nrows() << std::endl;
-//       throw("Cannot subtract Matrices with unequal numbers of rows");
+//       Throw1WithMessage("Cannot subtract Matrices with unequal numbers of rows");
 //     }
 //     if(ncols() != b.ncols()) {
 //       std::cerr << "\nthis->ncols()=" << ncols() << "\tb.ncols()=" << b.ncols() << std::endl;
-//       throw("Cannot subtract Matrices with unequal numbers of cols");
+//       Throw1WithMessage("Cannot subtract Matrices with unequal numbers of cols");
 //     }
 //     Matrix c;
 //     c.Data = Data-b.Data;
@@ -140,11 +140,11 @@ namespace WaveformUtilities {
 //   Matrix<T> Matrix<T>::operator/(const Matrix& b) const {
 //     if(nrows() != b.nrows()) {
 //       std::cerr << "\nthis->nrows()=" << nrows() << "\tb.nrows()=" << b.nrows() << std::endl;
-//       throw("Cannot divide Matrices with unequal numbers of rows");
+//       Throw1WithMessage("Cannot divide Matrices with unequal numbers of rows");
 //     }
 //     if(ncols() != b.ncols()) {
 //       std::cerr << "\nthis->ncols()=" << ncols() << "\tb.ncols()=" << b.ncols() << std::endl;
-//       throw("Cannot divide Matrices with unequal numbers of cols");
+//       Throw1WithMessage("Cannot divide Matrices with unequal numbers of cols");
 //     }
 //     Matrix c;
 //     c.Data = Data/b.Data;
@@ -180,7 +180,7 @@ namespace WaveformUtilities {
     }
     if (NewRow.size() != ncols()) {
       std::cerr << "\nNewRow.size()=" << NewRow.size() << "\tncols()=" << ncols() << std::endl;
-      throw("Trying to push_back on a Matrix with data of wrong size");
+      Throw1WithMessage("Trying to push_back on a Matrix with data of wrong size");
     }
     Data.push_back(NewRow);
     return;

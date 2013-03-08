@@ -111,11 +111,11 @@ WaveformAtAPointFT& WaveformAtAPointFT::ZeroAbove(const double Frequency) {
 double WaveformAtAPointFT::InnerProduct(const WaveformAtAPointFT& B, const std::vector<double>& InversePSD) const {
   if(NTimes() != B.NTimes()) {
     cerr << "\nthis->NTimes()=" << NTimes() << "\tB.NTimes()=" << B.NTimes() << endl;
-    throw("Incompatible sizes");
+    Throw1WithMessage("Incompatible sizes");
   }
   if(NTimes() != InversePSD.size()) {
     cerr << "\nWaveform size=" << NTimes() << "\tInversePSD.size()=" << InversePSD.size() << endl;
-    throw("Incompatible sizes");
+    Throw1WithMessage("Incompatible sizes");
   }
   double InnerProduct = 0.0;
   for(unsigned int i=0; i<NTimes(); ++i) {
@@ -128,7 +128,7 @@ double WaveformAtAPointFT::InnerProduct(const WaveformAtAPointFT& B, const std::
 double WaveformAtAPointFT::SNR(const std::vector<double>& InversePSD) const {
   if(NTimes() != InversePSD.size()) {
     cerr << "\nWaveform size=" << NTimes() << "\tInversePSD.size()=" << InversePSD.size() << endl;
-    throw("Incompatible sizes");
+    Throw1WithMessage("Incompatible sizes");
   }
   double SNRSquared = 0.0;
   for(unsigned int i=0; i<NTimes(); ++i) {
@@ -149,12 +149,12 @@ double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<
   if(n != B.NTimes() || n != InversePSD.size()) {
     cerr << "Waveform sizes, " << n << " and " << B.NTimes()
 	 << ", are not compatible with InversePSD size, " << InversePSD.size() << "." << endl;
-    throw("Incompatible sizes");
+    Throw1WithMessage("Incompatible sizes");
   }
   const double df = F(1)-F(0);
   if(df != B.F(1)-B.F(0)) {
     cerr << "Waveform frequency steps, " << df << " and " << B.F(1)-B.F(0) << ", are not compatible in Match." << endl;
-    throw("Incompatible resolutions");
+    Throw1WithMessage("Incompatible resolutions");
   }
   // s1 s2* = (a1 + i b1) (a2 - i b2) = (a1 a2 + b1 b2) + i(b1 a2 - a1 b2)
   WaveformUtilities::WrapVecDoub data(2*N);

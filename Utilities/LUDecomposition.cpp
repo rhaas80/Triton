@@ -12,7 +12,7 @@ LUdcmp::LUdcmp(MatDoub_I &a) : n(a.nrows()), lu(a), aref(a), indx(n) {
     big=0.0;
     for (j=0;j<n;j++)
       if ((temp=std::abs(lu[i][j])) > big) big=temp;
-    if (big == 0.0) throw("Singular matrix in LUdcmp");
+    if (big == 0.0) Throw1WithMessage("Singular matrix in LUdcmp");
     vv[i]=1.0/big;
   }
   for (k=0;k<n;k++) {
@@ -48,7 +48,7 @@ void LUdcmp::solve(VecDoub_I &b, VecDoub_O &x)
   Int i,ii=0,ip,j;
   Doub sum;
   if (b.size() != n || x.size() != n)
-    throw("LUdcmp::solve bad sizes");
+    Throw1WithMessage("LUdcmp::solve bad sizes");
   for (i=0;i<n;i++) x[i] = b[i];
   for (i=0;i<n;i++) {
     ip=indx[i];
@@ -71,7 +71,7 @@ void LUdcmp::solve(MatDoub_I &b, MatDoub_O &x)
 {
   int i,j,m=b.ncols();
   if (b.nrows() != n || x.nrows() != n || b.ncols() != x.ncols())
-    throw("LUdcmp::solve bad sizes");
+    Throw1WithMessage("LUdcmp::solve bad sizes");
   VecDoub xx(n);
   for (j=0;j<m;j++) {
     for (i=0;i<n;i++) xx[i] = b[i][j];

@@ -48,7 +48,7 @@ double ScaleMag(const double S, const unsigned int typeIndex) {
   case 2:
     return 1.0/S;
   default:
-    throw("That was unexpected!");
+    Throw1WithMessage("That was unexpected!");
   }
 }
 
@@ -80,7 +80,7 @@ Waveform& WaveformObjects::Waveform::RescaleMagForRadius(const double OldRadius)
   }
   if(R().size()<1) {
     cerr << "\n\nr.size()=" << R().size() << endl;
-    throw("Known radii not big enough.");
+    Throw1WithMessage("Known radii not big enough.");
   }
   if(R().size()==1) {
     const double ScaleFactor = R(0)/OldRadius;
@@ -89,7 +89,7 @@ Waveform& WaveformObjects::Waveform::RescaleMagForRadius(const double OldRadius)
     }
   } else if(R().size() != NTimes()) {
     cerr << "\n\nR().size()=" << R().size() << "\tNTimes()=" << NTimes() << endl;
-    throw("Known radii vector has wrong size.");
+    Throw1WithMessage("Known radii vector has wrong size.");
   } else {
     for(unsigned int t=0; t<NTimes(); ++t) {
       for(unsigned int mode=0; mode<NModes(); ++mode) {
@@ -101,11 +101,11 @@ Waveform& WaveformObjects::Waveform::RescaleMagForRadius(const double OldRadius)
 }
 
 Waveform& WaveformObjects::Waveform::SetTimeFromAverageLapse(const vector<double>& AverageLapse, const double ADMMass) {
-  if(R().size()==0) { throw("Bad size for radius data."); }
+  if(R().size()==0) { Throw1WithMessage("Bad size for radius data."); }
   History() << "### this->SetTimeFromLapseSurfaceIntegral(AverageLapse);" << endl;
   if(AverageLapse.size() != R().size() && R().size()!=1) {
     cerr << "\nAverageLapse.size()=" << AverageLapse.size() << "\tR().size()=" << R().size() << endl;
-    throw("Bad size for AverageLapse data");
+    Throw1WithMessage("Bad size for AverageLapse data");
   }
   if(R().size()==1) {
     TRef() = cumtrapz(T(), AverageLapse/sqrt(((-2.0*ADMMass)/R(0)) + 1.0)) + T(0);
@@ -116,7 +116,7 @@ Waveform& WaveformObjects::Waveform::SetTimeFromAverageLapse(const vector<double
 }
 
 Waveform& WaveformObjects::Waveform::SetTimeFromLapseSurfaceIntegral(const string& LapseFileName, const double ADMMass) {
-  if(R().size()==0) { throw("Bad size for radius data."); }
+  if(R().size()==0) { Throw1WithMessage("Bad size for radius data."); }
   History() << "### this->SetTimeFromLapseSurfaceIntegral(\"" << LapseFileName << "\", " << setprecision(16) << ADMMass << ");" << endl;
   //// Read data files
   vector<vector<double> > LapseData;
@@ -125,7 +125,7 @@ Waveform& WaveformObjects::Waveform::SetTimeFromLapseSurfaceIntegral(const strin
   vector<double> Lapse(LapseData.size());
   if(Lapse.size() != R().size() && R().size()!=1) {
     cerr << "\nLapse.size()=" << Lapse.size() << "\tR().size()=" << R().size() << "\tLapseFileName=" << LapseFileName << endl;
-    throw("Bad size for Lapse data");
+    Throw1WithMessage("Bad size for Lapse data");
   }
   if(R().size()==1) {
     for(unsigned int i=0; i<Lapse.size(); ++i) {
@@ -201,8 +201,8 @@ Waveform& WaveformObjects::Waveform::SetPhysicalMassAndDistance(const double Cur
   // See the note above Waveform::Types.  This function removes the (G*M/c^3)
   // from each type, then scales the Time into seconds, and Radius into meters.
   // It then removes the (r/c) from the amplitude of each type.
-  if((TypeIndex()>2 && TypeIndex()<6) || TypeIndex()>8) { throw(("Cannot SetPhysicalMass for Waveform of Type " + Type()).c_str()); }
-  if(TypeIndex()>5) { throw(("Cannot SetPhysicalDistance for Waveform of Type " + Type()).c_str()); }
+  if((TypeIndex()>2 && TypeIndex()<6) || TypeIndex()>8) { Throw1WithMessage(("Cannot SetPhysicalMass for Waveform of Type " + Type()).c_str()); }
+  if(TypeIndex()>5) { Throw1WithMessage(("Cannot SetPhysicalDistance for Waveform of Type " + Type()).c_str()); }
   double MassInSeconds = CurrentUnitMassInSolarMasses * SolarMass * NewtonsConstant / (SpeedOfLight*SpeedOfLight*SpeedOfLight);
   double DistanceInMeters = DistanceInMegaparsecs * OneMegaparsec;
   MagRef() *= (ScaleMag(1.0/MassInSeconds, TypeIndex()) * SpeedOfLight / DistanceInMeters);

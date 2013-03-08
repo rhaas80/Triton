@@ -92,7 +92,7 @@ vector<double> WU::NoiseCurve(const vector<double>& F, const string& Detector, c
   else if(Detector.compare("AdvLIGO_ZeroDet_HighP")==0) { return AdvLIGO_ZeroDet_HighP(F, Invert, NoiseFloor); }
   else if(Detector.compare("AdvLIGO_ZeroDet_LowP")==0) { return AdvLIGO_ZeroDet_LowP(F, Invert, NoiseFloor); }
   else if(Detector.compare("IniLIGO_Approx")==0) { return IniLIGO_Approx(F, Invert, NoiseFloor); }
-  else { cerr << "\nDetector type: '" << Detector << "'" << endl;  throw("Unknown detector"); }
+  else { cerr << "\nDetector type: '" << Detector << "'" << endl;  Throw1WithMessage("Unknown detector"); }
 }
 
 vector<double> WU::InverseNoiseCurve(const vector<double>& F, const string& Detector, const double NoiseFloor) {

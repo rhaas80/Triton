@@ -126,7 +126,7 @@ Waveform& WaveformObjects::Waveform::MinimalGrid(const double magTol, const doub
   if(NModes()>1) {
     cerr << "\nThis function is only designed to work on one mode at a time."
 	 << "There are " << NModes() << " modes in this data." << endl;
-    throw("Too many modes");
+    Throw1WithMessage("Too many modes");
   }
   
   unsigned int I0 = 0;
@@ -258,7 +258,7 @@ void Output(const std::string& FileName, const WaveformObjects::Waveform& a, con
     ofs.close();
   } else {
     cerr << "\n\nFailed to open '" << FileName << "' for writing.  May be write-protected." << endl;
-    throw("Unwritable file");
+    Throw1WithMessage("Unwritable file");
   }
   return;
 }

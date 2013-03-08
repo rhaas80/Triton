@@ -20,7 +20,7 @@ namespace WaveformUtilities {
 	p[i] *= stpmax/sum;
     for (i=0;i<n;i++)
       slope += g[i]*p[i];
-    if (slope >= 0.0) throw("Roundoff problem in lnsrch.");
+    if (slope >= 0.0) Throw1WithMessage("Roundoff problem in lnsrch.");
     test=0.0;
     for (i=0;i<n;i++) {
       temp=std::abs(p[i])/MAX(std::abs(xold[i]),1.0);
@@ -158,7 +158,7 @@ namespace WaveformUtilities {
       if (test < TOLX)
 	return;
     }
-    throw("MAXITS exceeded in newt");
+    Throw1WithMessage("MAXITS exceeded in newt");
   }
   template <class T>
   void broydn(VecDoub_IO &x, Bool &check, T &vecfunc) {
@@ -211,7 +211,7 @@ namespace WaveformUtilities {
 	  for (den=0.0,i=0;i<n;i++) den += SQR(s[i]);
 	  for (i=0;i<n;i++) s[i] /= den;
 	  qr->update(t,s);
-	  if (qr->sing) throw("singular update in broydn");
+	  if (qr->sing) Throw1WithMessage("singular update in broydn");
 	}
       }
       qr->qtmult(fvec,p);
@@ -272,7 +272,7 @@ namespace WaveformUtilities {
 	}
       }
     }
-    throw("MAXITS exceeded in broydn");
+    Throw1WithMessage("MAXITS exceeded in broydn");
   }
 
 }
