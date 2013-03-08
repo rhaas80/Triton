@@ -222,7 +222,7 @@ void StepperDopr853<D>::step(const Doub htry,D &derivs) {
 		<< "\tstd::abs(h)=" << std::abs(h) << "\tstd::abs(x)=" << std::abs(x)
 		<< "\tEPS=" << EPS << std::endl;
       // </added>
-      throw("stepsize underflow in StepperDopr853");
+      Throw1WithMessage("stepsize underflow in StepperDopr853");
     }
   }
   derivs(x+h,yout,dydxnew);

@@ -66,15 +66,15 @@ namespace WaveformUtilities {
 	} else if (SIGN(fh,fnew) != fh) {
 	  xl=ans;
 	  fl=fnew;
-	} else throw("never get here.");
+	} else Throw1WithMessage("never get here.");
 	if (abs(xh-xl) <= xacc) return ans;
       }
-      throw("zriddr exceed maximum iterations");
+      Throw1WithMessage("zriddr exceed maximum iterations");
     }
     else {
       if (fl == 0.0) return x1;
       if (fh == 0.0) return x2;
-      throw("root must be bracketed in zriddr.");
+      Throw1WithMessage("root must be bracketed in zriddr.");
     }
   }
   
@@ -85,7 +85,7 @@ namespace WaveformUtilities {
     const Doub EPS=numeric_limits<Doub>::epsilon();
     Doub a=x1,b=x2,c=x2,d,e,fa=func(a),fb=func(b),fc,p,q,r,s,tol1,xm;
     if ((fa > 0.0 && fb > 0.0) || (fa < 0.0 && fb < 0.0))
-      throw("Root must be bracketed in zbrent");
+      Throw1WithMessage("Root must be bracketed in zbrent");
     fc=fb;
     for (Int iter=0;iter<ITMAX;iter++) {
       if ((fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0)) {
@@ -138,7 +138,7 @@ namespace WaveformUtilities {
 	b += SIGN(tol1,xm);
       fb=func(b);
     }
-    throw("Maximum number of iterations exceeded in zbrent");
+    Throw1WithMessage("Maximum number of iterations exceeded in zbrent");
   }
 
   

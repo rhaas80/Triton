@@ -55,12 +55,12 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
   
   if(iL>8) {
     std::cerr << "\nL=" << iL << std::endl;
-    throw("This L value not yet implemented for Wigner D matrices.");
+    Throw1WithMessage("This L value not yet implemented for Wigner D matrices.");
   }
   
   if(abs(iMP)>iL || abs(iM)>iL) {
     std::cerr << "\nL=" << iL << "  MP=" << iMP << "  M=" << iM << std::endl;
-    throw("Bad MP or M, out of range for Wigner D matrix.");
+    Throw1WithMessage("Bad MP or M, out of range for Wigner D matrix.");
   }
   
   L=iL;

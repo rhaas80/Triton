@@ -120,7 +120,7 @@ Cell[BoxData[{
 #include \\\"VectorFunctions.hpp\\\"\nusing namespace std;\nnamespace WU = \
 WaveformUtilities;\n\nvoid WU::SWSH(const int L, const int M, const double \
 vartheta, const double varphi, double& amp, double& arg) {\n  if(L<2) { \
-throw(\\\"l<2 unsupported.\\\"); }\n  if(labs(M)>L) { throw(\\\"abs(m)>l \
+Throw1WithMessage(\\\"l<2 unsupported.\\\"); }\n  if(labs(M)>L) { Throw1WithMessage(\\\"abs(m)>l \
 unsupported for s=-2 spin-weighted spherical harmonics.\\\"); }\\n\>\""}], 
    "]"}], ";"}], "\n", 
  RowBox[{
@@ -128,7 +128,7 @@ unsupported for s=-2 spin-weighted spherical harmonics.\\\"); }\\n\>\""}],
    RowBox[{"OutFile", ",", " ", 
     RowBox[{"StringForm", "[", 
      RowBox[{
-     "\"\<  if(L>``) { throw(\\\"l>`` unsupported.\\\"); }\\n\>\"", ",", " ", 
+     "\"\<  if(L>``) { Throw1WithMessage(\\\"l>`` unsupported.\\\"); }\\n\>\"", ",", " ", 
       "LMax", ",", " ", "LMax"}], "]"}]}], "]"}], ";"}], "\n", 
  RowBox[{
   RowBox[{"WriteString", "[", 
@@ -244,18 +244,18 @@ amp*sin(arg));\n}\n\n\>\""}], "]"}], ";"}],
    "OutFile", ",", " ", 
     "\"\<\nvoid WU::SWSH(const int L, const int M, const vector<double>& \
 vartheta, const vector<double>& varphi, vector<double>& amp, vector<double>& \
-arg) {\n  if(L<2) { throw(\\\"l<2 unsupported.\\\"); }\n  if(labs(M)>L) { \
-throw(\\\"abs(m)>l unsupported for s=-2 spin-weighted spherical \
+arg) {\n  if(L<2) { Throw1WithMessage(\\\"l<2 unsupported.\\\"); }\n  if(labs(M)>L) { \
+Throw1WithMessage(\\\"abs(m)>l unsupported for s=-2 spin-weighted spherical \
 harmonics.\\\"); }\n  if(vartheta.size() != varphi.size()) {\n    std::cerr \
 << \\\"\\\\n\\\\nvartheta.size()=\\\" << vartheta.size() << \\\"  \
-varphi.size()=\\\" << varphi.size() << std::endl;\n    throw(\\\"Size \
+varphi.size()=\\\" << varphi.size() << std::endl;\n    Throw1WithMessage(\\\"Size \
 mismatch in input data\\\");\n  }\\n\>\""}], "]"}], ";"}], "\n", 
  RowBox[{
   RowBox[{"WriteString", "[", 
    RowBox[{"OutFile", ",", " ", 
     RowBox[{"StringForm", "[", 
      RowBox[{
-     "\"\<  if(L>``) { throw(\\\"l>`` unsupported.\\\"); }\\n\>\"", ",", " ", 
+     "\"\<  if(L>``) { Throw1WithMessage(\\\"l>`` unsupported.\\\"); }\\n\>\"", ",", " ", 
       "LMax", ",", " ", "LMax"}], "]"}]}], "]"}], ";"}], "\n", 
  RowBox[{
   RowBox[{"WriteString", "[", 
@@ -374,19 +374,19 @@ arg.resize(vartheta.size());\\n\>\""}], "]"}], ";"}], "\[IndentingNewLine]",
    RowBox[{
    "OutFile", ",", " ", 
     "\"\<\nvector<complex<double> > WU::SWSH(const int L, const int M, const \
-vector<double>& vartheta, const vector<double>& varphi) {\n  if(L<2) { throw(\
-\\\"l<2 unsupported.\\\"); }\n  if(labs(M)>L) { throw(\\\"abs(m)>l \
+vector<double>& vartheta, const vector<double>& varphi) {\n  if(L<2) { Throw1WithMessage(\
+\\\"l<2 unsupported.\\\"); }\n  if(labs(M)>L) { Throw1WithMessage(\\\"abs(m)>l \
 unsupported for s=-2 spin-weighted spherical harmonics.\\\"); }\n  \
 if(vartheta.size() != varphi.size()) {\n    std::cerr << \
 \\\"\\\\n\\\\nvartheta.size()=\\\" << vartheta.size() << \\\"  varphi.size()=\
-\\\" << varphi.size() << std::endl;\n    throw(\\\"Size mismatch in input \
+\\\" << varphi.size() << std::endl;\n    Throw1WithMessage(\\\"Size mismatch in input \
 data\\\");\n  }\\n\>\""}], "]"}], ";"}], "\n", 
  RowBox[{
   RowBox[{"WriteString", "[", 
    RowBox[{"OutFile", ",", " ", 
     RowBox[{"StringForm", "[", 
      RowBox[{
-     "\"\<  if(L>``) { throw(\\\"l>`` unsupported.\\\"); }\\n\>\"", ",", " ", 
+     "\"\<  if(L>``) { Throw1WithMessage(\\\"l>`` unsupported.\\\"); }\\n\>\"", ",", " ", 
       "LMax", ",", " ", "LMax"}], "]"}]}], "]"}], ";"}], "\n", 
  RowBox[{
   RowBox[{"WriteString", "[", 

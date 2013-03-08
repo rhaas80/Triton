@@ -200,7 +200,7 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
       EOBIntegration(H, d, ystart, GuessedLength, rtol, h1, nsave, denseish, t, v, Phi, r, prstar, pPhi);
     }
     if(rtol >= 1.0e-5) {
-      throw("Couldn't integrate the guessed EOB initial conditions.  Check the tolerances and reasonableness of inputs.");
+      Throw1WithMessage("Couldn't integrate the guessed EOB initial conditions.  Check the tolerances and reasonableness of inputs.");
     }
     g(ystartinitial[0]);
     H(ystartinitial[0], ystartinitial[2], ystartinitial[3]);

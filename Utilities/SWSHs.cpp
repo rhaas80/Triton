@@ -16,9 +16,9 @@ namespace WaveformUtilities {
 }
 
 void WU::SWSH(const int L, const int M, const double vartheta, const double varphi, double& amp, double& arg) {
-  if(L<2) { throw("l<2 unsupported."); }
-  if(labs(M)>L) { throw("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics."); }
-  if(L>12) { throw("l>12 unsupported."); }
+  if(L<2) { Throw1WithMessage("l<2 unsupported."); }
+  if(labs(M)>L) { Throw1WithMessage("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics."); }
+  if(L>12) { Throw1WithMessage("l>12 unsupported."); }
   
   switch(L) {
   case 2:
@@ -1564,13 +1564,13 @@ std::complex<double> WU::SWSH(const int L, const int M, const double vartheta, c
 
 
 void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const vector<double>& varphi, vector<double>& amp, vector<double>& arg) {
-  if(L<2) { throw("l<2 unsupported."); }
-  if(labs(M)>L) { throw("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics."); }
+  if(L<2) { Throw1WithMessage("l<2 unsupported."); }
+  if(labs(M)>L) { Throw1WithMessage("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics."); }
   if(vartheta.size() != varphi.size()) {
     std::cerr << "\n\nvartheta.size()=" << vartheta.size() << "  varphi.size()=" << varphi.size() << std::endl;
-    throw("Size mismatch in input data");
+    Throw1WithMessage("Size mismatch in input data");
   }
-  if(L>12) { throw("l>12 unsupported."); }
+  if(L>12) { Throw1WithMessage("l>12 unsupported."); }
   
   amp.resize(vartheta.size());
   arg.resize(vartheta.size());
@@ -3276,13 +3276,13 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
 }
 
 vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>& vartheta, const vector<double>& varphi) {
-  if(L<2) { throw("l<2 unsupported."); }
-  if(labs(M)>L) { throw("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics."); }
+  if(L<2) { Throw1WithMessage("l<2 unsupported."); }
+  if(labs(M)>L) { Throw1WithMessage("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics."); }
   if(vartheta.size() != varphi.size()) {
     std::cerr << "\n\nvartheta.size()=" << vartheta.size() << "  varphi.size()=" << varphi.size() << std::endl;
-    throw("Size mismatch in input data");
+    Throw1WithMessage("Size mismatch in input data");
   }
-  if(L>12) { throw("l>12 unsupported."); }
+  if(L>12) { Throw1WithMessage("l>12 unsupported."); }
   
   vector<complex<double> > swsh(vartheta.size());
   

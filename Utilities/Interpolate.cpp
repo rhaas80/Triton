@@ -17,18 +17,18 @@ using WU::SplineCumulativeIntegral;
 // #undef DEBUG
 
 vector<double> WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2) {
-  if(X1.size()==0) { throw("X1.size()==0"); }
-  if(X2.size()==0) { throw("X2.size()==0"); }
-  if(Y1.size()==0) { throw("Y1.size()==0"); }
+  if(X1.size()==0) { Throw1WithMessage("X1.size()==0"); }
+  if(X2.size()==0) { Throw1WithMessage("X2.size()==0"); }
+  if(Y1.size()==0) { Throw1WithMessage("Y1.size()==0"); }
   vector<double> Y2(X2.size());
   WU::Interpolate(X1, Y1, X2, Y2);
   return Y2;
 }
 
 void WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, vector<double>& Y2) {
-  if(X1.size()==0) { throw("X1.size()==0"); }
-  if(X2.size()==0) { throw("X2.size()==0"); }
-  if(Y1.size()==0) { throw("Y1.size()==0"); }
+  if(X1.size()==0) { Throw1WithMessage("X1.size()==0"); }
+  if(X2.size()==0) { Throw1WithMessage("X2.size()==0"); }
+  if(Y1.size()==0) { Throw1WithMessage("Y1.size()==0"); }
   SplineInterpolator Spline(X1, Y1);
   if(Y2.size()!=X2.size()) { Y2.resize(X2.size()); }
   for(unsigned int i=0; i<Y2.size(); ++i) { Y2[i] = Spline.interp(X2[i]); }
@@ -45,25 +45,25 @@ void WaveformUtilities::Interpolate(const vector<double>& X1, const vector<doubl
     if(WU::hasinf(X2)) { cerr << "X2 has Infs." << endl; }
     if(!WU::ismonotonic(X1)) { cerr << "X1 is not monotonic." << endl; }
     if(!WU::ismonotonic(X2)) { cerr << "X2 is not monotonic." << endl; }
-    throw("NaNs found in Interpolate");
+    Throw1WithMessage("NaNs found in Interpolate");
   }
   #endif
   return;
 }
 
 vector<double> WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, const double ExtrapVal) {
-  if(X1.size()==0) { throw("X1.size()==0"); }
-  if(X2.size()==0) { throw("X2.size()==0"); }
-  if(Y1.size()==0) { throw("Y1.size()==0"); }
+  if(X1.size()==0) { Throw1WithMessage("X1.size()==0"); }
+  if(X2.size()==0) { Throw1WithMessage("X2.size()==0"); }
+  if(Y1.size()==0) { Throw1WithMessage("Y1.size()==0"); }
   vector<double> Y2(X2.size());
   WU::Interpolate(X1, Y1, X2, Y2, ExtrapVal);
   return Y2;
 }
 
 void WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const vector<double>& X2, vector<double>& Y2, const double ExtrapVal) {
-  if(X1.size()==0) { throw("X1.size()==0"); }
-  if(X2.size()==0) { throw("X2.size()==0"); }
-  if(Y1.size()==0) { throw("Y1.size()==0"); }
+  if(X1.size()==0) { Throw1WithMessage("X1.size()==0"); }
+  if(X2.size()==0) { Throw1WithMessage("X2.size()==0"); }
+  if(Y1.size()==0) { Throw1WithMessage("Y1.size()==0"); }
   SplineInterpolator Spline(X1, Y1);
   if(Y2.size()!=X2.size()) { Y2.resize(X2.size()); }
   for(unsigned int i=0; i<Y2.size(); ++i) {
@@ -86,15 +86,15 @@ void WaveformUtilities::Interpolate(const vector<double>& X1, const vector<doubl
     if(WU::hasinf(X2)) { cerr << "X2 has Infs." << endl; }
     if(!WU::ismonotonic(X1)) { cerr << "X1 is not monotonic." << endl; }
     if(!WU::ismonotonic(X2)) { cerr << "X2 is not monotonic." << endl; }
-    throw("NaNs found in Interpolate");
+    Throw1WithMessage("NaNs found in Interpolate");
   }
   #endif
   return;
 }
 
 double WaveformUtilities::Interpolate(const vector<double>& X1, const vector<double>& Y1, const double& X2) {
-  if(X1.size()==0) { throw("X1.size()==0"); }
-  if(Y1.size()==0) { throw("Y1.size()==0"); }
+  if(X1.size()==0) { Throw1WithMessage("X1.size()==0"); }
+  if(Y1.size()==0) { Throw1WithMessage("Y1.size()==0"); }
   vector<double> x1(1, X2);
   vector<double> y1 = WU::Interpolate(X1, Y1, x1);
   return y1[0];
@@ -110,7 +110,7 @@ Interpolator::Interpolator(const vector<double>& x, const vector<double>& y, int
 
 Int Interpolator::locate(const Doub x) {
   Int ju,jm,jl;
-  if (n < 2 || mm < 2 || mm > n) throw("Interpolator::locate size error");
+  if (n < 2 || mm < 2 || mm > n) Throw1WithMessage("Interpolator::locate size error");
   Bool ascnd=(xx[n-1] >= xx[0]);
   jl=0;
   ju=n-1;
@@ -128,7 +128,7 @@ Int Interpolator::locate(const Doub x) {
 
 Int Interpolator::hunt(const Doub x) {
   Int jl=jsav, jm, ju, inc=1;
-  if (n < 2 || mm < 2 || mm > n) throw("Interpolator::hunt size error");
+  if (n < 2 || mm < 2 || mm > n) Throw1WithMessage("Interpolator::hunt size error");
   Bool ascnd=(xx[n-1] >= xx[0]);
   if (jl < 0 || jl > n-1) {
     jl=0;
@@ -189,7 +189,7 @@ Doub PolynomialInterpolator::rawinterp(Int jl, Doub x) {
       ho=xa[i]-x;
       hp=xa[i+m]-x;
       w=c[i+1]-d[i];
-      if ((den=ho-hp) == 0.0) throw("PolynomialInterpolator::rawinterp error");
+      if ((den=ho-hp) == 0.0) Throw1WithMessage("PolynomialInterpolator::rawinterp error");
       den=w/den;
       d[i]=hp*den;
       c[i]=ho*den;
@@ -234,7 +234,7 @@ Doub SplineInterpolator::rawinterp(Int jl, Doub x)
   Int klo=jl,khi=jl+1;
   Doub y,h,b,a;
   h=xx[khi]-xx[klo];
-  if (h == 0.0) throw("Bad input to routine SplineInterpolator::rawinterp");
+  if (h == 0.0) Throw1WithMessage("Bad input to routine SplineInterpolator::rawinterp");
   a=(xx[khi]-x)/h;
   b=(x-xx[klo])/h;
   y=a*yy[klo]+b*yy[khi]+((a*a*a-a)*y2[klo]

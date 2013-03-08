@@ -48,28 +48,28 @@ public:
     if(a.NModes() != b.NModes()) {
       cerr << "\nTrying to Align Waveforms with mismatched LM data." << endl;
       cerr << "a.NModes()=" << a.NModes() << "\tb.NModes()=" << b.NModes() << endl;
-      throw("Different number of modes");
+      Throw1WithMessage("Different number of modes");
     }
     if(a.LM() != b.LM()) {
       cerr << "\nTrying to Align Waveforms with mismatched LM data." << endl;
       cerr << "a.LM()=" << a.LM() << "\nb.LM()=" << b.LM() << endl;
-      throw("Different modes");
+      Throw1WithMessage("Different modes");
     }
     if(t1<a.T(0)) {
       cerr << "\nAlignment time t1=" << t1 << " does not occur in Waveform A (which has A.T(0)=" << A.T(0) << ")." << endl;
-      throw("Bad matching time for Waveform A");
+      Throw1WithMessage("Bad matching time for Waveform A");
     }
     if(t1<b.T(0)) {
       cerr << "\nAlignment time t1=" << t1 << " does not occur in Waveform B (which has B.T(0)=" << B.T(0) << ")." << endl;
-      throw("Bad matching time for Waveform B");
+      Throw1WithMessage("Bad matching time for Waveform B");
     }
     if(t2>a.T().back()) {
       cerr << "\nAlignment time t2=" << t2 << " does not occur in Waveform A (which has A.T(-1)=" << A.T().back() << ")." << endl;
-      throw("Bad matching time for Waveform A");
+      Throw1WithMessage("Bad matching time for Waveform A");
     }
     if(t2>B.T().back()) {
       cerr << "\nAlignment time t2=" << t2 << " does not occur in Waveform B (which has B.T(-1)=" << B.T().back() << ")." << endl;
-      throw("Bad matching time for Waveform B");
+      Throw1WithMessage("Bad matching time for Waveform B");
     }
     unsigned int i=0;
     //ORIENTATION!!! following loops
@@ -78,14 +78,14 @@ public:
     }
     if(LMa==-1) {
       cerr << "\na.LM()=" << a.LM() << endl;
-      throw("Can't find the 2,2 component of Waveform a!");
+      Throw1WithMessage("Can't find the 2,2 component of Waveform a!");
     }
     for(i=0; i<b.NModes(); ++i) {
       if(b.L(i)==2 && b.M(i)==2) { LMb=i; break; }
     }
     if(LMb==-1) {
       cerr << "\nb.LM()=" << b.LM() << endl;
-      throw("Can't find the 2,2 component of Waveform b!");
+      Throw1WithMessage("Can't find the 2,2 component of Waveform b!");
     }
     arga = a.Arg(LMa);
     i=t.size()-1;
@@ -120,7 +120,7 @@ public:
 Waveform& WaveformObjects::Waveform::AlignPhasesToTwoPi(const Waveform& a, const double tFrac) {
   if(tFrac<0 || tFrac>1) {
     cerr << "\ntFrac=" << tFrac << endl;
-    throw("Bad fraction");
+    Throw1WithMessage("Bad fraction");
   }
   History() << "### this->AlignPhasesToTwoPi(a, " << tFrac << ");\n" << flush;
   const int Ithis=int(tFrac*NTimes());
@@ -165,12 +165,12 @@ Waveform WaveformObjects::Waveform::HybridizeWith(const Waveform& b, const doubl
   if(NModes() != b.NModes()) {
     cerr << "\nTrying to Align Waveforms with mismatched LM data." << endl;
     cerr << "NModes()=" << NModes() << "\tb.NModes()=" << b.NModes() << endl;
-    throw("Different number of modes");
+    Throw1WithMessage("Different number of modes");
   }
   if(LM() != b.LM()) {
     cerr << "\nTrying to Align Waveforms with different LM data." << endl;
     cerr << "LM()=" << LM() << "\nb.LM()=" << b.LM() << endl;
-    throw("Different modes");
+    Throw1WithMessage("Different modes");
   }
   Waveform c(*this);
   c.TRef() = Union(T(), b.T(), MinStep);
@@ -218,7 +218,7 @@ inline double sign(const double x) {
 Waveform& WaveformObjects::Waveform::AlignTo_F(const Waveform& a, const double omega, const double t1, const double t2, const double DeltaT, const double MinStep) {
   if(omega==0.0) {
     cerr << "\nThe frequency input to AlignTo_F is exactly 0.0.  This will give you garbage" << endl;
-    throw("Bad frequency");
+    Throw1WithMessage("Bad frequency");
   }
   unsigned int i=0;
   double T1(t1), T2(t2);
@@ -331,7 +331,7 @@ Waveform WaveformObjects::Waveform::HybridizeWith_F(const Waveform& a, const dou
 Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double chiKerr, double dt, const double TLength) {
 //   if(LM() != QNMLMs()) {
 //     cerr << "LM=" << LM() << "\nQNMLMs()=" << QNMLMs() << endl;
-//     throw("Bad input LMs.");
+//     Throw1WithMessage("Bad input LMs.");
 //   }
   
   if(dt==0.0) { dt = 2*M_PI/(4*2.07); } // 2.07 -> MAX(omegaRe of all the QNM modes)

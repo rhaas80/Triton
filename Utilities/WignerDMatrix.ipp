@@ -2,7 +2,7 @@ namespace WignerDMatrixLocal {
   
   void Uninitialized(const double sinbetaovertwo, const double cosbetaovertwo, double& Mag) {
     std::cerr << "\nThis matrix has not yet been initialized with L,M,MP information." << std::endl;
-    throw("Trying to use an uninitialized Wigner D matrix.");
+    Throw1WithMessage("Trying to use an uninitialized Wigner D matrix.");
   }
   
   void D_0_0_0(const double sinbetaovertwo, const double cosbetaovertwo, double& Mag) {

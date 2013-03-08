@@ -32,9 +32,9 @@ void WU::ReadDatFile(const string& FileName, vector<vector<double> >& Data,
 {
   // If the FileName points to an h5 file and dataset, just get that
   if(FileName.find(".h5:")!=string::npos) {
-    throw("This capability has been removed from the code due to module hell.  Uncomment and recompile at your own risk!");
+    Throw1WithMessage("This capability has been removed from the code due to module hell.  Uncomment and recompile at your own risk!");
     // if(!Transpose) {
-    //   throw("Don't yet know how to return un-transposed h5 file.  It shouldn't be hard to implement...");
+    //   Throw1WithMessage("Don't yet know how to return un-transposed h5 file.  It shouldn't be hard to implement...");
     // }
     // size_t found = FileName.find(".h5:");
     // std::string FILE_NAME = FileName.substr(0, found+3);
@@ -48,7 +48,7 @@ void WU::ReadDatFile(const string& FileName, vector<vector<double> >& Data,
     // int rank = dataspace.getSimpleExtentNdims();
     // if(rank != 2) {
     //   cerr << "rank=" << rank << endl;
-    //   throw("Unknown data shape");
+    //   Throw1WithMessage("Unknown data shape");
     // }
     // // Get the dimension size of each dimension in the dataspace
     // hsize_t dims_out[2];
@@ -100,7 +100,7 @@ void WU::ReadDatFile(const string& FileName, vector<vector<double> >& Data,
   ifstream ifs(FileName.c_str(), ifstream::in);
   if(!ifs.is_open()) {
     cerr << "Couldn't open '" << FileName << "'" << endl;
-    throw("Bad file name");
+    Throw1WithMessage("Bad file name");
   }
   
   // Get the header and number of header lines

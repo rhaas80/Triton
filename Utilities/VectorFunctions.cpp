@@ -181,7 +181,7 @@ vector<double> operator/(const double& a, const vector<double>& b) {
 }
 
 vector<double> operator+(const vector<double>& a, const vector<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   vector<double> c(a.size());
   for(unsigned int i=0; i<c.size(); ++i) {
     c[i] = a[i]+b[i];
@@ -189,7 +189,7 @@ vector<double> operator+(const vector<double>& a, const vector<double>& b) {
   return c;
 }
 vector<double> operator-(const vector<double>& a, const vector<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   vector<double> c(a.size());
   for(unsigned int i=0; i<c.size(); ++i) {
     c[i] = a[i]-b[i];
@@ -197,7 +197,7 @@ vector<double> operator-(const vector<double>& a, const vector<double>& b) {
   return c;
 }
 vector<double> operator*(const vector<double>& a, const vector<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   vector<double> c(a.size());
   for(unsigned int i=0; i<c.size(); ++i) {
     c[i] = a[i]*b[i];
@@ -205,7 +205,7 @@ vector<double> operator*(const vector<double>& a, const vector<double>& b) {
   return c;
 }
 vector<double> operator/(const vector<double>& a, const vector<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   vector<double> c(a.size());
   for(unsigned int i=0; i<c.size(); ++i) {
     c[i] = a[i]/b[i];
@@ -239,28 +239,28 @@ vector<double>& operator/=(vector<double>& a, const double& b) {
 }
 
 vector<double>& operator+=(vector<double>& a, const vector<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   for(unsigned int i=0; i<a.size(); ++i) {
     a[i] += b[i];
   }
   return a;
 }
 vector<double>& operator-=(vector<double>& a, const vector<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   for(unsigned int i=0; i<a.size(); ++i) {
     a[i] += b[i];
   }
   return a;
 }
 vector<double>& operator*=(vector<double>& a, const vector<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   for(unsigned int i=0; i<a.size(); ++i) {
     a[i] += b[i];
   }
   return a;
 }
 vector<double>& operator/=(vector<double>& a, const vector<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   for(unsigned int i=0; i<a.size(); ++i) {
     a[i] += b[i];
   }
@@ -351,7 +351,7 @@ Matrix<double> operator/(const double& a, const Matrix<double>& b) {
 }
 
 Matrix<double> operator+(const Matrix<double>& a, const Matrix<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   Matrix<double> c(a.nrows(), a.ncols());
   for(unsigned int row=0; row<c.nrows(); ++row) {
     for(unsigned int col=0; col<c.ncols(); ++col) {
@@ -361,7 +361,7 @@ Matrix<double> operator+(const Matrix<double>& a, const Matrix<double>& b) {
   return c;
 }
 Matrix<double> operator-(const Matrix<double>& a, const Matrix<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   Matrix<double> c(a.nrows(), a.ncols());
   for(unsigned int row=0; row<c.nrows(); ++row) {
     for(unsigned int col=0; col<c.ncols(); ++col) {
@@ -371,7 +371,7 @@ Matrix<double> operator-(const Matrix<double>& a, const Matrix<double>& b) {
   return c;
 }
 Matrix<double> operator*(const Matrix<double>& a, const Matrix<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   Matrix<double> c(a.nrows(), a.ncols());
   for(unsigned int row=0; row<c.nrows(); ++row) {
     for(unsigned int col=0; col<c.ncols(); ++col) {
@@ -381,7 +381,7 @@ Matrix<double> operator*(const Matrix<double>& a, const Matrix<double>& b) {
   return c;
 }
 Matrix<double> operator/(const Matrix<double>& a, const Matrix<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   Matrix<double> c(a.nrows(), a.ncols());
   for(unsigned int row=0; row<c.nrows(); ++row) {
     for(unsigned int col=0; col<c.ncols(); ++col) {
@@ -425,7 +425,7 @@ Matrix<double>& operator/=(Matrix<double>& a, const double& b) {
 }
 
 Matrix<double>& operator+=(Matrix<double>& a, const Matrix<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   for(unsigned int row=0; row<a.nrows(); ++row) {
     for(unsigned int col=0; col<a.ncols(); ++col) {
       a[row][col] += b[row][col];
@@ -434,7 +434,7 @@ Matrix<double>& operator+=(Matrix<double>& a, const Matrix<double>& b) {
   return a;
 }
 Matrix<double>& operator-=(Matrix<double>& a, const Matrix<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   for(unsigned int row=0; row<a.nrows(); ++row) {
     for(unsigned int col=0; col<a.ncols(); ++col) {
       a[row][col] -= b[row][col];
@@ -443,7 +443,7 @@ Matrix<double>& operator-=(Matrix<double>& a, const Matrix<double>& b) {
   return a;
 }
 Matrix<double>& operator*=(Matrix<double>& a, const Matrix<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   for(unsigned int row=0; row<a.nrows(); ++row) {
     for(unsigned int col=0; col<a.ncols(); ++col) {
       a[row][col] *= b[row][col];
@@ -452,7 +452,7 @@ Matrix<double>& operator*=(Matrix<double>& a, const Matrix<double>& b) {
   return a;
 }
 Matrix<double>& operator/=(Matrix<double>& a, const Matrix<double>& b) {
-  if(! DimensionsAgree(a,b)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(a,b)) { Throw1WithMessage("Size disagreement"); }
   for(unsigned int row=0; row<a.nrows(); ++row) {
     for(unsigned int col=0; col<a.ncols(); ++col) {
       a[row][col] /= b[row][col];
@@ -514,7 +514,7 @@ vector<double> atan(const vector<double>& y) {
   return theta;
 }
 vector<double> atan2(const vector<double>& Im, const vector<double>& Re) {
-  if(! DimensionsAgree(Im,Re)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(Im,Re)) { Throw1WithMessage("Size disagreement"); }
   vector<double> theta(Im.size());
   for(unsigned int i=0; i<theta.size(); ++i) {
     theta[i] = atan2(Im[i], Re[i]);
@@ -564,7 +564,7 @@ vector<double> log10(const vector<double>& x) {
   return y;
 }
 vector<double> pow(const vector<double>& base, const vector<double>& exponent) {
-  if(! DimensionsAgree(base,exponent)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(base,exponent)) { Throw1WithMessage("Size disagreement"); }
   vector<double> y(base.size());
   for(unsigned int i=0; i<y.size(); ++i) {
     y[i] = pow(base[i], exponent[i]);
@@ -607,7 +607,7 @@ vector<double> floor(const vector<double>& x) {
   return y;
 }
 vector<double> fmod(const vector<double>& numerator, const vector<double>& denominator) {
-  if(! DimensionsAgree(numerator,denominator)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(numerator,denominator)) { Throw1WithMessage("Size disagreement"); }
   vector<double> y(numerator.size());
   for(unsigned int i=0; i<y.size(); ++i) {
     y[i] = fmod(numerator[i], denominator[i]);
@@ -677,7 +677,7 @@ Matrix<double> atan(const Matrix<double>& y) {
   return theta;
 }
 Matrix<double> atan2(const Matrix<double>& Im, const Matrix<double>& Re) {
-  if(! DimensionsAgree(Re,Im)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(Re,Im)) { Throw1WithMessage("Size disagreement"); }
   Matrix<double> theta(Re.nrows(), Re.ncols());
   for(unsigned int row=0; row<theta.nrows(); ++row) {
     for(unsigned int col=0; col<theta.ncols(); ++col) {
@@ -741,7 +741,7 @@ Matrix<double> log10(const Matrix<double>& x) {
   return y;
 }
 Matrix<double> pow(const Matrix<double>& base, const Matrix<double>& exponent) {
-  if(! DimensionsAgree(base,exponent)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(base,exponent)) { Throw1WithMessage("Size disagreement"); }
   Matrix<double> y(base.nrows(), base.ncols());
   for(unsigned int row=0; row<y.nrows(); ++row) {
     for(unsigned int col=0; col<y.ncols(); ++col) {
@@ -796,7 +796,7 @@ Matrix<double> floor(const Matrix<double>& x) {
   return y;
 }
 Matrix<double> fmod(const Matrix<double>& numerator, const Matrix<double>& denominator) {
-  if(! DimensionsAgree(numerator,denominator)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(numerator,denominator)) { Throw1WithMessage("Size disagreement"); }
   Matrix<double> y(numerator.nrows(), numerator.ncols());
   for(unsigned int row=0; row<y.nrows(); ++row) {
     for(unsigned int col=0; col<y.ncols(); ++col) {
@@ -818,7 +818,7 @@ Matrix<double> fmod(const Matrix<double>& numerator, const double& denominator) 
 double WU::dot(const vector<double>& x, const vector<double>& y) {
   if(x.size()!=3 || y.size()!=3) {
     cerr << "\nx.size()=" << x.size() << "\ty.size()=" << y.size() << endl;
-    throw("The dot product is only defined for 3-vectors");
+    Throw1WithMessage("The dot product is only defined for 3-vectors");
   }
   return x[0]*y[0] + x[1]*y[1] + x[2]*y[2];
 }
@@ -826,7 +826,7 @@ double WU::dot(const vector<double>& x, const vector<double>& y) {
 vector<double> WU::dot(const vector<vector<double> >& x, const vector<vector<double> >& y) {
   if(x.size()!=3 || y.size()!=3) {
     cerr << "\nx.size()=" << x.size() << "\ty.size()=" << y.size() << endl;
-    throw("The dot product is only defined for 3-vectors");
+    Throw1WithMessage("The dot product is only defined for 3-vectors");
   }
   return x[0]*y[0] + x[1]*y[1] + x[2]*y[2];
 }
@@ -834,7 +834,7 @@ vector<double> WU::dot(const vector<vector<double> >& x, const vector<vector<dou
 vector<double> WU::cross(const vector<double>& x, const vector<double>& y) {
   if(x.size()!=3 || y.size()!=3) {
     cerr << "\nx.size()=" << x.size() << "\ty.size()=" << y.size() << endl;
-    throw("The cross product is only defined for 3-vectors");
+    Throw1WithMessage("The cross product is only defined for 3-vectors");
   }
   vector<double> z(3, 0.0);
   z[0] = x[1]*y[2] - x[2]*y[1];
@@ -922,7 +922,7 @@ double WU::maxfabs(const vector<double>& x) {
 }
 
 double WU::maxmag(const vector<double>& Re, const vector<double>& Im) {
-  if(! DimensionsAgree(Re,Im)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(Re,Im)) { Throw1WithMessage("Size disagreement"); }
   if(Re.size()==0) { return 0.0; }
   double c=sqrt(Re[0]*Re[0]+Im[0]*Im[0]);
   for(unsigned int i=1; i<Im.size(); ++i) {
@@ -945,7 +945,7 @@ double WU::maxfabs(const Matrix<double>& x) {
 }
 
 double WU::maxmag(const Matrix<double>& Re, const Matrix<double>& Im) {
-  if(! DimensionsAgree(Re,Im)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(Re,Im)) { Throw1WithMessage("Size disagreement"); }
   if(Re.nrows()==0 || Re.ncols()==0) { return 0.0; }
   double c=sqrt(Re[0][0]*Re[0][0]+Im[0][0]*Im[0][0]);
   for(unsigned int row=0; row<Im.nrows(); ++row) {
@@ -1010,7 +1010,7 @@ int WU::min(const vector<int>& In) {
 double WU::avg(const vector<double>& In) { return sum(In)/double(In.size()); }
 
 double WU::trapz(const vector<double>& t, const vector<double>& f) {
-  if(! DimensionsAgree(t,f)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(t,f)) { Throw1WithMessage("Size disagreement"); }
   double Integral = 0.0;
   for(unsigned int i=1; i<f.size(); ++i) {
     Integral += ( (f[i] + f[i-1])*(t[i]-t[i-1]) / 2.0 );
@@ -1019,7 +1019,7 @@ double WU::trapz(const vector<double>& t, const vector<double>& f) {
 }
 
 vector<double> WU::cumtrapz(const vector<double>& t, const vector<double>& f) {
-  if(! DimensionsAgree(t,f)) { throw("Size disagreement"); }
+  if(! DimensionsAgree(t,f)) { Throw1WithMessage("Size disagreement"); }
   if(f.size()==0) { return vector<double>(0); }
   vector<double> Integral(f.size());
   Integral[0] = 0.0;
@@ -1030,8 +1030,8 @@ vector<double> WU::cumtrapz(const vector<double>& t, const vector<double>& f) {
 }
 
 vector<double> WU::dydx(const vector<double>& y, const vector<double>& x) {
-  if(! DimensionsAgree(y,x)) { throw("Size disagreement"); }
-  if(y.size()<3) { cerr << "\nsize=" << y.size() << endl; throw("Not enough points for a derivative"); }
+  if(! DimensionsAgree(y,x)) { Throw1WithMessage("Size disagreement"); }
+  if(y.size()<3) { cerr << "\nsize=" << y.size() << endl; Throw1WithMessage("Not enough points for a derivative"); }
   vector<double> D = y;
   const unsigned int i1 = y.size()-1;
   double hprev = x[1]-x[0];
@@ -1048,10 +1048,10 @@ vector<double> WU::dydx(const vector<double>& y, const vector<double>& x) {
 
 vector<double> WU::Intersection(const vector<double>& t1, const vector<double>& t2, const double MinStep, const double MinTime) {
   if(t1.size()==0) {
-    throw("t1 is empty");
+    Throw1WithMessage("t1 is empty");
   }
   if(t2.size()==0) {
-    throw("t2 is empty");
+    Throw1WithMessage("t2 is empty");
   }
   vector<double> t(t1.size()+t2.size());
   double min1 = t1[0];
@@ -1063,7 +1063,7 @@ vector<double> WU::Intersection(const vector<double>& t1, const vector<double>& 
   if(mint > max1 || mint > max2) {
     cerr << "\nmin(t1)=" << min1 << "\tmin(t2)=" << min2 << endl;
     cerr << "max(t1)=" << max1 << "\tmax(t2)=" << max2 << endl;
-    throw("Empty intersection");
+    Throw1WithMessage("Empty intersection");
   }
   t[0] = mint;
   unsigned int I=0, I1=0, I2=0;
@@ -1119,7 +1119,7 @@ vector<double> WU::Union(const vector<double>& t1, const vector<double>& t2, con
   if(min2 > max1 || min1 > max2) {
     cerr << "\nmin(t1)=" << min1 << "\tmin(t2)=" << min2 << endl;
     cerr << "max(t1)=" << max1 << "\tmax(t2)=" << max2 << endl;
-    throw("Disjoint Union");
+    Throw1WithMessage("Disjoint Union");
   }
   t[0] = mint;
   unsigned int I=0, I1=0, I2=0;
@@ -1259,7 +1259,7 @@ double WU::Factorial(const int n) {
   }
   if (n < 0 || n > 170) {
     cerr << "\nn=" << n << endl;
-    throw("Fac out of range");
+    Throw1WithMessage("Fac out of range");
   }
   return a[n];
 }
@@ -1280,7 +1280,7 @@ double WU::DoubleFactorial(const int n) {
   }
   if (n < 0 || n > 300) {
     cerr << "\nn=" << n << endl;
-    throw("DoubleFac out of range");
+    Throw1WithMessage("DoubleFac out of range");
   }
   return a[n];
 }
@@ -1295,7 +1295,7 @@ double WU::LogFactorial(const int n) {
   }
   if (n < 0) {
     cerr << "\nn=" << n << endl;
-    throw("Negative arg in LogFac");
+    Throw1WithMessage("Negative arg in LogFac");
   }
   if (n < NTOP) return a[n];
   return LogGammaFunction(n+1.);
@@ -1311,7 +1311,7 @@ double WU::LogGammaFunction(const double xx) {
 			       .844182239838527433e-4,-.261908384015814087e-4,.368991826595316234e-5};
   if (xx <= 0) {
     cerr << "\nxx=" << xx << endl;
-    throw("Bad arg in LogGamma");
+    Throw1WithMessage("Bad arg in LogGamma");
   }
   y=x=xx;
   tmp = x+5.24218750000000000;
@@ -1331,7 +1331,7 @@ complex<double> WU::LogGammaFunction(const complex<double>& xx) {
 			       .844182239838527433e-4,-.261908384015814087e-4,.368991826595316234e-5};
   if (arg(xx)>M_PI/2.0 && arg(x)<3*M_PI/2.0) {
     cerr << "\nxx=" << xx << "\targ(xx)=" << arg(xx) << endl;
-    throw("Bad arg in LogGamma");
+    Throw1WithMessage("Bad arg in LogGamma");
   }
   y=x=xx;
   tmp = x+5.24218750000000000;

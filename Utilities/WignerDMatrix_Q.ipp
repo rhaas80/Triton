@@ -1,7 +1,7 @@
 
   double Uninitialized() {
     std::cerr << "\nThis matrix has not yet been initialized with L,M,MP information." << std::endl;
-    throw("Trying to use an uninitialized Wigner D matrix.");
+    std::cerr << "ERROR: " << "Trying to use an uninitialized Wigner D matrix." << "\n       in file " << __FILE__ << " at line " << __LINE__ << std::endl; throw(1);
     return 0.0;
   }
   

@@ -39,11 +39,11 @@ void m2Y2m2(const double iota, const double phi, double& amp, double& arg) {
 void m2Y2M(const int L, const int M, const double iota, const double phi, double& amp, double& arg) {
   if(abs(M)>L) {
     cerr << "abs(m)=" << abs(M) << "\tl=" << L << endl;
-    throw("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics.");
+    Throw1WithMessage("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics.");
   }
   if(L!=2) {
     cerr << "l=" << L << endl;
-    throw("l!=2 not available in this function.");
+    Throw1WithMessage("l!=2 not available in this function.");
   }
   switch(M) {
   case -2:

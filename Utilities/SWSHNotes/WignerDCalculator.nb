@@ -184,7 +184,7 @@ Cell[BoxData[{
      "\"\<namespace WignerDMatrixLocal {\n  \n  void Uninitialized(const \
 double sinbetaovertwo, const double cosbetaovertwo, double& Mag) {\n    \
 std::cerr << \\\"\\\\nThis matrix has not yet been initialized with L,M,MP \
-information.\\\" << std::endl;\n    throw(\\\"Trying to use an uninitialized \
+information.\\\" << std::endl;\n    Throw1WithMessage(\\\"Trying to use an uninitialized \
 Wigner D matrix.\\\");\n  }\n  \>\""}], "]"}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
@@ -582,7 +582,7 @@ Cell[BoxData[{
     "OutFilei", ",", " ", 
      "\"\<\n  double Uninitialized() {\n    std::cerr << \\\"\\\\nThis matrix \
 has not yet been initialized with L,M,MP information.\\\" << std::endl;\n    \
-throw(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n    return \
+Throw1WithMessage(\\\"Trying to use an uninitialized Wigner D matrix.\\\");\n    return \
 0.0;\n  }\n  \n  double Identity() {\n    return 1.0;\n  }\n  \n  double \
 Zero() {\n    return 0.0;\n  }\n  \>\""}], "]"}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 

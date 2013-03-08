@@ -131,12 +131,12 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
   
   if(iL>8) {
     std::cerr << "\nL=" << iL << std::endl;
-    throw("This L value not yet implemented for Wigner D matrices.");
+    Throw1WithMessage("This L value not yet implemented for Wigner D matrices.");
   }
   
   if(std::abs(iMP)>iL || std::abs(iM)>iL) {
     std::cerr << "\nL=" << iL << "  MP=" << iMP << "  M=" << iM << std::endl;
-    throw("Bad MP or M, out of range for Wigner D matrix.");
+    Throw1WithMessage("Bad MP or M, out of range for Wigner D matrix.");
   }
   
   L=iL;
@@ -3503,6 +3503,6 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
     
   } // switch(L)
   
-  throw("Shouldn't have gotten here");
+  Throw1WithMessage("Shouldn't have gotten here");
   return;
 }

@@ -83,7 +83,7 @@ namespace WaveformUtilities {
 	for (Int j=0;j<n;j++) xi[i] -= hessin[i][j]*g[j];
       }
     }
-    throw("too many iterations in dfpmin");
+    Throw1WithMessage("too many iterations in dfpmin");
   }
   template <class T>
   struct Funcd {

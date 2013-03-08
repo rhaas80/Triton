@@ -74,7 +74,7 @@ void Output(const string& FileName, const vector<double>& t, const vector<double
 int main(int argc, char* argv[]) {
   if(argc<3) {
     cerr << "Expecting at least two arguments; got " << argc-1 << endl;
-    throw("Bad arguments");
+    Throw1WithMessage("Bad arguments");
   }
   
   const string Unique = "";
