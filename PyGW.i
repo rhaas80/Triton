@@ -348,13 +348,22 @@ def ReadFromNRAR(FileName) :
     import re
     import numpy
     YlmRegex = re.compile(r"""(?P<Type>.*)_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)_*\.(asc|dat)""")
+    W = PyGW.Waveform()
+    W.AppendHistory("### *this = PyGW.ReadFromNRAR(FileName='{0}')\n".format(FileName))
     try :
-        f = h5py.File(FileName, 'r')
+        FileName, RootGroup = FileName.rsplit('.h5', 1)
+        FileName += '.h5'
+    except ValueError :
+        RootGroup = '' # FileName is just a file, not a group in a file
+    try :
+        f_h5 = h5py.File(FileName, 'r')
     except IOError :
         print("ReadFromNRAR could not open the file '{0}'".format(FileName))
         raise
-    W = PyGW.Waveform()
-    W.AppendHistory("### *this = PyGW.ReadFromNRAR(FileName='{0}')\n".format(FileName))
+    if(RootGroup) :
+        f = f_h5[RootGroup]
+    else :
+        f = f_h5
     try :
         OldHistory = f.attrs['History']
         W.AppendHistory("##### Begin Previous History\n#" + OldHistory.replace('\n','\n#') + "#### End Previous History\n")
@@ -402,7 +411,7 @@ def ReadFromNRAR(FileName) :
         if(FileName.find(type)>-1) :
             W.SetTypeIndex(i)
             break
-    f.close()
+    f_h5.close()
     return W
 
 def ConvertFromGWFrames(W_G) :
