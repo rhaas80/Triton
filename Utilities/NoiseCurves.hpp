@@ -18,14 +18,14 @@ namespace WaveformUtilities {
   /// These constants are reported in the Advanced LIGO design study http://www.ligo.caltech.edu/docs/T/T010075-00.pdf
   /// Note that the sampling rate is frequently cut down by data analysts to 1/2 or 1/4 before any data is processed.
   /// Also note that a more realistic seismic wall early in Adv. LIGO's life will be more like 20Hz.
-  const double AdvLIGOSeismicWall(10.0); // Units of Hz
-  const double AdvLIGOSamplingFreq(16384.0); // Units of Hz
+  const double AdvLIGOSeismicWall = 10.0; // Units of Hz
+  const double AdvLIGOSamplingFreq = 16384.0; // Units of Hz
   
-  const double IniLIGOSeismicWall(40.0); // Units of Hz
-  const double IniLIGOSamplingFreq(8192.0); // Units of Hz
+  const double IniLIGOSeismicWall = 40.0; // Units of Hz
+  const double IniLIGOSamplingFreq = 8192.0; // Units of Hz
   
-  const double VirgoSeismicWall(10.0); // Units of Hz
-  const double VirgoSamplingFreq(16384.0); // Units of Hz
+  const double VirgoSeismicWall = 10.0; // Units of Hz
+  const double VirgoSamplingFreq = 16384.0; // Units of Hz
   
 }
 

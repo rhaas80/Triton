@@ -28,6 +28,8 @@ namespace WaveformObjects {
     double SNR(const std::vector<double>& InversePSD) const;
     double Match(const WaveformAtAPointFT& B, const std::vector<double>& InversePSD) const;
     double Match(const WaveformAtAPointFT& B, const std::string& Detector="AdvLIGO_ZeroDet_HighP") const;
+    void Match(const WaveformAtAPointFT& B, const std::vector<double>& InversePSD, double& timeOffset, double& phaseOffset, double& match) const;
+    void Match(const WaveformAtAPointFT& B, double& timeOffset, double& phaseOffset, double& match, const std::string& Detector="AdvLIGO_ZeroDet_HighP") const;
     WaveformAtAPointFT& Normalize(const std::vector<double>& InversePSD);
     WaveformAtAPointFT& ZeroAbove(const double Frequency);
     WaveformAtAPointFT operator-(const WaveformAtAPointFT& b) const;

@@ -26,6 +26,7 @@
   #include "Objects/WaveformAtAPoint.hpp"
   #include "Objects/WaveformAtAPointFT.hpp"
   #include "Objects/Waveforms.hpp"
+  #include "Utilities/NoiseCurves.hpp"
   #include "Utilities/Quaternions.hpp"
   #include "Utilities/SWSHs.hpp"
 %}
@@ -94,6 +95,8 @@ namespace std {
 %apply double *INOUT { double& arg };
 %feature("pythonappend") WaveformUtilities::SWSH() %{ if isinstance(val, tuple) : val = numpy.array(val) %}
 %include "Utilities/SWSHs.hpp"
+// Make noise curves available
+%include "Utilities/NoiseCurves.hpp"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -178,6 +181,9 @@ namespace std {
 //// Read in the WaveformAtAPointFT class ////
 //////////////////////////////////////////////
 //// Parse the header file to generate wrappers
+%apply double *INOUT { double& timeOffset };
+%apply double *INOUT { double& phaseOffset };
+%apply double *INOUT { double& match };
 %include "Objects/WaveformAtAPointFT.hpp"
 
 

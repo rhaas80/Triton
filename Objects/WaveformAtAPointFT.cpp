@@ -163,11 +163,10 @@ double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<
     data.imag(i) = (Im(i)*B.Re(i)-Re(i)*B.Im(i))*InversePSD[i];
   }
   idft(data);
-  int maxi=0;
   double maxmag=sqrt(SQR(data.real(0)) + SQR(data.imag(0)));
   for(unsigned int i=1; i<N; ++i) {
     const double mag = sqrt(SQR(data.real(i)) + SQR(data.imag(i)));
-    if(mag>maxmag) { maxmag = mag; maxi = int(i); }
+    if(mag>maxmag) { maxmag = mag; }
   }
   /// The return from ifft is just the bare FFT sum, so we multiply by df to get
   /// the continuum-analog FT.  This is correct because the input data (re,im) are
@@ -175,30 +174,54 @@ double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<
   /// See, e.g., Eq. (A.33) [rather than Eq. (A.35)] of
   /// http://etd.caltech.edu/etd/available/etd-01122009-143851/
   return 4.0*df*maxmag;
-//   if(maxi<6 || abs(int(N)/2-maxi)<6 || abs(int(N)-maxi)<6) { return 4.0*df*maxmag; }
-//   const unsigned int nfit = std::min(11, int(std::min(int(2*maxi-1), int(2*(int(N)-maxi)-1))));
-//   cerr << "\nDebugging at " << __LINE__ << " of " << __FILE__ << endl;
-//   cerr << maxi << " " << nfit << endl;
-//   cerr << 11 << " " << int(2*maxi-1) << " " << int(2*(int(N)-maxi)-1) << endl;
-//   if(nfit<5) { return 4.0*df*maxmag; }
-//   vector<double> xx(nfit),yy(nfit),ssig(nfit);
-//   for(unsigned int i=maxi-((nfit-1)/2), j=0; i<=maxi+((nfit-1)/2); ++i, ++j) {
-//     xx[j] = DoubleSidedF(i,N,df)-DoubleSidedF(maxi,N,df);
-//     yy[j] = sqrt(SQR(data.real(i))+SQR(data.imag(i)));
-//     ssig[j] = 1.0;
-//   }
-//   WU::PolynomialBasisFunctions p(2);
-//   WU::Fit<WU::PolynomialBasisFunctions> myfit(xx,yy,ssig,p);
-//   myfit.fit();
-//   maxmag = myfit.a[0] - SQR(myfit.a[1])/(4.0*myfit.a[2]);
-//   cerr << "\nDebugging at " << __LINE__ << " of " << __FILE__ << endl;
-//   cerr << myfit.a << endl;
-//   cerr << maxmag << endl;
-//   return 4.0*df*maxmag;
 }
 
 double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::string& Detector) const {
   return Match(B, NoiseCurve(F(), Detector, true));
+}
+
+void WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<double>& InversePSD, double& timeOffset, double& phaseOffset, double& match) const {
+  const unsigned int n = NTimes(); // Only positive frequencies are stored in t
+  const unsigned int N = 2*(n-1);  // But this is how many there really are
+  if(n != B.NTimes() || n != InversePSD.size()) {
+    cerr << "Waveform sizes, " << n << " and " << B.NTimes()
+	 << ", are not compatible with InversePSD size, " << InversePSD.size() << "." << endl;
+    Throw1WithMessage("Incompatible sizes");
+  }
+  const double df = F(1)-F(0);
+  if(df != B.F(1)-B.F(0)) {
+    cerr << "Waveform frequency steps, " << df << " and " << B.F(1)-B.F(0) << ", are not compatible in Match." << endl;
+    Throw1WithMessage("Incompatible resolutions");
+  }
+  // s1 s2* = (a1 + i b1) (a2 - i b2) = (a1 a2 + b1 b2) + i(b1 a2 - a1 b2)
+  WaveformUtilities::WrapVecDoub data(2*N);
+  for(unsigned int i=0; i<n; ++i) {
+    data.real(i) = (Re(i)*B.Re(i)+Im(i)*B.Im(i))*InversePSD[i];
+    data.imag(i) = (Im(i)*B.Re(i)-Re(i)*B.Im(i))*InversePSD[i];
+  }
+  idft(data);
+  int maxi=0;
+  double maxmag=sqrt(SQR(data.real(0)) + SQR(data.imag(0)));
+  for(unsigned int i=1; i<N; ++i) {
+    const double mag = sqrt(SQR(data.real(i)) + SQR(data.imag(i)));
+    if(mag>maxmag) { maxmag = mag; maxi = int(i); }
+  }
+  timeOffset = (maxi<N/2 ? double(maxi)/(N*df) : double(maxi-int(N))/(N*df));
+  // timeOffset = maxi/(N*df);
+  phaseOffset = atan2(data.imag(maxi), data.real(maxi))/2.0;
+  // std::cout << maxi << " of " << N << "\tdf=" << df << "\ttO=" << timeOffset << "\tpO=" << phaseOffset << "\t" << __FILE__ << ":" << __LINE__ << endl;
+  /// The return from ifft is just the bare FFT sum, so we multiply by df to get
+  /// the continuum-analog FT.  This is correct because the input data (re,im) are
+  /// the continuum-analog data, rather than just the return from the bare FFT sum.
+  /// See, e.g., Eq. (A.33) [rather than Eq. (A.35)] of
+  /// http://etd.caltech.edu/etd/available/etd-01122009-143851/
+  match = 4.0*df*maxmag;
+  return;
+}
+
+void WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, double& timeOffset, double& phaseOffset, double& match, const std::string& Detector) const {
+  Match(B, NoiseCurve(F(), Detector, true), timeOffset, phaseOffset, match);
+  return;
 }
 
 WaveformAtAPointFT WaveformAtAPointFT::operator-(const WaveformAtAPointFT& b) const {
