@@ -174,7 +174,7 @@ def plotWaveform(this, WaveformPart='Mag', Modes=(), *pyplot_args, **pyplot_kwar
 
 
 ### The following allows us to write things like
-###   W = PyGW.Waveform()
+###   W = PyGW_IS_FOR_OLD_DATA.Waveform()
 ###   W.plot('Mag', ((2,2), (2,-2)))
-import PyGW
-PyGW.Waveform.plot = plotWaveform
+import PyGW_IS_FOR_OLD_DATA
+PyGW_IS_FOR_OLD_DATA.Waveform.plot = plotWaveform

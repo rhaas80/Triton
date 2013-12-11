@@ -160,7 +160,7 @@ Cell[BoxData[{
       "]"}]}]}], ";"}], "\n", "\n"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-  "SetDirectory", "[", "\"\</Users/boyle/Research/Triton/Utilities/\>\"", 
+  "SetDirectory", "[", "\"\</Users/boyle/Research/Triton_IS_FOR_OLD_DATA/Utilities/\>\"", 
    "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
@@ -558,7 +558,7 @@ Cell[BoxData[{
   "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\n", 
  RowBox[{
   RowBox[{
-  "SetDirectory", "[", "\"\</Users/boyle/Research/Triton/Utilities/\>\"", 
+  "SetDirectory", "[", "\"\</Users/boyle/Research/Triton_IS_FOR_OLD_DATA/Utilities/\>\"", 
    "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{

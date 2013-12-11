@@ -7,7 +7,7 @@ This file contains a class to do the extrapolation.  For details, see
 the help text of the Extrapolate class.
 
 Note that data in the new format (HDF5) need to be extrapolated with
-the separate script 'PyGWExtrapolate_h5.py'.
+the separate script 'PyGW_IS_FOR_OLD_DATAExtrapolate_h5.py'.
 
 """
 
@@ -20,7 +20,7 @@ class Extrapolate :
     Construct this object to read Waveform data, lapse, and surface
     area data for a series of radii, and extrapolate to infinite
     radius.  Note that data in the new format (HDF5) need to be
-    extrapolated with the separate script 'PyGWExtrapolate_h5.py'.
+    extrapolated with the separate script 'PyGW_IS_FOR_OLD_DATAExtrapolate_h5.py'.
     
     Options	 	 Defaults
     =================================================================
@@ -90,7 +90,7 @@ class Extrapolate :
             setattr(self, VariableName, DefaultValue)
     
     def __init__ (self, Dictionary={}, FileName="") :
-        import PyGW
+        import PyGW_IS_FOR_OLD_DATA
         import numpy as npy
         from time import time
         import sys
@@ -126,7 +126,7 @@ class Extrapolate :
         if(self.PlotFormat) :
             import matplotlib
             matplotlib.use('Agg')
-            import PyGW.plot
+            import PyGW_IS_FOR_OLD_DATA.plot
             import matplotlib.pyplot as plt
             import matplotlib as mpl
             try:
@@ -164,14 +164,14 @@ class Extrapolate :
             if(-len(self.Radii)>min(self.ExtrapolationOrders)) :
                 raise ValueError("Not enough data sets ({0}) for min extrapolation order (N={1}).".format(len(self.Radii), min(self.ExtrapolationOrders)))
             # Read in the Waveforms and set things up nicely
-            Ws = PyGW.Waveforms(npy.array([float(s) for s in self.Radii]),
+            Ws = PyGW_IS_FOR_OLD_DATA.Waveforms(npy.array([float(s) for s in self.Radii]),
                                 self.InputDirectory+'/'+DataFile, self.InputDirectory+'/'+self.AreaFile, self.InputDirectory+'/'+self.LapseFile,
                                 self.ADMMass, self.ChMass, False);
             Ws.SetCommonTime(self.MinTimeStep, self.EarliestTime);
             Ws.FixNonOscillatingData();
             
             # Loop over all the ExtrapolationOrders, doing the dirty business
-            Last = PyGW.Waveform()
+            Last = PyGW_IS_FOR_OLD_DATA.Waveform()
             if(self.PlotFormat) :
                 figmag = plt.figure(0)
                 figarg = plt.figure(1)
@@ -181,7 +181,7 @@ class Extrapolate :
                 
                 # Extrapolate
                 Time1 = time()
-                Sigma = PyGW.Waveform()
+                Sigma = PyGW_IS_FOR_OLD_DATA.Waveform()
                 if(self.UseOmegas) :
                     Extrap = Ws.Extrapolate(Sigma, Ws[0].T(), -0.5*Ws[0].Omega2m2(), self.ExtrapolationOrders[i], self.UseSVD);
                 else :
@@ -197,17 +197,17 @@ class Extrapolate :
                 sys.stdout.flush()
                 if not os.path.exists(self.OutputDirectory) :
                     os.makedirs(self.OutputDirectory)
-                PyGW.Output(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
+                PyGW_IS_FOR_OLD_DATA.Output(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
                 if(self.ExtrapolationOrders[i]>=0) :
                     sys.stdout.write("and {0}... ".format(self.OutputDirectory+"/"+SigmaFile))
                     sys.stdout.flush()
-                    PyGW.Output(self.OutputDirectory+"/"+SigmaFile, Sigma)
+                    PyGW_IS_FOR_OLD_DATA.Output(self.OutputDirectory+"/"+SigmaFile, Sigma)
                 print("☺")
                 
                 # Compare to the last one
                 if(i==0) :
                     if(not 'Psi4' in Extrap.Type()) :
-                        Extrap_hdot = PyGW.Waveform(Extrap)
+                        Extrap_hdot = PyGW_IS_FOR_OLD_DATA.Waveform(Extrap)
                         Extrap_hdot.Differentiate()
                         MaxFluxTime = Extrap_hdot.PeakFluxTime()
                         del Extrap_hdot
@@ -217,7 +217,7 @@ class Extrapolate :
                     DifferenceFile = (Extrap.Type() + "_" + self.DifferenceFiles) % (self.ExtrapolationOrders[i], self.ExtrapolationOrders[i-1])
                     sys.stdout.write("Writing {0}... ".format(self.OutputDirectory+"/"+DifferenceFile))
                     sys.stdout.flush()
-                    PyGW.Output(self.OutputDirectory+"/"+DifferenceFile, Diff)
+                    PyGW_IS_FOR_OLD_DATA.Output(self.OutputDirectory+"/"+DifferenceFile, Diff)
                     print("☺")
                     if(self.PlotFormat) :
                         sys.stdout.write("Plotting... ")

@@ -2,9 +2,9 @@ html
 latex
 ToDo.txt
 .gitignore
-PyGW/__init__.py
-PyGW.py
-Python/PyGW/WaveformObjects.py
+PyGW_IS_FOR_OLD_DATA/__init__.py
+PyGW_IS_FOR_OLD_DATA.py
+Python/PyGW_IS_FOR_OLD_DATA/WaveformObjects.py
 Python/SWSHs.py
 Test/Input
 MachineDef

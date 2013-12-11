@@ -63,7 +63,7 @@ namespace WaveformUtilities {
   %template(MatrixInt) Matrix<int>;
   %template(MatrixDouble) Matrix<double>;
 };
-//// I need to use my Quaternion class, to pass arguments into PyGW
+//// I need to use my Quaternion class, to pass arguments into PyGW_IS_FOR_OLD_DATA
 %ignore WaveformUtilities::Quaternion::operator=;
 %ignore WaveformUtilities::Quaternion::operator[];
 %rename(__getitem__) WaveformUtilities::Quaternion::operator[] const;

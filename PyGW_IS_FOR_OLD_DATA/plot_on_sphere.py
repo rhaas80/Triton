@@ -42,7 +42,7 @@ def data_on_sphere(W, TimeIndex, vartheta, varphi) :
     coordinates (vartheta, varphi), this returns a numpy array of the
     complex data evaluated at those spherical coordinates.
     """
-    from PyGW import SWSH
+    from PyGW_IS_FOR_OLD_DATA import SWSH
     nmodes = W.NModes()
     varthetalen = len(vartheta)
     varphilen = len(varphi)

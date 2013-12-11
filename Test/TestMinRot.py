@@ -4,24 +4,24 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import PyGW
+import PyGW_IS_FOR_OLD_DATA
 
 OpeningAngle = np.pi/7.
 Omega = 1./20.
 
 length = 20000
-t = PyGW.vectord(np.linspace(0., 15*np.pi/(Omega*np.cos(OpeningAngle)), num=length))
-R = PyGW.vectorq(length)
-X = PyGW.vectorq(length)
-Y = PyGW.vectorq(length)
-Z = PyGW.vectorq(length)
-X_MinRot = PyGW.vectorq(length)
-Y_MinRot = PyGW.vectorq(length)
-Z_MinRot = PyGW.vectorq(length)
-x = PyGW.Quaternion(0, 1, 0, 0)
-y = PyGW.Quaternion(0, 0, 1, 0)
-z = PyGW.Quaternion(0, 0, 0, 1)
-one = PyGW.Quaternion(1, 0, 0, 0)
+t = PyGW_IS_FOR_OLD_DATA.vectord(np.linspace(0., 15*np.pi/(Omega*np.cos(OpeningAngle)), num=length))
+R = PyGW_IS_FOR_OLD_DATA.vectorq(length)
+X = PyGW_IS_FOR_OLD_DATA.vectorq(length)
+Y = PyGW_IS_FOR_OLD_DATA.vectorq(length)
+Z = PyGW_IS_FOR_OLD_DATA.vectorq(length)
+X_MinRot = PyGW_IS_FOR_OLD_DATA.vectorq(length)
+Y_MinRot = PyGW_IS_FOR_OLD_DATA.vectorq(length)
+Z_MinRot = PyGW_IS_FOR_OLD_DATA.vectorq(length)
+x = PyGW_IS_FOR_OLD_DATA.Quaternion(0, 1, 0, 0)
+y = PyGW_IS_FOR_OLD_DATA.Quaternion(0, 0, 1, 0)
+z = PyGW_IS_FOR_OLD_DATA.Quaternion(0, 0, 0, 1)
+one = PyGW_IS_FOR_OLD_DATA.Quaternion(1, 0, 0, 0)
 
 def QuatSqrt(Q) :
     return (one+Q)/np.sqrt(2+2*Q[0])
@@ -31,16 +31,16 @@ ax1 = fig1.add_subplot(111, projection='3d')
 fig2 = plt.figure('MinRot')
 ax2 = fig2.add_subplot(111, projection='3d')
 
-for j,OverallRotation in enumerate([PyGW.Quaternion(1,0,0,0), QuatSqrt(-PyGW.Quaternion(0,OpeningAngle/5.0,OpeningAngle/7.0,0).exp()*z)]) :
+for j,OverallRotation in enumerate([PyGW_IS_FOR_OLD_DATA.Quaternion(1,0,0,0), QuatSqrt(-PyGW_IS_FOR_OLD_DATA.Quaternion(0,OpeningAngle/5.0,OpeningAngle/7.0,0).exp()*z)]) :
     
     for i in range(length) :
         phi = Omega*t[i]
-        v = OverallRotation*PyGW.Quaternion(0, np.sin(OpeningAngle)*np.cos(phi), np.sin(OpeningAngle)*np.sin(phi), np.cos(OpeningAngle))*OverallRotation.Conjugate()
+        v = OverallRotation*PyGW_IS_FOR_OLD_DATA.Quaternion(0, np.sin(OpeningAngle)*np.cos(phi), np.sin(OpeningAngle)*np.sin(phi), np.cos(OpeningAngle))*OverallRotation.Conjugate()
         R[i] = QuatSqrt(-v*z)
     
-    R_MinRot = PyGW.MinimalRotation(R, t)
+    R_MinRot = PyGW_IS_FOR_OLD_DATA.MinimalRotation(R, t)
     
-    R_z = (PyGW.Quaternion(0,0,0,(2.53*np.pi/9.)*j)).exp()
+    R_z = (PyGW_IS_FOR_OLD_DATA.Quaternion(0,0,0,(2.53*np.pi/9.)*j)).exp()
     
     for i in range(length) :
         X[i] = OverallRotation.Conjugate()*R[i]*x*R[i].Conjugate()*OverallRotation

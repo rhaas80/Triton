@@ -3,22 +3,22 @@ def ReadWaveform(File) :
     Read a single h5 waveform file in NRAR format.
     """
     import h5py
-    import PyGW
+    import PyGW_IS_FOR_OLD_DATA
     import re
     import numpy
     YlmRegex = re.compile(r""".*_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+).*\.dat""")
     f = h5py.File(File, 'r')
     datasetlist = list(f)
-    W = PyGW.Waveform()
+    W = PyGW_IS_FOR_OLD_DATA.Waveform()
     NTimes = f[datasetlist[0]].shape[0]
     YLMdata = [DataSet for DataSet in datasetlist for m in [YlmRegex.search(DataSet)] if m]
     YLMdata = sorted(YLMdata, key=lambda DataSet : [int(YlmRegex.search(DataSet).group('L')), int(YlmRegex.search(DataSet).group('M'))])
     NModes = len(YLMdata)
     W.AppendHistory("### # Python read from {0}.".format(File))
     W.SetT(f[datasetlist[0]][:,0])
-    W.SetLM(PyGW.MatrixInt(sorted([[int(m.group('L')), int(m.group('M'))] for DataSet in YLMdata for m in [YlmRegex.search(DataSet)] if m])))
-    W.SetMag(PyGW.MatrixDouble(numpy.array([f[dataset][:,1] for dataset in datasetlist])))
-    W.SetArg(PyGW.MatrixDouble(numpy.array([f[dataset][:,2] for dataset in datasetlist])))
+    W.SetLM(PyGW_IS_FOR_OLD_DATA.MatrixInt(sorted([[int(m.group('L')), int(m.group('M'))] for DataSet in YLMdata for m in [YlmRegex.search(DataSet)] if m])))
+    W.SetMag(PyGW_IS_FOR_OLD_DATA.MatrixDouble(numpy.array([f[dataset][:,1] for dataset in datasetlist])))
+    W.SetArg(PyGW_IS_FOR_OLD_DATA.MatrixDouble(numpy.array([f[dataset][:,2] for dataset in datasetlist])))
     W.ConvertReImToMagArg()
     for i,type in enumerate(W.Types) :
         if(File.find(type)>-1) :
@@ -41,7 +41,7 @@ def WriteWaveform(FileName, W) :
     appropriate '.bbh' file.
     """
     import h5py
-    import PyGW
+    import PyGW_IS_FOR_OLD_DATA
     import re
     import numpy
     BBHString = ''

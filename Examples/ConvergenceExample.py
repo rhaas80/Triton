@@ -9,11 +9,11 @@ But otherwise, this is a working example.  To run, simply make this
 script executable and run from the command prompt.
 
 Note that numerous other options are avilable; see the docstring in
-Triton/Python/Scripts/PyGWConvergence.py for more information.
+Triton_IS_FOR_OLD_DATA/Python/Scripts/PyGW_IS_FOR_OLD_DATAConvergence.py for more information.
 
 """
 
-from PyGW.Convergence import Convergence
+from PyGW_IS_FOR_OLD_DATA.Convergence import Convergence
 
 D = {}
 
@@ -27,6 +27,6 @@ D['RWZFiles'] = 'rh_ExtrapolatedN{ExtrapOrder}.dat'
 #       automatically replaced by a number corresponding to the
 #       extrapolation orders you give as D['ExtrapolationOrders'],
 #       which defaults to [-1,5].  See the docstring in
-#       PyGWConvergence.py for more information.
+#       PyGW_IS_FOR_OLD_DATAConvergence.py for more information.
 
 Convergence(Dictionary=D)

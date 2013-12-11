@@ -1,6 +1,6 @@
 // -*- c++ -*-
 
-%module PyGW
+%module PyGW_IS_FOR_OLD_DATA
  #pragma SWIG nowarn=401,509
 
 %exception {
@@ -12,7 +12,7 @@
   }
 }
 
-%include "PyGW/PyGW_Doc.i"
+%include "PyGW_IS_FOR_OLD_DATA/PyGW_IS_FOR_OLD_DATA_Doc.i"
 
 /////////////////////////////////////////////////
 //// These will be needed by the c++ wrapper ////
@@ -64,7 +64,7 @@ namespace WaveformUtilities {
   %template(MatrixInt) Matrix<int>;
   %template(MatrixDouble) Matrix<double>;
 };
-//// I need to use my Quaternion class, to pass arguments into PyGW
+//// I need to use my Quaternion class, to pass arguments into PyGW_IS_FOR_OLD_DATA
 %ignore WaveformUtilities::Quaternion::operator=;
 %rename(__getitem__) WaveformUtilities::Quaternion::operator [](unsigned int const) const;
 %rename(__setitem__) WaveformUtilities::Quaternion::operator [](unsigned int const);
@@ -83,7 +83,7 @@ namespace WaveformUtilities {
   // This prints the Quaternion nicely at the prompt
   %pythoncode{
     def __repr__(self):
-        return 'PyGW.Quaternion('+repr(self[0])+', '+repr(self[1])+', '+repr(self[2])+', '+repr(self[3])+')'
+        return 'PyGW_IS_FOR_OLD_DATA.Quaternion('+repr(self[0])+', '+repr(self[1])+', '+repr(self[2])+', '+repr(self[3])+')'
   };
  };
 namespace std {
@@ -129,7 +129,7 @@ namespace std {
     std::stringstream S;
     S << ($self->HistoryStr()) << "###\n"
       << "### # In python:\n"
-      << "### import PyGW\n"
+      << "### import PyGW_IS_FOR_OLD_DATA\n"
       << "### print(this)" << std::endl << std::setprecision(14);
     for(unsigned int t=0; t<$self->NTimes(); ++t) {
       S << $self->T(t) << " ";
@@ -208,7 +208,7 @@ namespace std {
 
 
 //// Add a function to read the new h5 format for multiple radii
-//// Note that this is defined in the PyGW namespace
+//// Note that this is defined in the PyGW_IS_FOR_OLD_DATA namespace
 %insert("python") %{
 
 def PickChMass(File='Horizons.h5') :
@@ -254,7 +254,7 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
     Read data at various radii, and offset by tortoise coordinate.
     """
     import h5py
-    import PyGW
+    import PyGW_IS_FOR_OLD_DATA
     import re
     import numpy
     YlmRegex = re.compile(r"""Y_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)\.dat""")
@@ -271,8 +271,8 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
         # Pare down the WaveformNames list appropriately
         WaveformNames = [Name for Name in WaveformNames for Radius in Radii for m in [re.compile(Radius).search(Name)] if m]
     NWaveforms = len(WaveformNames)
-    Ws = PyGW.Waveforms(NWaveforms)
-    TempW = PyGW.Waveform()
+    Ws = PyGW_IS_FOR_OLD_DATA.Waveforms(NWaveforms)
+    TempW = PyGW_IS_FOR_OLD_DATA.Waveform()
     for n in range(NWaveforms) :
         W = f[WaveformNames[n]]
         NTimes = W['AverageLapse.dat'].shape[0]
@@ -303,9 +303,9 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
         Indices = MonotonicIndices(T)
         BadIndices = numpy.setdiff1d(range(len(T)), Indices)
         TempW.SetT(T[Indices])
-        TempW.SetLM(PyGW.MatrixInt(LM))
-        TempW.SetMag(PyGW.MatrixDouble(numpy.delete(Mag, BadIndices, 1)))
-        TempW.SetArg(PyGW.MatrixDouble(numpy.delete(Arg, BadIndices, 1)))
+        TempW.SetLM(PyGW_IS_FOR_OLD_DATA.MatrixInt(LM))
+        TempW.SetMag(PyGW_IS_FOR_OLD_DATA.MatrixDouble(numpy.delete(Mag, BadIndices, 1)))
+        TempW.SetArg(PyGW_IS_FOR_OLD_DATA.MatrixDouble(numpy.delete(Arg, BadIndices, 1)))
         TempW.ConvertReImToMagArg()
         for i,type in enumerate(TempW.Types) :
             if(File.find(type)>-1) :
@@ -318,7 +318,7 @@ def ReadFiniteRadiusData(ChMass=1.0, Dir='.', File='rh_FiniteRadii_CodeUnits.h5'
         if(ChMass != 1.0) : TempW.SetTotalMassToOne(ChMass)
         Ws[n] = TempW
     f.close()
-    Ws.AppendHistory("### PyGW.ReadFiniteRadiusData(ChMass={0}, Dir='{1}', File='{2}')".format(ChMass, Dir, File))
+    Ws.AppendHistory("### PyGW_IS_FOR_OLD_DATA.ReadFiniteRadiusData(ChMass={0}, Dir='{1}', File='{2}')".format(ChMass, Dir, File))
     return Ws,InitialAdmEnergy,Radii
 
 def OutputToNRAR(FileName, W) :
@@ -347,15 +347,15 @@ def OutputToNRAR(FileName, W) :
 
 def ReadFromNRAR(FileName) :
     """
-    Read data from an NRAR file, as output by PyGW.
+    Read data from an NRAR file, as output by PyGW_IS_FOR_OLD_DATA.
     """
     import h5py
-    import PyGW
+    import PyGW_IS_FOR_OLD_DATA
     import re
     import numpy
     YlmRegex = re.compile(r"""(?P<Type>.*)_l(?P<L>[0-9]+)_m(?P<M>[-+0-9]+)_*\.(asc|dat)""")
-    W = PyGW.Waveform()
-    W.AppendHistory("### *this = PyGW.ReadFromNRAR(FileName='{0}')\n".format(FileName))
+    W = PyGW_IS_FOR_OLD_DATA.Waveform()
+    W.AppendHistory("### *this = PyGW_IS_FOR_OLD_DATA.ReadFromNRAR(FileName='{0}')\n".format(FileName))
     try :
         FileName, RootGroup = FileName.rsplit('.h5', 1)
         FileName += '.h5'
@@ -377,7 +377,7 @@ def ReadFromNRAR(FileName) :
         pass # Did not find a history
     try :
         Frame = f['Frame']
-        W.SetFrame([PyGW.Quaternion(r) for r in Frame])
+        W.SetFrame([PyGW_IS_FOR_OLD_DATA.Quaternion(r) for r in Frame])
     except KeyError :
         pass # Did not find a frame
     # Get the names of all the datasets in the h5 file, and check for matches
@@ -409,9 +409,9 @@ def ReadFromNRAR(FileName) :
     Indices = MonotonicIndices(T)
     BadIndices = numpy.setdiff1d(range(len(T)), Indices)
     W.SetT(T[Indices])
-    W.SetLM(PyGW.MatrixInt(LM))
-    W.SetMag(PyGW.MatrixDouble(numpy.delete(Re, BadIndices, 1)))
-    W.SetArg(PyGW.MatrixDouble(numpy.delete(Im, BadIndices, 1)))
+    W.SetLM(PyGW_IS_FOR_OLD_DATA.MatrixInt(LM))
+    W.SetMag(PyGW_IS_FOR_OLD_DATA.MatrixDouble(numpy.delete(Re, BadIndices, 1)))
+    W.SetArg(PyGW_IS_FOR_OLD_DATA.MatrixDouble(numpy.delete(Im, BadIndices, 1)))
     W.ConvertReImToMagArg()
     for i,type in enumerate(W.Types) :
         if(FileName.find(type)>-1) :

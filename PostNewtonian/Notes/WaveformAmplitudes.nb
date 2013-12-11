@@ -2337,7 +2337,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
   "SetDirectory", "[", 
-   "\"\</Users/boyle/Research/Triton/PostNewtonian/Notes/\>\"", "]"}], 
+   "\"\</Users/boyle/Research/Triton_IS_FOR_OLD_DATA/PostNewtonian/Notes/\>\"", "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"OutFile1", " ", "=", " ", 
@@ -4857,7 +4857,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
   "SetDirectory", "[", 
-   "\"\</Users/boyle/Research/Triton/PostNewtonian/Notes/\>\"", "]"}], 
+   "\"\</Users/boyle/Research/Triton_IS_FOR_OLD_DATA/PostNewtonian/Notes/\>\"", "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{

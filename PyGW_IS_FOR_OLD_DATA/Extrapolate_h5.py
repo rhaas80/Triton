@@ -83,7 +83,7 @@ class Extrapolate :
             setattr(self, VariableName, DefaultValue)
     
     def __init__ (self, Dictionary={}, FileName="") :
-        import PyGW
+        import PyGW_IS_FOR_OLD_DATA
         import numpy as npy
         from time import time
         import sys
@@ -115,7 +115,7 @@ class Extrapolate :
         
         # Don't bother loading modules unless we're plotting
         if(self.PlotFormat) :
-            import PyGW.plot
+            import PyGW_IS_FOR_OLD_DATA.plot
             import matplotlib.pyplot as plt
             import matplotlib as mpl
             try:
@@ -139,7 +139,7 @@ class Extrapolate :
         MaxFluxTime = -1000.0;
         for DataFile in self.DataFiles :
             # Read in the Waveforms and set things up nicely
-            Ws,self.ADMMass,self.Radii = PyGW.ReadFiniteRadiusData(self.ChMass, self.InputDirectory, DataFile, self.Radii)
+            Ws,self.ADMMass,self.Radii = PyGW_IS_FOR_OLD_DATA.ReadFiniteRadiusData(self.ChMass, self.InputDirectory, DataFile, self.Radii)
             Ws.SetCommonTime(self.MinTimeStep, self.EarliestTime);
             Ws.FixNonOscillatingData();
             
@@ -150,7 +150,7 @@ class Extrapolate :
                 raise ValueError("Not enough data sets ({0}) for min extrapolation order (N={1}).".format(len(self.Radii), min(self.ExtrapolationOrders)))
             
             # Loop over all the ExtrapolationOrders, doing the dirty business
-            Last = PyGW.Waveform()
+            Last = PyGW_IS_FOR_OLD_DATA.Waveform()
             if(self.PlotFormat) :
                 figmag = plt.figure(0)
                 figarg = plt.figure(1)
@@ -160,7 +160,7 @@ class Extrapolate :
                 
                 # Extrapolate
                 Time1 = time()
-                Sigma = PyGW.Waveform()
+                Sigma = PyGW_IS_FOR_OLD_DATA.Waveform()
                 if(self.UseOmegas) :
                     Extrap = Ws.Extrapolate(Sigma, Ws[0].T(), -0.5*Ws[0].Omega2m2(), self.ExtrapolationOrders[i], self.UseSVD);
                 else :
@@ -177,22 +177,22 @@ class Extrapolate :
                 if not os.path.exists(self.OutputDirectory) :
                     os.makedirs(self.OutputDirectory)
                 if (ExtrapolatedFile.endswith('.h5')) :
-                    PyGW.OutputToNRAR(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
+                    PyGW_IS_FOR_OLD_DATA.OutputToNRAR(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
                 else :
-                    PyGW.Output(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
+                    PyGW_IS_FOR_OLD_DATA.Output(self.OutputDirectory+"/"+ExtrapolatedFile, Extrap)
                 if(self.ExtrapolationOrders[i]>=0) :
                     sys.stdout.write("and {0}... ".format(self.OutputDirectory+"/"+SigmaFile))
                     sys.stdout.flush()
                     if (SigmaFile.endswith('.h5')) :
-                        PyGW.OutputToNRAR(self.OutputDirectory+"/"+SigmaFile, Sigma)
+                        PyGW_IS_FOR_OLD_DATA.OutputToNRAR(self.OutputDirectory+"/"+SigmaFile, Sigma)
                     else :
-                        PyGW.Output(self.OutputDirectory+"/"+SigmaFile, Sigma)
+                        PyGW_IS_FOR_OLD_DATA.Output(self.OutputDirectory+"/"+SigmaFile, Sigma)
                 print("☺")
                 
                 # Compare to the last one
                 if(i==0) :
                     if(not 'Psi4' in Extrap.Type()) :
-                        Extrap_hdot = PyGW.Waveform(Extrap)
+                        Extrap_hdot = PyGW_IS_FOR_OLD_DATA.Waveform(Extrap)
                         Extrap_hdot.Differentiate()
                         MaxFluxTime = Extrap_hdot.PeakFluxTime()
                         del Extrap_hdot
@@ -203,9 +203,9 @@ class Extrapolate :
                     sys.stdout.write("Writing {0}... ".format(self.OutputDirectory+"/"+DifferenceFile))
                     sys.stdout.flush()
                     if (DifferenceFile.endswith('.h5')) :
-                        PyGW.OutputToNRAR(self.OutputDirectory+"/"+DifferenceFile, Diff)
+                        PyGW_IS_FOR_OLD_DATA.OutputToNRAR(self.OutputDirectory+"/"+DifferenceFile, Diff)
                     else :
-                        PyGW.Output(self.OutputDirectory+"/"+DifferenceFile, Diff)
+                        PyGW_IS_FOR_OLD_DATA.Output(self.OutputDirectory+"/"+DifferenceFile, Diff)
                     print("☺")
                     if(self.PlotFormat) :
                         sys.stdout.write("Plotting... ")

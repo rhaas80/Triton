@@ -27,7 +27,7 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
   "SetDirectory", "[", 
-   "\"\</Users/boyle/Research/Triton/Utilities/SWSHNotes/\>\"", "]"}], 
+   "\"\</Users/boyle/Research/Triton_IS_FOR_OLD_DATA/Utilities/SWSHNotes/\>\"", "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{

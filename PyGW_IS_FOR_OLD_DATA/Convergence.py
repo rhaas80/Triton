@@ -104,8 +104,8 @@ class Convergence :
             setattr(self, VariableName, DefaultValue)
     
     def __init__ (self, Dictionary={}, FileName="") :
-        import PyGW
-        import PyGW.plot
+        import PyGW_IS_FOR_OLD_DATA
+        import PyGW_IS_FOR_OLD_DATA.plot
         import sys
         import os
         import matplotlib.pyplot as plt
@@ -159,18 +159,18 @@ class Convergence :
         MaxFluxTime=3.0e300;
         if(self.BestExtrapolationh!='') :
             if(self.BestExtrapolationh.endswith('.h5')) :
-                FluxW = PyGW.ReadFromNRAR(self.BestExtrapolationh)
+                FluxW = PyGW_IS_FOR_OLD_DATA.ReadFromNRAR(self.BestExtrapolationh)
             else :
-                FluxW = PyGW.Waveform(self.BestExtrapolationh, self.WaveformFormat)
+                FluxW = PyGW_IS_FOR_OLD_DATA.Waveform(self.BestExtrapolationh, self.WaveformFormat)
             #FluxW.Differentiate()
             FluxW.DropBefore(200)
             MaxFluxTime = FluxW.PeakFluxTime()
             print("MaxFluxTime={0}".format(MaxFluxTime))
         
         # Do the Lev convergence
-        # Diff0 = PyGW.Waveform()
-        # Diff1 = PyGW.Waveform()
-        Diff = PyGW.Waveforms(2)
+        # Diff0 = PyGW_IS_FOR_OLD_DATA.Waveform()
+        # Diff1 = PyGW_IS_FOR_OLD_DATA.Waveform()
+        Diff = PyGW_IS_FOR_OLD_DATA.Waveforms(2)
         for Files in [self.RWZFiles, self.Psi4Files] :
             if(Files!='') :
                 for i in range(len(self.ExtrapolationOrders)) :
@@ -188,16 +188,16 @@ class Convergence :
                         sys.stdout.write("Computing {0} - {1} ... ".format(LastFile, NextFile))
                         sys.stdout.flush()
                         if(LastFile.endswith('.h5')) :
-                            Diff[0] = PyGW.ReadFromNRAR(LastFile)
+                            Diff[0] = PyGW_IS_FOR_OLD_DATA.ReadFromNRAR(LastFile)
                         else :
-                            Diff[0] = PyGW.Waveform(LastFile, self.WaveformFormat);
+                            Diff[0] = PyGW_IS_FOR_OLD_DATA.Waveform(LastFile, self.WaveformFormat);
                         if(NextFile.endswith('.h5')) :
-                            Diff[1] = PyGW.ReadFromNRAR(NextFile)
+                            Diff[1] = PyGW_IS_FOR_OLD_DATA.ReadFromNRAR(NextFile)
                         else :
-                            Diff[1] = PyGW.Waveform(NextFile, self.WaveformFormat);
+                            Diff[1] = PyGW_IS_FOR_OLD_DATA.Waveform(NextFile, self.WaveformFormat);
                         if(self.ConvergenceAlignmentT1!=3.0e300 and self.ConvergenceAlignmentT2!=3.0e300) :
                             if(self.MutualAlignmentApproximant!='') :
-                                PN = PyGW.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0,
+                                PN = PyGW_IS_FOR_OLD_DATA.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0,
                                                    tuple(tuple(x) for x in Diff[0].LM()));
                                 PN.AddToTime(Diff[0].Peak22Time()-PN.T(PN.NTimes()-1));
                                 PN.AlignTo(Diff[0], self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
@@ -228,7 +228,7 @@ class Convergence :
                         if(self.OutputNSamplesPerCycle22!=0) : Diff[0].Interpolate(Diff[1]);
                         if(self.DropBeforeTime!=-3.0e300) : Diff[0].DropBefore(self.DropBeforeTime);
                         if(self.DropAfterTime!=3.0e300) : Diff[0].DropAfter(self.DropAfterTime);
-                        PyGW.Output(self.OutputDirectory+"/"+DiffFile, Diff[0]);
+                        PyGW_IS_FOR_OLD_DATA.Output(self.OutputDirectory+"/"+DiffFile, Diff[0]);
                         sys.stdout.write("\n\tand plotting ... ")
                         sys.stdout.flush()
                         plt.figure(0)
@@ -312,16 +312,16 @@ class Convergence :
                     sys.stdout.write("Computing {0} - {1} ... ".format(Higher, Lower))
                     sys.stdout.flush()
                     if(Higher.endswith('.h5')) :
-                        Diff[0] = PyGW.ReadFromNRAR(Higher)
+                        Diff[0] = PyGW_IS_FOR_OLD_DATA.ReadFromNRAR(Higher)
                     else :
-                        Diff[0] = PyGW.Waveform(Higher, self.WaveformFormat);
+                        Diff[0] = PyGW_IS_FOR_OLD_DATA.Waveform(Higher, self.WaveformFormat);
                     if(Lower.endswith('.h5')) :
-                        Diff[1] = PyGW.ReadFromNRAR(Lower)
+                        Diff[1] = PyGW_IS_FOR_OLD_DATA.ReadFromNRAR(Lower)
                     else :
-                        Diff[1] = PyGW.Waveform(Lower, self.WaveformFormat);
+                        Diff[1] = PyGW_IS_FOR_OLD_DATA.Waveform(Lower, self.WaveformFormat);
                     if( (self.ConvergenceAlignmentT1!=3.0e300) and (self.ConvergenceAlignmentT2!=3.0e300) ) :
                         if(self.MutualAlignmentApproximant!='') :
-                            PN = PyGW.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0,
+                            PN = PyGW_IS_FOR_OLD_DATA.Waveform(self.MutualAlignmentApproximant, self.delta, self.chis, self.chia, self.v0,
                                                tuple(tuple(x) for x in Diff[0].LM()));
                             PN.AddToTime(Diff[0].Peak22Time()-PN.T().back());
                             PN.AlignTo(Diff[0], self.ConvergenceAlignmentT1, self.ConvergenceAlignmentT2);
@@ -340,7 +340,7 @@ class Convergence :
                     if(self.OutputNSamplesPerCycle22!=0) : Diff[0].Interpolate(Diff[1]);
                     if(self.DropBeforeTime!=-3.0e300) : Diff[0].DropBefore(self.DropBeforeTime);
                     if(self.DropAfterTime!=3.0e300) : Diff[0].DropAfter(self.DropAfterTime);
-                    PyGW.Output(self.OutputDirectory+"/"+DiffFile, Diff[0])
+                    PyGW_IS_FOR_OLD_DATA.Output(self.OutputDirectory+"/"+DiffFile, Diff[0])
                     sys.stdout.write("\n\tand plotting ... ")
                     sys.stdout.flush()
                     plt.figure(0)
