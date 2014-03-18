@@ -174,7 +174,7 @@ struct StepperDopr853 : StepperBase {
   VecDoub k2,k3,k4,k5,k6,k7,k8,k9,k10;
   VecDoub rcont1,rcont2,rcont3,rcont4,rcont5,rcont6,rcont7,rcont8;
   StepperDopr853(VecDoub_IO &yy, VecDoub_IO &dydxx, Doub &xx,
-		 const Doub atoll, const Doub rtoll, bool dens);
+                 const Doub atoll, const Doub rtoll, bool dens);
   void step(const Doub htry,D &derivs);
   void dy(const Doub h,D &derivs);
   void prepare_dense(const Doub h,VecDoub_I &dydxnew,D &derivs);
@@ -190,7 +190,7 @@ struct StepperDopr853 : StepperBase {
 };
 template <class D>
 StepperDopr853<D>::StepperDopr853(VecDoub_IO &yy,VecDoub_IO &dydxx,Doub &xx,
-				  const Doub atoll,const Doub rtoll,bool dens) :
+                                  const Doub atoll,const Doub rtoll,bool dens) :
   StepperBase(yy,dydxx,xx,atoll,rtoll,dens),yerr2(n),k2(n),k3(n),k4(n),
   k5(n),k6(n),k7(n),k8(n),k9(n),k10(n),rcont1(n),rcont2(n),rcont3(n),
   rcont4(n),rcont5(n),rcont6(n),rcont7(n),rcont8(n) {
@@ -207,8 +207,8 @@ void StepperDopr853<D>::step(const Doub htry,D &derivs) {
     if (std::abs(h) <= std::abs(x)*EPS) {
       // <added>
       std::cerr << "\nh=" << h << "\tx=" << x
-		<< "\tstd::abs(h)=" << std::abs(h) << "\tstd::abs(x)=" << std::abs(x)
-		<< "\tEPS=" << EPS << std::endl;
+                << "\tstd::abs(h)=" << std::abs(h) << "\tstd::abs(x)=" << std::abs(x)
+                << "\tEPS=" << EPS << std::endl;
       // </added>
       Throw1WithMessage("stepsize underflow in StepperDopr853");
     }
@@ -249,20 +249,20 @@ void StepperDopr853<D>::dy(const Doub h,D &derivs) {
   derivs(x+c8*h,ytemp,k8);
   for (i=0;i<n;i++)
     ytemp[i]=y[i]+h*(a91*dydx[i]+a94*k4[i]+a95*k5[i]+a96*k6[i]+a97*k7[i]+
-		     a98*k8[i]);
+                     a98*k8[i]);
   derivs(x+c9*h,ytemp,k9);
   for (i=0;i<n;i++)
     ytemp[i]=y[i]+h*(a101*dydx[i]+a104*k4[i]+a105*k5[i]+a106*k6[i]+
-		     a107*k7[i]+a108*k8[i]+a109*k9[i]);
+                     a107*k7[i]+a108*k8[i]+a109*k9[i]);
   derivs(x+c10*h,ytemp,k10);
   for (i=0;i<n;i++)
     ytemp[i]=y[i]+h*(a111*dydx[i]+a114*k4[i]+a115*k5[i]+a116*k6[i]+
-		     a117*k7[i]+a118*k8[i]+a119*k9[i]+a1110*k10[i]);
+                     a117*k7[i]+a118*k8[i]+a119*k9[i]+a1110*k10[i]);
   derivs(x+c11*h,ytemp,k2);
   Doub xph=x+h;
   for (i=0;i<n;i++)
     ytemp[i]=y[i]+h*(a121*dydx[i]+a124*k4[i]+a125*k5[i]+a126*k6[i]+
-		     a127*k7[i]+a128*k8[i]+a129*k9[i]+a1210*k10[i]+a1211*k2[i]);
+                     a127*k7[i]+a128*k8[i]+a129*k9[i]+a1210*k10[i]+a1211*k2[i]);
   derivs(xph,ytemp,k3);
   for (i=0;i<n;i++) {
     k4[i]=b1*dydx[i]+b6*k6[i]+b7*k7[i]+b8*k8[i]+b9*k9[i]+b10*k10[i]+
@@ -277,7 +277,7 @@ void StepperDopr853<D>::dy(const Doub h,D &derivs) {
 }
 template <class D>
 void StepperDopr853<D>::prepare_dense(const Doub h,VecDoub_I &dydxnew,
-				      D &derivs) {
+                                      D &derivs) {
   Int i;
   Doub ydiff,bspl;
   VecDoub ytemp(n);
@@ -299,15 +299,15 @@ void StepperDopr853<D>::prepare_dense(const Doub h,VecDoub_I &dydxnew,
   }
   for (i=0;i<n;i++)
     ytemp[i]=y[i]+h*(a141*dydx[i]+a147*k7[i]+a148*k8[i]+a149*k9[i]+
-		     a1410*k10[i]+a1411*k2[i]+a1412*k3[i]+a1413*dydxnew[i]);
+                     a1410*k10[i]+a1411*k2[i]+a1412*k3[i]+a1413*dydxnew[i]);
   derivs(x+c14*h,ytemp,k10);
   for (i=0;i<n;i++)
     ytemp[i]=y[i]+h*(a151*dydx[i]+a156*k6[i]+a157*k7[i]+a158*k8[i]+
-		     a1511*k2[i]+a1512*k3[i]+a1513*dydxnew[i]+a1514*k10[i]);
+                     a1511*k2[i]+a1512*k3[i]+a1513*dydxnew[i]+a1514*k10[i]);
   derivs(x+c15*h,ytemp,k2);
   for (i=0;i<n;i++)
     ytemp[i]=y[i]+h*(a161*dydx[i]+a166*k6[i]+a167*k7[i]+a168*k8[i]+
-		     a169*k9[i]+a1613*dydxnew[i]+a1614*k10[i]+a1615*k2[i]);
+                     a169*k9[i]+a1613*dydxnew[i]+a1614*k10[i]+a1615*k2[i]);
   derivs(x+c16*h,ytemp,k3);
   for (i=0;i<n;i++)
     {
@@ -322,7 +322,7 @@ Doub StepperDopr853<D>::dense_out(const Int i,const Doub x,const Doub h) {
   Doub s=(x-xold)/h;
   Doub s1=1.0-s;
   return rcont1[i]+s*(rcont2[i]+s1*(rcont3[i]+s*(rcont4[i]+s1*(rcont5[i]+
-							       s*(rcont6[i]+s1*(rcont7[i]+s*rcont8[i]))))));
+                                                               s*(rcont6[i]+s1*(rcont7[i]+s*rcont8[i]))))));
 }
 template <class D>
 Doub StepperDopr853<D>::error(const Doub h) {
@@ -367,4 +367,3 @@ bool StepperDopr853<D>::Controller::success(const Doub err, Doub &h) {
     return false;
   }
 }
-

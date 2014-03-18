@@ -42,10 +42,10 @@ WaveformUtilities::Quaternion::Quaternion(const Quaternion& Q)
 
 /// Constructor from spherical coordinates.
 WaveformUtilities::Quaternion::Quaternion(const double vartheta, const double varphi) {
-  /// 
+  ///
   /// \param vartheta Float representing the polar angle
   /// \param varphi Float representing the azimuthal angle
-  /// 
+  ///
   /// The unit Quaternion constructed in this way rotates the z axis
   /// onto the point given by the coordinates (vartheta, varphi).
   *this = WaveformUtilities::exp((varphi/2.)*zHat) * WaveformUtilities::exp((vartheta/2.)*yHat);
@@ -53,11 +53,11 @@ WaveformUtilities::Quaternion::Quaternion(const double vartheta, const double va
 
 /// Constructor from Euler angles.
 WaveformUtilities::Quaternion::Quaternion(const double alpha, const double beta, const double gamma) {
-  /// 
+  ///
   /// \param alpha First Euler angle
   /// \param beta Second Euler angle
   /// \param gamma Third Euler angle
-  /// 
+  ///
   /// The unit Quaternion constructed in this way corresponds to a
   /// rotation by the given Euler angles.  The convention used here is
   /// the z-y-z convention.  That is, the rotations occur about the
@@ -82,7 +82,7 @@ WaveformUtilities::Quaternion::Quaternion(const double w0, const double x0, cons
 WaveformUtilities::Quaternion::Quaternion(const std::vector<double>& q) {
   ///
   /// \param q Vector containing three or four components
-  /// 
+  ///
   /// If the input vector has three components, they are assumed to
   /// represent the vector components of the Quaternion, and the
   /// scalar component is set to zero.  If the input vector has four
@@ -108,10 +108,10 @@ WaveformUtilities::Quaternion::Quaternion(const std::vector<double>& q) {
 WaveformUtilities::Quaternion::Quaternion(const double angle, const std::vector<double>& axis)
   : w(std::cos(angle/2.)), x(std::sin(angle/2.)*axis[0]), y(std::sin(angle/2.)*axis[1]), z(std::sin(angle/2.)*axis[2])
 {
-  /// 
+  ///
   /// \param angle Single number giving the rotation angle
   /// \param axis Three-component vector (assumed to be normalized) giving the axis
-  /// 
+  ///
   /// This constructs a rotor (assuming 'axis' is normalized)
   /// corresponding to rotation about the given axis through the given
   /// angle.
@@ -129,7 +129,7 @@ double WaveformUtilities::Quaternion::operator[](const unsigned int i) const {
   case 3:
     return z;
   default:
-    cerr << "\ni=" << i << " is not a possible quaternion index" << endl; 
+    cerr << "\ni=" << i << " is not a possible quaternion index" << endl;
     throw(WaveformUtilities_IndexOutOfBounds);
   }
 }
@@ -147,7 +147,7 @@ double& WaveformUtilities::Quaternion::operator[](const unsigned int i) {
   case 3:
     return z;
   default:
-    cerr << "\ni=" << i << " is not a possible quaternion index" << endl; 
+    cerr << "\ni=" << i << " is not a possible quaternion index" << endl;
     throw(WaveformUtilities_IndexOutOfBounds);
   }
 }
@@ -155,9 +155,9 @@ double& WaveformUtilities::Quaternion::operator[](const unsigned int i) {
 /// Quaternion multiplication.
 Quaternion WaveformUtilities::Quaternion::operator*(const Quaternion& Q) const {
   return Quaternion(w*Q.w - x*Q.x - y*Q.y - z*Q.z,
-		    w*Q.x + x*Q.w + y*Q.z - z*Q.y,
-		    w*Q.y - x*Q.z + y*Q.w + z*Q.x,
-		    w*Q.z + x*Q.y - y*Q.x + z*Q.w);
+                    w*Q.x + x*Q.w + y*Q.z - z*Q.y,
+                    w*Q.y - x*Q.z + y*Q.w + z*Q.x,
+                    w*Q.z + x*Q.y - y*Q.x + z*Q.w);
 }
 
 /// Return logarithm of Quaternion.
@@ -222,7 +222,7 @@ std::vector<Quaternion> WaveformUtilities::CenteredDifferencing(const std::vecto
   QOut[0] = (QIn[0] * WaveformUtilities::log(QIn[0].inverse()*QIn[1])) / (tIn[1]-tIn[0]);
   for(unsigned int i=1; i<Size-1; ++i) {
     QOut[i] = QIn[i] * (0.5 * (WaveformUtilities::log(QIn[i].inverse()*QIn[i+1])/(tIn[i+1]-tIn[i])
-			       + WaveformUtilities::log(QIn[i-1].inverse()*QIn[i])/(tIn[i]-tIn[i-1])) );
+                               + WaveformUtilities::log(QIn[i-1].inverse()*QIn[i])/(tIn[i]-tIn[i-1])) );
   }
   QOut[Size-1] = (QIn[Size-1] * WaveformUtilities::log(QIn[Size-2].inverse()*QIn[Size-1])) / (tIn[Size-1]-tIn[Size-2]);
   return QOut;
@@ -234,7 +234,7 @@ std::vector<Quaternion> WaveformUtilities::MinimalRotation(const std::vector<Qua
   /// \param R Vector of rotors.
   /// \param T Vector of corresponding time steps.
   /// \param NIterations Number of refinements [default: 5]
-  /// 
+  ///
   /// This function returns a copy of the input R, which takes the z
   /// axis to the same point as R, but adjusts the rotation about that
   /// new point by imposing the minimal-rotation condition.
@@ -284,7 +284,7 @@ std::vector<Quaternion> WaveformUtilities::FrameFromXY(const std::vector<Quatern
   for(unsigned int k=0; k<Size; ++k) {
     const Quaternion Ra = sqrtOfRotor(-X[k]*x);
     const double beta = std::atan2(WaveformUtilities::dot(Ra*z*Ra.conjugate(), Y[k]),
-				   WaveformUtilities::dot(Ra*y*Ra.conjugate(), Y[k]));
+                                   WaveformUtilities::dot(Ra*y*Ra.conjugate(), Y[k]));
     R[k] = Ra * WaveformUtilities::exp((beta/2.0)*x);
   }
   return R;
@@ -296,7 +296,7 @@ std::vector<Quaternion> WaveformUtilities::FrameFromZ(const std::vector<Quaterni
   /// \param Z Vector of Quaternions
   /// \param T Vector of corresponding times
   /// \param NIterations Number of refinements [default: 5]
-  /// 
+  ///
   /// The input vector of Quaternions, assumed to be pure unit
   /// vectors, represent the Z basis vectors of the frame at each
   /// instant of time.  The returned vector of rotors will rotate the
@@ -323,7 +323,7 @@ std::vector<Quaternion> WaveformUtilities::UnflipRotors(const std::vector<Quater
   ///
   /// \param R Vector of rotors
   /// \param discont Acceptable discontinuity [default: sqrt(2)]
-  /// 
+  ///
   /// Because of the two-sided nature of quaternion rotations, the
   /// sign of a rotor may be undetermined in many cases.
   /// Discontinuous flips in that sign for rotor-valued functions of
@@ -375,7 +375,7 @@ std::vector<Quaternion> WaveformUtilities::Squad(const std::vector<Quaternion>& 
   /// \param RIn Vector of rotors
   /// \param tIn Vector of corresponding times
   /// \param tOut Vector of times to which RIn will be interpolated
-  /// 
+  ///
   /// This function implements a version of cubic-spline interpolation
   /// designed for unit quaternions, which delivers more accurate,
   /// smooth, and physical rotations than other forms of
@@ -425,20 +425,20 @@ std::vector<Quaternion> WaveformUtilities::Squad(const std::vector<Quaternion>& 
       Qip2 = RIn[iIn+2];
     }
     Ai = Qi * WaveformUtilities::exp((
-		       WaveformUtilities::log(Qi.conjugate()*Qip1)
-		       +(Dti/Dtim1)*WaveformUtilities::log(Qim1.conjugate()*Qi)
-		       -2*WaveformUtilities::log(Qip1*Qi.conjugate())
-		       )*0.25);
+                       WaveformUtilities::log(Qi.conjugate()*Qip1)
+                       +(Dti/Dtim1)*WaveformUtilities::log(Qim1.conjugate()*Qi)
+                       -2*WaveformUtilities::log(Qip1*Qi.conjugate())
+                       )*0.25);
     Bip1 = Qip1 * WaveformUtilities::exp((
-			   (Dti/Dtip1)*WaveformUtilities::log(Qip1.conjugate()*Qip2)
-			   +WaveformUtilities::log(Qi.conjugate()*Qip1)
-			   -2*WaveformUtilities::log(Qip1*Qi.conjugate())
-			   )*-0.25);
+                           (Dti/Dtip1)*WaveformUtilities::log(Qip1.conjugate()*Qip2)
+                           +WaveformUtilities::log(Qi.conjugate()*Qip1)
+                           -2*WaveformUtilities::log(Qip1*Qi.conjugate())
+                           )*-0.25);
     while(iOut<tOut.size() && tOut[iOut]<=tIn[iIn+1]) {
       const double taui = (tOut[iOut]-tIn[iIn]) / Dti;
       ROut[iOut] = WaveformUtilities::Slerp(2*taui*(1-taui),
-			     WaveformUtilities::Slerp(taui, Qi, Qip1),
-			     WaveformUtilities::Slerp(taui, Ai, Bip1));
+                             WaveformUtilities::Slerp(taui, Qi, Qip1),
+                             WaveformUtilities::Slerp(taui, Ai, Bip1));
       iOut += 1;
     }
     iIn += 1;

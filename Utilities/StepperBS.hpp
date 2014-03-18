@@ -17,19 +17,19 @@ struct StepperBS : StepperBase {
   bool first_step,last_step;
   bool forward,reject,prev_reject;
   StepperBS(VecDoub_IO &yy, VecDoub_IO &dydxx, Doub &xx, const Doub atol,
-	    const Doub rtol, bool dens);
+            const Doub rtol, bool dens);
   void step(const Doub htry,D &derivs);
   virtual void dy(VecDoub_I &y, const Doub htot, const Int k, VecDoub_O &yend,
-		  Int &ipt, D &derivs);
+                  Int &ipt, D &derivs);
   void polyextr(const Int k, MatDoub_IO &table, VecDoub_IO &last);
   virtual void prepare_dense(const Doub h,VecDoub_I &dydxnew, VecDoub_I &ysav,
-			     VecDoub_I &scale, const Int k, Doub &error);
+                             VecDoub_I &scale, const Int k, Doub &error);
   virtual Doub dense_out(const Int i,const Doub x,const Doub h);
   virtual void dense_interp(const Int n, VecDoub_IO &y, const Int imit);
 };
 template <class D>
 StepperBS<D>::StepperBS(VecDoub_IO &yy,VecDoub_IO &dydxx,Doub &xx,
-			const Doub atoll,const Doub rtoll, bool dens) :
+                        const Doub atoll,const Doub rtoll, bool dens) :
   StepperBase(yy,dydxx,xx,atoll,rtoll,dens),nseq(IMAXX),cost(IMAXX),
   table(KMAXX,n),dydxnew(n),coeff(IMAXX,IMAXX),errfac(2*IMAXX+2),ysave(IMAXX,n),
   fsave(IMAXX*(2*IMAXX+1),n),ipoint(IMAXX+1),dens((2*IMAXX+5)*n),
@@ -73,7 +73,7 @@ Doub StepperBS<D>::dense_out(const Int i,const Doub x,const Doub h) {
   Doub theta=(x-xold)/h;
   Doub theta1=1.0-theta;
   Doub yinterp=dens[i]+theta*(dens[n+i]+theta1*(dens[2*n+i]*theta
-						+dens[3*n+i]*theta1));
+                                                +dens[3*n+i]*theta1));
   if (mu<0)
     return yinterp;
   Doub theta05=theta-0.5;
@@ -107,21 +107,21 @@ void StepperBS<D>::dense_interp(const Int n, VecDoub_IO &y, const Int imit) {
     if (imit >= 1) {
       a[1]=16.0*(y[5*n+i]-ph1);
       if (imit >= 3) {
-	a[3]=16.0*(y[7*n+i]-ph3+3*a[1]);
-	for (Int im=5; im <=imit; im+=2) {
-	  fac1=im*(im-1)/2.0;
-	  fac2=fac1*(im-2)*(im-3)*2.0;
-	  a[im]=16.0*(y[(im+4)*n+i]+fac1*a[im-2]-fac2*a[im-4]);
-	}
+        a[3]=16.0*(y[7*n+i]-ph3+3*a[1]);
+        for (Int im=5; im <=imit; im+=2) {
+          fac1=im*(im-1)/2.0;
+          fac2=fac1*(im-2)*(im-3)*2.0;
+          a[im]=16.0*(y[(im+4)*n+i]+fac1*a[im-2]-fac2*a[im-4]);
+        }
       }
     }
     a[0]=(y[4*n+i]-ph0)*16.0;
     if (imit >= 2) {
       a[2]=(y[n*6+i]-ph2+a[0])*16.0;
       for (Int im=4; im <=imit; im+=2) {
-	fac1=im*(im-1)/2.0;
-	fac2=im*(im-1)*(im-2)*(im-3);
-	a[im]=(y[n*(im+4)+i]+a[im-2]*fac1-a[im-4]*fac2)*16.0;
+        fac1=im*(im-1)/2.0;
+        fac2=im*(im-1)*(im-2)*(im-3);
+        a[im]=(y[n*(im+4)+i]+a[im-2]*fac1-a[im-4]*fac2)*16.0;
       }
     }
     for (Int im=0; im<=imit; im++)
@@ -130,7 +130,7 @@ void StepperBS<D>::dense_interp(const Int n, VecDoub_IO &y, const Int imit) {
 }
 template <class D>
 void StepperBS<D>::dy(VecDoub_I &y,const Doub htot,const Int k,VecDoub_O &yend,
-		      Int &ipt,D &derivs) {
+                      Int &ipt,D &derivs) {
   VecDoub ym(n),yn(n);
   Int nstep=nseq[k];
   Doub h=htot/nstep;
@@ -144,12 +144,12 @@ void StepperBS<D>::dy(VecDoub_I &y,const Doub htot,const Int k,VecDoub_O &yend,
   for (Int nn=1;nn<nstep;nn++) {
     if (dense && nn == nstep/2) {
       for (Int i=0;i<n;i++)
-	ysave[k][i]=yn[i];
+        ysave[k][i]=yn[i];
     }
     if (dense && std::abs(nn-nstep/2) <= 2*k+1) {
       ipt++;
       for (Int i=0;i<n;i++)
-	fsave[ipt][i]=yend[i];
+        fsave[ipt][i]=yend[i];
     }
     for (Int i=0;i<n;i++) {
       Doub swap=ym[i]+h2*yend[i];
@@ -178,7 +178,7 @@ void StepperBS<D>::polyextr(const Int k, MatDoub_IO &table, VecDoub_IO &last) {
 }
 template <class D>
 void StepperBS<D>::prepare_dense(const Doub h,VecDoub_I &dydxnew,
-				 VecDoub_I &ysav,VecDoub_I &scale,const Int k,Doub &error) {
+                                 VecDoub_I &ysav,VecDoub_I &scale,const Int k,Doub &error) {
   mu=2*k-1;
   for (Int i=0; i<n; i++) {
     dens[i]=ysav[i];
@@ -191,7 +191,7 @@ void StepperBS<D>::prepare_dense(const Doub h,VecDoub_I &dydxnew,
     for (Int l=j; l>=1; l--) {
       Doub factor=SQR(dblenj/nseq[l-1])-1.0;
       for (Int i=0; i<n; i++)
-	ysave[l-1][i]=ysave[l][i]+(ysave[l][i]-ysave[l-1][i])/factor;
+        ysave[l-1][i]=ysave[l][i]+(ysave[l][i]-ysave[l-1][i])/factor;
     }
   }
   for (Int i=0; i<n; i++)
@@ -202,15 +202,15 @@ void StepperBS<D>::prepare_dense(const Doub h,VecDoub_I &dydxnew,
       Doub facnj=::pow(nseq[kk]/2.0,kmi-1);
       Int ipt=ipoint[kk+1]-2*kk+kmi-3;
       for (Int i=0; i<n; i++)
-	ysave[kk][i]=fsave[ipt][i]*facnj;
+        ysave[kk][i]=fsave[ipt][i]*facnj;
     }
     for (Int j=kbeg+1; j<=k; j++) {
       Doub dblenj=nseq[j];
       for (Int l=j; l>=kbeg+1; l--) {
-	Doub factor=SQR(dblenj/nseq[l-1])-1.0;
-	for (Int i=0; i<n; i++)
-	  ysave[l-1][i]=ysave[l][i]+
-	    (ysave[l][i]-ysave[l-1][i])/factor;
+        Doub factor=SQR(dblenj/nseq[l-1])-1.0;
+        for (Int i=0; i<n; i++)
+          ysave[l-1][i]=ysave[l][i]+
+            (ysave[l][i]-ysave[l-1][i])/factor;
       }
     }
     for (Int i=0; i<n; i++)
@@ -221,20 +221,20 @@ void StepperBS<D>::prepare_dense(const Doub h,VecDoub_I &dydxnew,
       Int lend=ipoint[kk]+kmi;
       if (kmi == 1) lend += 2;
       for (Int l=lbeg; l>=lend; l-=2)
-	for (Int i=0; i<n; i++)
-	  fsave[l][i]=fsave[l][i]-fsave[l-2][i];
+        for (Int i=0; i<n; i++)
+          fsave[l][i]=fsave[l][i]-fsave[l-2][i];
       if (kmi == 1) {
-	Int l=lend-2;
-	for (Int i=0; i<n; i++)
-	  fsave[l][i]=fsave[l][i]-dydx[i];
+        Int l=lend-2;
+        for (Int i=0; i<n; i++)
+          fsave[l][i]=fsave[l][i]-dydx[i];
       }
     }
     for (Int kk=kmi/2; kk<=k; kk++) {
       Int lbeg=ipoint[kk+1]-2;
       Int lend=ipoint[kk]+kmi+1;
       for (Int l=lbeg; l>=lend; l-=2)
-	for (Int i=0; i<n; i++)
-	  fsave[l][i]=fsave[l][i]-fsave[l-2][i];
+        for (Int i=0; i<n; i++)
+          fsave[l][i]=fsave[l][i]-fsave[l-2][i];
     }
   }
   dense_interp(n,dens,mu);
@@ -282,62 +282,62 @@ void StepperBS<D>::step(const Doub htry,D &derivs) {
     for (k=0; k<=k_targ+1;k++) {
       dy(ysav,h,k,yseq,ipt,derivs);
       if (k == 0)
-	y=yseq;
+        y=yseq;
       else
-	for (i=0;i<n;i++)
-	  table[k-1][i]=yseq[i];
+        for (i=0;i<n;i++)
+          table[k-1][i]=yseq[i];
       if (k != 0) {
-	polyextr(k,table,y);
-	err=0.0;
-	for (i=0;i<n;i++) {
-	  scale[i]=atol+rtol*MAX(std::abs(ysav[i]),std::abs(y[i]));
-	  err+=SQR((y[i]-table[0][i])/scale[i]);
-	}
-	err=sqrt(err/n);
-	Doub expo=1.0/(2*k+1);
-	Doub facmin=::pow(STEPFAC3,expo);
-	if (err == 0.0)
-	  fac=1.0/facmin;
-	else {
-	  fac=STEPFAC2/::pow(err/STEPFAC1,expo);
-	  fac=MAX(facmin/STEPFAC4,MIN(1.0/facmin,fac));
-	}
-	hopt[k]=std::abs(h*fac);
-	work[k]=cost[k]/hopt[k];
-	if ((first_step || last_step) && err <= 1.0)
-	  break;
-	if (k == k_targ-1 && !prev_reject && !first_step && !last_step) {
-	  if (err <= 1.0)
-	    break;
-	  else if (err>SQR(nseq[k_targ]*nseq[k_targ+1]/(nseq[0]*nseq[0]))) {
-	    reject=true;
-	    k_targ=k;
-	    if (k_targ>1 && work[k-1]<KFAC1*work[k])
-	      k_targ--;
-	    hnew=hopt[k_targ];
-	    break;
-	  }
-	}
-	if (k == k_targ) {
-	  if (err <= 1.0)
-	    break;
-	  else if (err>SQR(nseq[k+1]/nseq[0])) {
-	    reject=true;
-	    if (k_targ>1 && work[k-1]<KFAC1*work[k])
-	      k_targ--;
-	    hnew=hopt[k_targ];
-	    break;
-	  }
-	}
-	if (k == k_targ+1) {
-	  if (err > 1.0) {
-	    reject=true;
-	    if (k_targ>1 && work[k_targ-1]<KFAC1*work[k_targ])
-	      k_targ--;
-	    hnew=hopt[k_targ];
-	  }
-	  break;
-	}
+        polyextr(k,table,y);
+        err=0.0;
+        for (i=0;i<n;i++) {
+          scale[i]=atol+rtol*MAX(std::abs(ysav[i]),std::abs(y[i]));
+          err+=SQR((y[i]-table[0][i])/scale[i]);
+        }
+        err=sqrt(err/n);
+        Doub expo=1.0/(2*k+1);
+        Doub facmin=::pow(STEPFAC3,expo);
+        if (err == 0.0)
+          fac=1.0/facmin;
+        else {
+          fac=STEPFAC2/::pow(err/STEPFAC1,expo);
+          fac=MAX(facmin/STEPFAC4,MIN(1.0/facmin,fac));
+        }
+        hopt[k]=std::abs(h*fac);
+        work[k]=cost[k]/hopt[k];
+        if ((first_step || last_step) && err <= 1.0)
+          break;
+        if (k == k_targ-1 && !prev_reject && !first_step && !last_step) {
+          if (err <= 1.0)
+            break;
+          else if (err>SQR(nseq[k_targ]*nseq[k_targ+1]/(nseq[0]*nseq[0]))) {
+            reject=true;
+            k_targ=k;
+            if (k_targ>1 && work[k-1]<KFAC1*work[k])
+              k_targ--;
+            hnew=hopt[k_targ];
+            break;
+          }
+        }
+        if (k == k_targ) {
+          if (err <= 1.0)
+            break;
+          else if (err>SQR(nseq[k+1]/nseq[0])) {
+            reject=true;
+            if (k_targ>1 && work[k-1]<KFAC1*work[k])
+              k_targ--;
+            hnew=hopt[k_targ];
+            break;
+          }
+        }
+        if (k == k_targ+1) {
+          if (err > 1.0) {
+            reject=true;
+            if (k_targ>1 && work[k_targ-1]<KFAC1*work[k_targ])
+              k_targ--;
+            hnew=hopt[k_targ];
+          }
+          break;
+        }
       }
     }
     if (reject)
@@ -385,9 +385,9 @@ void StepperBS<D>::step(const Doub htry,D &derivs) {
       hnew=hopt[kopt];
     else {
       if (k<k_targ && work[k]<KFAC2*work[k-1])
-	hnew=hopt[k]*cost[kopt+1]/cost[k];
+        hnew=hopt[k]*cost[kopt+1]/cost[k];
       else
-	hnew=hopt[k]*cost[kopt]/cost[k];
+        hnew=hopt[k]*cost[kopt]/cost[k];
     }
     k_targ=kopt;
   }
@@ -396,5 +396,5 @@ void StepperBS<D>::step(const Doub htry,D &derivs) {
   if (forward)
     hnext=hnew;
   else
-    hnext=-hnew;	
+    hnext=-hnew;
 }

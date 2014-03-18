@@ -4,7 +4,7 @@
 #include "NumericalRecipes.hpp"
 
 namespace WaveformUtilities {
-  
+
   struct LUdcmp {
     Int n;
     MatDoub lu;
@@ -18,7 +18,7 @@ namespace WaveformUtilities {
     void mprove(VecDoub_I &b, VecDoub_IO &x);
     MatDoub_I &aref;
   };
-  
+
 }
 
 #endif // LUDECOMPOSITION_HPP

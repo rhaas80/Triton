@@ -19,7 +19,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
   if(L<2) { Throw1WithMessage("l<2 unsupported."); }
   if(labs(M)>L) { Throw1WithMessage("abs(m)>l unsupported for s=-2 spin-weighted spherical harmonics."); }
   if(L>12) { Throw1WithMessage("l>12 unsupported."); }
-  
+
   switch(L) {
   case 2:
     switch(M) {
@@ -69,7 +69,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 3:
     switch(M) {
     case -3:
@@ -136,7 +136,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 4:
     switch(M) {
     case -4:
@@ -221,7 +221,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 5:
     switch(M) {
     case -5:
@@ -324,7 +324,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 6:
     switch(M) {
     case -6:
@@ -445,7 +445,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 7:
     switch(M) {
     case -7:
@@ -584,7 +584,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 8:
     switch(M) {
     case -8:
@@ -741,7 +741,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 9:
     switch(M) {
     case -9:
@@ -916,7 +916,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 10:
     switch(M) {
     case -10:
@@ -1109,7 +1109,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 11:
     switch(M) {
     case -11:
@@ -1320,7 +1320,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   case 12:
     switch(M) {
     case -12:
@@ -1549,7 +1549,7 @@ void WU::SWSH(const int L, const int M, const double vartheta, const double varp
       }
       return;
     } // switch(M)
-    
+
   } // switch(L)
 
   return;
@@ -1571,10 +1571,10 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
     Throw1WithMessage("Size mismatch in input data");
   }
   if(L>12) { Throw1WithMessage("l>12 unsupported."); }
-  
+
   amp.resize(vartheta.size());
   arg.resize(vartheta.size());
-  
+
   switch(L) {
   case 2:
     switch(M) {
@@ -1629,7 +1629,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 3:
     switch(M) {
     case -3:
@@ -1703,7 +1703,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 4:
     switch(M) {
     case -4:
@@ -1797,7 +1797,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 5:
     switch(M) {
     case -5:
@@ -1911,7 +1911,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 6:
     switch(M) {
     case -6:
@@ -2045,7 +2045,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 7:
     switch(M) {
     case -7:
@@ -2199,7 +2199,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 8:
     switch(M) {
     case -8:
@@ -2373,7 +2373,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 9:
     switch(M) {
     case -9:
@@ -2567,7 +2567,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 10:
     switch(M) {
     case -10:
@@ -2781,7 +2781,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 11:
     switch(M) {
     case -11:
@@ -3015,7 +3015,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   case 12:
     switch(M) {
     case -12:
@@ -3269,7 +3269,7 @@ void WU::SWSH(const int L, const int M, const vector<double>& vartheta, const ve
       }
       return;
     } // switch(M)
-    
+
   } // switch(L)
 
   return;
@@ -3283,9 +3283,9 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
     Throw1WithMessage("Size mismatch in input data");
   }
   if(L>12) { Throw1WithMessage("l>12 unsupported."); }
-  
+
   vector<complex<double> > swsh(vartheta.size());
-  
+
   switch(L) {
   case 2:
     switch(M) {
@@ -3320,7 +3320,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 3:
     switch(M) {
     case -3:
@@ -3366,7 +3366,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 4:
     switch(M) {
     case -4:
@@ -3424,7 +3424,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 5:
     switch(M) {
     case -5:
@@ -3494,7 +3494,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 6:
     switch(M) {
     case -6:
@@ -3576,7 +3576,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 7:
     switch(M) {
     case -7:
@@ -3670,7 +3670,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 8:
     switch(M) {
     case -8:
@@ -3776,7 +3776,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 9:
     switch(M) {
     case -9:
@@ -3894,7 +3894,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 10:
     switch(M) {
     case -10:
@@ -4024,7 +4024,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 11:
     switch(M) {
     case -11:
@@ -4166,7 +4166,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   case 12:
     switch(M) {
     case -12:
@@ -4320,7 +4320,7 @@ vector<complex<double> > WU::SWSH(const int L, const int M, const vector<double>
       }
       return swsh;
     } // switch(M)
-    
+
   } // switch(L)
 
   return swsh;

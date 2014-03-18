@@ -65,9 +65,9 @@ Waveform WaveformObjects::Waveform::operator/(const Waveform& b) const {
   Waveform c = *this;
   Waveform d = b;
   c.History() << "### this->Waveform::operator/(const Waveform& b) const" << endl
-	      << "###### Begin b.history:" << endl
-	      << d.HistoryStr()
-	    << "###### End b.history:" << endl;
+              << "###### Begin b.history:" << endl
+              << d.HistoryStr()
+            << "###### End b.history:" << endl;
   vector<double> NewTime = Intersection(c.T(), d.T(), 5e-8, -1e300);
   c.History() << "#";
   c.Interpolate(NewTime);

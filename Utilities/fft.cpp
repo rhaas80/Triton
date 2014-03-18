@@ -101,13 +101,13 @@ void four1(Doub *data, const Int n, const Int isign) {
     wi=0.0;
     for (m=1;m<mmax;m+=2) {
       for (i=m;i<=nn;i+=istep) {
-	j=i+mmax;
-	tempr=wr*data[j-1]-wi*data[j];
-	tempi=wr*data[j]+wi*data[j-1];
-	data[j-1]=data[i-1]-tempr;
-	data[j]=data[i]-tempi;
-	data[i-1] += tempr;
-	data[i] += tempi;
+        j=i+mmax;
+        tempr=wr*data[j-1]-wi*data[j];
+        tempi=wr*data[j]+wi*data[j-1];
+        data[j-1]=data[i-1]-tempr;
+        data[j]=data[i]-tempi;
+        data[i-1] += tempr;
+        data[i] += tempi;
       }
       wr=(wtemp=wr)*wpr-wi*wpi+wr;
       wi=wi*wpr+wtemp*wpi+wi;
@@ -186,7 +186,7 @@ void convlv(VecDoub_I &data, VecDoub_I &respns, const Int isign, VecDoub_O &ans)
   } else if (isign == -1) {
     for (i=2;i<n;i+=2) {
       if ((mag2=SQR(temp[i])+SQR(temp[i+1])) == 0.0)
-	Throw1WithMessage("Deconvolving at response zero in convlv");
+        Throw1WithMessage("Deconvolving at response zero in convlv");
       tmp=ans[i];
       ans[i]=(ans[i]*temp[i]+ans[i+1]*temp[i+1])/mag2/no2;
       ans[i+1]=(ans[i+1]*temp[i]-tmp*temp[i+1])/mag2/no2;

@@ -10,7 +10,7 @@ double cubicexample(const double x) {
 }
 
 int main() {
-  
+
   {
     const int npts=20;
     vector<double> xx(npts),yy(npts),ssig(npts);
@@ -24,7 +24,7 @@ int main() {
     myfit.fit();
     cout << myfit.a << endl;
   }
-  
+
   {
     const int npts=20;
     vector<double> xx(npts),yy(npts),ssig(npts);
@@ -38,6 +38,6 @@ int main() {
     myfit.fit();
     cout << myfit.a << endl;
   }
-  
+
   return 0;
 }

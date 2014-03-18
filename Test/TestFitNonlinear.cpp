@@ -48,7 +48,7 @@ int main () {
   aa[0] = 1.623245187905471417189;
   aa[1] = 3.9;
   aa[2] = 4.864789743913981430541;
-  
+
   {
     const int npts=20;
     const int k=3*1;
@@ -67,6 +67,6 @@ int main () {
     cout << setprecision(15) << myfit.a << endl;
     cout << "Errors in parameters: " << setprecision(5) << aa-myfit.a << endl;
   }
-  
+
   return 0;
 }

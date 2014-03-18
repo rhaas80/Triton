@@ -11,16 +11,16 @@ using namespace WaveformUtilities;
 
 int main() {
   clock_t start,end;
-  
+
   const unsigned int N=(1 << 25);
   vector<double> x(N);
   for(unsigned int i=0; i<N; ++i) {
     x[i] = -M_E + 1013.0*M_PI*i/double(N-1);
   }
   vector<double> y(N);
-  
+
   cout << "sizeof(double) = " << sizeof(double) << endl;
-  
+
   cout << N << " uses of pow ... " << endl;
   start = clock();
   for(unsigned int i=0; i<N; ++i) {
@@ -61,7 +61,7 @@ int main() {
   }
   end = clock();
   cout << "... took " << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
-  
+
   cout << N << " uses of my functions ... " << endl;
   start = clock();
   for(unsigned int i=0; i<N; ++i) {
@@ -102,7 +102,7 @@ int main() {
   }
   end = clock();
   cout << "... took " << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
-  
+
 
   return 0;
 }

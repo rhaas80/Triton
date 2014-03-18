@@ -35,12 +35,12 @@ int main() {
   Func_Min[1]=0.0;
   int Iterations=0;
   double fret;
-  
+
   Functor f;
 //   Funcd<DoubleFunction> f(func);
   vector<double> p(2,-1.02349812);
   dfpmin(p, Tolerance, Iterations, fret, f);
-  
+
   cout << "Exact:" << endl;
   cout << "xmin=" << setprecision(Prec) << Func_Min << "\tfmin=" << setprecision(Prec) << func_Offset << endl;
   cout << "Numerical:" << endl;

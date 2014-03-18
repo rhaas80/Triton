@@ -50,7 +50,7 @@ std::vector<string> WaveformObjects::Waveform::Types(12, "");
 // Note on Waveform Types:
 // In any system, h -- being strain -- should be dimensionless.
 // When G=c=1, the dimensionless quantities are rMPsi4, rhdot, and rhOverM; as are rOverM and tOverM.
-// When G and c are dimensionful, the dimensionless quantities are 
+// When G and c are dimensionful, the dimensionless quantities are
 //     -  (r/c) * (M*G/c^3) * Psi4
 //     -  (r/c) * hdot
 //     -  (r/c) * h / (M*G/c^3)
@@ -93,10 +93,10 @@ WaveformObjects::Waveform::Waveform() :
     time ( &rawtime );
     string date = asctime ( localtime ( &rawtime ) );
     history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
-	    << "### pwd = " << pwd << endl
-	    << "### hostname = " << hostname << endl
-	    << "### date = " << date // comes with a newline
-	    << "### Waveform(); // empty constructor" << endl;
+            << "### pwd = " << pwd << endl
+            << "### hostname = " << hostname << endl
+            << "### date = " << date // comes with a newline
+            << "### Waveform(); // empty constructor" << endl;
   }
 }
 
@@ -118,7 +118,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
   /// \param DataFileName String containing absolute or relative path to file
   /// \param Format String of either 'MagArg' (for data in magnitude-argument format) or 'ReIm'
   /// \param ZeroEnds=false Bool indicating whether or not the ends of the data should be set to 0
-  /// 
+  ///
   /// This is the main Waveform constructor, which reads either a .dat
   /// file or a metadata file with associated data files.  For path
   /// names ending in .bbh or .minimal, the file is assumed to be a
@@ -129,7 +129,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
   /// containing the (l,m) data, where the first column is the time,
   /// and the following two lines contain either the real-imaginary or
   /// magnitude-argument data.
-  /// 
+  ///
   /// For all other path names, the file is assumed to be a single
   /// data file containing all necessary (l,m) modes.  The first
   /// column is assumed to be time, and consecutive pairs of columns
@@ -146,9 +146,9 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
   /// Finally, the data format is also deduced from the header, and a
   /// warning is issued if it mismatches the input parameter to this
   /// function.
-  
+
   //cout << "Calling Waveform(const std::string& DataFileName, const std::string& Format, ...)" << endl;
-  
+
   SetWaveformTypes();
   {
     char path[MAXPATHLEN];
@@ -161,16 +161,16 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     time ( &rawtime );
     string date = asctime ( localtime ( &rawtime ) );
     history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
-	    << "### pwd = " << pwd << endl
-	    << "### hostname = " << hostname << endl
-	    << "### date = " << date // comes with a newline
-	    << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\"); // constructor from data file" << endl;
+            << "### pwd = " << pwd << endl
+            << "### hostname = " << hostname << endl
+            << "### date = " << date // comes with a newline
+            << "### Waveform(\"" << DataFileName << "\", \"" << Format << "\"); // constructor from data file" << endl;
   }
-  
+
   if(tolower(Format).find("ninja") != string::npos
      || (DataFileName.size()>4 && DataFileName.compare(DataFileName.size()-4,4,".bbh")==0)
      || (DataFileName.size()>8 && DataFileName.compare(DataFileName.size()-8,8,".minimal")==0)) {  //// Is this a NINJA-style metadata file?
-    
+
     // Get the directory of the .bbh file
     string Dir = DataFileName;
     size_t LastSlash = Dir.rfind("/");
@@ -179,7 +179,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     } else {
       Dir = "";
     }
-    
+
     // Open the metadata file and look for "[ht-ampphi-data]" or "[ht-data]" or "[psi4t-ampphi-data]" or "[psi4t-data]"
     string Format = "ReIm";
     int LineLength=8192;
@@ -197,14 +197,14 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       string TrimmedLine(LineChars);
       TrimmedLine = TrimWhiteSpace(StripComments(TrimmedLine));
       if(TrimmedLine.compare("[ht-data]") == 0 || TrimmedLine.compare("[psi4t-data]") == 0) {
-	Format = "ReIm";
-	break;
+        Format = "ReIm";
+        break;
       } else if(TrimmedLine.compare("[ht-ampphi-data]") == 0 || TrimmedLine.compare("[psi4t-ampphi-data]") == 0) {
-	Format = "MagArg";
-	break;
+        Format = "MagArg";
+        break;
       }
     }
-    
+
     // Loop through following lines getting data
     string DataFileName = "";
     std::vector<string> Header;
@@ -218,16 +218,16 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       Pair = split(Line.assign(LineCharsStripped), '=');
       if(Pair[0].find("extraction-radius")!=string::npos) { continue; }
       if((Pair[0].find("[ht-data]")!=string::npos) ||
-	 (Pair[0].find("[psi4t-data]")!=string::npos) ||
-	 (Pair[0].find("[ht-ampphi-data]")!=string::npos) ||
-	 (Pair[0].find("[psi4t-ampphi-data]")!=string::npos))
-	{ break; }
+         (Pair[0].find("[psi4t-data]")!=string::npos) ||
+         (Pair[0].find("[ht-ampphi-data]")!=string::npos) ||
+         (Pair[0].find("[psi4t-ampphi-data]")!=string::npos))
+        { break; }
       LandMString = split(Pair[0], ',');
       DataFileName = TrimWhiteSpace(Pair[1]);
       LandM[0] = atoi(LandMString[0].c_str());
       LandM[1] = atoi(LandMString[1].c_str());
       lm.push_back(LandM);
-      
+
       //// Read data file
       std::vector<std::vector<double> > Data;
       ReadDatFile(Dir+DataFileName,  Data,  Header, true); // Read "transposed" data
@@ -236,45 +236,45 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       Im.push_back(std::vector<double>(Data[0].size()));
       unsigned int End=Times.size()-1;
       for(unsigned int i=0; i<Data[0].size(); ++i) {
-      	Times[End][i] = Data[0][i];
+        Times[End][i] = Data[0][i];
       }
       if(t.size()==0) {
-      	t = Times[End];
+        t = Times[End];
       } else {
-      	t = Intersection(t, Times[End], 0.05, -1.e300);
+        t = Intersection(t, Times[End], 0.05, -1.e300);
       }
       for(unsigned int i = 0; i<Data[0].size(); ++i) { // Loop over time steps
-      	Re[End][i] = Data[1][i];
-      	Im[End][i] = Data[2][i];
+        Re[End][i] = Data[1][i];
+        Im[End][i] = Data[2][i];
       }
     }
     ifs.close();
-    
+
     r = std::vector<double>(1, 0.0);
-    
+
     // Search for TimeScale, LM info, Format, and Waveform Type
     //LM = std::vector<std::vector<int> > (mag.size(), std::vector<int>(2, 0));
     //GetWaveformTimeScaleAndLM(Header, timeScale, LM);
     timeScale = "(t-r*)/M";
     typeIndex = GetWaveformType(DataFileName, Header);
-    
+
     if(Format.compare("ReIm") == 0) {
       std::vector<std::vector<double> > ReA=Re, ImA=Im;
       //ORIENTATION!!! 3 following lines
       for(unsigned int i=0; i<Re.size(); ++i) { // Loop over components
-	MagArg(ReA[i], ImA[i], Re[i], Im[i]);
+        MagArg(ReA[i], ImA[i], Re[i], Im[i]);
       }
     }
-    
+
     mag.resize(Re.size(), t.size());
     arg.resize(Im.size(), t.size());
     for(unsigned int i=0; i<Times.size(); ++i) {
       mag[i] = WaveformUtilities::Interpolate(Times[i], Re[i], t);
       arg[i] = WaveformUtilities::Interpolate(Times[i], Im[i], t);
     }
-    
+
   } else {  // Treat this file like a normal data file
-    
+
     // Read data file
     std::vector<std::vector<double> > Data;
     std::vector<string> Header;
@@ -289,7 +289,7 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
       t[i] = Data[0][i];
     }
     r = std::vector<double>(1, 0.0);
-    
+
     // Get mag and arg data
     // The data has std::vectors of std::vectors of components at a given time;
     // we transpose the matrix to std::vectors of components, each of which
@@ -301,18 +301,18 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     std::vector<double> ImEnds(Re.size(), 0.0);
     if(ZeroEnds) {
       for(unsigned int i = 0; i<Re.size(); ++i) { // Loop over components of Re
-	ReEnds[i] = Data[2*i+1][Data.size()-1];
-	ImEnds[i] = Data[2*i+2][Data.size()-1];
+        ReEnds[i] = Data[2*i+1][Data.size()-1];
+        ImEnds[i] = Data[2*i+2][Data.size()-1];
       }
     }
     for(unsigned int i = 0; i<Re.size(); ++i) { // Loop over components of Re
       for(unsigned int j = 0; j<Re[i].size(); ++j) { // Loop over time steps
-	Re[i][j] = Data[2*i+1][j];
-	Im[i][j] = Data[2*i+2][j];
+        Re[i][j] = Data[2*i+1][j];
+        Im[i][j] = Data[2*i+2][j];
       }
     }
     Data.clear();
-    
+
     // Search for TimeScale, LM info, and Waveform Type
     lm.resize(Re.size(), 2);
     GetWaveformTimeScaleAndLM(DataFileName, Header, timeScale, lm);
@@ -323,14 +323,14 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
     } else if(DetectedFormat.compare(Format) != 0) {
       cerr << "Detected file format '" << DetectedFormat << "' does not match explicit file format '" << Format << "'.  Proceeding with detected format." << endl;
     }
-    
+
     mag.resize(Re.size(), Re[0].size());
     arg.resize(Re.size(), Re[0].size());
     if(DetectedFormat.compare("ReIm") == 0) {
       //ORIENTATION!!! 3 following lines
       if(ZeroEnds) std::cout << "ReEnds=" << ReEnds << "\nImEnds=" << ImEnds << std::endl;
       for(unsigned int i=0; i<Re.size(); ++i) { // Loop over components
-	MagArg(Re[i]-ReEnds[i], Im[i]-ImEnds[i], mag[i], arg[i]);
+        MagArg(Re[i]-ReEnds[i], Im[i]-ImEnds[i], mag[i], arg[i]);
       }
     } else if(DetectedFormat.compare("MagArg") == 0) {
       mag = Re;
@@ -343,13 +343,13 @@ WaveformObjects::Waveform::Waveform(const std::string& DataFileName, const std::
 
 /// Construct a single Waveform from a .bbh or .minimal file.
 WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
-				    const int SectionToUse, // default: 0
-				    const WaveformUtilities::Matrix<int> LM) :
+                                    const int SectionToUse, // default: 0
+                                    const WaveformUtilities::Matrix<int> LM) :
   history(""), typeIndex(0), timeScale("Time"), t(0), r(0), frame(0),
   lm(), mag(), arg()
 {
   //cout << "Calling Waveform(const std::string& BBHFileName, ..." << endl;
-  
+
   // Get the directory of the .bbh file
   string Dir = BBHFileName;
   size_t LastSlash = Dir.rfind("/");
@@ -358,7 +358,7 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
   } else {
     Dir = "";
   }
-  
+
   // Set up variables we will use and open the metadata file
   string Format = "ReIm";
   int LineLength=8192;
@@ -372,7 +372,7 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
     cerr << "Couldn't open '" << BBHFileName << "'" << endl;
     Throw1WithMessage("Bad file descriptor");
   }
-  
+
   // Skip to the desired [*-data] section
   std::vector<std::string> BBHDataSection;
   int SectionToUseHere=SectionToUse;
@@ -384,19 +384,19 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
        (LineCharsStripped.find("[ht-ampphi-data]")!=string::npos) ||
        (LineCharsStripped.find("[psi4t-ampphi-data]")!=string::npos))
       {
-	if(SectionToUseHere==0) {
-	  BBHDataSection.push_back(LineCharsStripped);
-	  break;
-	} else {
-	  --SectionToUseHere;
-	}
+        if(SectionToUseHere==0) {
+          BBHDataSection.push_back(LineCharsStripped);
+          break;
+        } else {
+          --SectionToUseHere;
+        }
       }
   }
   if(SectionToUseHere != 0) {
     cerr << "\nSectionToUse=" << SectionToUse << "\tSectionToUseHere=" << SectionToUseHere << endl;
     Throw1WithMessage("Not enough [*-data] sections in metadata file for requested section.");
   }
-  
+
   // Loop through following lines getting data
   while(ifs.getline(LineChars, LineLength, '\n')) {
     string LineCharsStripped(LineChars);
@@ -406,7 +406,7 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
        (LineCharsStripped.find("[ht-ampphi-data]")!=string::npos) ||
        (LineCharsStripped.find("[psi4t-ampphi-data]")!=string::npos))
       {
-	break;
+        break;
       }
     BBHDataSection.push_back(LineCharsStripped);
   }
@@ -415,16 +415,16 @@ WaveformObjects::Waveform::Waveform(const std::string& BBHFileName,
 
 /// Construct a single Waveform from a [*-data] bbh section.
 WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSection,
-				    const std::string Dir,
-				    const WaveformUtilities::Matrix<int> LM) :
+                                    const std::string Dir,
+                                    const WaveformUtilities::Matrix<int> LM) :
   history(""), typeIndex(0), timeScale("Time"), t(0), r(0), frame(0),
   lm(LM), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
 {
   /// The section is passed as a vector of strings, each element of
   /// which contains the "l,m = path" line from a metadata file.
-  
+
   //cout << "Calling Waveform(const std::vector<std::string>& BBHDataSection, ..." << endl;
-  
+
   Waveforms Ws(BBHDataSection, Dir, LM);
   if(Ws.size()==0) {
     cerr << "BBHDataSection = \"\"\"\n";
@@ -432,7 +432,7 @@ WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSecti
       cerr << BBHDataSection[i] << endl;
     }
     cerr << "\n\"\"\"\nDir = \"" << Dir
-	 << "\"\nLM = " << RowFormat(LM) << "\"" << endl;
+         << "\"\nLM = " << RowFormat(LM) << "\"" << endl;
     Throw1WithMessage("Found no Waveforms.");
   }
   if(Ws.size()==1) {
@@ -452,11 +452,11 @@ WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSecti
   //   time ( &rawtime );
   //   string date = asctime ( localtime ( &rawtime ) );
   //   history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
-  // 	    << "### pwd = " << pwd << endl
-  // 	    << "### hostname = " << hostname << endl
-  // 	    << "### date = " << date // comes with a newline
-  // 	    << "### Waveform(BBHDataSection, " << RowFormat(LM) << ", " << Dir << "); // constructor from data file" << endl
-  // 	    << "##### BBHDataSection = " << endl;
+  //        << "### pwd = " << pwd << endl
+  //        << "### hostname = " << hostname << endl
+  //        << "### date = " << date // comes with a newline
+  //        << "### Waveform(BBHDataSection, " << RowFormat(LM) << ", " << Dir << "); // constructor from data file" << endl
+  //        << "##### BBHDataSection = " << endl;
   //   for(unsigned int i=0; i<BBHDataSection.size(); ++i) {
   //     history << "#### " << BBHDataSection[i] << endl;
   //   }
@@ -467,8 +467,8 @@ WaveformObjects::Waveform::Waveform(const std::vector<std::string>& BBHDataSecti
 
 /// Simple PN/EOB constructor for non-precessing systems
 WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const double chis, const double chia, const double v0,
-				    const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
-				    const double PNPhaseOrder, const double PNAmplitudeOrder) :
+                                    const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
+                                    const double PNPhaseOrder, const double PNAmplitudeOrder) :
   history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0), frame(0),
   lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
 {
@@ -482,12 +482,12 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   /// \param denseish If true, output nsave points per time step taken by the integrator
   /// \param PNPhaseOrder Unused parameter
   /// \param PNAmplitudeOrder Unused parameter
-  /// 
+  ///
   /// Constructs a PN/EOB inspiral for simple non-precessing systems.
   /// Note that in all cases, only the inspiral is returned -- EOB
   /// included.  To attach a ringdown (though a hackish technique) see
   /// also the AttachQNMs function.
-  /// 
+  ///
   /// The total number of modes required for \f$L\f$ is given by
   /// \f{align}{
   /// N_{\text{modes}}
@@ -495,25 +495,25 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   ///   &= 2\left[L\, (L-1)/2-1\right] + (L-2) \\
   ///   &= (L+3)\, (L-1)
   /// \f}
-  
+
   SetWaveformTypes();
-  
+
   {
     history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
-	    << "### Waveform("
-	    << Approximant << ", "
-	    << delta << ", "
-	    << chis << ", "
-	    << chia << ", "
-	    << v0 << ", "
-	    << PNPhaseOrder << ", "
-	    << PNAmplitudeOrder << ", "
-	    << RowFormat(lm) << ", "
-	    << nsave << ", "
-	    << denseish
-	    << "); // PN constructor" << endl;
+            << "### Waveform("
+            << Approximant << ", "
+            << delta << ", "
+            << chis << ", "
+            << chia << ", "
+            << v0 << ", "
+            << PNPhaseOrder << ", "
+            << PNAmplitudeOrder << ", "
+            << RowFormat(lm) << ", "
+            << nsave << ", "
+            << denseish
+            << "); // PN constructor" << endl;
   }
-  
+
   std::vector<double> v(0), Phi(0);
   if(Approximant.compare("TaylorT1")==0) {
     if(nsave==-1) {
@@ -560,10 +560,10 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
     unsigned int i=0;
     for(int l=2; l<=PNLMax; ++l) {
       for(int m=-l; m<=l; ++m) {
-	lm[i][0] = l;
-	lm[i][1] = m;
-	PNAmp.rhOverM(l, m, v, Phi, mag[i], arg[i]);
-	++i;
+        lm[i][0] = l;
+        lm[i][1] = m;
+        PNAmp.rhOverM(l, m, v, Phi, mag[i], arg[i]);
+        ++i;
       }
     }
   }
@@ -573,8 +573,8 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 
 /// PN/EOB constructor for precessing systems
 WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
-				    const double v0, const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
-				    const double PNPhaseOrder, const double PNAmplitudeOrder) :
+                                    const double v0, const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
+                                    const double PNPhaseOrder, const double PNAmplitudeOrder) :
   history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0), frame(0),
   lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
 {
@@ -588,38 +588,38 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   /// \param denseish If true, output nsave points per time step taken by the integrator
   /// \param PNPhaseOrder Unused parameter
   /// \param PNAmplitudeOrder Unused parameter
-  /// 
+  ///
   /// Constructs a PN inspiral for precessing systems using the method
   /// described in [Phys. Rev. D 84, 124011
   /// (2011)](http://link.aps.org/doi/10.1103/PhysRevD.84.124011)
   SetWaveformTypes();
-  
+
   std::vector<double> alpha, beta, gamma;
   {
     history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
-	    << "### Waveform("
-	    << Approximant << ", "
-	    << delta << ", ("
-	    << chi1 << "), ("
-	    << chi2 << "), "
-	    << v0 << ", "
-	    << PNPhaseOrder << ", "
-	    << PNAmplitudeOrder << ", "
-	    << RowFormat(lm) << ", "
-	    << nsave << ", "
-	    << denseish
-	    << ") // PN constructor" << endl;
+            << "### Waveform("
+            << Approximant << ", "
+            << delta << ", ("
+            << chi1 << "), ("
+            << chi2 << "), "
+            << v0 << ", "
+            << PNPhaseOrder << ", "
+            << PNAmplitudeOrder << ", "
+            << RowFormat(lm) << ", "
+            << nsave << ", "
+            << denseish
+            << ") // PN constructor" << endl;
   }
-  
+
   std::vector<double> v(0), Phi(0), chis(0), chia(0);
   if(Approximant.compare("TaylorT4Spin")==0) {
     if(nsave==-1) {
       TaylorT4Spin(delta, chi1, chi2, v0, t, v, Phi,
-		   chis, chia, alpha, beta, gamma);
+                   chis, chia, alpha, beta, gamma);
     } else {
       TaylorT4Spin(delta, chi1, chi2, v0, t, v, Phi,
-		   chis, chia, alpha, beta, gamma,
-		   nsave, denseish);
+                   chis, chia, alpha, beta, gamma,
+                   nsave, denseish);
     }
   } else {
     cerr << "Unknown approximant '" << Approximant << "'." << endl;
@@ -636,10 +636,10 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
     unsigned int i=0;
     for(int l=2; l<=PNLMax; ++l) {
       for(int m=-l; m<=l; ++m) {
-	lm[i][0] = l;
-	lm[i][1] = m;
-	PNAmp.rhOverM(l, m, v, Phi, chis, chia, mag[i], arg[i]);
-	++i;
+        lm[i][0] = l;
+        lm[i][1] = m;
+        PNAmp.rhOverM(l, m, v, Phi, chis, chia, mag[i], arg[i]);
+        ++i;
       }
     }
   }
@@ -649,9 +649,9 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 
 /// PN/EOB constructor for precessing systems
 WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
-				    const double v0, vector<vector<double> >& S1, vector<vector<double> >& S2, vector<vector<double> >& LNHat,
-				    const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
-				    const double PNPhaseOrder, const double PNAmplitudeOrder) :
+                                    const double v0, vector<vector<double> >& S1, vector<vector<double> >& S2, vector<vector<double> >& LNHat,
+                                    const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
+                                    const double PNPhaseOrder, const double PNAmplitudeOrder) :
   history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0), frame(0),
   lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
 {
@@ -668,11 +668,11 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   /// \param denseish If true, output nsave points per time step taken by the integrator
   /// \param PNPhaseOrder Unused parameter
   /// \param PNAmplitudeOrder Unused parameter
-  /// 
+  ///
   /// Constructs a PN inspiral for precessing systems using the method
   /// described in [Phys. Rev. D 84, 124011
   /// (2011)](http://link.aps.org/doi/10.1103/PhysRevD.84.124011)
-  /// 
+  ///
   /// The result is in a stationary frame, though the waveform is
   /// computed in the minimal-rotation frame, and transformed back.
   /// The returned Waveform has trivial `frame` data, but the LNHat
@@ -682,32 +682,32 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
   /// that this is distinct from the information gained by looking at
   /// the Waveform alone.)
   SetWaveformTypes();
-  
+
   {
     history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
-	    << "### Waveform("
-	    << Approximant << ", "
-	    << delta << ", ("
-	    << chi1 << "), ("
-	    << chi2 << "), "
-	    << v0 << ", S1, S2, LNHat, "
-	    << PNPhaseOrder << ", "
-	    << PNAmplitudeOrder << ", "
-	    << RowFormat(lm) << ", "
-	    << nsave << ", "
-	    << denseish
-	    << ") // PN constructor" << endl;
+            << "### Waveform("
+            << Approximant << ", "
+            << delta << ", ("
+            << chi1 << "), ("
+            << chi2 << "), "
+            << v0 << ", S1, S2, LNHat, "
+            << PNPhaseOrder << ", "
+            << PNAmplitudeOrder << ", "
+            << RowFormat(lm) << ", "
+            << nsave << ", "
+            << denseish
+            << ") // PN constructor" << endl;
   }
-  
+
   std::vector<double> v(0), Phi(0);
   if(Approximant.compare("TaylorT4Spin")==0) {
     if(nsave==-1) {
       TaylorT4Spin(delta, chi1, chi2, v0, t, v, Phi,
-		   S1, S2, LNHat);
+                   S1, S2, LNHat);
     } else {
       TaylorT4Spin(delta, chi1, chi2, v0, t, v, Phi,
-		   S1, S2, LNHat,
-		   nsave, denseish);
+                   S1, S2, LNHat,
+                   nsave, denseish);
     }
   } else {
     cerr << "Unknown approximant '" << Approximant << "'." << endl;
@@ -728,10 +728,10 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
     unsigned int i=0;
     for(int l=2; l<=PNLMax; ++l) {
       for(int m=-l; m<=l; ++m) {
-	lm[i][0] = l;
-	lm[i][1] = m;
-	PNAmp.rhOverM(l, m, v, Phi, chis, chia, mag[i], arg[i]);
-	++i;
+        lm[i][0] = l;
+        lm[i][1] = m;
+        PNAmp.rhOverM(l, m, v, Phi, chis, chia, mag[i], arg[i]);
+        ++i;
       }
     }
   }
@@ -741,9 +741,9 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 
 // /// PN/EOB constructor for precessing systems
 // WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
-// 				    const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
-// 				    const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
-// 				    const double PNPhaseOrder, const double PNAmplitudeOrder) :
+//                                  const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+//                                  const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
+//                                  const double PNPhaseOrder, const double PNAmplitudeOrder) :
 //   history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0), frame(0),
 //   lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
 // {
@@ -760,37 +760,37 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 //   /// \param denseish If true, output nsave points per time step taken by the integrator
 //   /// \param PNPhaseOrder Unused parameter
 //   /// \param PNAmplitudeOrder Unused parameter
-//   /// 
+//   ///
 //   /// Constructs a PN inspiral for precessing systems using the method
 //   /// described in [Phys. Rev. D 84, 124011
 //   /// (2011)](http://link.aps.org/doi/10.1103/PhysRevD.84.124011)
 //   SetWaveformTypes();
-  
+
 //   {
 //     history << "### Code revision `git rev-parse HEAD` = " << GitRevision << endl
-// 	    << "### Waveform("
-// 	    << Approximant << ", "
-// 	    << delta << ", ("
-// 	    << chi1 << "), ("
-// 	    << chi2 << "), "
-// 	    << v0 << ", alpha, beta, gamma, "
-// 	    << PNPhaseOrder << ", "
-// 	    << PNAmplitudeOrder << ", "
-// 	    << RowFormat(lm) << ", "
-// 	    << nsave << ", "
-// 	    << denseish
-// 	    << ") // PN constructor" << endl;
+//          << "### Waveform("
+//          << Approximant << ", "
+//          << delta << ", ("
+//          << chi1 << "), ("
+//          << chi2 << "), "
+//          << v0 << ", alpha, beta, gamma, "
+//          << PNPhaseOrder << ", "
+//          << PNAmplitudeOrder << ", "
+//          << RowFormat(lm) << ", "
+//          << nsave << ", "
+//          << denseish
+//          << ") // PN constructor" << endl;
 //   }
-  
+
 //   std::vector<double> v(0), Phi(0), chis(0), chia(0);
 //   if(Approximant.compare("TaylorT4Spin")==0) {
 //     if(nsave==-1) {
 //       TaylorT4Spin(delta, chi1, chi2, v0, t, v, Phi,
-// 		   chis, chia, alpha, beta, gamma);
+//                 chis, chia, alpha, beta, gamma);
 //     } else {
 //       TaylorT4Spin(delta, chi1, chi2, v0, t, v, Phi,
-// 		   chis, chia, alpha, beta, gamma,
-// 		   nsave, denseish);
+//                 chis, chia, alpha, beta, gamma,
+//                 nsave, denseish);
 //     }
 //   } else {
 //     cerr << "Unknown approximant '" << Approximant << "'." << endl;
@@ -807,10 +807,10 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 //     unsigned int i=0;
 //     for(int l=2; l<=PNLMax; ++l) {
 //       for(int m=-l; m<=l; ++m) {
-// 	lm[i][0] = l;
-// 	lm[i][1] = m;
-// 	PNAmp.rhOverM(l, m, v, Phi, chis, chia, mag[i], arg[i]);
-// 	++i;
+//      lm[i][0] = l;
+//      lm[i][1] = m;
+//      PNAmp.rhOverM(l, m, v, Phi, chis, chia, mag[i], arg[i]);
+//      ++i;
 //       }
 //     }
 //   }
@@ -824,7 +824,7 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 void WaveformObjects::Waveform::swap(Waveform& b) {
   /// This function uses the std::vector method 'swap' which simply
   /// swaps pointers to data, for efficiency.
-  
+
   // This call should not be recorded explicitly in the history,
   // because the histories are swapped
   { const string historyb=b.history.str(); b.history.str(history.str()); history.str(historyb); }
@@ -841,7 +841,7 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
   return;
 }
 
-// 
+//
 // Constructors
 
 // x
@@ -868,7 +868,7 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
 // Manipulate (l,m) modes
 //   These functions are defined in Waveform/Waveform_ManipulateModes.cpp
 
-// 
+//
 // Align and hybridize waveforms
 //   These functions are defined in Waveform/Waveform_AlignAndHybridize.cpp
 
@@ -876,7 +876,7 @@ void WaveformObjects::Waveform::swap(Waveform& b) {
 // Rotate by the given Euler angles or Quaternion
 //   These functions are defined in Waveform/Waveform_Rotation.cpp
 
-// 
+//
 // Output functions (members and non-members)
 //   These functions are defined in Waveform/Waveform_Output.cpp
 
@@ -898,7 +898,7 @@ std::string tolower(const std::string& A) {
 int GetWaveformType(const std::string& FullPath, const std::vector<std::string>& Header) {
   int typeIndex = 0;
   string FileName = FullPath;
-  
+
   // Look for the info at the beginning of the file name
   size_t found=FileName.find_last_of("/\\");
   if (found!=string::npos) { FileName = FileName.substr(found+1); }
@@ -908,13 +908,13 @@ int GetWaveformType(const std::string& FullPath, const std::vector<std::string>&
       return i;
     }
   }
-  
+
   // Look for the info in the Header
   for(unsigned int j=0; j<Header.size(); ++j) {
     for(unsigned int i=0; i<Waveform::Types.size(); ++i) {
       if(tolower(Header[j]).find(tolower(Waveform::Types[i])) != string::npos) {
-	typeIndex = i;
-	break;
+        typeIndex = i;
+        break;
       }
     }
   }
@@ -923,22 +923,22 @@ int GetWaveformType(const std::string& FullPath, const std::vector<std::string>&
 
 std::string GetFileFormat(const std::vector<std::string>& Header) {
   string DetectedFormat("");
-  
+
   // Look for the info in the Header
   for(unsigned int j=0; j<Header.size(); ++j) {
     if(tolower(Header[j]).find(tolower("Mag{")) != string::npos || tolower(Header[j]).find(tolower("Abs{")) != string::npos || tolower(Header[j]).find(tolower("Amp{")) != string::npos) {
       DetectedFormat = "MagArg";
-      if(Header[j].substr(0,2).compare("##")!=0) { 
-	break;
+      if(Header[j].substr(0,2).compare("##")!=0) {
+        break;
       }
     } else if(tolower(Header[j]).find(tolower("r*Re")) != string::npos) {
       DetectedFormat = "ReIm";
-      if(Header[j].substr(0,2).compare("##")!=0) { 
-	break;
+      if(Header[j].substr(0,2).compare("##")!=0) {
+        break;
       }
     }
   }
-  
+
   return DetectedFormat;
 }
 
@@ -952,8 +952,8 @@ void GetWaveformTimeScaleAndLM(const std::string& FullPath, const std::vector<st
      tolower(FileName).find("_m", found) != string::npos)
     {
       if(lm.nrows()!=1) {
-	cerr << "\nlm.nrows()=" << lm.nrows() << " but file name " << FileName << " indicates there is just one mode." << endl;
-	Throw1WithMessage("Bad LM modes");
+        cerr << "\nlm.nrows()=" << lm.nrows() << " but file name " << FileName << " indicates there is just one mode." << endl;
+        Throw1WithMessage("Bad LM modes");
       }
       size_t LBegin, LEnd, MBegin, MEnd;
       LBegin = found+2;
@@ -964,7 +964,7 @@ void GetWaveformTimeScaleAndLM(const std::string& FullPath, const std::vector<st
       lm[0][1] = atoi(FileName.substr(MBegin,MEnd-MBegin).c_str());
       return;
     }
-  
+
   //// Look for the info in the Header
   unsigned int i=0;
   size_t Comma, Paren1, Paren2;
@@ -976,10 +976,10 @@ void GetWaveformTimeScaleAndLM(const std::string& FullPath, const std::vector<st
       Paren1 = Header[j].rfind("(",Comma);
       Paren2 = Header[j].find(")",Comma);
       if(Comma != string::npos && Paren1 != string::npos && Paren2 != string::npos) {
-	lm[i][0] = atoi(Header[j].substr(Paren1+1,Comma-Paren1-1).c_str());
-	lm[i][1] = atoi(Header[j].substr(Comma+1,Paren2-Comma-1).c_str());
-	++i;
-	++j;
+        lm[i][0] = atoi(Header[j].substr(Paren1+1,Comma-Paren1-1).c_str());
+        lm[i][1] = atoi(Header[j].substr(Comma+1,Paren2-Comma-1).c_str());
+        ++i;
+        ++j;
       }
     }
   }

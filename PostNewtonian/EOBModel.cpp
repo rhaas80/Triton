@@ -12,14 +12,14 @@ using std::endl;
 using std::string;
 
 WaveformUtilities::EOBParameters::EOBParameters(const double idelta, const double ichis, const double ichia,
-						const double gtt_a4, const double gtt_a5, const double gtt_a6, const double grr_d4,
-						const double HamGyro_a, const double HamGyro_b, const double Ham_aSS)
+                                                const double gtt_a4, const double gtt_a5, const double gtt_a6, const double grr_d4,
+                                                const double HamGyro_a, const double HamGyro_b, const double Ham_aSS)
   : delta(idelta), nu((1.0-delta*delta)/4.0), chis(ichis), chia(ichia),
     chi((1-2*nu)*chis + delta*chia), chistar(2*nu*chis), chiKerr(chis + delta*chia),
     a4(gtt_a4), a5(gtt_a5), a6(gtt_a6), d4(grr_d4), a(HamGyro_a), b(HamGyro_b), aSS(Ham_aSS)
 { }
 
-WaveformUtilities::EOBParameters::EOBParameters(const double idelta, const double ichis, const double ichia, const std::string& PaperRef) 
+WaveformUtilities::EOBParameters::EOBParameters(const double idelta, const double ichis, const double ichia, const std::string& PaperRef)
   : delta(idelta), nu((1.0-delta*delta)/4.0), chis(ichis), chia(ichia),
     chi((1-2*nu)*chis + delta*chia), chistar(2*nu*chis), chiKerr(chis + delta*chia)
 {
@@ -186,7 +186,7 @@ void WaveformUtilities::EOBHamiltonianWithSpin::operator()(const double r_new, c
   r = r_new;
   prstar = prstar_new;
   pPhi = pPhi_new;
-  
+
   /// For k=0
 //   const double lambda = -(pow(chiKerr,2)*g.Dt) + pow(pow(chiKerr,2) + pow(r,2),2);
 //   const double dlambdadr = -(pow(chiKerr,2)*g.dDtdr) + 4*r*(pow(chiKerr,2) + pow(r,2));
@@ -207,28 +207,28 @@ void WaveformUtilities::EOBHamiltonianWithSpin::operator()(const double r_new, c
 //   const double dHeffdprstar = dHeffRadicanddprstar/(2.*sqrt(HeffRadicand)) + (dsigmadprstar*kappa*pPhi)/lambda;
 //   const double dHeffdpPhi = dHeffRadicanddpPhi/(2.*sqrt(HeffRadicand)) + (kappa*(chiKerr + dsigmadpPhi*pPhi + sigma))/lambda;
 
-  
+
   /// For k=1
   const double lambda = -(pow(chiKerr,2)*g.Dt) + pow(pow(chiKerr,2) + pow(r,2),2);
   const double dlambdadr = -(pow(chiKerr,2)*g.dDtdr) + 4*r*(pow(chiKerr,2) + pow(r,2));
   const double kappa = pow(chiKerr,2) - g.Dt + pow(r,2);
   const double dkappadr = -g.dDtdr + 2*r;
-  
+
   const double sigma = sigmaconst + (pow(pPhi,2)*sigmapPhi)/pow(r,2) + sigmarinv/r + pow(prstar,2)*(sigmapr + (g.Dr*sigmaprDr)/pow(r,2))*pow(g.drstardr,2);
   const double dsigmadr = (-2*pow(pPhi,2)*sigmapPhi)/pow(r,3) + pow(g.drstardr,2)*pow(prstar,2)*((-2*g.Dr*sigmaprDr)/pow(r,3) + (g.dDrdr*sigmaprDr)/pow(r,2)) + 2*g.ddrstardrdr*g.drstardr*pow(prstar,2)*(sigmapr + (g.Dr*sigmaprDr)/pow(r,2)) - sigmarinv/pow(r,2);
   const double dsigmadprstar = 2*pow(g.drstardr,2)*prstar*(sigmapr + (g.Dr*sigmaprDr)/pow(r,2));
   const double dsigmadpPhi = (2*pPhi*sigmapPhi)/pow(r,2);
-  
+
   const double HeffRadicand = (pow(prstar,2)*pow(pow(chiKerr,2) + pow(r,2),2) + (g.Dt*(2*pow(g.drstardr,4)*lambda*(4 - 3*nu)*nu*pow(prstar,4) + lambda*pow(r,2) + pow(pPhi,2)*pow(r,4)))/lambda)/lambda;
-  
+
   const double dHeffRadicanddr = (-(pow(chiKerr,4)*dlambdadr*lambda*pow(prstar,2)) - 2*pow(g.drstardr,3)*lambda*(-(dlambdadr*g.drstardr*g.Dt) + g.dDtdr*g.drstardr*lambda + 4*g.ddrstardrdr*g.Dt*lambda)*nu*(-4 + 3*nu)*pow(prstar,4) + 2*pow(lambda,2)*(g.Dt + 2*pow(chiKerr,2)*pow(prstar,2))*r + lambda*(g.dDtdr*lambda - dlambdadr*(g.Dt + 2*pow(chiKerr,2)*pow(prstar,2)))*pow(r,2) + 4*lambda*(g.Dt*pow(pPhi,2) + lambda*pow(prstar,2))*pow(r,3) + ((-2*dlambdadr*g.Dt + g.dDtdr*lambda)*pow(pPhi,2) - dlambdadr*lambda*pow(prstar,2))*pow(r,4))/pow(lambda,3);
   const double dHeffRadicanddprstar = (2*prstar*(2*pow(g.drstardr,4)*g.Dt*(8 - 6*nu)*nu*pow(prstar,2) + pow(pow(chiKerr,2) + pow(r,2),2)))/lambda;
   const double dHeffRadicanddpPhi = (2*g.Dt*pPhi*pow(r,4))/pow(lambda,2);
-  
+
   const double dHeffdr = dHeffRadicanddr/(2.*sqrt(HeffRadicand)) - (4*aSSterm)/pow(r,5) + (dsigmadr*kappa*lambda*pPhi + (-(dlambdadr*kappa) + dkappadr*lambda)*pPhi*(chiKerr + sigma))/pow(lambda,2);
   const double dHeffdprstar = dHeffRadicanddprstar/(2.*sqrt(HeffRadicand)) + (dsigmadprstar*kappa*pPhi)/lambda;
   const double dHeffdpPhi = dHeffRadicanddpPhi/(2.*sqrt(HeffRadicand)) + (kappa*(chiKerr + dsigmadpPhi*pPhi + sigma))/lambda;
-  
+
   Heff = sqrt(HeffRadicand)
     + pPhi*kappa*(chiKerr+sigma)/lambda
     + aSSterm/fourth(r);
@@ -237,10 +237,10 @@ void WaveformUtilities::EOBHamiltonianWithSpin::operator()(const double r_new, c
   ///dHdPhi = 0.0;
   dHdprstar = dHeffdprstar / H;
   dHdpPhi = dHeffdpPhi / H;
-  
+
   H = (H-1.0)/nu;
-  
+
   v = (dHdpPhi>0 ? pow(dHdpPhi, 1./3.) : -pow(-dHdpPhi, 1./3.));
-  
+
   return;
 }

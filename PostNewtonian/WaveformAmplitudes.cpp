@@ -283,7 +283,7 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
     }
     break;
   } // switch(L)
-  
+
   /// Hhat_{l,-m} = (-1)^l Hhat_{l,m}^\ast
   if(M<0) {
     if(L%2==0) {
@@ -292,7 +292,7 @@ void WaveformUtilities::WaveformAmplitudes::Hhat(const int L, const int M, const
       Re *= -1.0;
     }
   }
-  
+
   return;
 }
 
@@ -315,7 +315,7 @@ void WaveformUtilities::WaveformAmplitudes::rhOverM(const int L, const int M, co
 }
 
 void WaveformUtilities::WaveformAmplitudes::rhOverM(const int L, const int M, const vector<double>& v, const vector<double>& psi,
-						    const vector<double>& ichis, const vector<double>& ichia, vector<double>& Mag, vector<double>& Arg) {
+                                                    const vector<double>& ichis, const vector<double>& ichia, vector<double>& Mag, vector<double>& Arg) {
   vector<double> Re(v.size()), Im(v.size());
   for(unsigned int i=0; i<v.size(); ++i) {
     SetParameters(delta, ichis[i], ichia[i]);
@@ -358,29 +358,29 @@ double WaveformUtilities::WaveformAmplitudesSumMMagSquared::SumMMagSquared(const
     NormalizationFactor*fourth(v)
     *(Sum_v0
       + v*(Sum_v2
-	   + v*(Sum_v3
-		+ v*(Sum_v4
-		     + v*(Sum_v5
-			  + v*(Sum_v6 + lnv*Sum_v6lnv
-			       + v*(Sum_v7
-				    + v*(Sum_v8 + lnv*Sum_v8lnv
-					 + v*(Sum_v9 + lnv*Sum_v9lnv
-					      + v*(Sum_v10 + lnv*Sum_v10lnv
-						   + v*(Sum_v11 + lnv*Sum_v11lnv
-							+ v*(Sum_v12 + lnv*(Sum_v12lnv + lnv*(Sum_v12lnvSquared))
-							     + v*(Sum_v13 + lnv*(Sum_v13lnv)
-								  + v*(Sum_v14)
-								  )
-							     )
-							)
-						   )
-					      )
-					 )
-				    )
-			       )
-			  )
-		     )
-		)
-	   )
+           + v*(Sum_v3
+                + v*(Sum_v4
+                     + v*(Sum_v5
+                          + v*(Sum_v6 + lnv*Sum_v6lnv
+                               + v*(Sum_v7
+                                    + v*(Sum_v8 + lnv*Sum_v8lnv
+                                         + v*(Sum_v9 + lnv*Sum_v9lnv
+                                              + v*(Sum_v10 + lnv*Sum_v10lnv
+                                                   + v*(Sum_v11 + lnv*Sum_v11lnv
+                                                        + v*(Sum_v12 + lnv*(Sum_v12lnv + lnv*(Sum_v12lnvSquared))
+                                                             + v*(Sum_v13 + lnv*(Sum_v13lnv)
+                                                                  + v*(Sum_v14)
+                                                                  )
+                                                             )
+                                                        )
+                                                   )
+                                              )
+                                         )
+                                    )
+                               )
+                          )
+                     )
+                )
+           )
       );
 }

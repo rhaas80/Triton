@@ -48,10 +48,10 @@ timeval_diff(struct timeval *difference,
 int main() {
   timeval startval, endval, diff;
   long long difference;
-  
+
   time_t start,end;
   cout << setprecision(15);
-  
+
   gettimeofday(&startval,NULL);
   Waveform W1("/Users/boyle/Research/Data/nrar/SpEC-Case01/SpEC-Case01-Lev1/SpEC-Case01-Lev1-short.bbh", "ReIm");
   gettimeofday(&endval,NULL);
@@ -59,13 +59,13 @@ int main() {
   cout << "H5 read 1 took " << difference/1000000. << " seconds." << endl;
   cout << "W1.NTimes()=" << W1.NTimes() << "\tW1.NModes()=" << W1.NModes() << endl;
   cout << "W1.LM()=" << W1.LM() << endl;
-  
+
   gettimeofday(&startval,NULL);
   Output("/Users/boyle/Research/Data/nrar/SpEC-Case01/SpEC-Case01-Lev1/FiniteRadius/h_TestH5_1.dat", W1);
   gettimeofday(&endval,NULL);
   difference = timeval_diff(&diff, &endval, &startval);
   cout << "Dat output 1 took " << difference/1000000. << " seconds." << endl;
-  
+
   gettimeofday(&startval,NULL);
   Waveform W2("/Users/boyle/Research/Data/nrar/SpEC-Case01/SpEC-Case01-Lev1/FiniteRadius/h_TestH5_1.dat", "MagArg");
   gettimeofday(&endval,NULL);
@@ -73,13 +73,13 @@ int main() {
   cout << "Dat read took " << difference/1000000. << " seconds." << endl;
   cout << "W2.NTimes()=" << W2.NTimes() << "\tW2.NModes()=" << W2.NModes() << endl;
   cout << "W2.LM()=" << W2.LM() << endl;
-  
+
   gettimeofday(&startval,NULL);
   Output("/Users/boyle/Research/Data/nrar/SpEC-Case01/SpEC-Case01-Lev1/FiniteRadius/h_TestH5_2.dat", W2);
   gettimeofday(&endval,NULL);
   difference = timeval_diff(&diff, &endval, &startval);
   cout << "Dat output 2 took " << difference/1000000. << " seconds." << endl;
-  
+
   gettimeofday(&startval,NULL);
   Waveform W3("/Users/boyle/Research/Data/nrar/SpEC-Case01/SpEC-Case01-Lev1/SpEC-Case01-Lev1-short.bbh", "ReIm");
   gettimeofday(&endval,NULL);
@@ -87,6 +87,6 @@ int main() {
   cout << "H5 read 2 took " << difference/1000000. << " seconds." << endl;
   cout << "W3.NTimes()=" << W3.NTimes() << "\tW3.NModes()=" << W3.NModes() << endl;
   cout << "W3.LM()=" << W3.LM() << endl;
-  
+
   return 0;
 }

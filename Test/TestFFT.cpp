@@ -32,7 +32,7 @@ int main() {
     data.real(i) = Amp1*cos(2*M_PI*Freq1*t[i]) + Amp2*sin(2*M_PI*Freq2*t[i]) + Amp3*cos(2*M_PI*Freq3*t[i]);
     data.imag(i) = Amp1*sin(2*M_PI*Freq1*t[i]) + Amp2*cos(2*M_PI*Freq2*t[i]) + Amp4*cos(2*M_PI*Freq4*t[i]);
   }
-  
+
   /// Output time-domain data
   ofstream ofst("TestFFT.t.dat", ofstream::out);
   ofst << "# [1] = t\n"
@@ -43,7 +43,7 @@ int main() {
     ofst << t[i] << "\t" << data.real(i) << "\t" << data.imag(i) << endl;
   }
   ofst.close();
-  
+
   /// FFT the data
   vector<double> ReFexact(N, 0.0), ImFexact(N, 0.0), f(N, 0.0);
   f = WU::TimeToFrequency(t);
@@ -54,7 +54,7 @@ int main() {
     if(f[i]==Freq3 || f[i]==-Freq3) { ReFexact[i] = N*Amp3/2.0; }
     if(f[i]==Freq4 || f[i]==-Freq4) { ImFexact[i] = N*Amp4/2.0; }
   }
-  
+
   /// Output frequency-domain data
   ofstream ofsf("TestFFT.f.dat", ofstream::out);
   ofsf << "# [1] = f\n"
@@ -65,7 +65,7 @@ int main() {
     ofsf << f[i] << "\t" << data.real(i) << "\t" << data.imag(i) << endl;
   }
   ofsf.close();
-  
+
   /// Output errors
   ofstream ofse("TestFFT.ef.dat", ofstream::out);
   ofse << "# [1] = f\n"
@@ -78,11 +78,11 @@ int main() {
     ofse << f[i] << "\t" << data.real(i)-ReFexact[i] << "\t" << data.imag(i)-ImFexact[i] << endl; // "\t" << ReT[i]-ReFI[i] << "\t" << ImT[i]-ImFI[i] << endl;
   }
   ofse.close();
-  
+
   /// FFT the data back
   vector<double> ReFI(N, 0.0), ImFI(N, 0.0);
   WU::idft(data);
-  
+
   /// Output time-domain data
   ofstream ofsi("TestFFT.tt.dat", ofstream::out);
   ofsi << "# [1] = t\n"
@@ -93,6 +93,6 @@ int main() {
     ofsi << t[i] << "\t" << data.real(i) << "\t" << data.imag(i) << endl;
   }
   ofsi.close();
-  
+
   return 0;
 }

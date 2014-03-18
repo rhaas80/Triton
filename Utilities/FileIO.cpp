@@ -28,7 +28,7 @@ vector<string> ReadHeader(ifstream& ifs, int& HeaderLines) {
 
 
 void WU::ReadDatFile(const string& FileName, vector<vector<double> >& Data,
-		     vector<string>& Header, const bool Transpose)
+                     vector<string>& Header, const bool Transpose)
 {
   // If the FileName points to an h5 file and dataset, just get that
   if(FileName.find(".h5:")!=string::npos) {
@@ -88,25 +88,25 @@ void WU::ReadDatFile(const string& FileName, vector<vector<double> >& Data,
     // Header = vector<string>(0);
     // return;
   }
-  
+
   // Get the number of lines in the file
   char LengthChar[9];
   FILE* fp = popen(("wc -l " + FileName).c_str(), "r");
   fgets(LengthChar, 9, fp);
   pclose(fp);
   int FileLength = atoi(LengthChar);
-  
+
   // Open the file stream
   ifstream ifs(FileName.c_str(), ifstream::in);
   if(!ifs.is_open()) {
     cerr << "Couldn't open '" << FileName << "'" << endl;
     Throw1WithMessage("Bad file name");
   }
-  
+
   // Get the header and number of header lines
   int HeaderLines = 0;
   Header = ReadHeader(ifs, HeaderLines);
-  
+
   // Read the data
   vector<double> Line;
   unsigned int NumLines = FileLength - HeaderLines;
@@ -120,18 +120,18 @@ void WU::ReadDatFile(const string& FileName, vector<vector<double> >& Data,
     for(uint j=0; j<Line.size(); ++j) { Data[j][0] = Line[j]; }
     for(uint i=1; i<NumLines; ++i) {
       for(uint j=0; j<Line.size(); ++j) {
-	ifs >> Data[j][i];
+        ifs >> Data[j][i];
       }
     }
   } else {
     Data = vector<vector<double> >(NumLines, Line);
     for(uint i=1; i<Data.size(); ++i) {
       for(uint j=0; j<Data[i].size(); ++j) {
-	ifs >> Data[i][j];
+        ifs >> Data[i][j];
       }
     }
   }
-  
+
   // Close the file stream
   ifs.close();
 }
@@ -140,23 +140,23 @@ void WU::ReadDatFile(const string& FileName, vector<vector<double> >& Data,
 // This function writes a data file with a single column
 // Note that the Header is empty by default
 void WU::WriteDatFile(const string& FileName, const vector<double>& Data,
-		      const vector<string>& Header)
+                      const vector<string>& Header)
 {
   // Open the file stream
   ofstream ofs(FileName.c_str(), ofstream::out);
   ofs << setprecision(14) << flush;
-  
+
   // Write the header
   for(uint i=0; i<Header.size(); ++i) {
     ofs << Header[i] << endl;
   }
-  
+
   // Write the data
   for(uint i=0; i<Data.size()-1; ++i) {
     ofs << Data[i] << " ";
   }
   ofs << Data[Data.size()-1] << endl;
-  
+
   // Close the file stream
   ofs.close();
 }
@@ -166,17 +166,17 @@ void WU::WriteDatFile(const string& FileName, const vector<double>& Data,
 // Note that the Header is empty by default
 //ORIENTATION!!!
 void WU::WriteDatFile(const string& FileName, const vector<vector<double> >& Data,
-		      const vector<string>& Header)
+                      const vector<string>& Header)
 {
   // Open the file stream
   ofstream ofs(FileName.c_str(), ofstream::out);
   ofs << setprecision(14) << flush;
-  
+
   // Write the header
   for(uint i=0; i<Header.size(); ++i) {
     ofs << Header[i] << endl;
   }
-  
+
   // Write the data
   for(uint i=0; i<Data.size(); ++i) {
     for(uint j=0; j<Data[i].size()-1; ++j) {
@@ -184,7 +184,7 @@ void WU::WriteDatFile(const string& FileName, const vector<vector<double> >& Dat
     }
     ofs << Data[i][Data[i].size()-1] << endl;
   }
-  
+
   // Close the file stream
   ofs.close();
 }
@@ -194,7 +194,7 @@ void WU::WriteDatFile(const string& FileName, const vector<vector<double> >& Dat
 // Note that the Header is empty by default
 //ORIENTATION!!!
 void WU::WriteDatFile(const string& FileName, const vector<double>& Time,
-		      const vector<vector<double> >& Data, const vector<string>& Header)
+                      const vector<vector<double> >& Data, const vector<string>& Header)
 {
   // Make sure Time and Data have same length
   if(Data.size()<1) {
@@ -203,30 +203,30 @@ void WU::WriteDatFile(const string& FileName, const vector<double>& Time,
   }
   if(Time.size() != Data[0].size()) {
     cerr << "ERROR!!!\n"
-	 << "Time and Data vectors have wrong dimensions.\n"
-	 << "Outputting to separate files instead!" << endl;
+         << "Time and Data vectors have wrong dimensions.\n"
+         << "Outputting to separate files instead!" << endl;
     WriteDatFile(FileName+".time", Time, Header);
     WriteDatFile(FileName+".data", Data, Header);
   } else {
-    
+
     // Open the file stream
     ofstream ofs(FileName.c_str(), ofstream::out);
     ofs << setprecision(14) << flush;
-    
+
     // Write the header
     for(uint i=0; i<Header.size(); ++i) {
       ofs << Header[i] << endl;
     }
-    
+
     // Write the time and data
     for(uint i=0; i<Time.size(); ++i) { // Loop over times
       ofs << Time[i] << " ";
       for(uint j=0; j<Data.size()-1; ++j) { // Loop over components
-	ofs << Data[j][i] << " ";
+        ofs << Data[j][i] << " ";
       }
       ofs << Data[Data.size()-1][i] << endl;
     }
-    
+
     // Close the file stream
     ofs.close();
   }

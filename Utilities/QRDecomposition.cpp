@@ -21,9 +21,9 @@ QRdcmp::QRdcmp(MatDoub_I &a)
       c[k]=sigma*r[k][k];
       d[k] = -scale*sigma;
       for (j=k+1;j<n;j++) {
-	for (sum=0.0,i=k;i<n;i++) sum += r[i][k]*r[i][j];
-	tau=sum/c[k];
-	for (i=k;i<n;i++) r[i][j] -= tau*r[i][k];
+        for (sum=0.0,i=k;i<n;i++) sum += r[i][k]*r[i][j];
+        tau=sum/c[k];
+        for (i=k;i<n;i++) r[i][j] -= tau*r[i][k];
       }
     }
   }
@@ -36,12 +36,12 @@ QRdcmp::QRdcmp(MatDoub_I &a)
   for (k=0;k<n-1;k++) {
     if (c[k] != 0.0) {
       for (j=0;j<n;j++) {
-	sum=0.0;
-	for (i=k;i<n;i++)
-	  sum += r[i][k]*qt[i][j];
-	sum /= c[k];
-	for (i=k;i<n;i++)
-	  qt[i][j] -= sum*r[i][k];
+        sum=0.0;
+        for (i=k;i<n;i++)
+          sum += r[i][k]*qt[i][j];
+        sum /= c[k];
+        for (i=k;i<n;i++)
+          qt[i][j] -= sum*r[i][k];
       }
     }
   }

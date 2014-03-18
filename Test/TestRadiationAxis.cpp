@@ -29,13 +29,13 @@ using WaveformObjects::Waveform;
 /// spits out its best guess for alpha(t) and beta(t).  The function
 /// gamma(t) is not guessed, because this does not affect the
 /// radiation axis.
-/// 
+///
 /// The first output of this test is TestRadiationAxis.dat, which
 /// gives columns of the angles input, the angles found, and the
 /// error.  In each case, gamma can be safely ignored.  The error in
 /// alpha and beta should be <~1e-8, except where the input beta is
 /// close to 0 or pi.
-/// 
+///
 /// The second output is a series of waveforms,
 /// rhOverM_TestRadiationAxis{1,2,3,4}.dat.  Here, 1 is the original
 /// waveform; 2 is the waveform when the physical system is rotated; 3
@@ -67,7 +67,7 @@ int main() {
   W.MagRef(2) *= 0.0;
   //W.MagRef(3) *= 0.0;
   cout << "Created Waveform with " << W.NTimes() << " steps." << endl;
-  
+
   // Construct the time-dependent precession angles
   vector<double> alpha(W.NTimes());
   vector<double> beta(W.NTimes());
@@ -82,18 +82,18 @@ int main() {
 //     beta[t] = M_PI*(0.012 + (W.T(t)-W.T(0))/(W.T().back()-W.T(0)));
 //     gamma[t] = M_PI*(0.034 + (W.T(t)-W.T(0))/2000.0);
 //   }
-  
+
   // Add the time-dependent rotation to the Waveform
   const Waveform WIni = W;
   W.RotatePhysicalSystem(alpha, beta, gamma);
-  
+
   // Find the radiation axis
   vector<double> alphaOut, betaOut, gammaOut;
   vector<vector<double> > L(W.NTimes(), vector<double>(3, 0.0));
   RadiationAxis(W, alphaOut, betaOut);
   AngularMomentumVector(W, L);
   gammaOut.resize(betaOut.size());
-  
+
   // Write the results to files
   ofstream file1("TestRadiationAxis.dat");
   file1 << "# [1] = t\n"
@@ -106,19 +106,19 @@ int main() {
        << setprecision(16);
   for(unsigned int t=0; t<W.NTimes(); ++t) {
     file1 << W.T(t) << " "
-	  << L[t][0] << " "
-	  << L[t][1] << " "
-	  << L[t][2] << " "
-	  << sin(beta[t])*cos(alpha[t]) << " "
-	  << sin(beta[t])*sin(alpha[t]) << " "
-	  << cos(beta[t])
-	  << endl;
+          << L[t][0] << " "
+          << L[t][1] << " "
+          << L[t][2] << " "
+          << sin(beta[t])*cos(alpha[t]) << " "
+          << sin(beta[t])*sin(alpha[t]) << " "
+          << cos(beta[t])
+          << endl;
   }
   file1.close();
   return 0;
-  
-  
-  
+
+
+
   // Write the results to files
   ofstream file("TestRadiationAxis.dat");
   file << "# [1] = t\n"
@@ -140,22 +140,22 @@ int main() {
     const double betaL = acos(L[t][2]);
     const double gammaL = 0.0;
     file << W.T(t) << " "
-	 << alpha[t] << " "
-	 << beta[t] << " "
-	 << gamma[t] << " "
-	 << alphaOut[t] << " "
-	 << betaOut[t] << " "
-	 << gammaOut[t] << " "
-	 << alpha[t]-alphaOut[t] << " "
-	 << beta[t]-betaOut[t] << " "
-	 << gamma[t]-gammaOut[t] << " "
-	 << alphaL << " "
-	 << betaL << " "
-	 << gammaL
-	 << endl;
+         << alpha[t] << " "
+         << beta[t] << " "
+         << gamma[t] << " "
+         << alphaOut[t] << " "
+         << betaOut[t] << " "
+         << gammaOut[t] << " "
+         << alpha[t]-alphaOut[t] << " "
+         << beta[t]-betaOut[t] << " "
+         << gamma[t]-gammaOut[t] << " "
+         << alphaL << " "
+         << betaL << " "
+         << gammaL
+         << endl;
   }
   file.close();
-  
+
   // Output Waveforms
   Output("rhOverM_TestRadiationAxis1.dat", WIni);
   Output("rhOverM_TestRadiationAxis2.dat", W);
@@ -163,14 +163,14 @@ int main() {
   Output("rhOverM_TestRadiationAxis3.dat", W3.RotateCoordinates(alphaOut, betaOut, gammaOut));
   Waveform W4 = W;
   Output("rhOverM_TestRadiationAxis4.dat", W4.RotateCoordinates(alpha, beta, gamma));
-  
-  
-  
+
+
+
   // Find the radiation axis
   vector<Quaternion> Q;
   RadiationAxis(W, Q);
   Quaternion Z(0,0,0,1);
-  
+
   // Write the results to files
   ofstream file2("TestRadiationAxis2.dat");
   file2 << "# [1] = t\n"
@@ -187,16 +187,16 @@ int main() {
   for(unsigned int t=0; t<W.NTimes(); ++t) {
     vector<double> AlphaBetaGamma = Q[t].EulerAnglesZYZ();
     file2 << W.T(t) << " "
-	  << sin(beta[t])*cos(alpha[t]) << " "
-	  << sin(beta[t])*sin(alpha[t]) << " "
-	  << cos(beta[t]) << " "
-	  << (Q[t]*Z*(Q[t].Conjugate())).Axis() << " "
-	  << sin(AlphaBetaGamma[1])*cos(AlphaBetaGamma[0]) << " "
-	  << sin(AlphaBetaGamma[1])*sin(AlphaBetaGamma[0]) << " "
-	  << cos(AlphaBetaGamma[1])
-	  << endl;
+          << sin(beta[t])*cos(alpha[t]) << " "
+          << sin(beta[t])*sin(alpha[t]) << " "
+          << cos(beta[t]) << " "
+          << (Q[t]*Z*(Q[t].Conjugate())).Axis() << " "
+          << sin(AlphaBetaGamma[1])*cos(AlphaBetaGamma[0]) << " "
+          << sin(AlphaBetaGamma[1])*sin(AlphaBetaGamma[0]) << " "
+          << cos(AlphaBetaGamma[1])
+          << endl;
   }
   file2.close();
-  
+
   return 0;
 }

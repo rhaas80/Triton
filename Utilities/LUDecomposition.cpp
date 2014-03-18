@@ -21,15 +21,15 @@ LUdcmp::LUdcmp(MatDoub_I &a) : n(a.nrows()), lu(a), aref(a), indx(n) {
     for (i=k;i<n;i++) {
       temp=vv[i]*std::abs(lu[i][k]);
       if (temp > big) {
-	big=temp;
-	imax=i;
+        big=temp;
+        imax=i;
       }
     }
     if (k != imax) {
       for (j=0;j<n;j++) {
-	temp=lu[imax][j];
-	lu[imax][j]=lu[k][j];
-	lu[k][j]=temp;
+        temp=lu[imax][j];
+        lu[imax][j]=lu[k][j];
+        lu[k][j]=temp;
       }
       d = -d;
       vv[imax]=vv[k];
@@ -39,7 +39,7 @@ LUdcmp::LUdcmp(MatDoub_I &a) : n(a.nrows()), lu(a), aref(a), indx(n) {
     for (i=k+1;i<n;i++) {
       temp=lu[i][k] /= lu[k][k];
       for (j=k+1;j<n;j++)
-	lu[i][j] -= temp*lu[k][j];
+        lu[i][j] -= temp*lu[k][j];
     }
   }
 }

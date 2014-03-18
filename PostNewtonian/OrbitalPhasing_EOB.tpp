@@ -16,7 +16,7 @@ public:
     g(y[0]);
     H(y[0], y[2], y[3]);
     T(H.v, y[0], y[2], y[3]); /// (v, r, prstar, pPhi)
-    
+
     /// Eqs. (10) of Pan et al., 2011:
     dydt[0] = g.drdrstar * H.dHdprstar;
     dydt[1] = H.dHdpPhi;
@@ -34,35 +34,35 @@ public:
 
 template <class Metric, class Hamiltonian, class HamiltonEquations>
 std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, const HamiltonEquations& d,
-				  const std::vector<double>& ystartGuess, const double AcceptableEcc, const double& v0);
+                                  const std::vector<double>& ystartGuess, const double AcceptableEcc, const double& v0);
 
 
 template <class Hamiltonian, class HamiltonEquations>
 void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d, std::vector<double>& y0,
-		    const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
-		    std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
-		    std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi);
+                    const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
+                    std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
+                    std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi);
 
 
 template <class Metric, class Hamiltonian, class Torque>
 void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
-	 const double delta, const double chis, const double chia, const double v0,
-	 std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
-	 std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi,
-	 const int nsave, const bool denseish, const double rtol)
+         const double delta, const double chis, const double chia, const double v0,
+         std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
+         std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi,
+         const int nsave, const bool denseish, const double rtol)
 {
   clock_t start,end;
-  
+
   /// Construct the physics object
   EOBHamiltonEquations<Metric, Hamiltonian, Torque> d(g, H, T);
-  
+
   /// Guess some parameters
   const double nu = (1.0-delta*delta)/4.0;
   const double GuessedLength = 1.1 * 5.0/(256.0*nu*::pow(v0,8));
   const double AcceptableEcc=1e-12;
   const double r0 = 1.0/(v0*v0);
   const double h1=10*(2.0*M_PI/(v0*v0*v0))/4.0;
-  
+
   /// Set up initial conditions
   std::vector<double> ystart(4, 0.0);
   g(r0);
@@ -75,7 +75,7 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
   ystart[2] = nu * g.drstardr * T.Torque / dpPhi0dr;
   if(ystart[2]>0.0) ystart[2] *= -1;
   //std::cout << ystart << std::endl;
-  
+
   //// If spin is too large, build up to the goal gradually, reducing eccentricity at each step
   std::vector<double> chisMax(10);
   chisMax[0] = 0.1; chisMax[1] = 0.2; chisMax[2] = 0.3; chisMax[3] = 0.4; chisMax[4] = 0.45;
@@ -94,41 +94,41 @@ void EOB(const Metric& g, const Hamiltonian& H, const Torque& T,
       ystart = ReduceEccentricity(g, H, d, ystart, 1.e-10, v0);
     }
   }
-  
+
   //// Now reduce eccentricity with the real parameters
   std::cout << "Reducing eccentricity ... " << std::flush;
   start = clock();
   ystart = ReduceEccentricity(g, H, d, ystart, AcceptableEcc, v0);
   end = clock();
   std::cout << "\nEccentricity reduction took " << std::setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << std::flush;
-  
+
   start = clock();
   EOBIntegration(H, d, ystart, GuessedLength, rtol, h1, nsave, denseish, t, v, Phi, r, prstar, pPhi);
   end = clock();
   std::cout << "\tEOBIntegration took " << std::setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << std::endl;
-  
+
   return;
 }
 
 
 template <class Hamiltonian, class HamiltonEquations>
 void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d,
-		    std::vector<double>& y0, const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
-		    std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
-		    std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi)
+                    std::vector<double>& y0, const double tLength, const double rtol, const double h1, const int nsave, const bool denseish,
+                    std::vector<double>& t, std::vector<double>& v, std::vector<double>& Phi,
+                    std::vector<double>& r, std::vector<double>& prstar, std::vector<double>& pPhi)
 {
   const double atol = 0.0;
   const double t0 = 0.0, t1 = tLength;
   const double hmin=1.0e-2;
   Output out(nsave);
-  
+
   /// First pass, integrating until tLength or the 'Early' integration test fails
   Odeint<StepperBS<HamiltonEquations> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, &HamiltonEquations::ContinueIntegratingEarly);
   //Odeint<StepperDopr853<HamiltonEquations> > odeA(y0, t0, t1, atol, rtol, h1, hmin, out, d, denseish, &HamiltonEquations::ContinueIntegratingEarly);
   try {
     odeA.integrate();
   } catch(NRerror err) { }
-  
+
   /// Second pass, only if 'Early' integration test failed
   {
     const double t0B = out.xsave[out.count-1];
@@ -139,11 +139,11 @@ void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d,
       const double h1 = MIN(nsave*(out.xsave[out.count-1]-out.xsave[out.count-2])/1.0, (t1-t0B)/100.0);
       Odeint<StepperDopr853<HamiltonEquations> > odeB(y0, t0B, t1, atol, rtol, h1, hmin, out, d, denseish, &HamiltonEquations::ContinueIntegrating);
       try {
-	odeB.integrate();
+        odeB.integrate();
       } catch(NRerror err) { }
     }
   }
-  
+
   /// Save the results
   out.xsave.resize(out.count);
   t.swap(out.xsave);
@@ -158,7 +158,7 @@ void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d,
     v[i] = H.v;
   }
   t -= t.back();
-  
+
   return;
 }
 
@@ -174,7 +174,7 @@ void EOBIntegration(const Hamiltonian& H, HamiltonEquations& d,
 //////////////////////////////////////////////////////////////////////////
 template <class Metric, class Hamiltonian, class HamiltonEquations>
 std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, const HamiltonEquations& d,
-				       const std::vector<double>& ystartGuess, const double AcceptableEcc, const double& v0)
+                                       const std::vector<double>& ystartGuess, const double AcceptableEcc, const double& v0)
 {
   const unsigned int NMaxIterations=1000;
   const double Omega0 = v0*v0*v0;
@@ -188,7 +188,7 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
   std::vector<double> ystartinitial(ystart);
   std::vector<double> Bestystart(ystart);
   std::vector<double> t, Phi, v, r, prstar, pPhi;
-  
+
   //// Reduce eccentricity
   double BestEcc=1.e100;
   //// Iterations of arXiv:1012.1549's method
@@ -205,13 +205,13 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
     g(ystartinitial[0]);
     H(ystartinitial[0], ystartinitial[2], ystartinitial[3]);
     double Ecc = Eccentricity_rDot(t, prstar, ystartinitial[0], H.dHdpPhi, DeltarDot, DeltaPhiDot);
-    
+
     if(i==0) {
       BestEcc = Ecc;
     } else {
       if(fabs(Ecc)<fabs(BestEcc)) {
-	BestEcc = Ecc;
-	Bestystart = ystartinitial;
+        BestEcc = Ecc;
+        Bestystart = ystartinitial;
       }
     }
     if(fabs(BestEcc)<AcceptableEcc) {
@@ -228,8 +228,8 @@ std::vector<double> ReduceEccentricity(const Metric& g, const Hamiltonian& H, co
     //std::cout << "i: " << i << "\tEcc: " << Ecc << std::endl;
   }
   std::cerr << "!!! Did not achieve acceptable eccentricity reduction !!!" << std::endl
-	    << "Proceeding anyway, with e=" << BestEcc << "." << std::endl;
-  
+            << "Proceeding anyway, with e=" << BestEcc << "." << std::endl;
+
   return Bestystart;
 }
 //////////////////////////////////////////////////////////////////////////

@@ -41,7 +41,7 @@ int main() {
 //   W.DropLMode(4);
 //   W.DropLMode(3);
   cout << "Created Waveform with " << W.NTimes() << " steps." << endl;
-  
+
   // Construct the time-dependent precession angles
   vector<double> alpha(W.NTimes());
   vector<double> beta(W.NTimes());
@@ -61,17 +61,17 @@ int main() {
     beta[t] = 2*M_PI*25.0/360.0;
     gamma[t] = -alpha[t];
   }
-  
+
   // Add the time-dependent rotation to the Waveform
   const Waveform WIni = W;
   W.RotatePhysicalSystem(alpha, beta, gamma);
-  
+
   // Find the radiation axis
 //   vector<Quaternion> Q;
 //   RadiationAxis(W, Q);
   vector<double> alphaOut, betaOut, gammaOut;
   MinimalRotation(W, alphaOut, betaOut, gammaOut);
-  
+
 //   // Write the results to file
 //   const Quaternion Z(0, 0, 0, 1);
 //   vector<Quaternion> QIn = Quaternions(alpha, beta, gamma);
@@ -90,12 +90,12 @@ int main() {
 //     MaxErr = (MaxErr<AxisAngleErr) ? AxisAngleErr : MaxErr;
 //     SumErr += AxisAngleErr;
 //     file << W.T(t) << " "
-// 	 << AxisAngleErr
-// 	 << endl;
+//       << AxisAngleErr
+//       << endl;
 //   }
 //   file.close();
 //   cout << "Run 1: MaxErr=" << MaxErr << "  AvgErr=" << SumErr/double(W.NTimes()) << endl;
-  
+
   // Write the results to file
   const Quaternion Z(0, 0, 0, 1);
   vector<Quaternion> QIn = Quaternions(alpha, beta, gamma);
@@ -123,21 +123,21 @@ int main() {
     MaxErr = (MaxErr<AxisAngleErr) ? AxisAngleErr : MaxErr;
     SumErr += AxisAngleErr;
     file << W.T(t) << " "
-	 << alpha[t] << " "
-	 << beta[t] << " "
-	 << gamma[t] << " "
-	 << alphaOut[t] << " "
-	 << betaOut[t] << " "
-	 << gammaOut[t] << " "
-	 << alpha[t]-alphaOut[t] << " "
-	 << beta[t]-betaOut[t] << " "
-	 << gamma[t]-gammaOut[t] << " "
-	 << AxisAngleErr
-	 << endl;
+         << alpha[t] << " "
+         << beta[t] << " "
+         << gamma[t] << " "
+         << alphaOut[t] << " "
+         << betaOut[t] << " "
+         << gammaOut[t] << " "
+         << alpha[t]-alphaOut[t] << " "
+         << beta[t]-betaOut[t] << " "
+         << gamma[t]-gammaOut[t] << " "
+         << AxisAngleErr
+         << endl;
   }
   file.close();
   cout << "Run 1: MaxErr=" << MaxErr << "  AvgErr=" << SumErr/double(W.NTimes()) << endl;
-  
+
   // Output Waveforms
   //Output("rhOverM_TestYawFree1.dat", WIni);
   //Output("rhOverM_TestYawFree2.dat", W);
@@ -148,7 +148,7 @@ int main() {
   Output("rhOverM_TestYawFree4.dat", W4.RotateCoordinates(alphaOut, betaOut, gammaOut));
   Waveform W5 = W;
   //Output("rhOverM_TestYawFree5.dat", W5.RotateCoordinates(alphaOut, betaOut, vector<double>(beta.size(), 0.0)));
-  
+
 //   // Do it again with an overall rotation
 //   {
 // //     vector<double> alphaOut, betaOut, gammaOut;
@@ -174,8 +174,8 @@ int main() {
 //     vector<Quaternion> QDiff = QIn*QOut;
 //     ofstream file("TestYawFree_Rotated.dat");
 //     file << "# [1] = t\n"
-// 	 << "# [2] = AxisAngleErr\n"
-// 	 << setprecision(16);
+//       << "# [2] = AxisAngleErr\n"
+//       << setprecision(16);
 //     double MaxErr = 0.0;
 //     double SumErr = 0.0;
 //     for(unsigned int t=0; t<W.NTimes(); ++t) {
@@ -183,8 +183,8 @@ int main() {
 //       MaxErr = (MaxErr<AxisAngleErr) ? AxisAngleErr : MaxErr;
 //       SumErr += AxisAngleErr;
 //       file << W.T(t) << " "
-// 	   << AxisAngleErr
-// 	   << endl;
+//         << AxisAngleErr
+//         << endl;
 //     }
 //     file.close();
 //     cout << "Run 2: MaxErr=" << MaxErr << "  AvgErr=" << SumErr/double(W.NTimes()) << endl;
@@ -215,17 +215,17 @@ int main() {
     vector<Quaternion> QDiff = QIn*QOut;
     ofstream file("TestYawFree_Rotated.dat");
     file << "# [1] = t\n"
-	 << "# [2] = alphaIn\n"
-	 << "# [3] = betaIn\n"
-	 << "# [4] = gammaIn\n"
-	 << "# [5] = alphaOut\n"
-	 << "# [6] = betaOut\n"
-	 << "# [7] = gammaOut\n"
-	 << "# [8] = alphaErr\n"
-	 << "# [9] = betaErr\n"
-	 << "# [10] = gammaErr\n"
-	 << "# [11] = AxisAngleErr\n"
-	 << setprecision(16);
+         << "# [2] = alphaIn\n"
+         << "# [3] = betaIn\n"
+         << "# [4] = gammaIn\n"
+         << "# [5] = alphaOut\n"
+         << "# [6] = betaOut\n"
+         << "# [7] = gammaOut\n"
+         << "# [8] = alphaErr\n"
+         << "# [9] = betaErr\n"
+         << "# [10] = gammaErr\n"
+         << "# [11] = AxisAngleErr\n"
+         << setprecision(16);
     double MaxErr = 0.0;
     double SumErr = 0.0;
     for(unsigned int t=0; t<W.NTimes(); ++t) {
@@ -233,21 +233,21 @@ int main() {
       MaxErr = (MaxErr<AxisAngleErr) ? AxisAngleErr : MaxErr;
       SumErr += AxisAngleErr;
       file << W.T(t) << " "
-	   << alpha[t] << " "
-	   << beta[t] << " "
-	   << gamma[t] << " "
-	   << alphaOut[t] << " "
-	   << betaOut[t] << " "
-	   << gammaOut[t] << " "
-	   << alpha[t]+alphaOut[t] << " "
-	   << beta[t]+betaOut[t] << " "
-	   << gamma[t]+gammaOut[t] << " "
-	   << AxisAngleErr
-	   << endl;
+           << alpha[t] << " "
+           << beta[t] << " "
+           << gamma[t] << " "
+           << alphaOut[t] << " "
+           << betaOut[t] << " "
+           << gammaOut[t] << " "
+           << alpha[t]+alphaOut[t] << " "
+           << beta[t]+betaOut[t] << " "
+           << gamma[t]+gammaOut[t] << " "
+           << AxisAngleErr
+           << endl;
     }
     file.close();
     cout << "Run 2: MaxErr=" << MaxErr << "  AvgErr=" << SumErr/double(W.NTimes()) << endl;
   }
-  
+
   return 0;
 }

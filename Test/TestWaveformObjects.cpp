@@ -22,13 +22,13 @@ int main() {
   const double TotalMassInSolarMasses = 110;
   const double DistanceInMegaparsecs = 100;
   const double dt = 1.0/IniLIGOSamplingFreq;
-  
+
   const bool WriteFiles = true;
-  
+
   cout << "Reading " << InFile << " ... " << flush;
   Waveform W(InFile, "MagArg");
   cout << "☺" << endl;
-  
+
   if(WriteFiles) {
     cout << "Writing " << OutWaveform << " ... " << flush;
     ofstream ofs(OutWaveform.c_str(), ofstream::out);
@@ -37,9 +37,9 @@ int main() {
     ofs.close();
     cout << "☺" << endl;
   }
-  
+
   W.DropBefore(-1.0e5).SetPhysicalMassAndDistance(TotalMassInSolarMasses, DistanceInMegaparsecs);
-  
+
   if(WriteFiles) {
     cout << "Writing " << OutWaveformScaled << " ... " << flush;
     ofstream ofs1(OutWaveformScaled.c_str(), ofstream::out);
@@ -48,9 +48,9 @@ int main() {
     ofs1.close();
     cout << "☺" << endl;
   }
-  
+
   WaveformAtAPoint WAAP(W, dt, 0.0, 0.0);
-  
+
   if(WriteFiles) {
     cout << "Writing " << OutWaveformAAP << " ... " << flush;
     ofstream ofs2(OutWaveformAAP.c_str(), ofstream::out);
@@ -59,10 +59,10 @@ int main() {
     ofs2.close();
     cout << "☺" << endl;
   }
-  
+
   WaveformAtAPointFT WFT(WAAP);
   //WFT = WFT*(1.0/WFT.NTimes());
-  
+
   if(WriteFiles) {
     cout << "Writing " << OutWaveformFT << " ... " << flush;
     ofstream ofs(OutWaveformFT.c_str(), ofstream::out);
@@ -71,7 +71,7 @@ int main() {
     ofs.close();
     cout << "☺" << endl;
   }
-  
+
   vector<double> InversePSD = InverseNoiseCurve(WFT.F(), Detector);
   cout << "WFT.SNR() = " << WFT.SNR(InversePSD) << " [76 is typical]" << endl;
   cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << " [5850 is typical]" << endl;
@@ -81,7 +81,7 @@ int main() {
   cout << "WFT.SNR() = " << WFT.SNR(InversePSD) << " [This should be 1]" << endl;
   cout << "WFT.InnerProduct(WFT, InversePSD) = " << WFT.InnerProduct(WFT, InversePSD) << " [This should be 1]" << endl;
   cout << "WFT.Match(WFT, InversePSD) = " << WFT.Match(WFT, InversePSD) << " [This should be 1]" << endl;
-  
+
 //   // Test that WFT.Re() is even and WFT.Im() is odd
 //   const double Tol = 1e-7;
 //   cout << "\n\nChecking that \\tilde{h}(-f) = \\tilde{h}^\\ast(f) to within " << Tol << " ..." << endl;
@@ -98,6 +98,6 @@ int main() {
 //     }
 //   }
 //   cout << "Done checking." << endl;
-  
+
   return 0;
 }

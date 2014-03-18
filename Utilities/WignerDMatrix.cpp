@@ -52,21 +52,21 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
     Calculator = &WignerDMatrixLocal::Uninitialized;
     return;
   }
-  
+
   if(iL>8) {
     std::cerr << "\nL=" << iL << std::endl;
     Throw1WithMessage("This L value not yet implemented for Wigner D matrices.");
   }
-  
+
   if(abs(iMP)>iL || abs(iM)>iL) {
     std::cerr << "\nL=" << iL << "  MP=" << iMP << "  M=" << iM << std::endl;
     Throw1WithMessage("Bad MP or M, out of range for Wigner D matrix.");
   }
-  
+
   L=iL;
   MP=iMP;
   M=iM;
-  
+
   switch(L) {
   case 0:
     switch(M) {
@@ -77,9 +77,9 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   case 1:
     switch(M) {
     case -1:
@@ -95,7 +95,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -1:
@@ -109,7 +109,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -1:
@@ -123,9 +123,9 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   case 2:
     switch(M) {
     case -2:
@@ -147,7 +147,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -2:
@@ -167,7 +167,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -2:
@@ -187,7 +187,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -2:
@@ -207,7 +207,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -2:
@@ -227,9 +227,9 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   case 3:
     switch(M) {
     case -3:
@@ -257,7 +257,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -3:
@@ -283,7 +283,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -3:
@@ -309,7 +309,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -3:
@@ -335,7 +335,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -3:
@@ -361,7 +361,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -3:
@@ -387,7 +387,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -3:
@@ -413,9 +413,9 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   case 4:
     switch(M) {
     case -4:
@@ -449,7 +449,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -4:
@@ -481,7 +481,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -4:
@@ -513,7 +513,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -4:
@@ -545,7 +545,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -4:
@@ -577,7 +577,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -4:
@@ -609,7 +609,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -4:
@@ -641,7 +641,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -4:
@@ -673,7 +673,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -4:
@@ -705,9 +705,9 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   case 5:
     switch(M) {
     case -5:
@@ -747,7 +747,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -5:
@@ -785,7 +785,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -5:
@@ -823,7 +823,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -5:
@@ -861,7 +861,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -5:
@@ -899,7 +899,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -5:
@@ -937,7 +937,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -5:
@@ -975,7 +975,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -5:
@@ -1013,7 +1013,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -5:
@@ -1051,7 +1051,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -5:
@@ -1089,7 +1089,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -5:
@@ -1127,9 +1127,9 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   case 6:
     switch(M) {
     case -6:
@@ -1175,7 +1175,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -6:
@@ -1219,7 +1219,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -6:
@@ -1263,7 +1263,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -6:
@@ -1307,7 +1307,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -6:
@@ -1351,7 +1351,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -6:
@@ -1395,7 +1395,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -6:
@@ -1439,7 +1439,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -6:
@@ -1483,7 +1483,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -6:
@@ -1527,7 +1527,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -6:
@@ -1571,7 +1571,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -6:
@@ -1615,7 +1615,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -6:
@@ -1659,7 +1659,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -6:
@@ -1703,9 +1703,9 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   case 7:
     switch(M) {
     case -7:
@@ -1757,7 +1757,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -6:
       switch(MP) {
       case -7:
@@ -1807,7 +1807,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -7:
@@ -1857,7 +1857,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -7:
@@ -1907,7 +1907,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -7:
@@ -1957,7 +1957,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -7:
@@ -2007,7 +2007,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -7:
@@ -2057,7 +2057,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -7:
@@ -2107,7 +2107,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -7:
@@ -2157,7 +2157,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -7:
@@ -2207,7 +2207,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -7:
@@ -2257,7 +2257,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -7:
@@ -2307,7 +2307,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -7:
@@ -2357,7 +2357,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -7:
@@ -2407,7 +2407,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 7:
       switch(MP) {
       case -7:
@@ -2457,9 +2457,9 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   case 8:
     switch(M) {
     case -8:
@@ -2517,7 +2517,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -7:
       switch(MP) {
       case -8:
@@ -2573,7 +2573,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -6:
       switch(MP) {
       case -8:
@@ -2629,7 +2629,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -8:
@@ -2685,7 +2685,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -8:
@@ -2741,7 +2741,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -8:
@@ -2797,7 +2797,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -8:
@@ -2853,7 +2853,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -8:
@@ -2909,7 +2909,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -8:
@@ -2965,7 +2965,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -8:
@@ -3021,7 +3021,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -8:
@@ -3077,7 +3077,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -8:
@@ -3133,7 +3133,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -8:
@@ -3189,7 +3189,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -8:
@@ -3245,7 +3245,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -8:
@@ -3301,7 +3301,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 7:
       switch(MP) {
       case -8:
@@ -3357,7 +3357,7 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     case 8:
       switch(MP) {
       case -8:
@@ -3413,11 +3413,10 @@ void WaveformUtilities::WignerDMatrix::SetElement(const int iL, const int iMP, c
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
-    
+
   } // switch(L)
-  
+
   return;
 }
-

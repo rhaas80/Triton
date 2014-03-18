@@ -18,7 +18,7 @@ private:
   double Phi0;
   double t2, t3, t4, t5, t6, t6Lnv, t7;
   double Phi2, Phi3, Phi4, Phi5, Phi5Lnv, Phi6, Phi6Lnv, Phi7;
-  
+
 public:
   T2(const double delta, const double chis, const double chia, const double v0)
     : nu((1.0-delta*delta)/4.0), Phi0(0.0),
@@ -42,14 +42,14 @@ public:
     (*this)(v0, t, Phi0);
     Phi0 *= -1.0;
   }
-  
+
   /// Make this object a functor for finding the value of v for which t=0
   double operator()(const double v) const {
     double t, Phi;
     (*this)(v, t, Phi);
     return t;
   }
-  
+
   /// This evaluates the approximant for values of v
   void operator()(const double v, double& t, double& Phi) const {
     const double lnv = log(v);
@@ -61,8 +61,8 @@ public:
 };
 
 void WU::TaylorT2(const double delta, const double chis, const double chia, const double v0,
-		  vector<double>& t, vector<double>& v, vector<double>& Phi,
-		  const int NPoints)
+                  vector<double>& t, vector<double>& v, vector<double>& Phi,
+                  const int NPoints)
 {
   T2 d(delta, chis, chia, v0);
   int nroot;

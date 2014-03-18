@@ -17,7 +17,7 @@ class T4 {
 private:
   double nu;
   double dvdt2, dvdt3, dvdt4, dvdt5, dvdt6, dvdt6Ln4v, dvdt7;
-  
+
 public:
   T4(const double delta, const double chis, const double chia)
     : nu((1.0-delta*delta)/4.0),
@@ -29,25 +29,25 @@ public:
       dvdt6Ln4v(-16.304761904761904),
       dvdt7(9.185773074661964e-6*(-374493.5522711713 + 4.104076111684791e6*pow(chia,2) - 1.0117628e7*chis - 7.116984e6*pow(chia,2)*chis + 4.104076111684791e6*pow(chis,2) - 6.87204e6*pow(chis,3) - 1.0117628e7*chia*delta - 6.87204e6*pow(chia,3)*delta + 8.208152223369582e6*chia*chis*delta - 2.061612e7*chia*pow(chis,2)*delta - 1.3499136e7*pow(chia,2)*chis*pow(delta,2) + 2.028259341047374e7*nu - 1.6416304446739163e7*pow(chia,2)*nu + 2.1545842e7*chis*nu + 3.1783752e7*pow(chia,2)*chis*nu + 4.440744e6*pow(chis,3)*nu + 1.5224886e7*chia*delta*nu + 2.6925696e7*pow(chia,3)*delta*nu + 8.319024e6*chia*pow(chis,2)*delta*nu + 2.0695681428494263e7*pow(nu,2) - 2.1492918e7*chis*pow(nu,2) - 1.5408792e7*pow(chia,2)*chis*pow(nu,2) - 49896.*pow(chis,3)*pow(nu,2) - 5.235426e6*chia*delta*pow(nu,2) + 13608.*pow(chia,3)*delta*pow(nu,2) + 40824.*chia*pow(chis,2)*delta*pow(nu,2) + 1.03068e6*chis*pow(nu,3)))
   { }
-  
+
   void operator() (const double t, const vector<double>& y, vector<double>& dydt) {
     const double& v=y[0];
     dydt[0] = (6.4*nu)*CUB(CUB(v))
       * (1.0 + v*v*(dvdt2 + v*(dvdt3 + v*(dvdt4 + v*(dvdt5 + v*(dvdt6 + dvdt6Ln4v*log(4.0*v) + v*(dvdt7) ) ) ) ) ) );
     dydt[1]=CUB(v);
   }
-  
+
   bool ContinueIntegrating(const double& t, const vector<double>& y, const vector<double>& dydt) const {
     return (dydt[0]>0.0 && y[0]<1.0);
   }
-  
+
 };
 
 typedef bool (T4::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
 
 void WU::TaylorT4(const double delta, const double chis, const double chia, const double v0,
-		  vector<double>& t, vector<double>& v, vector<double>& Phi,
-		  const int nsave, const bool denseish)
+                  vector<double>& t, vector<double>& v, vector<double>& Phi,
+                  const int nsave, const bool denseish)
 {
   const double nu( (1.0-delta*delta)/4.0 );
   const double GuessedLength = 1.1 * 5.0/(256.0*nu*pow(v0,8));
@@ -62,13 +62,13 @@ void WU::TaylorT4(const double delta, const double chis, const double chia, cons
   try {
     ode.integrate();
   } catch(NRerror err) { }
-  
+
   out.xsave.resize(out.count);
   t.swap(out.xsave);
   out.ysave.resize(out.ysave.nrows(), out.count);
   v.swap(out.ysave[0]);
   Phi.swap(out.ysave[1]);
   t -= t.back();
-  
+
   return;
 }

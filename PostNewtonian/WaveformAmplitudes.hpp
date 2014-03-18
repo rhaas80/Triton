@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace WaveformUtilities {
-  
+
   class WaveformAmplitudes {
     friend class WaveformAmplitudesSumMMagSquared;
   private:
@@ -25,7 +25,7 @@ namespace WaveformUtilities {
       Hhat_L6_M4_Re_v6, Hhat_L6_M3_Im_v5, Hhat_L6_M2_Re_v4, Hhat_L6_M2_Re_v6, Hhat_L6_M1_Im_v5, Hhat_L7_M7_Im_v5,
       Hhat_L7_M6_Re_v6, Hhat_L7_M5_Im_v5, Hhat_L7_M4_Re_v6, Hhat_L7_M3_Im_v5, Hhat_L7_M2_Re_v6, Hhat_L7_M1_Im_v5,
       Hhat_L8_M8_Re_v6, Hhat_L8_M6_Re_v6, Hhat_L8_M4_Re_v6, Hhat_L8_M2_Re_v6;
-    
+
   public:
     WaveformAmplitudes(const double idelta, const double ichis, const double ichia);
     void SetParameters(const double idelta, const double ichis, const double ichia);
@@ -33,9 +33,9 @@ namespace WaveformUtilities {
     void rhOverM(const int L, const int M, const double v, const double psi, double& Mag, double& Arg) const;
     void rhOverM(const int L, const int M, const std::vector<double>& v, const std::vector<double>& psi, std::vector<double>& Mag, std::vector<double>& Arg) const;
     void rhOverM(const int L, const int M, const std::vector<double>& v, const std::vector<double>& psi,
-		 const std::vector<double>& chis, const std::vector<double>& chia, std::vector<double>& Mag, std::vector<double>& Arg);
+                 const std::vector<double>& chis, const std::vector<double>& chia, std::vector<double>& Mag, std::vector<double>& Arg);
   };
-  
+
   class WaveformAmplitudesSumMMagSquared {
   private:
     double NormalizationFactor;
@@ -45,7 +45,7 @@ namespace WaveformUtilities {
     WaveformAmplitudesSumMMagSquared(const WaveformAmplitudes& WA);
     double SumMMagSquared(const double v) const;
   };
-  
+
 }
 
 

@@ -4,20 +4,20 @@
 #include <string>
 
 namespace WaveformUtilities {
-  
+
   class EOBParameters {
   public:
     const double delta, nu, chis, chia, chi, chistar, chiKerr;
     double a4, a5, a6, d4, a, b, aSS;
   public:
     EOBParameters(const double delta, const double chis, const double chia,
-		  const double gtt_a4, const double gtt_a5, const double gtt_a6, const double grr_d4,
-		  const double HamGyro_a, const double HamGyro_b, const double Ham_aSS);
+                  const double gtt_a4, const double gtt_a5, const double gtt_a6, const double grr_d4,
+                  const double HamGyro_a, const double HamGyro_b, const double Ham_aSS);
     EOBParameters(const double delta, const double chis, const double chia, const std::string& PaperRef="default");
   };
-  
-  
-  
+
+
+
 //   class EOBMetricNonspinning {
 //   private:
 //     const double nu, a4, a5, a6;
@@ -34,7 +34,7 @@ namespace WaveformUtilities {
 //     mutable double drdrstar;
 //     mutable double drstardr;
 //   };
-  
+
 //   class EOBHamiltonianNonspinning {
 //   private:
 //     const double nu;
@@ -51,10 +51,10 @@ namespace WaveformUtilities {
 //     mutable double dHdpPhi;
 //     mutable double v;
 //   };
-  
-  
-  
-  
+
+
+
+
   class EOBMetricWithSpin {
   private:
     const double chiKerr;
@@ -73,7 +73,7 @@ namespace WaveformUtilities {
     mutable double drstardr;
     mutable double ddrstardrdr;
   };
-  
+
   class EOBHamiltonianWithSpin {
   private:
     const double nu;
@@ -93,8 +93,8 @@ namespace WaveformUtilities {
     mutable double dHdpPhi;
     mutable double v;
   };
-  
-  
+
+
 }
 
 #endif // EOBMODEL_HPP

@@ -12,7 +12,7 @@ inline double f(const double x) {
 }
 
 int main() {
-  
+
   const unsigned int log2N = 17;
   const unsigned int N = (1 << log2N);
   const double XMin = -1.0;
@@ -24,7 +24,7 @@ int main() {
     X[i] = XMin + dX*i;
     Y[i] = f(X[i]);
   }
-  
+
   for(unsigned int log2n=5; log2n<log2N; log2n++) {
     const unsigned int n = (1 << log2n);
     const double dx = (XMax-XMin)/(n-1.0);
@@ -37,13 +37,13 @@ int main() {
     vector<double> YInterp = WU::Interpolate(x, y, X);
     ofstream ofs(("TestInterpolator_n" + WU::DoubleToString(n, 6) + ".dat").c_str(), ios::out);
     ofs << "# [1] = X\n"
-	<< "# [2] = Y\n"
-	<< "# [3] = error" << endl;
+        << "# [2] = Y\n"
+        << "# [3] = error" << endl;
     for(unsigned int i=0; i<N; ++i) {
       ofs << X[i] << " " << Y[i] << " " << YInterp[i]-Y[i] << endl;
     }
     ofs.close();
   }
-  
+
   return 0;
 }

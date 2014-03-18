@@ -40,7 +40,7 @@ using std::ios_base;
 /// between indices I0 and I1 to within a tolerance of Tol
 /// at the midpoint between I0 and I1.
 bool MinimalGrid_Check(const vector<double>& x, const vector<double>& y,
-	   const int I0, const int I1, const double Tol)
+           const int I0, const int I1, const double Tol)
 {
   if(I1==I0+1) { return true; }
   int IMid = ((I0+I1) >> 1); // = floor(avg(I0+I1))
@@ -58,10 +58,10 @@ bool MinimalGrid_Check(const vector<double>& x, const vector<double>& y,
 /// Compare Numerical Recipes's 'hunt' function; this is
 /// basically a hunt for that optimal index.
 int MinimalGrid_Hunt(const vector<double>& t, const vector<double>& arg,
-		    const double argTol, const int I0, const int I1)
+                    const double argTol, const int I0, const int I1)
 {
   int Inc=1, I1lo = I1, I1hi=I1+1;
-  
+
   // Bracket the optimal I1 between I1lo and I1hi
   if( MinimalGrid_Check(t, arg, I0, I1lo, argTol) ) {
     while( MinimalGrid_Check(t, arg, I0, I1hi, argTol) ) {
@@ -69,8 +69,8 @@ int MinimalGrid_Hunt(const vector<double>& t, const vector<double>& arg,
       Inc *= 2;
       I1hi += Inc;
       if(I1hi>int(t.size())) {
-	I1hi = t.size();
-	break;
+        I1hi = t.size();
+        break;
       }
     }
   } else {
@@ -83,14 +83,14 @@ int MinimalGrid_Hunt(const vector<double>& t, const vector<double>& arg,
       I1hi = I1lo;
       Inc *= 2;
       if(Inc > I1hi) {
-	I1lo = I0+2;
-	break;
+        I1lo = I0+2;
+        break;
       } else {
-	I1lo = I1hi-Inc;
+        I1lo = I1hi-Inc;
       }
     }
   }
-  
+
   // Now use bisection between I1lo and I1hi
   if(I1hi==I1lo) { I1hi++; }
   while(I1hi-I1lo != 1) {
@@ -101,7 +101,7 @@ int MinimalGrid_Hunt(const vector<double>& t, const vector<double>& arg,
       I1hi = I1m;
     }
   }
-  
+
   return I1lo;
 }
 
@@ -121,21 +121,21 @@ Waveform& WaveformObjects::Waveform::MinimalGrid(const double magTol, const doub
   /// algorithm proceeds with the earlier interval.  Finally, the input
   /// t, mag, and arg vectors are replaced by the smaller vectors given
   /// by our vector of bool's.
-  
+
   // We can only have one mode here
   if(NModes()>1) {
     cerr << "\nThis function is only designed to work on one mode at a time."
-	 << "There are " << NModes() << " modes in this data." << endl;
+         << "There are " << NModes() << " modes in this data." << endl;
     Throw1WithMessage("Too many modes");
   }
-  
+
   unsigned int I0 = 0;
   unsigned int I1 = ((NTimes()-1) >> 1); // = midpoint of the input data set
   unsigned int NumPoints = 2;
   vector<bool> Tbool(NTimes(), false);
   Tbool[0] = true;
   Tbool.back() = true;
-  
+
   // Coarse -- check only arg at midpoints of each interval
   //   This loop starts from the beginning of the data set, and
   //   forms the smallest interval such that the arg Tolerance
@@ -144,7 +144,7 @@ Waveform& WaveformObjects::Waveform::MinimalGrid(const double magTol, const doub
   while(((I0+I1)>>1) < Tbool.size()-1) {
     // hunt for optimal I1
     I1 = MinimalGrid_Hunt(T(), Arg(0), argTol, I0, I1);
-    
+
     if(!Tbool[I1]) {
       Tbool[I1] = true;
       ++NumPoints;
@@ -153,7 +153,7 @@ Waveform& WaveformObjects::Waveform::MinimalGrid(const double magTol, const doub
     I1 = 2*I1 - I0;
     if(I1<I0+2) { I1 = I0+2; }
   }
-  
+
   // Fine -- check mag and arg at every point
   //   This loop goes through each of the intervals found above,
   //   and makes sure that every data point in both arg and mag
@@ -173,14 +173,14 @@ Waveform& WaveformObjects::Waveform::MinimalGrid(const double magTol, const doub
     while(!Tbool[I1]) { ++I1; }
     if(i != I0 && i != I1) {
       if(fabs(1-(Mag(0,I0)+(T(i)-T(I0))*(Mag(0,I1)-Mag(0,I0))/(T(I1)-T(I0)))/Mag(0,i)) > magTol
-	 || fabs(Arg(0,I0)+(T(i)-T(I0))*(Arg(0,I1)-Arg(0,I0))/(T(I1)-T(I0))-Arg(0,i)) > argTol) {
-	I1 = ((I0+I1)>>1);
-	if(!Tbool[I1]) {
-	  //if(I1==I0+1) { Caution(magTol, argTol); }
-	  Tbool[I1] = true;
-	  ++NumPoints;
-	}
-	continue;
+         || fabs(Arg(0,I0)+(T(i)-T(I0))*(Arg(0,I1)-Arg(0,I0))/(T(I1)-T(I0))-Arg(0,i)) > argTol) {
+        I1 = ((I0+I1)>>1);
+        if(!Tbool[I1]) {
+          //if(I1==I0+1) { Caution(magTol, argTol); }
+          Tbool[I1] = true;
+          ++NumPoints;
+        }
+        continue;
       }
     }
     if(i==I1) {
@@ -189,7 +189,7 @@ Waveform& WaveformObjects::Waveform::MinimalGrid(const double magTol, const doub
     }
     ++i;
   }
-  
+
   // Take only the smaller grid
   vector<double> tOut(NumPoints, 0.0);
   int Point = 0;
@@ -200,7 +200,7 @@ Waveform& WaveformObjects::Waveform::MinimalGrid(const double magTol, const doub
     }
   }
   this->Interpolate(tOut);
-  
+
   return *this;
 }
 

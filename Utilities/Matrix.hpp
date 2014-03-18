@@ -7,7 +7,7 @@
 #include "Utilities.hpp"
 
 namespace WaveformUtilities {
-  
+
   template <class T> class Matrix {
   private:
     std::vector<std::vector<T> > Data;
@@ -36,22 +36,22 @@ namespace WaveformUtilities {
     void swap(Matrix<T>& b) { Data.swap(b.Data); } // Swap data sets
     ~Matrix() { }
   };
-  
+
   template <class T>
   Matrix<T>::Matrix() : Data(0) { }
-  
+
   template <class T>
   Matrix<T>::Matrix(unsigned int rows, unsigned int cols) : Data(rows, std::vector<T>(cols)) { }
-  
+
   template <class T>
   Matrix<T>::Matrix(unsigned int rows, unsigned int cols, const T& a) : Data(rows, std::vector<T>(cols, a)) { }
-  
+
   template <class T>
   Matrix<T>::Matrix(const Matrix &rhs) : Data(rhs.Data) { }
-  
+
   template <class T>
   Matrix<T>::Matrix(const std::vector<std::vector<T> >& DataIn) : Data(DataIn) { }
-  
+
   template <class T>
   Matrix<T>& Matrix<T>::operator=(const Matrix<T> &rhs) {
     if (this != &rhs) {
@@ -59,20 +59,20 @@ namespace WaveformUtilities {
     }
     return *this;
   }
-  
+
   template <class T>
   Matrix<T>& Matrix<T>::operator=(const std::vector<std::vector<T> > &newData) {
     for(unsigned int i=1; i<newData.size(); ++i) { // Check that the input is rectangular
       if(newData[i].size() != ncols()) {
-	std::cerr << "\nnewData.size()=" << newData.size() << "\tnewData[" << i << "].size()==" << newData[i].size() << std::endl;
-	std::cerr << "nrows()=" << nrows() << "\tncols()=" << ncols() << std::endl;
-	Throw1WithMessage("Input data is not rectangular, or you need to resize this object");
+        std::cerr << "\nnewData.size()=" << newData.size() << "\tnewData[" << i << "].size()==" << newData[i].size() << std::endl;
+        std::cerr << "nrows()=" << nrows() << "\tncols()=" << ncols() << std::endl;
+        Throw1WithMessage("Input data is not rectangular, or you need to resize this object");
       }
     }
     Data = newData;
     return *this;
   }
-  
+
   template <class T>
   inline std::vector<T>& Matrix<T>::operator[](const unsigned int i) {
     #ifdef DEBUG
@@ -83,7 +83,7 @@ namespace WaveformUtilities {
     #endif
     return Data[i];
   }
-  
+
   template <class T>
   inline const std::vector<T>& Matrix<T>::operator[](const unsigned int i) const {
     #ifdef DEBUG
@@ -94,7 +94,7 @@ namespace WaveformUtilities {
     #endif
     return Data[i];
   }
-  
+
   template <class T>
   bool Matrix<T>::operator==(const Matrix<T>& b) const {
     if(nrows() != b.nrows() || ncols() != b.ncols()) {
@@ -102,12 +102,12 @@ namespace WaveformUtilities {
     }
     for(unsigned int row=0; row<nrows(); ++row) {
       for(unsigned int col=0; col<ncols(); ++col) {
-	if(Data[row][col] != b.Data[row][col]) { return false; }
+        if(Data[row][col] != b.Data[row][col]) { return false; }
       }
     }
     return true;
   }
-  
+
   template <class T>
   bool Matrix<T>::operator!=(const Matrix<T>& b) const {
     if(nrows() != b.nrows() || ncols() != b.ncols()) {
@@ -115,12 +115,12 @@ namespace WaveformUtilities {
     }
     for(unsigned int row=0; row<nrows(); ++row) {
       for(unsigned int col=0; col<ncols(); ++col) {
-	if(Data[row][col] != b.Data[row][col]) { return true; }
+        if(Data[row][col] != b.Data[row][col]) { return true; }
       }
     }
     return false;
   }
-  
+
 //   template <class T>
 //   Matrix<T> Matrix<T>::operator-(const Matrix& b) const {
 //     if(nrows() != b.nrows()) {
@@ -135,7 +135,7 @@ namespace WaveformUtilities {
 //     c.Data = Data-b.Data;
 //     return c;
 //   }
-  
+
 //   template <class T>
 //   Matrix<T> Matrix<T>::operator/(const Matrix& b) const {
 //     if(nrows() != b.nrows()) {
@@ -150,13 +150,13 @@ namespace WaveformUtilities {
 //     c.Data = Data/b.Data;
 //     return c;
 //   }
-  
+
   template <class T>
   void Matrix<T>::resize(unsigned int newNRows, unsigned int newNCols, const T)
   {
     if(newNCols != ncols()) {
       for(unsigned int i=0; i<nrows(); ++i) {
-	Data[i].resize(newNCols);
+        Data[i].resize(newNCols);
       }
     }
     if(newNRows != nrows()) {
@@ -164,14 +164,14 @@ namespace WaveformUtilities {
     }
     return;
   }
-  
+
   template <class T>
   void Matrix<T>::clear()
   {
     Data.clear();
     return;
   }
-  
+
   template <class T>
   void Matrix<T>::push_back(const std::vector<T>& NewRow) {
     if(nrows()==0) {
@@ -185,7 +185,7 @@ namespace WaveformUtilities {
     Data.push_back(NewRow);
     return;
   }
-  
+
 } // namespace WaveformUtilities
 
 #endif // MATRIX_HPP

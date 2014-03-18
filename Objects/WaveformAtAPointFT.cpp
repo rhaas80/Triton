@@ -33,17 +33,17 @@ WaveformAtAPointFT::WaveformAtAPointFT()
 { }
 
 WaveformAtAPointFT::WaveformAtAPointFT(const WaveformAtAPoint& W, const unsigned int WindowNCycles,
-				       const double DetectorResponseAmp, const double DetectorResponsePhase)
+                                       const double DetectorResponseAmp, const double DetectorResponsePhase)
   : WaveformAtAPoint(W), Normalized(false)
 {
   // Record that this is happening
   History() << "### WaveformAtAPointFT(W, " << DetectorResponseAmp << ", " << DetectorResponsePhase << ");" << endl;
-  
+
   // Set up the frequency data
   const double dt = W.T(1)-W.T(0);
   TRef() = TimeToPositiveFrequencies(W.T());
   RRef().resize(NTimes());
-  
+
   // Now get the actual data
   vector<double> RealT;
   if(DetectorResponsePhase!=0.0) {
@@ -53,7 +53,7 @@ WaveformAtAPointFT::WaveformAtAPointFT(const WaveformAtAPoint& W, const unsigned
   } else {
     RealT = W.Re();
   }
-  
+
   {
     // Zero up to the first zero crossing for continuity
     unsigned int i=0;
@@ -76,7 +76,7 @@ WaveformAtAPointFT::WaveformAtAPointFT(const WaveformAtAPoint& W, const unsigned
       RealT[j] *= BumpFunction(W.T(j), t0, t1);
     }
   }
-  
+
   // Do the actual work
   realdft(RealT);
   // The return from realdft needs to be multiplied by dt to correspond to the continuum FT
@@ -89,7 +89,7 @@ WaveformAtAPointFT::WaveformAtAPointFT(const WaveformAtAPoint& W, const unsigned
   // Sort out some funky storage
   ReRef().back() = 0.0; // RealT[1]; // just ignore data at the Nyquist frequency
   ImRef().back() = 0.0;
-  ImRef(0) = 0.0; 
+  ImRef(0) = 0.0;
 }
 
 WaveformAtAPointFT& WaveformAtAPointFT::Normalize(const std::vector<double>& InversePSD) {
@@ -148,7 +148,7 @@ double WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<
 //   }
   if(n != B.NTimes() || n != InversePSD.size()) {
     cerr << "Waveform sizes, " << n << " and " << B.NTimes()
-	 << ", are not compatible with InversePSD size, " << InversePSD.size() << "." << endl;
+         << ", are not compatible with InversePSD size, " << InversePSD.size() << "." << endl;
     Throw1WithMessage("Incompatible sizes");
   }
   const double df = F(1)-F(0);
@@ -185,7 +185,7 @@ void WaveformAtAPointFT::Match(const WaveformAtAPointFT& B, const std::vector<do
   const unsigned int N = 2*(n-1);  // But this is how many there really are
   if(n != B.NTimes() || n != InversePSD.size()) {
     cerr << "Waveform sizes, " << n << " and " << B.NTimes()
-	 << ", are not compatible with InversePSD size, " << InversePSD.size() << "." << endl;
+         << ", are not compatible with InversePSD size, " << InversePSD.size() << "." << endl;
     Throw1WithMessage("Incompatible sizes");
   }
   const double df = F(1)-F(0);

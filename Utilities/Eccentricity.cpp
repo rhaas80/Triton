@@ -34,10 +34,10 @@ public:
 
 
 double WaveformUtilities::Eccentricity_rDot(const std::vector<double>& t, const std::vector<double>& rDot,
-					    const double r0, const double Omega0, double& DeltarDot, double& DeltaPhiDot) {
+                                            const double r0, const double Omega0, double& DeltarDot, double& DeltaPhiDot) {
   //// Do the fit to the model:
   ////   rDot(t) = vbar0 + arbar0*t + Br*cos(omegar*t+phir)
-  
+
   //// First fit to rDotDot to find phase, frequency, and amplitude
   std::vector<double> rDotDot = dydx(rDot, t);
   std::vector<double> aDotDotGuesses(3);
@@ -55,7 +55,7 @@ double WaveformUtilities::Eccentricity_rDot(const std::vector<double>& t, const 
   rDotDotFit.fit();
   rDotDotFit.free(0);
   rDotDotFit.fit();
-  
+
   //// Next fit to rDot to find all parameters
   std::vector<double> aDotGuesses(5);
   aDotGuesses[0] = avg(rDot);
@@ -66,7 +66,7 @@ double WaveformUtilities::Eccentricity_rDot(const std::vector<double>& t, const 
   Eccentricity_rDotFit e_d;
   FitNonlinear<Eccentricity_rDotFit> rDotFit(t, rDot, TrivialSigmas, aDotGuesses, e_d, 1.e-8);
   rDotFit.fit();
-  
+
   //// Adjust the parameters
   //double& vbar0 = rDotFit.a[0];
   //double& arbar0 = rDotFit.a[1];
@@ -75,7 +75,7 @@ double WaveformUtilities::Eccentricity_rDot(const std::vector<double>& t, const 
   double& phir = rDotFit.a[4];
   DeltarDot = -Br * cos(phir); // Eq. (71) of arXiv:1012.1549
   DeltaPhiDot = Br * omegar * sin(phir) / (2* r0 * Omega0);  // Eq. (73) of arXiv:1012.1549
-  
+
   //// Return the measured eccentricity
   return -Br / (r0 * omegar);
 }

@@ -136,24 +136,24 @@ Int Interpolator::hunt(const Doub x) {
   } else {
     if (x >= xx[jl] == ascnd) {
       for (;;) {
-	ju = jl + inc;
-	if (ju >= n-1) { ju = n-1; break;}
-	else if (x < xx[ju] == ascnd) break;
-	else {
-	  jl = ju;
-	  inc += inc;
-	}
+        ju = jl + inc;
+        if (ju >= n-1) { ju = n-1; break;}
+        else if (x < xx[ju] == ascnd) break;
+        else {
+          jl = ju;
+          inc += inc;
+        }
       }
     } else {
       ju = jl;
       for (;;) {
-	jl = jl - inc;
-	if (jl <= 0) { jl = 0; break;}
-	else if (x >= xx[jl] == ascnd) break;
-	else {
-	  ju = jl;
-	  inc += inc;
-	}
+        jl = jl - inc;
+        if (jl <= 0) { jl = 0; break;}
+        else if (x >= xx[jl] == ascnd) break;
+        else {
+          ju = jl;
+          inc += inc;
+        }
       }
     }
   }
@@ -238,7 +238,7 @@ Doub SplineInterpolator::rawinterp(Int jl, Doub x)
   a=(xx[khi]-x)/h;
   b=(x-xx[klo])/h;
   y=a*yy[klo]+b*yy[khi]+((a*a*a-a)*y2[klo]
-			 +(b*b*b-b)*y2[khi])*(h*h)/6.0;
+                         +(b*b*b-b)*y2[khi])*(h*h)/6.0;
   return y;
 }
 
@@ -268,7 +268,7 @@ void SplineIntegrator::SetUpIntegrationCoefficients() {
     const double y2j = y2[j];
     const double y2jp1 = y2[j+1];
     const double dxj = xxjp1-xxj;
-    
+
     IntegrationCoefficients1[j] = pow(xxj,2)*xxjp1*(12.*y2j - 12.*y2jp1) + pow(xxj,3)*(-4.*y2j + 4.*y2jp1) + pow(dxj,2)*(4.*xxj*y2j - 4.*xxjp1*y2j + 8.*xxj*y2jp1 - 8.*xxjp1*y2jp1) + xxjp1*(pow(xxjp1,2)*(4.*y2j - 4.*y2jp1) + 24.*yyj - 24.*yyjp1) + dxj*(12.*pow(xxj,2)*y2jp1 - 24.*xxj*xxjp1*y2jp1 + 12.*pow(xxjp1,2)*y2jp1 + 24.*yyjp1) + xxj*(pow(xxjp1,2)*(-12.*y2j + 12.*y2jp1) - 24.*yyj + 24.*yyjp1);
     IntegrationCoefficients2[j] = xxj*xxjp1*(12.*y2j - 12.*y2jp1) + dxj*(12.*xxj - 12.*xxjp1)*y2jp1 + pow(dxj,2)*(2.*y2j + 4.*y2jp1) + pow(xxj,2)*(-6.*y2j + 6.*y2jp1) + pow(xxjp1,2)*(-6.*y2j + 6.*y2jp1) - 12.*yyj + 12.*yyjp1;
     IntegrationCoefficients3[j] = 4*(-xxj*y2j + xxjp1*y2j + dxj*y2jp1 + xxj*y2jp1 - xxjp1*y2jp1);
@@ -306,12 +306,12 @@ double SplineIntegrator::operator()(const double x) {
   const double X = x-xx[j];
   return IntegrationConstants[j]
     + (X*(IntegrationCoefficients1[j]
-	  + X*(IntegrationCoefficients2[j]
-	       + X*(IntegrationCoefficients3[j]
-		    + X*(IntegrationCoefficients4[j])
-		    )
-	       )
-	  )
+          + X*(IntegrationCoefficients2[j]
+               + X*(IntegrationCoefficients3[j]
+                    + X*(IntegrationCoefficients4[j])
+                    )
+               )
+          )
        ) / (24.*(xx[j+1]-xx[j]));
 }
 
@@ -322,4 +322,3 @@ std::vector<double> SplineIntegrator::operator()() {
 double SplineIntegrator::CumulativeIntegral() {
   return IntegrationConstants.back();
 }
-

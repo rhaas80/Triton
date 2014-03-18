@@ -4,10 +4,10 @@
 #include "NumericalRecipes.hpp"
 
 namespace WaveformUtilities {
-  
+
   template <class T>
   void lnsrch(VecDoub_I &xold, const Doub fold, VecDoub_I &g, VecDoub_IO &p,
-	      VecDoub_O &x, Doub &f, const Doub stpmax, Bool &check, T &func) {
+              VecDoub_O &x, Doub &f, const Doub stpmax, Bool &check, T &func) {
     const Doub ALF=1.0e-4, TOLX=numeric_limits<Doub>::epsilon();
     Doub a,alam,alam2=0.0,alamin,b,disc,f2=0.0;
     Doub rhs1,rhs2,slope=0.0,sum=0.0,temp,test,tmplam;
@@ -17,7 +17,7 @@ namespace WaveformUtilities {
     sum=sqrt(sum);
     if (sum > stpmax)
       for (i=0;i<n;i++)
-	p[i] *= stpmax/sum;
+        p[i] *= stpmax/sum;
     for (i=0;i<n;i++)
       slope += g[i]*p[i];
     if (slope >= 0.0) Throw1WithMessage("Roundoff problem in lnsrch.");
@@ -32,28 +32,28 @@ namespace WaveformUtilities {
       for (i=0;i<n;i++) x[i]=xold[i]+alam*p[i];
       f=func(x);
       if (alam < alamin) {
-	for (i=0;i<n;i++) x[i]=xold[i];
-	check=true;
-	return;
+        for (i=0;i<n;i++) x[i]=xold[i];
+        check=true;
+        return;
       } else if (f <= fold+ALF*alam*slope) return;
       else {
-	if (alam == 1.0)
-	  tmplam = -slope/(2.0*(f-fold-slope));
-	else {
-	  rhs1=f-fold-alam*slope;
-	  rhs2=f2-fold-alam2*slope;
-	  a=(rhs1/(alam*alam)-rhs2/(alam2*alam2))/(alam-alam2);
-	  b=(-alam2*rhs1/(alam*alam)+alam*rhs2/(alam2*alam2))/(alam-alam2);
-	  if (a == 0.0) tmplam = -slope/(2.0*b);
-	  else {
-	    disc=b*b-3.0*a*slope;
-	    if (disc < 0.0) tmplam=0.5*alam;
-	    else if (b <= 0.0) tmplam=(-b+sqrt(disc))/(3.0*a);
-	    else tmplam=-slope/(b+sqrt(disc));
-	  }
-	  if (tmplam>0.5*alam)
-	    tmplam=0.5*alam;
-	}
+        if (alam == 1.0)
+          tmplam = -slope/(2.0*(f-fold-slope));
+        else {
+          rhs1=f-fold-alam*slope;
+          rhs2=f2-fold-alam2*slope;
+          a=(rhs1/(alam*alam)-rhs2/(alam2*alam2))/(alam-alam2);
+          b=(-alam2*rhs1/(alam*alam)+alam*rhs2/(alam2*alam2))/(alam-alam2);
+          if (a == 0.0) tmplam = -slope/(2.0*b);
+          else {
+            disc=b*b-3.0*a*slope;
+            if (disc < 0.0) tmplam=0.5*alam;
+            else if (b <= 0.0) tmplam=(-b+sqrt(disc))/(3.0*a);
+            else tmplam=-slope/(b+sqrt(disc));
+          }
+          if (tmplam>0.5*alam)
+            tmplam=0.5*alam;
+        }
       }
       alam2=alam;
       f2 = f;
@@ -70,15 +70,15 @@ namespace WaveformUtilities {
       MatDoub df(n,n);
       VecDoub xh=x;
       for (Int j=0;j<n;j++) {
-	Doub temp=xh[j];
-	Doub h=EPS*std::abs(temp);
-	if (h == 0.0) h=EPS;
-	xh[j]=temp+h;
-	h=xh[j]-temp;
-	VecDoub f=func(xh);
-	xh[j]=temp;
-	for (Int i=0;i<n;i++)
-	  df[i][j]=(f[i]-fvec[i])/h;
+        Doub temp=xh[j];
+        Doub h=EPS*std::abs(temp);
+        if (h == 0.0) h=EPS;
+        xh[j]=temp+h;
+        h=xh[j]-temp;
+        VecDoub f=func(xh);
+        xh[j]=temp;
+        for (Int i=0;i<n;i++)
+          df[i][j]=(f[i]-fvec[i])/h;
       }
       return df;
     }
@@ -123,9 +123,9 @@ namespace WaveformUtilities {
     for (its=0;its<MAXITS;its++) {
       fjac=fdjac(x,fvec);
       for (i=0;i<n;i++) {
-	sum=0.0;
-	for (j=0;j<n;j++) sum += fjac[j][i]*fvec[j];
-	g[i]=sum;
+        sum=0.0;
+        for (j=0;j<n;j++) sum += fjac[j][i]*fvec[j];
+        g[i]=sum;
       }
       for (i=0;i<n;i++) xold[i]=x[i];
       fold=f;
@@ -135,28 +135,28 @@ namespace WaveformUtilities {
       lnsrch(xold,fold,g,p,x,f,stpmax,check,fmin);
       test=0.0;
       for (i=0;i<n;i++)
-	if (std::abs(fvec[i]) > test) test=std::abs(fvec[i]);
+        if (std::abs(fvec[i]) > test) test=std::abs(fvec[i]);
       if (test < TOLF) {
-	check=false;
-	return;
+        check=false;
+        return;
       }
       if (check) {
-	test=0.0;
-	den=MAX(f,0.5*n);
-	for (i=0;i<n;i++) {
-	  temp=std::abs(g[i])*MAX(std::abs(x[i]),1.0)/den;
-	  if (temp > test) test=temp;
-	}
-	check=(test < TOLMIN);
-	return;
+        test=0.0;
+        den=MAX(f,0.5*n);
+        for (i=0;i<n;i++) {
+          temp=std::abs(g[i])*MAX(std::abs(x[i]),1.0)/den;
+          if (temp > test) test=temp;
+        }
+        check=(test < TOLMIN);
+        return;
       }
       test=0.0;
       for (i=0;i<n;i++) {
-	temp=(std::abs(x[i]-xold[i]))/MAX(std::abs(x[i]),1.0);
-	if (temp > test) test=temp;
+        temp=(std::abs(x[i]-xold[i]))/MAX(std::abs(x[i]),1.0);
+        if (temp > test) test=temp;
       }
       if (test < TOLX)
-	return;
+        return;
     }
     Throw1WithMessage("MAXITS exceeded in newt");
   }
@@ -186,90 +186,90 @@ namespace WaveformUtilities {
     restrt=true;
     for (its=1;its<=MAXITS;its++) {
       if (restrt) {
-	qr=new QRdcmp(fdjac(x,fvec));
-	if (qr->sing) {
-	  MatDoub one(n,n,0.0);
-	  for (i=0;i<n;i++) one[i][i]=1.0;
-	  delete qr;
-	  qr=new QRdcmp(one);
-	}
+        qr=new QRdcmp(fdjac(x,fvec));
+        if (qr->sing) {
+          MatDoub one(n,n,0.0);
+          for (i=0;i<n;i++) one[i][i]=1.0;
+          delete qr;
+          qr=new QRdcmp(one);
+        }
       } else {
-	for (i=0;i<n;i++) s[i]=x[i]-xold[i];
-	for (i=0;i<n;i++) {
-	  for (sum=0.0,j=i;j<n;j++) sum += qr->r[i][j]*s[j];
-	  t[i]=sum;
-	}
-	skip=true;
-	for (i=0;i<n;i++) {
-	  for (sum=0.0,j=0;j<n;j++) sum += qr->qt[j][i]*t[j];
-	  w[i]=fvec[i]-fvcold[i]-sum;
-	  if (std::abs(w[i]) >= EPS*(std::abs(fvec[i])+std::abs(fvcold[i]))) skip=false;
-	  else w[i]=0.0;
-	}
-	if (!skip) {
-	  qr->qtmult(w,t);
-	  for (den=0.0,i=0;i<n;i++) den += SQR(s[i]);
-	  for (i=0;i<n;i++) s[i] /= den;
-	  qr->update(t,s);
-	  if (qr->sing) Throw1WithMessage("singular update in broydn");
-	}
+        for (i=0;i<n;i++) s[i]=x[i]-xold[i];
+        for (i=0;i<n;i++) {
+          for (sum=0.0,j=i;j<n;j++) sum += qr->r[i][j]*s[j];
+          t[i]=sum;
+        }
+        skip=true;
+        for (i=0;i<n;i++) {
+          for (sum=0.0,j=0;j<n;j++) sum += qr->qt[j][i]*t[j];
+          w[i]=fvec[i]-fvcold[i]-sum;
+          if (std::abs(w[i]) >= EPS*(std::abs(fvec[i])+std::abs(fvcold[i]))) skip=false;
+          else w[i]=0.0;
+        }
+        if (!skip) {
+          qr->qtmult(w,t);
+          for (den=0.0,i=0;i<n;i++) den += SQR(s[i]);
+          for (i=0;i<n;i++) s[i] /= den;
+          qr->update(t,s);
+          if (qr->sing) Throw1WithMessage("singular update in broydn");
+        }
       }
       qr->qtmult(fvec,p);
       for (i=0;i<n;i++)
-	p[i] = -p[i];
+        p[i] = -p[i];
       for (i=n-1;i>=0;i--) {
-	for (sum=0.0,j=0;j<=i;j++) sum -= qr->r[j][i]*p[j];
-	g[i]=sum;
+        for (sum=0.0,j=0;j<=i;j++) sum -= qr->r[j][i]*p[j];
+        g[i]=sum;
       }
       for (i=0;i<n;i++) {
-	xold[i]=x[i];
-	fvcold[i]=fvec[i];
+        xold[i]=x[i];
+        fvcold[i]=fvec[i];
       }
       fold=f;
       qr->rsolve(p,p);
       Doub slope=0.0;
       for (i=0;i<n;i++) slope += g[i]*p[i];
       if (slope >= 0.0) {
-	restrt=true;
-	continue;
+        restrt=true;
+        continue;
       }
       lnsrch(xold,fold,g,p,x,f,stpmax,check,fmin);
       test=0.0;
       for (i=0;i<n;i++)
-	if (std::abs(fvec[i]) > test) test=std::abs(fvec[i]);
+        if (std::abs(fvec[i]) > test) test=std::abs(fvec[i]);
       if (test < TOLF) {
-	check=false;
-	delete qr;
-	return;
+        check=false;
+        delete qr;
+        return;
       }
       if (check) {
-	if (restrt) {
-	  delete qr;
-	  return;
-	} else {
-	  test=0.0;
-	  den=MAX(f,0.5*n);
-	  for (i=0;i<n;i++) {
-	    temp=std::abs(g[i])*MAX(std::abs(x[i]),1.0)/den;
-	    if (temp > test) test=temp;
-	  }
-	  if (test < TOLMIN) {
-	    delete qr;
-	    return;
-	  }
-	  else restrt=true;
-	}
+        if (restrt) {
+          delete qr;
+          return;
+        } else {
+          test=0.0;
+          den=MAX(f,0.5*n);
+          for (i=0;i<n;i++) {
+            temp=std::abs(g[i])*MAX(std::abs(x[i]),1.0)/den;
+            if (temp > test) test=temp;
+          }
+          if (test < TOLMIN) {
+            delete qr;
+            return;
+          }
+          else restrt=true;
+        }
       } else {
-	restrt=false;
-	test=0.0;
-	for (i=0;i<n;i++) {
-	  temp=(std::abs(x[i]-xold[i]))/MAX(std::abs(x[i]),1.0);
-	  if (temp > test) test=temp;
-	}
-	if (test < TOLX) {
-	  delete qr;
-	  return;
-	}
+        restrt=false;
+        test=0.0;
+        for (i=0;i<n;i++) {
+          temp=(std::abs(x[i]-xold[i]))/MAX(std::abs(x[i]),1.0);
+          if (temp > test) test=temp;
+        }
+        if (test < TOLX) {
+          delete qr;
+          return;
+        }
       }
     }
     Throw1WithMessage("MAXITS exceeded in broydn");

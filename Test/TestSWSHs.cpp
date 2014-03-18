@@ -67,7 +67,7 @@ void m2Y2M(const int L, const int M, const double iota, const double phi, double
 
 
 int main() {
-  
+
   // First, test against the 'Data Formats' convention
   {
     // Set up the angles at which comparison will be done
@@ -85,24 +85,24 @@ int main() {
     for(int M=-L; M<=L; ++M) {
       cout << "L=" << L << "\tM=" << M << endl;
       for(unsigned int i=0; i<N; ++i) {
-	for(unsigned int j=0; j<N; ++j) {
-	  double ampDF, argDF, ampWU, argWU;
-	  m2Y2M(L, M, varthetas[i], varphis[j], ampDF, argDF);
-	  WU::SWSH(L, M, varthetas[i], varphis[j], ampWU, argWU);
-	  const double AbsAmpErr = (ampDF-ampWU);
-	  const double RelAmpErr = 2*AbsAmpErr/(ampDF+ampWU);
-	  const double AbsArgErr = (argDF-argWU);
-	  if(abs(RelAmpErr)>RelTol && abs(AbsAmpErr)>AbsTol) {
-	    cerr << "RelAmp: " << L << "\t" << M << "\t" << varthetas[i] << "\t" << varphis[j] << "\t" << ampDF << "\t" << ampWU << "\t" << RelAmpErr << "\t" << AbsAmpErr << endl;
-	  }
-	  if(abs(AbsArgErr)>AbsTol) {
-	    cerr << "AbsArg: " << L << "\t" << M << "\t" << varthetas[i] << "\t" << varphis[j] << "\t" << argDF << "\t" << argWU << "\t" << AbsArgErr << endl;
-	  }
-	}
+        for(unsigned int j=0; j<N; ++j) {
+          double ampDF, argDF, ampWU, argWU;
+          m2Y2M(L, M, varthetas[i], varphis[j], ampDF, argDF);
+          WU::SWSH(L, M, varthetas[i], varphis[j], ampWU, argWU);
+          const double AbsAmpErr = (ampDF-ampWU);
+          const double RelAmpErr = 2*AbsAmpErr/(ampDF+ampWU);
+          const double AbsArgErr = (argDF-argWU);
+          if(abs(RelAmpErr)>RelTol && abs(AbsAmpErr)>AbsTol) {
+            cerr << "RelAmp: " << L << "\t" << M << "\t" << varthetas[i] << "\t" << varphis[j] << "\t" << ampDF << "\t" << ampWU << "\t" << RelAmpErr << "\t" << AbsAmpErr << endl;
+          }
+          if(abs(AbsArgErr)>AbsTol) {
+            cerr << "AbsArg: " << L << "\t" << M << "\t" << varthetas[i] << "\t" << varphis[j] << "\t" << argDF << "\t" << argWU << "\t" << AbsArgErr << endl;
+          }
+        }
       }
     }
   }
-  
+
   // Next, test against the Mathematica results
   {
     // Set up the angles at which comparison will be done
@@ -125,31 +125,31 @@ int main() {
     unsigned int k=0;
     for(int L=2; L<=LMax; ++L) {
       for(int M=-L; M<=L; ++M) {
-	cout << "L=" << L << "\tM=" << M << endl;
-	for(unsigned int i=0; i<N; ++i) {
-	  for(unsigned int j=0; j<N; ++j) {
-	    double ampMA, argMA, ampWU, argWU;
-	    ampMA = Data[k][0];
-	    argMA = Data[k][1];
-	    k++;
-	    WU::SWSH(L, M, varthetas[i], varphis[j], ampWU, argWU);
-	    const double AbsAmpErr = (ampMA-ampWU);
-	    const double RelAmpErr = 2*AbsAmpErr/(ampMA+ampWU);
-	    const double RelArgErr = fmod(argMA-argWU, 2*M_PI);
-	    if(abs(RelAmpErr)>RelTol && abs(AbsAmpErr)>AbsTol) {
-	      cerr << "RelAmp: " << L << "\t" << M << "\t"
-		   << setw(10) << setprecision(5) << varthetas[i] << "\t" << setw(10) << setprecision(5) << varphis[j] << "\t"
-		   << setw(10) << setprecision(5) << ampMA << "\t" << setw(10) << setprecision(5) << ampWU << "\t"
-		   << setw(10) << setprecision(5) << RelAmpErr << "\t" << setw(10) << setprecision(5) << AbsAmpErr << endl;
-	    }
-	    if(abs(RelArgErr)>AbsTol && abs(abs(RelArgErr)-2*M_PI)>AbsTol && abs(ampMA)>AbsTol) {
-	      cerr << "RelArg: " << L << "\t" << M << "\t" << varthetas[i] << "\t" << varphis[j] << "\t" << argMA << "\t" << argWU << "\t" << RelArgErr << endl;
-	    }
-	  }
-	}
+        cout << "L=" << L << "\tM=" << M << endl;
+        for(unsigned int i=0; i<N; ++i) {
+          for(unsigned int j=0; j<N; ++j) {
+            double ampMA, argMA, ampWU, argWU;
+            ampMA = Data[k][0];
+            argMA = Data[k][1];
+            k++;
+            WU::SWSH(L, M, varthetas[i], varphis[j], ampWU, argWU);
+            const double AbsAmpErr = (ampMA-ampWU);
+            const double RelAmpErr = 2*AbsAmpErr/(ampMA+ampWU);
+            const double RelArgErr = fmod(argMA-argWU, 2*M_PI);
+            if(abs(RelAmpErr)>RelTol && abs(AbsAmpErr)>AbsTol) {
+              cerr << "RelAmp: " << L << "\t" << M << "\t"
+                   << setw(10) << setprecision(5) << varthetas[i] << "\t" << setw(10) << setprecision(5) << varphis[j] << "\t"
+                   << setw(10) << setprecision(5) << ampMA << "\t" << setw(10) << setprecision(5) << ampWU << "\t"
+                   << setw(10) << setprecision(5) << RelAmpErr << "\t" << setw(10) << setprecision(5) << AbsAmpErr << endl;
+            }
+            if(abs(RelArgErr)>AbsTol && abs(abs(RelArgErr)-2*M_PI)>AbsTol && abs(ampMA)>AbsTol) {
+              cerr << "RelArg: " << L << "\t" << M << "\t" << varthetas[i] << "\t" << varphis[j] << "\t" << argMA << "\t" << argWU << "\t" << RelArgErr << endl;
+            }
+          }
+        }
       }
     }
   }
-  
+
   return 0;
 }

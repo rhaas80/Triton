@@ -48,17 +48,17 @@ inline float MIN(const float &a, const double &b)
 
 template<class T>
 inline T SIGN(const T &a, const T &b)
-	{return b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a);}
+        {return b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a);}
 
 inline float SIGN(const float &a, const double &b)
-	{return b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a);}
+        {return b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a);}
 
 inline float SIGN(const double &a, const float &b)
-	{return (float)(b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a));}
+        {return (float)(b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a));}
 
 template<class T>
 inline void SWAP(T &a, T &b)
-	{T dum=a; a=b; b=dum;}
+        {T dum=a; a=b; b=dum;}
 
 // Define my own vectors and matrices
 #define NRvector std::vector

@@ -11,7 +11,7 @@
 // just the same.
 
 namespace WaveformUtilities {
-  
+
   // The class for an individual quaternion
   class Quaternion {
   private:
@@ -74,8 +74,8 @@ namespace WaveformUtilities {
   inline Quaternion sqrtOfRotor(const Quaternion& Q) { return Q.sqrtOfRotor(); }
   inline Quaternion Slerp(const double tau, const Quaternion& Qa, const Quaternion& Qb) { return ( pow((Qb/Qa), tau) * Qa ); }
   std::ostream& operator<<(std::ostream& out, const WaveformUtilities::Quaternion& q);
-  
-  
+
+
   // Functions for arrays of Quaternion objects
   std::vector<Quaternion> CenteredDifferencing(const std::vector<Quaternion>& QIn, const std::vector<double>& tIn);
   std::vector<Quaternion> MinimalRotation(const std::vector<Quaternion>& R, const std::vector<double>& T, const unsigned int NIterations=5);
@@ -146,7 +146,7 @@ namespace WaveformUtilities {
   std::vector<double> Component1(const std::vector<WaveformUtilities::Quaternion>& Q);
   std::vector<double> Component2(const std::vector<WaveformUtilities::Quaternion>& Q);
   std::vector<double> Component3(const std::vector<WaveformUtilities::Quaternion>& Q);
-  
+
 } // namespace WaveformUtilities
 
 #endif // QUATERNIONS_HPP

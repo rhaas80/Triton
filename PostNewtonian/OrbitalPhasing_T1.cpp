@@ -21,7 +21,7 @@ private:
   double nu;
   double dvdtNum2, dvdtNum3, dvdtNum4, dvdtNum5, dvdtNum6, dvdtNum6Ln4v, dvdtNum7;
   double dvdtDen2, dvdtDen3, dvdtDen4, dvdtDen5, dvdtDen6;
-  
+
 public:
   T1(const double delta, const double chis, const double chia)
     : nu((1.0-delta*delta)/4.0),
@@ -38,7 +38,7 @@ public:
       dvdtDen5(0.3888888888888889*(72.*chis + 72.*chia*delta - 121.*chis*nu - 31.*chia*delta*nu + 2.*chis*pow(nu,2))),
       dvdtDen6(-0.0038580246913580245*(10935. - 40149.69585598816*nu + 1674.*pow(nu,2) + 7.*pow(nu,3)))
   { }
-  
+
   void operator() (const double t, const vector<double>& y, vector<double>& dydt) {
     const double& v=y[0];
     const double cubv=CUB(v);
@@ -47,18 +47,18 @@ public:
       / (1.0 + v*v*(dvdtDen2 + v*(dvdtDen3 + v*(dvdtDen4 + v*(dvdtDen5 + v*(dvdtDen6) ) ) ) ) );
     dydt[1]=cubv;
   }
-  
+
   bool ContinueIntegrating(const double& t, const vector<double>& y, const vector<double>& dydt) const {
     return (dydt[0]>0.0 && y[0]<1.0);
   }
-  
+
 };
 
 typedef bool (T1::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
 
 void WU::TaylorT1(const double delta, const double chis, const double chia, const double v0,
-		  vector<double>& t, vector<double>& v, vector<double>& Phi,
-		  const int nsave, const bool denseish)
+                  vector<double>& t, vector<double>& v, vector<double>& Phi,
+                  const int nsave, const bool denseish)
 {
   const double nu( (1.0-delta*delta)/4.0 );
   const double GuessedLength = 1.1 * 5.0/(256.0*nu*pow(v0,8));
@@ -73,13 +73,13 @@ void WU::TaylorT1(const double delta, const double chis, const double chia, cons
   try {
     ode.integrate();
   } catch(NRerror err) { }
-  
+
   out.xsave.resize(out.count);
   t.swap(out.xsave);
   out.ysave.resize(out.ysave.nrows(), out.count);
   v.swap(out.ysave[0]);
   Phi.swap(out.ysave[1]);
   t -= t.back();
-  
+
   return;
 }

@@ -12,7 +12,7 @@ int main() {
   x[0] = 1.;
   y[1] = 1.;
   z[2] = 1.;
-  
+
   Quaternion a(M_PI/2., x);
   Quaternion b(M_PI/2., y);
   Quaternion c(M_PI/2., z);
@@ -28,7 +28,7 @@ int main() {
   // cout << "a*z*abar" << a * z * a.inverse() << endl;
   // cout << "b*z*bbar" << b * z * b.inverse() << endl;
   // cout << "c*z*cbar" << c * z * c.inverse() << endl;
-  
+
   vector<Quaternion> qIn(5);
   qIn[0] = Quaternion(0., x).normalized();
   qIn[1] = Quaternion(M_PI/2., x).normalized();
@@ -47,7 +47,7 @@ int main() {
     tOut[i] = tIn[0] + i*(tIn.back()-tIn[0])/(NSteps-1.0);
   }
   vector<Quaternion> qOut(Squad(qIn, tIn, tOut));
-  
+
   for(unsigned int i=0; i<5; ++i) {
     vector<double> vec = (qIn[i]*Quaternion(z)*qIn[i].inverse()).vec();
     cout << tIn[i] << " " << vec[0] << " " << vec[1] << " " << vec[2] << endl;
@@ -56,6 +56,6 @@ int main() {
     vector<double> vec = (qOut[i]*Quaternion(z)*qOut[i].inverse()).vec();
     cout << tOut[i] << " " << vec[0] << " " << vec[1] << " " << vec[2] << endl;
   }
-  
+
   return 0;
 }

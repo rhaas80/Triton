@@ -5,10 +5,10 @@
 
 namespace WaveformUtilities {
   const int PNLMax = 8;
-  
+
   double nuOFdelta(const double delta);
   double deltaOFq(const double q);
-  
+
   double FinalSpinApproximation(const double delta, const double chis);
 }
 

@@ -19,7 +19,7 @@ public:
     dydx[1]=(-DampingCoefficient*y[1]-SpringCoefficient*y[0])/Mass;
   }
   double y(const double t) const {
-    return (Initialy*sqrt(-pow(DampingCoefficient,2) + 4*Mass*SpringCoefficient)*cos((sqrt(-pow(DampingCoefficient,2) + 4*Mass*SpringCoefficient)*t)/(2.*Mass)) + 
+    return (Initialy*sqrt(-pow(DampingCoefficient,2) + 4*Mass*SpringCoefficient)*cos((sqrt(-pow(DampingCoefficient,2) + 4*Mass*SpringCoefficient)*t)/(2.*Mass)) +
      (DampingCoefficient*Initialy + 2*Initialv*Mass)*sin((sqrt(-pow(DampingCoefficient,2) + 4*Mass*SpringCoefficient)*t)/(2.*Mass)))/(exp((DampingCoefficient*t)/(2.*Mass))*sqrt(-pow(DampingCoefficient,2) + 4*Mass*SpringCoefficient));
   }
   double amplitude(const double t) const {
@@ -28,10 +28,10 @@ public:
 };
 
 int main() {
-  
+
   vector<double> t1, t2;
-  
-  {  
+
+  {
   const int nvar=2;
   const double atol=0.0, rtol=1.0e-13, h1=0.01, hmin=0.0, x1=0.0, x2=2000.0;
   std::vector<double> ystart(nvar);
@@ -43,7 +43,7 @@ int main() {
   WU::Odeint< WU::StepperBS<DampedHarmonicOscillator> > ode(ystart,x1,x2,atol,rtol,h1,hmin,out,d,true);
   ode.integrate();
   cout << out.count << endl;
-  
+
 //   cout << "# [1] = t"
 //        << "\n# [2] = y"
 //        << "\n# [3] = v"
@@ -59,13 +59,13 @@ int main() {
 //     const double amp = d.amplitude(T);
 //     cout << T << " " << y << " " << v << " " << Exacty << " " << Errory << " " << Errory/amp << endl;
 //   }
-  
+
   t1.swap(out.xsave);
   t1.resize(out.count);
   }
 
-  
-  {  
+
+  {
   const int nvar=2;
   const double atol=0.0, rtol=1.0e-13, h1=0.01, hmin=0.0, x1=0.0, x2=2000.0;
   std::vector<double> ystart(nvar);
@@ -77,7 +77,7 @@ int main() {
   WU::Odeint< WU::StepperBS<DampedHarmonicOscillator> > ode(ystart,x1,x2,atol,rtol,h1,hmin,out,d,true);
   ode.integrate();
   cout << out.count << endl;
-  
+
 //   cout << "# [1] = t"
 //        << "\n# [2] = y"
 //        << "\n# [3] = v"
@@ -96,8 +96,8 @@ int main() {
   t2.swap(out.xsave);
   t2.resize(out.count);
   }
-  
+
   cout << "t1==t2 = " << (t1==t2) << "\ttrue=" << true << endl;
-  
+
   return 0;
 }

@@ -24,7 +24,7 @@ typedef WaveformUtilities::Torque_KFPhi<Flu> TorS;
 int main() {
   const bool SpeedComparison = false;
   const bool WaveformOutput = true;
-  
+
   const double q = 9.0;
   const double delta=(q-1.0)/(q+1.0);
   const double chis = 0.95;
@@ -37,11 +37,11 @@ int main() {
   const int nsaveEOB = 10;
   const bool denseish = true;
   cout << "v0 = " << v0 << "\tdelta = " << delta << "\tchis = " << chis << endl;
-  
+
   clock_t start,end;
-  
+
   const unsigned int N=1000;
-  
+
   if(SpeedComparison) {
     cout << N << " iterations of TaylorT1 ... " << endl;
     start = clock();
@@ -50,7 +50,7 @@ int main() {
     }
     end = clock();
     cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
-    
+
     cout << N << " iterations of TaylorT2 ... " << endl;
     start = clock();
     for(unsigned int i=0; i<N; ++i) {
@@ -58,7 +58,7 @@ int main() {
     }
     end = clock();
     cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
-    
+
     cout << N << " iterations of TaylorT3 ... " << endl;
     start = clock();
     for(unsigned int i=0; i<N; ++i) {
@@ -66,7 +66,7 @@ int main() {
     }
     end = clock();
     cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
-    
+
     cout << N << " iterations of TaylorT4 ... " << endl;
     start = clock();
     for(unsigned int i=0; i<N; ++i) {
@@ -74,7 +74,7 @@ int main() {
     }
     end = clock();
     cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
-    
+
 //     cout << N << " iterations of EOB ... " << endl;
 //     const Met g(delta);
 //     const Ham H(delta, g);
@@ -88,9 +88,9 @@ int main() {
 //     }
 //     end = clock();
 //     cout << "... took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds." << endl;
-    
+
   } // if(SpeedComparison)
-  
+
   if(WaveformOutput) {
     {
       cout << "Calculating T1 ... " << flush;
@@ -100,15 +100,15 @@ int main() {
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_T1.dat");
       ofs << "# [1] = t" << endl
-	  << "# [2] = v" << endl
-	  << "# [3] = Phi" << endl;
+          << "# [2] = v" << endl
+          << "# [3] = Phi" << endl;
       ofs << setprecision(16);
       for(unsigned int i=0; i<t.size(); ++i) {
-	ofs << t[i] << " " << v[i] << " " << Phi[i] << endl;
+        ofs << t[i] << " " << v[i] << " " << Phi[i] << endl;
       }
       ofs.close();
     }
-    
+
     {
       cout << "Calculating T2 ... " << flush;
       start = clock();
@@ -117,15 +117,15 @@ int main() {
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_T2.dat");
       ofs << "# [1] = t" << endl
-	  << "# [2] = v" << endl
-	  << "# [3] = Phi" << endl;
+          << "# [2] = v" << endl
+          << "# [3] = Phi" << endl;
       ofs << setprecision(16);
       for(unsigned int i=0; i<t.size(); ++i) {
-	ofs << t[i] << " " << v[i] << " " << Phi[i] << endl;
+        ofs << t[i] << " " << v[i] << " " << Phi[i] << endl;
       }
       ofs.close();
     }
-    
+
     {
       cout << "Calculating T3 ... " << flush;
       start = clock();
@@ -134,15 +134,15 @@ int main() {
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_T3.dat");
       ofs << "# [1] = t" << endl
-	  << "# [2] = v" << endl
-	  << "# [3] = Phi" << endl;
+          << "# [2] = v" << endl
+          << "# [3] = Phi" << endl;
       ofs << setprecision(16);
       for(unsigned int i=0; i<t.size(); ++i) {
-	ofs << t[i] << " " << v[i] << " " << Phi[i] << endl;
+        ofs << t[i] << " " << v[i] << " " << Phi[i] << endl;
       }
       ofs.close();
     }
-    
+
     {
       cout << "Calculating T4 ... " << flush;
       start = clock();
@@ -151,15 +151,15 @@ int main() {
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_T4.dat");
       ofs << "# [1] = t" << endl
-	  << "# [2] = v" << endl
-	  << "# [3] = Phi" << endl;
+          << "# [2] = v" << endl
+          << "# [3] = Phi" << endl;
       ofs << setprecision(16);
       for(unsigned int i=0; i<t.size(); ++i) {
-	ofs << t[i] << " " << v[i] << " " << Phi[i] << endl;
+        ofs << t[i] << " " << v[i] << " " << Phi[i] << endl;
       }
       ofs.close();
     }
-    
+
     if(chis==0 && chia==0) {
       cout << "Calculating EOB ... " << flush;
       const Met g(delta, chis, chia);
@@ -174,18 +174,18 @@ int main() {
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_EOB.dat");
       ofs << "# [1] = t" << endl
-	  << "# [2] = v" << endl
-	  << "# [3] = Phi" << endl
-	  << "# [4] = r" << endl
-	  << "# [5] = prstar" << endl
-	  << "# [6] = pPhi" << endl;
+          << "# [2] = v" << endl
+          << "# [3] = Phi" << endl
+          << "# [4] = r" << endl
+          << "# [5] = prstar" << endl
+          << "# [6] = pPhi" << endl;
       ofs << setprecision(16);
       for(unsigned int i=0; i<t.size(); ++i) {
-	ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
+        ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
       }
       ofs.close();
     }
-    
+
     {
       cout << "Calculating EOB with spin ... " << flush;
       const MetS g(delta, chis, chia);
@@ -206,18 +206,18 @@ int main() {
       cout << "took " << setprecision(10) << double(end-start)/double(CLOCKS_PER_SEC) << " seconds.  ☺" << endl;
       ofstream ofs("Outputs/TestPN_EOBSpin.dat");
       ofs << "# [1] = t" << endl
-	  << "# [2] = v" << endl
-	  << "# [3] = Phi" << endl
-	  << "# [4] = r" << endl
-	  << "# [5] = prstar" << endl
-	  << "# [6] = pPhi" << endl;
+          << "# [2] = v" << endl
+          << "# [3] = Phi" << endl
+          << "# [4] = r" << endl
+          << "# [5] = prstar" << endl
+          << "# [6] = pPhi" << endl;
       ofs << setprecision(16);
       for(unsigned int i=0; i<t.size(); ++i) {
-	ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
+        ofs << t[i] << " " << v[i] << " " << Phi[i] << " " << r[i] << " " << prstar[i] << " " << pPhi[i] << endl;
       }
       ofs.close();
     }
   } // if WaveformOutput
-  
+
   return 0;
 }

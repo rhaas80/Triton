@@ -35,7 +35,7 @@ int main() {
     data2[2*i] = data.real(i);
     Data[i] = data.real(i);
   }
-  
+
   /// Output time-domain data
   ofstream ofst("TestRealFFT.t.dat", ofstream::out);
   ofst << "# [1] = t\n"
@@ -46,7 +46,7 @@ int main() {
     ofst << t[i] << "\t" << data.real(i) << "\t" << data.imag(i) << endl;
   }
   ofst.close();
-  
+
   /// FFT the data
   vector<double> ReFexact(N, 0.0), ImFexact(N, 0.0), f(N, 0.0);
   f = WU::TimeToFrequency(t);
@@ -57,7 +57,7 @@ int main() {
     if(fabs(f[i]-Freq2)<1e-12) { ImFexact[i] = double(N)*Amp2/(-2.0); }
     if(fabs(f[i]+Freq2)<1e-12) { ImFexact[i] = double(N)*Amp2/2.0; }
   }
-  
+
   /// Output frequency-domain data
   ofstream ofsf("TestRealFFT.f.dat", ofstream::out);
   ofsf << "# [1] = f\n"
@@ -69,7 +69,7 @@ int main() {
     //ofsf << f[i] << "\t" << data.real(i) << "\t" << data.imag(i) << endl;
   }
   ofsf.close();
-  
+
 //   /// Output errors
 //   ofstream ofse("TestRealFFT.ef.dat", ofstream::out);
 //   ofse << "# [1] = f\n"
@@ -80,14 +80,14 @@ int main() {
 //        << setprecision(12) << flush;
 //   for(unsigned int i=0; i<N; ++i) {
 //     ofse << f[i] << "\t" << data.real(i)-ReFexact[i] << "\t" << data.imag(i)-ImFexact[i]
-// 	 << "\t" << ReFexact[i] << "\t" << ImFexact[i] << endl;
+//       << "\t" << ReFexact[i] << "\t" << ImFexact[i] << endl;
 //   }
 //   ofse.close();
-  
+
 //   /// FFT the data back
 //   vector<double> ReFI(N, 0.0), ImFI(N, 0.0);
 //   WU::idft(data);
-  
+
 //   /// Output time-domain data
 //   ofstream ofsi("TestRealFFT.tt.dat", ofstream::out);
 //   ofsi << "# [1] = t\n"
@@ -98,10 +98,10 @@ int main() {
 //     ofsi << t[i] << "\t" << data.real(i)/double(N) << "\t" << data.imag(i)/double(N) << endl;
 //   }
 //   ofsi.close();
-  
+
   /// FFT the data's real part
   WU::realdft(Data);
-  
+
   /// Output time-domain data
   complex<double> c;
   ofstream ofs("TestRealFFT.ref.dat", ofstream::out);
@@ -118,6 +118,6 @@ int main() {
   c = Cmplx(Data)[0];
   ofs << -f[N/2] << "\t" << c.imag() << "\t" << 0.0 << endl;
   ofs.close();
-  
+
   return 0;
 }

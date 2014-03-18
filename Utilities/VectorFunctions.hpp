@@ -115,9 +115,9 @@ namespace WaveformUtilities {
   std::vector<double> cross(const std::vector<double>& x, const std::vector<double>& y);
   double norm(const std::vector<double>& x);
   std::vector<double> norm(const std::vector<std::vector<double> >& x);
-  
+
   /// NOTE!!! After optimization, the following are barely faster than pow.  These are, of course, incorrectly implemented because of the 'inline's.
-  /// 
+  ///
   /// Small integer powers:
   /// To compute x^n efficiently, write n in binary, then replace each 1 with "SX" and each 0 with "S",
   /// and cross off the first SX appearing at the left.  Read from left to right, this rule tells us to
@@ -139,7 +139,7 @@ namespace WaveformUtilities {
   inline std::vector<double> sixth(const std::vector<double>& x);
   inline std::vector<double> seventh(const std::vector<double>& x);
   inline std::vector<double> eighth(const std::vector<double>& x);
-  
+
   /// Max-type functions
   double maxfabs(const std::vector<double>& x);
   double maxmag(const std::vector<double>& Re, const std::vector<double>& Im);
@@ -159,7 +159,7 @@ namespace WaveformUtilities {
 //   inline T max(const T a, const T b) {
 //     return (a>b ? a : b);
 //   }
-  
+
   /// Integral, derivative, etc.
   std::vector<double> diff(const std::vector<double>& In);
   double sum(const std::vector<double>& In);
@@ -167,13 +167,13 @@ namespace WaveformUtilities {
   double trapz(const std::vector<double>& t, const std::vector<double>& f);
   std::vector<double> cumtrapz(const std::vector<double>& t, const std::vector<double>& f);
   std::vector<double> dydx(const std::vector<double>& y, const std::vector<double>& x);
-  
+
   /// Common-time functions
   /// The input to each of these functions must be strictly monotonic.
-  /// 
-  /// This function returns the intersection of two time sequences, 
-  ///   where the time step at each point is the minimum of the 
-  ///   time steps in t1 and t2 at that instant, or MinStep, 
+  ///
+  /// This function returns the intersection of two time sequences,
+  ///   where the time step at each point is the minimum of the
+  ///   time steps in t1 and t2 at that instant, or MinStep,
   ///   whichever is greater.  The output starts at the earliest
   ///   moment common to t1 and t2, or MinTime, whichever is greater.
   std::vector<double> Intersection(const std::vector<double>& t1, const std::vector<double>& t2, const double MinStep, const double MinTime);
@@ -185,15 +185,15 @@ namespace WaveformUtilities {
   ///   similar to the 'Intersection' function above.
   ///   This is used when hybridizing Waveform objects.
   std::vector<double> Union(const std::vector<double>& t1, const std::vector<double>& t2, const double MinStep);
-  
+
   /// Phase-conversion functions
   std::vector<double> Unwrap(const std::vector<double>& a);
   std::vector<double>& Unwrap(std::vector<double>& a, const unsigned int i1, const unsigned int i2); // Unwrap between two indices
   void MagArg(const std::vector<double>& Re, const std::vector<double>& Im,
-	      std::vector<double>& mag, std::vector<double>& arg);
+              std::vector<double>& mag, std::vector<double>& arg);
   void ReIm(const std::vector<std::vector<double> >& mag, const std::vector<std::vector<double> >& arg,
-	    std::vector<std::vector<double> >& Re, std::vector<std::vector<double> >& Im);
-  
+            std::vector<std::vector<double> >& Re, std::vector<std::vector<double> >& Im);
+
   /// Factorial and Gamma functions
   double Factorial(const int n);
   double DoubleFactorial(const int n);
@@ -201,7 +201,7 @@ namespace WaveformUtilities {
   double LogGammaFunction(const double x);
   std::complex<double> LogGammaFunction(const std::complex<double>& x);
   std::vector<std::complex<double> > LogGammaFunction(const std::vector<std::complex<double> >& x);
-  
+
   /// NaN, inf, and monotonicity checks
   inline bool isnan(const double a) {
     return (a != a);
@@ -214,7 +214,7 @@ namespace WaveformUtilities {
   bool hasinf(const std::vector<double>& a);
   bool hasinf(const WaveformUtilities::Matrix<double>& a);
   bool ismonotonic(const std::vector<double>& a);
-  
+
   /// Transition functions
   inline double TransitionFunction_Linear(const double x) {
     return (x<0.0 ? 0.0 : (x>1.0 ? 1.0 : x) );
@@ -228,7 +228,7 @@ namespace WaveformUtilities {
   inline double TransitionFunction_Smooth(const double x, const double a, const double b) {
     return TransitionFunction_Smooth((x-a)/b);
   }
-  
+
 } // namespace WaveformUtilities
 
 #endif // VECTORFUNCTIONS_HPP

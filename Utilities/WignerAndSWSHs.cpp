@@ -80,9 +80,9 @@ WaveformUtilities::WignerCoefficientFunctor::WignerCoefficientFunctor()
   for(int ell=0; ell<=ellMax; ++ell) {
     for(int mp=-ell; mp<=ell; ++mp) {
       for(int m=-ell; m<=ell; ++m) {
-	CoefficientTable[i++] = 
-	  std::sqrt( Factorial(ell+mp)*Factorial(ell-mp)
-	  	     / double(Factorial(ell+m)*Factorial(ell-m)) );
+        CoefficientTable[i++] =
+          std::sqrt( Factorial(ell+mp)*Factorial(ell-mp)
+                     / double(Factorial(ell+m)*Factorial(ell-m)) );
       }
     }
   }

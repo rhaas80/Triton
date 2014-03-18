@@ -97,16 +97,16 @@ public:
     t.erase(t.begin(), t.begin()+i);
     arga.erase(arga.begin(), arga.begin()+i);
   }
-  
+
   int LM_a() { return LMa; }
-  
+
   double darg(const double dt, const unsigned int mode) const {
     vector<double> argA = WaveformUtilities::Interpolate(a.T(), a.Arg(mode), t);
     vector<double> argB = WaveformUtilities::Interpolate(b.T(), b.Arg(mode), t-dt);
     // return trapz(t, argA-argB) / (t.back()-t[0]);
     return SplineCumulativeIntegral(t, argA-argB) / (t.back()-t[0]);
   }
-  
+
   double operator()(const double dt) const {
     vector<double> argb = WaveformUtilities::Interpolate(b.T(), b.Arg(LMb), t-dt);
     // double darg = trapz(t, arga-argb) / (t.back()-t[0]);
@@ -204,10 +204,10 @@ Waveform WaveformObjects::Waveform::HybridizeWith(const Waveform& b, const doubl
       c.ArgRef(Mode,j) = SplineArgB.interp(c.T(j));
     }
   }
-  
+
   // Check for NaNs
   c.HasNaNs();
-  
+
   return c;
 }
 
@@ -264,7 +264,7 @@ Waveform& WaveformObjects::Waveform::AlignTo_F(const Waveform& a, const double o
       NewTimeA.erase(NewTimeA.begin()+i, NewTimeA.begin()+NewTimeA.size());
       NewOmegaA.erase(NewOmegaA.begin()+i, NewOmegaA.begin()+NewOmegaA.size());
     }
-    
+
     /// Make sure B only includes data before T2
     i=NewTimeB.size()-1;
     while(NewTimeB[i]>T2 && i>0) { --i; }
@@ -297,7 +297,7 @@ Waveform& WaveformObjects::Waveform::AlignTo_F(const Waveform& a, const double o
     }
   } catch (char* str) {
     cerr << "Bad news from AlignTo_F: " << str << endl
-	 << "\nThe frequency requested is probably out of range of one or both of the Waveforms, or your t1 and t2 are too restrictive.\n" << endl;
+         << "\nThe frequency requested is probably out of range of one or both of the Waveforms, or your t1 and t2 are too restrictive.\n" << endl;
     exit(1);
   }
   const double TA = WaveformUtilities::Interpolate(NewOmegaA, NewTimeA, NewOmegaASign*fabs(omega));
@@ -306,19 +306,19 @@ Waveform& WaveformObjects::Waveform::AlignTo_F(const Waveform& a, const double o
   const double TB = WaveformUtilities::Interpolate(NewOmegaB, NewTimeB, NewOmegaBSign*fabs(omega));
   NewOmegaB.clear();
   NewTimeB.clear();
-  
+
   const double dt = TA-TB;
   TRef() += dt;
   for(unsigned int i=0; i<a.NModes() && i<NModes(); ++i) {
     ArgRef(i) += WaveformUtilities::Interpolate(a.T(), a.Arg(i), TA) - WaveformUtilities::Interpolate(T(), Arg(i), TA);
   }
-  
+
   if(DeltaT!=1e300) {
     //cerr << "\nomega=" << omega << "\tTA=" << TA << "\tt1=" << max(TA-DeltaT, max(a.T(0), T(0)))
     //     << "\tt2=" << min(TA+DeltaT, min(a.T(a.NTimes()-1), T(NTimes()-1))) << endl;
     *this = this->HybridizeWith(a, std::max(TA-DeltaT, std::max(a.T(0), T(0))), std::min(TA+DeltaT, std::min(a.T().back(), T().back())), MinStep);
   }
-  
+
   return *this;
 }
 
@@ -333,10 +333,10 @@ Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double
 //     cerr << "LM=" << LM() << "\nQNMLMs()=" << QNMLMs() << endl;
 //     Throw1WithMessage("Bad input LMs.");
 //   }
-  
+
   if(dt==0.0) { dt = 2*M_PI/(4*2.07); } // 2.07 -> MAX(omegaRe of all the QNM modes)
   History() << "### this->AttachQNMs(" << chiKerr << ", " << dt << ", " << TLength << ");" << endl;
-  
+
   /// Add the new times, and resize everything as appropriate
   const double TPeak = Peak22Time();
   const double TEnd = T().back();
@@ -353,7 +353,7 @@ Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double
     cout << "T(0)=" << T(0) << "\tT().back()=" << T().back() << endl;
     this->Interpolate(NewTimes, ExtrapVal);
   }
-  
+
 //   const unsigned int NTimesEnd = NTimes();
 //   TRef().resize(NTimes()+int(floor(TLength/dt)), T().back());
 //   for(unsigned int i=0; i<NTimes()-NTimesEnd; ++i) {
@@ -362,17 +362,17 @@ Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double
 //   if(R().size()>1) { RRef().resize(NTimes(), 0.0); }
 //   MagRef().resize(NModes(), NTimes(), 0.0);
 //   ArgRef().resize(NModes(), NTimes(), 0.0);
-  
+
   for(unsigned int mode=0; mode<NModes(); ++mode) {
     //// If this mode should be exactly zero, let it be
     if(delta==0.0 && !(M(mode)%2==0)) {
       continue;
     }
-    
+
     //// Get the QNM frequency
     double omegaRe, omegaIm;
     QNM(L(mode), M(mode), 0, chiKerr, omegaRe, omegaIm);
-    
+
     //// Extract the invertible data of the l,m mode
     unsigned int iPeak=maxIndex(Mag(mode));
     const double tDropBefore(T(iPeak));
@@ -382,24 +382,24 @@ Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double
     const unsigned int iBad=i;
     const double tDropAfter(T(iBad));
     Waveform InspiralLM((this->operator[](mode)).DropBefore(tDropBefore).DropAfter(tDropAfter));
-    
+
     //// Find the solution.  Most of this is dedicated to making sure the interpolation of Fvec and Tvec is well-posed
     vector<double> Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaIm));
     vector<double> Tvec = InspiralLM.T();
     {
       unsigned int k=1;
       if(Fvec[0]>0.0) {
-	while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
-	Fvec.erase(Fvec.begin(), Fvec.begin()+k);
-	Tvec.erase(Tvec.begin(), Tvec.begin()+k);
-	k=1;
+        while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
+        Fvec.erase(Fvec.begin(), Fvec.begin()+k);
+        Tvec.erase(Tvec.begin(), Tvec.begin()+k);
+        k=1;
       }
       while(Fvec[k]<Fvec[k-1]) { ++k; }
       Fvec.erase(Fvec.begin()+k, Fvec.end());
       Tvec.erase(Tvec.begin()+k, Tvec.end());
     }
     double tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
-    
+
     if((delta==deltaOFq(10.0) && chiKerr==FinalSpinApproximation(deltaOFq(10), 0.95))) {
       //cout << "Redoing tmatch find! (tailored to q==10 && chis==0.95)" << endl;
       iPeak = NTimes()-1;
@@ -411,20 +411,20 @@ Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double
       //     << " InspiralLM.T().back()=" << InspiralLM.T().back() << endl;
       const double tLength = InspiralLM.T().back()-InspiralLM.T(0);
       for(unsigned int j=0; j<InspiralLM.NTimes(); ++j) {
-	InspiralLM.MagRef(0,j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
-	MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
+        InspiralLM.MagRef(0,j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
+        MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
       }
       Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaIm));
       Tvec = InspiralLM.T();
       {
-	unsigned int k=1;
-	while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
-	Fvec.erase(Fvec.begin(), Fvec.begin()+k);
-	Tvec.erase(Tvec.begin(), Tvec.begin()+k);
-	k=1;
-	while(Fvec[k]<Fvec[k-1] && k<Fvec.size()) { ++k; }
-	Fvec.erase(Fvec.begin()+k, Fvec.end());
-	Tvec.erase(Tvec.begin()+k, Tvec.end());
+        unsigned int k=1;
+        while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
+        Fvec.erase(Fvec.begin(), Fvec.begin()+k);
+        Tvec.erase(Tvec.begin(), Tvec.begin()+k);
+        k=1;
+        while(Fvec[k]<Fvec[k-1] && k<Fvec.size()) { ++k; }
+        Fvec.erase(Fvec.begin()+k, Fvec.end());
+        Tvec.erase(Tvec.begin()+k, Tvec.end());
       }
       tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
     } else if(tmatch<tDropBefore || tmatch>tDropAfter) {
@@ -433,22 +433,22 @@ Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double
       const double tFakeRingdown = std::min(InspiralLM.T(0)+50.0, InspiralLM.T().back());
       const double tLength = tFakeRingdown-InspiralLM.T(0);
       for(unsigned int j=0; j<InspiralLM.NTimes(); ++j) {
-	InspiralLM.MagRef(0, j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
-	MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
+        InspiralLM.MagRef(0, j) *= (1.0-TransitionFunction_Smooth((InspiralLM.T(j)-InspiralLM.T(0))/tLength));
+        MagRef(mode, j+iPeak) = InspiralLM.Mag(0, j);
       }
       Fvec = dydx(InspiralLM.Mag(0), InspiralLM.T()) + (InspiralLM.Mag(0) * abs(omegaIm));
       Tvec = InspiralLM.T();
       {
-	unsigned int k=1;
-	if(Fvec[0]>0.0) {
-	  while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
-	  Fvec.erase(Fvec.begin(), Fvec.begin()+k);
-	  Tvec.erase(Tvec.begin(), Tvec.begin()+k);
-	  k=1;
-	}
-	while(Fvec[k]<Fvec[k-1]) { ++k; }
-	Fvec.erase(Fvec.begin()+k, Fvec.end());
-	Tvec.erase(Tvec.begin()+k, Tvec.end());
+        unsigned int k=1;
+        if(Fvec[0]>0.0) {
+          while(Fvec[k]>Fvec[k-1] && k<Fvec.size()) { ++k; }
+          Fvec.erase(Fvec.begin(), Fvec.begin()+k);
+          Tvec.erase(Tvec.begin(), Tvec.begin()+k);
+          k=1;
+        }
+        while(Fvec[k]<Fvec[k-1]) { ++k; }
+        Fvec.erase(Fvec.begin()+k, Fvec.end());
+        Tvec.erase(Tvec.begin()+k, Tvec.end());
       }
       tmatch = WaveformUtilities::Interpolate(Fvec, Tvec, 0.0);
       //if(L(mode)==2 && M(mode)==2) {
@@ -465,7 +465,7 @@ Waveform& WaveformObjects::Waveform::AttachQNMs(const double delta, const double
     i=iPeak;
     while(tmatch>T(i) && i<NTimes()) { ++i; }
     const unsigned int iMatch=i; // iMatch points at or to the right of tmatch
-    
+
     //// Read data into the QNM portion of the waveform
     const double phiPeak = Arg(mode, iPeak);
     const double omegaPeak = (Arg(mode, iPeak+1)-Arg(mode, iPeak-1)) / (T(iPeak+1)-T(iPeak-1));

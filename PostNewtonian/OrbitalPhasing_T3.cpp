@@ -19,7 +19,7 @@ private:
   bool Findv0;
   double v2, v3, v4, v5, v6, v6lntau, v7;
   double Phi2, Phi3, Phi4, Phi5lntau, Phi6, Phi6lntau, Phi7;
-  
+
 public:
   T3(const double delta, const double chis, const double chia, const double iv0)
     : nu((1.0-delta*delta)/4.0), v0(iv0), Findv0(true),
@@ -38,14 +38,14 @@ public:
       Phi6lntau(0.23883928571428573),
       Phi7(1.9222460396195517e-9*(7.182133195448384e6*pow(chia,2)*(-407. + 1600.*nu) + 9.42477796076938*(1.88516689e8 + 1.642452e8*nu - 4.7634384e7*pow(nu,2)) + 756.*pow(chia,3)*delta*(1.350103e6 - 6.00847e6*nu + 180600.*pow(nu,2)) + 756.*pow(chis,3)*(1.350103e6 - 1.021458e6*nu + 642264.*pow(nu,2)) + 2.*chia*delta*(-5.386538891e9 - 8.84569035e8*nu + 9.80367696e8*pow(nu,2)) + 2268.*pow(chis,2)*(3166.7253948185116*(-407. + 28.*nu) + chia*delta*(1.350103e6 - 883658.*nu + 180600.*pow(nu,2))) + 2.*chis*(-5.386538891e9 - 2.9231282105474925e9*chia*delta + 4.258127587e9*nu + 3.156448596e9*pow(nu,2) - 4.49340192e8*pow(nu,3) + 1134.*pow(chia,2)*(325681. + 1.024422e6*pow(delta,2) - 2.048582e6*nu + 2.1994e6*pow(nu,2)))))
   { }
-  
+
   void operator() (double& v, const double t, double& Phi) const {
     const double taum8 = pow((-nu/5.0)*t,-1./8.);
     const double lntau = log((-nu/5.0)*t);
     v = 0.5*taum8*(1.0 + taum8*taum8*(v2 + taum8*(v3 + taum8*(v4 + taum8*(v5 + taum8*(v6 + v6lntau*lntau + taum8*(v7) ) ) ) ) ) );
     Phi = (-1.0/(nu*pow(taum8,5)))*(1.0 + taum8*taum8*(Phi2 + taum8*(Phi3 + taum8*(Phi4 + taum8*(Phi5lntau*lntau + taum8*(Phi6 + Phi6lntau*lntau + taum8*(Phi7) ) ) ) ) ) );
   }
-  
+
   double operator()(const double t) const {
     double v, Phi;
     (*this)(v, t, Phi);
@@ -55,24 +55,24 @@ public:
       return -v;
     }
   }
-  
+
   void FindMaxv() {
     Findv0 = false;
   }
-  
+
 };
 
 void WU::TaylorT3(const double delta, const double chis, const double chia, const double v0,
-		  vector<double>& t, vector<double>& v, vector<double>& Phi,
-		  const int NPoints)
+                  vector<double>& t, vector<double>& v, vector<double>& Phi,
+                  const int NPoints)
 {
   const double nu((1.0-delta*delta)/4.0);
   bool BadPoints(false);
-  
+
   //// The T3 object 'd' serves as a functor, first to find the time at which v(t)=v0,
   //// then -- after d.Findv0=false is set -- to find the time at which v(t) is a maximum.
   T3 d(delta, chis, chia, v0);
-  
+
   // Set up the t vector by finding the t which gives v[0]=v0,
   // then distributing points roughly evenly spaced in v by
   // approximating as t=-5/(256*nu*v^8).
@@ -82,7 +82,7 @@ void WU::TaylorT3(const double delta, const double chis, const double chia, cons
   Minimizer.cx = -0.5/(256*nu*pow(v0,8));
   const double t0 = Minimizer.minimize(d);
   const double v0Bad = pow(-256*nu*t0/5., -1./8.);
-  
+
   //// Now switch d, and find the max of v(t)
   d.FindMaxv();
   Minimizer.ax = t0;
@@ -107,7 +107,7 @@ void WU::TaylorT3(const double delta, const double chis, const double chia, cons
     Phi[i] = Phi[i]-Phi[0];
   }
   Phi[0] = 0.0;
-  
+
   //// If we couldn't find the max of v(t), remove v>1 from the data
   if(BadPoints) {
     unsigned int i=0;
@@ -116,6 +116,6 @@ void WU::TaylorT3(const double delta, const double chis, const double chia, cons
     t.erase(t.begin()+i, t.end());
     Phi.erase(Phi.begin()+i, Phi.end());
   }
-  
+
   return;
 }

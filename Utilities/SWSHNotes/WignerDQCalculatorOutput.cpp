@@ -1,4 +1,3 @@
-  
   switch(L) {
   case 8:
     switch(M) {
@@ -57,7 +56,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -7:
       switch(MP) {
       case -8:
@@ -113,7 +112,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -6:
       switch(MP) {
       case -8:
@@ -169,7 +168,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -8:
@@ -225,7 +224,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -8:
@@ -281,7 +280,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -8:
@@ -337,7 +336,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -8:
@@ -393,7 +392,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -8:
@@ -449,7 +448,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -8:
@@ -505,7 +504,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -8:
@@ -561,7 +560,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -8:
@@ -617,7 +616,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -8:
@@ -673,7 +672,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -8:
@@ -729,7 +728,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -8:
@@ -785,7 +784,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -8:
@@ -841,7 +840,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 7:
       switch(MP) {
       case -8:
@@ -897,7 +896,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 8:
       switch(MP) {
       case -8:
@@ -953,10 +952,10 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 7:
     switch(M) {
     case -7:
@@ -1008,7 +1007,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -6:
       switch(MP) {
       case -7:
@@ -1058,7 +1057,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -7:
@@ -1108,7 +1107,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -7:
@@ -1158,7 +1157,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -7:
@@ -1208,7 +1207,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -7:
@@ -1258,7 +1257,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -7:
@@ -1308,7 +1307,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -7:
@@ -1358,7 +1357,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -7:
@@ -1408,7 +1407,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -7:
@@ -1458,7 +1457,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -7:
@@ -1508,7 +1507,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -7:
@@ -1558,7 +1557,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -7:
@@ -1608,7 +1607,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -7:
@@ -1658,7 +1657,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 7:
       switch(MP) {
       case -7:
@@ -1708,10 +1707,10 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 6:
     switch(M) {
     case -6:
@@ -1757,7 +1756,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -6:
@@ -1801,7 +1800,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -6:
@@ -1845,7 +1844,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -6:
@@ -1889,7 +1888,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -6:
@@ -1933,7 +1932,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -6:
@@ -1977,7 +1976,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -6:
@@ -2021,7 +2020,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -6:
@@ -2065,7 +2064,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -6:
@@ -2109,7 +2108,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -6:
@@ -2153,7 +2152,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -6:
@@ -2197,7 +2196,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -6:
@@ -2241,7 +2240,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -6:
@@ -2285,10 +2284,10 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 5:
     switch(M) {
     case -5:
@@ -2328,7 +2327,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -5:
@@ -2366,7 +2365,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -5:
@@ -2404,7 +2403,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -5:
@@ -2442,7 +2441,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -5:
@@ -2480,7 +2479,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -5:
@@ -2518,7 +2517,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -5:
@@ -2556,7 +2555,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -5:
@@ -2594,7 +2593,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -5:
@@ -2632,7 +2631,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -5:
@@ -2670,7 +2669,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -5:
@@ -2708,10 +2707,10 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 4:
     switch(M) {
     case -4:
@@ -2745,7 +2744,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -4:
@@ -2777,7 +2776,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -4:
@@ -2809,7 +2808,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -4:
@@ -2841,7 +2840,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -4:
@@ -2873,7 +2872,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -4:
@@ -2905,7 +2904,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -4:
@@ -2937,7 +2936,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -4:
@@ -2969,7 +2968,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -4:
@@ -3001,10 +3000,10 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 3:
     switch(M) {
     case -3:
@@ -3032,7 +3031,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -3:
@@ -3058,7 +3057,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -3:
@@ -3084,7 +3083,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -3:
@@ -3110,7 +3109,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -3:
@@ -3136,7 +3135,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -3:
@@ -3162,7 +3161,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -3:
@@ -3188,10 +3187,10 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 2:
     switch(M) {
     case -2:
@@ -3213,7 +3212,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -2:
@@ -3233,7 +3232,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -2:
@@ -3253,7 +3252,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -2:
@@ -3273,7 +3272,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -2:
@@ -3293,10 +3292,10 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 1:
     switch(M) {
     case -1:
@@ -3312,7 +3311,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -1:
@@ -3326,7 +3325,7 @@
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -1:
@@ -3340,10 +3339,10 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 0:
     switch(M) {
     case 0:
@@ -3353,8 +3352,8 @@
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   } // switch(L)

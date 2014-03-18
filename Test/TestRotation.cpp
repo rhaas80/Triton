@@ -83,7 +83,7 @@ int main() {
   AlphaBetaGammaB[0] = -AlphaBetaGammaA[2];
   AlphaBetaGammaB[1] = -AlphaBetaGammaA[1];
   AlphaBetaGammaB[2] = -AlphaBetaGammaA[0];
-  
+
   string Approximant = "TaylorT4";
   const double delta = 0.05;
   const double chis = 0.0;
@@ -130,7 +130,7 @@ int main() {
   Output("Outputs/TestRotation_3.dat", W);
   Output("Outputs/TestRotation_3-Ini.dat", W/WIni);
   cout << endl << "Done" << endl;
-  
+
   WaveformAmplitudes Amp(delta, chis, chia);
   double hMag, hArg;
   Amp.rhOverM(2, 2, v0, 0.0, hMag, hArg);
@@ -153,12 +153,12 @@ int main() {
   try {
     WaveformUtilities::dfpmin(BetaGamma, Tolerance, Iterations2, Mag22, Minimizer);
   } catch(int) { }
-  
+
   cout << "Exact:" << endl;
   cout << "xmin=" << setprecision(Prec) << -AlphaBetaGamma0 << "\tfmin=" << setprecision(Prec) << -hMag*hMag << "=" << -0.060432566507885*0.060432566507885 << endl;
   cout << "Numerical:" << endl;
   cout << "xmin=" << setprecision(Prec) << fmod(BetaGamma, M_PI) << " or " << fmod(BetaGamma, M_PI)-M_PI << "\tfmin=" << setprecision(Prec) << Mag22 << endl;
   cout << "Iterations=" << Iterations1+Iterations2 << endl;
-  
+
   return 0;
 }

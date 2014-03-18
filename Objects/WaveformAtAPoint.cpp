@@ -21,16 +21,16 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
   // Record that this is happening
   SetHistory(W.HistoryStr());
   History() << "### WaveformAtAPoint(W, " << setprecision(16) << dt << ", " << Vartheta << ", " << Varphi << ");" << endl;
-  
+
   // Make sure to copy over some other data
   TypeIndexRef() = W.TypeIndex();
   TimeScaleRef() = W.TimeScale();
-  
+
   // Set L,M data to something impossible, to denote that we're doing things at a point
   LMRef() = Matrix<int>(1, 2);
   LRef(0) = 0;
   MRef(0) = 0;
-  
+
   // Construct a grid with even spacing dt whose size is the next power of 2
   const unsigned int N1 = (unsigned int)(floor((W.T().back()-W.T(0))/dt));
   const unsigned int N2 = (unsigned int)(pow(2.0,ceil(log2(N1))));
@@ -40,7 +40,7 @@ WaveformAtAPoint::WaveformAtAPoint(const Waveform& W, const double dt, const dou
   }
   MagRef() = Matrix<double>(1, N2, 0.0);
   ArgRef() = Matrix<double>(1, N2, 0.0);
-  
+
   // Step through the modes interpolating to the new time
   vector<double> SWSHAmp, SWSHPhi, Amplitude, Phase;
   SWSH(W.LM().RawData(), vartheta, varphi, SWSHAmp, SWSHPhi);

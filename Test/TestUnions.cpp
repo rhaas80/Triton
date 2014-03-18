@@ -8,7 +8,7 @@ namespace WU = WaveformUtilities;
 int main() {
   const double MinStep = 0.0;
   const double MinTime = -1e210;
-  
+
   const unsigned int Na = 47;
   const unsigned int Nb = 97;
   const unsigned int Nc = 103;
@@ -21,7 +21,7 @@ int main() {
   const double xcI = 12.4;
   const double dxc = 0.179;
   const double xcF = xcI + dxc*(Nc-1); // = 30.658
-  
+
   vector<double> xa(Na);
   for(unsigned int i=0; i<Na; ++i) {
     xa[i] = xaI + i*dxa;
@@ -34,58 +34,58 @@ int main() {
   for(unsigned int i=0; i<Nc; ++i) {
     xc[i] = xcI + i*dxc;
   }
-  
+
 //   unsigned int Nuab;
 //   {
-    
+
 //   }
-  
+
   vector<double> T;
-  
+
   ofstream ofsuab("TestUnions_uab.dat", ofstream::out);
   ofsuab << "# [1] = Index\n"
-	 << "# [2] = Time\n"
-	 << setprecision(8) << flush;
+         << "# [2] = Time\n"
+         << setprecision(8) << flush;
   T = WU::Union(xa, xb, MinStep);
   for(unsigned int i=0; i<T.size(); ++i) {
     ofsuab << i << " " << T[i] << endl;
   }
   ofsuab.close();
-  
+
   ofstream ofsubc("TestUnions_ubc.dat", ofstream::out);
   ofsubc << "# [1] = Index\n"
-	 << "# [2] = Time\n"
-	 << setprecision(8) << flush;
+         << "# [2] = Time\n"
+         << setprecision(8) << flush;
   T = WU::Union(xb, xc, MinStep);
   for(unsigned int i=0; i<T.size(); ++i) {
     ofsubc << i << " " << T[i] << endl;
   }
   ofsubc.close();
-  
+
   ofstream ofsuba("TestUnions_uba.dat", ofstream::out);
   ofsuba << "# [1] = Index\n"
-	 << "# [2] = Time\n"
-	 << setprecision(8) << flush;
+         << "# [2] = Time\n"
+         << setprecision(8) << flush;
   T = WU::Union(xb, xa, MinStep);
   for(unsigned int i=0; i<T.size(); ++i) {
     ofsuba << i << " " << T[i] << endl;
   }
   ofsuba.close();
-  
+
   ofstream ofsucb("TestUnions_ucb.dat", ofstream::out);
   ofsucb << "# [1] = Index\n"
-	 << "# [2] = Time\n"
-	 << setprecision(8) << flush;
+         << "# [2] = Time\n"
+         << setprecision(8) << flush;
   T = WU::Union(xc, xb, MinStep);
   for(unsigned int i=0; i<T.size(); ++i) {
     ofsucb << i << " " << T[i] << endl;
   }
   ofsucb.close();
-  
+
   ofstream ofsuca("TestUnions_uca.dat", ofstream::out);
   ofsuca << "# [1] = Index\n"
-	 << "# [2] = Time\n"
-	 << setprecision(8) << flush;
+         << "# [2] = Time\n"
+         << setprecision(8) << flush;
   try {
     T = WU::Union(xc, xa, MinStep);
     cerr << "!!! Should have thrown an exception !!! " << __LINE__ << " " << __FILE__ << endl;
@@ -98,11 +98,11 @@ int main() {
     ofsuca << i << " " << T[i] << endl;
   }
   ofsuca.close();
-  
+
   ofstream ofsuac("TestUnions_uac.dat", ofstream::out);
   ofsuac << "# [1] = Index\n"
-	 << "# [2] = Time\n"
-	 << setprecision(8) << flush;
+         << "# [2] = Time\n"
+         << setprecision(8) << flush;
   try {
     T = WU::Union(xa, xc, MinStep);
     cerr << "!!! Should have thrown an exception !!! " << __LINE__ << " " << __FILE__ << endl;
@@ -115,6 +115,6 @@ int main() {
     ofsuac << i << " " << T[i] << endl;
   }
   ofsuac.close();
-  
+
   return 0;
 }

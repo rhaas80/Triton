@@ -95,7 +95,7 @@ public:
 
 
 void RadiationAxis(const Waveform& W, std::vector<double>& alpha, std::vector<double>& beta,
-		   const double alphaGuess=0.0, const double betaGuess=0.0) {
+                   const double alphaGuess=0.0, const double betaGuess=0.0) {
   alpha.resize(W.NTimes());
   beta.resize(W.NTimes());
   vector<double> AlphaBeta(2, 0.0);
@@ -134,30 +134,30 @@ void MinimalRotation(const std::vector<double>& alpha, const std::vector<double>
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tt.size()=" << t.size() << endl;
     Throw1WithMessage("Size mismatch in MinimalRotation.");
   }
-  
+
   vector<double> gammaDot = -dydx(alpha, t)*cos(beta);
   gamma = -alpha*cos(beta) + cumtrapz(t, -sin(beta)*dydx(beta,t)*alpha);
-  
+
   return;
 }
 
 /// Given the radiation axis, return the frame which minimizes rotation.
 std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<double>& alpha, const std::vector<double>& beta,
-							   const std::vector<double>& t, const unsigned int NIterations=5) {
+                                                           const std::vector<double>& t, const unsigned int NIterations=5) {
   if(alpha.size() != beta.size() || alpha.size() != t.size()) {
     cerr << "\nalpha.size()=" << alpha.size() << "\tbeta.size()=" << beta.size() << "\tt.size()=" << t.size() << endl;
     Throw1WithMessage("Size mismatch in MinimalRotation.");
   }
-  
+
   // Find the minimal-rotation frame using the Euler-angle method
   vector<double> gammaDot = -dydx(alpha, t)*cos(beta);
   vector<double> gamma = -alpha*cos(beta) + cumtrapz(t, -sin(beta)*dydx(beta,t)*alpha);
   vector<WaveformUtilities::Quaternion> MinRotFrame = WaveformUtilities::Quaternions(alpha, beta, gamma);
-  
+
   // Now use that frame with the quaternion method for better numerics
   const Quaternion z(0.,0.,0.,1.);
   for(unsigned int iteration=0; iteration<NIterations; ++iteration) {
-    // Note that Component0 gives -1 times the dot product of two vectors 
+    // Note that Component0 gives -1 times the dot product of two vectors
     const vector<double> negativegammaover2 = SplineIntegral(t, Component0( conjugate(MinRotFrame) * CenteredDifferencing(MinRotFrame, t) * z ));
     for(unsigned int i=0; i<negativegammaover2.size(); ++i) {
       MinRotFrame[i] = MinRotFrame[i] * (negativegammaover2[i]*z).exp();
@@ -170,7 +170,7 @@ std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<dou
     }
     File.close();
   }
-  
+
   // gammaDot = 2*Component0( SquadVelocities(t, MinRotFrame) * z * Conjugate(MinRotFrame) );
   // gamma = SplineIntegral(t, gammaDot);
   // cerr << "The correction to gamma is:\n" << gamma << endl;
@@ -201,7 +201,7 @@ std::vector<WaveformUtilities::Quaternion> MinimalRotation(const std::vector<dou
   // for(unsigned int i=0; i<gamma.size(); ++i) {
   //   MinRotFrame[i] = MinRotFrame[i] * (gamma[i]*z).exp();
   // }
-  
+
   return MinRotFrame;
 }
 
@@ -213,14 +213,14 @@ Waveform& WaveformObjects::Waveform::TransformToSchmidtFrame(const double alpha0
   /// calling RotateCoordinates) to align with that frame.  Note that
   /// the rotation in this case always has the third Euler angle
   /// (gamma) set to 0.
-  /// 
+  ///
   /// We define the Euler angles (alpha, beta, gamma) using the
   /// z-y'-z'' convention, where the first rotation is through an
   /// angle alpha about the z axis, the second through beta about the
   /// (new) y' axis, and the third through gamma about the (new) z''
   /// axis.  Note that this is equivalent to rotations in the opposite
   /// order about the fixed set of axes z-y-z.
-  /// 
+  ///
   /// See PRD 84, 124011 (2011) for more details.
   history << "### this->TransformToSchmidtFrame(" << alpha0Guess << ", " << beta0Guess << ");" << endl;
   vector<double> alpha(NTimes(), 0.0), beta(NTimes(), 0.0), gamma(NTimes(), 0.0);
@@ -235,14 +235,14 @@ Waveform& WaveformObjects::Waveform::TransformToMinimalRotationFrame(const doubl
   /// rotates the coordinates in which the physical system is
   /// expressed (by calling RotateCoordinates) to align with that
   /// frame.
-  /// 
+  ///
   /// We define the Euler angles (alpha, beta, gamma) using the
   /// z-y'-z'' convention, where the first rotation is through an
   /// angle alpha about the z axis, the second through beta about the
   /// (new) y' axis, and the third through gamma about the (new) z''
   /// axis.  Note that this is equivalent to rotations in the opposite
   /// order about the fixed set of axes z-y-z.
-  /// 
+  ///
   /// See PRD 84, 124011 (2011) for more details.
   history << "### this->TransformToMinimalRotationFrame(" << alpha0Guess << ", " << beta0Guess << ", " << NIterations << ");" << endl;
   vector<double> alpha(NTimes(), 0.0), beta(NTimes(), 0.0), gamma(NTimes(), 0.0);

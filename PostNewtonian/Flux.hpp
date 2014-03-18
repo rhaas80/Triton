@@ -6,7 +6,7 @@
 #include "VectorFunctions.hpp"
 
 namespace WaveformUtilities {
-  
+
   class Flux_Base {
   protected:
     mutable double v;
@@ -15,7 +15,7 @@ namespace WaveformUtilities {
     Flux_Base() : v(0.0), Flux(0.0) { }
     double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const;
   };
-  
+
   class TidalHeating : public Flux_Base {
   private:
     const double N;
@@ -23,7 +23,7 @@ namespace WaveformUtilities {
     TidalHeating(const double delta, const double chis, const double chia);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
-  
+
   class Flux_Taylor : public Flux_Base {
   private:
     const double nu, F0, F2, F3, F4, F5, F6, F6lnv, F7;
@@ -31,8 +31,8 @@ namespace WaveformUtilities {
     Flux_Taylor(const double delta, const double chis, const double chia);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
-  
-  
+
+
   class Flux_Taylor8 : public Flux_Base {
   private:
     const double nu, F0, F2, F3, F4, F5, F6, F6lnv, F7, F8, F8lnv;
@@ -40,8 +40,8 @@ namespace WaveformUtilities {
     Flux_Taylor8(const double delta, const double chis, const double chia);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
-  
-  
+
+
   class Flux_Pade44LogConst : public Flux_Base {
   private:
     const double nu, N;
@@ -52,8 +52,8 @@ namespace WaveformUtilities {
     Flux_Pade44LogConst(const double delta, const double chis, const double chia);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
-  
-  
+
+
   class Flux_Pade44LogFac : public Flux_Base {
   private:
     const double nu, N, vPole, vLSO;
@@ -65,8 +65,8 @@ namespace WaveformUtilities {
     Flux_Pade44LogFac(const double delta, const double chis, const double chia);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
-  
-  
+
+
   class Flux_SumAmplitudes : public Flux_Base, private WaveformAmplitudesSumMMagSquared {
   private:
     const double N;
@@ -74,8 +74,8 @@ namespace WaveformUtilities {
     Flux_SumAmplitudes(const double delta, const double chis, const double chia);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
-  
-  
+
+
   template <class Metric, class Hamiltonian>
   class Flux_SumAmplitudesResummed : public Flux_Base, private WaveformAmplitudesResummedSumMMagSquared<Metric, Hamiltonian> {
   private:
@@ -85,8 +85,8 @@ namespace WaveformUtilities {
     Flux_SumAmplitudesResummed(const double delta, const double chis, const double chia, const Metric& ig, const Hamiltonian& iH);
     double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const;
   };
-  
-  
+
+
   template <class Flux>
   class Torque_KFPhi {
   private:
@@ -100,7 +100,7 @@ namespace WaveformUtilities {
     template <class H> Torque_KFPhi(const double delta, const double chis, const double chia, const Flux& iF, const H& Ham);
     double operator()(const double v_new, const double r_new=0.0, const double prstar_new=0.0, const double pPhi_new=0.0) const;
   };
-  
+
   /// This choice is significantly slower, and makes only a miniscule difference in the result
 //   template <class HamiltonianCircular, class Flux>
 //   class Torque_nKFPhi {
@@ -115,9 +115,9 @@ namespace WaveformUtilities {
 //     Torque_nKFPhi(const double delta, const double chis, const double chia, const Flux& iF, const HamiltonianCircular& iHcirc);
 //     double operator()(const double v_new, const double r_new, const double prstar_new, const double pPhi_new) const;
 //   };
-  
+
   #include "Flux.tpp"
-  
+
 }
 
 #endif // FLUX_HPP

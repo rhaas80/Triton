@@ -7,38 +7,38 @@
 #include "Matrix.hpp"
 
 namespace WaveformObjects {
-  
+
   class Waveform {
-    
+
   public:  // Constructors and Destructor
     Waveform();
     Waveform(const Waveform& W);
     Waveform(const std::string& DataFileName, const std::string& Format, const bool ZeroEnds=false);
     Waveform(const std::string& BBHFileName,
-	     int SectionToUse=0,
-	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
+             int SectionToUse=0,
+             const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
     Waveform(const std::vector<std::string>& BBHDataSection,
-	     const std::string Dir = "",
-	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
+             const std::string Dir = "",
+             const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0));
     Waveform(const std::string& Approximant, const double delta, const double chis, const double chia, const double v0,
-	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
-	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
+             const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+             const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
-	     const double v0, 
-	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
-	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
+             const double v0,
+             const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+             const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
-	     const double v0, std::vector<std::vector<double> >& S1, std::vector<std::vector<double> >& S2, std::vector<std::vector<double> >& LNHat,
-	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
-	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
+             const double v0, std::vector<std::vector<double> >& S1, std::vector<std::vector<double> >& S2, std::vector<std::vector<double> >& LNHat,
+             const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+             const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     // Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
-    // 	     const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
-    // 	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
-    // 	     const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
+    //       const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
+    //       const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+    //       const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
     ~Waveform() { }
     void swap(Waveform& b);
     void clear() { t.clear(); r.clear(); lm.clear(); mag.clear(); arg.clear(); }
-    
+
   private:  // Member data
     std::stringstream history;
     unsigned int typeIndex;
@@ -51,7 +51,7 @@ namespace WaveformObjects {
     WaveformUtilities::Matrix<double> arg;
   public:
     static std::vector<std::string> Types;
-    
+
   public:  // Get-data access functions
     // Basic Waveform information
     inline const unsigned int NTimes() const { return t.size(); }
@@ -85,7 +85,7 @@ namespace WaveformObjects {
     inline const WaveformUtilities::Matrix<double>& Mag() const { return mag; }
     inline const WaveformUtilities::Matrix<double>& Arg() const { return arg; }
     #endif
-    
+
   public:  // Set-data implicit access functions
     #ifndef SWIG // Exclude the following from SWIG
     // Basic Waveform information
@@ -112,7 +112,7 @@ namespace WaveformObjects {
     inline WaveformUtilities::Matrix<double>& MagRef() { return mag; }
     inline WaveformUtilities::Matrix<double>& ArgRef() { return arg; }
     #endif // Excluded the above from SWIG
-    
+
   public:  // Set-data explicit access functions (mostly for SWIG)
     inline void AppendHistory(const std::string& Hist) { history << Hist; }
     inline void SetHistory(const std::string& Hist) { history.str(Hist); history.seekp(0, std::ios_base::end); }
@@ -134,12 +134,12 @@ namespace WaveformObjects {
     inline void SetArg(const unsigned int Mode, const std::vector<double>& a) { arg[Mode] = a; }
     inline void SetArg(const WaveformUtilities::Matrix<double>& a) { arg = a; }
     #endif // Only used above for SWIG or doxygen
-    
+
   public:  // Operators
     Waveform& operator=(const Waveform& b);
     Waveform operator[](const unsigned int mode) const;
     Waveform operator/(const Waveform& b) const;
-    
+
   public:  // Member functions
     // Extract features
     unsigned int FindModeIndex(const int L, const int M) const;
@@ -155,14 +155,14 @@ namespace WaveformObjects {
     std::vector<double> L2Norm() const;
     std::vector<double> L2NormDifference(const Waveform& b) const;
     Waveform& Differentiate();
-    
+
     // Interpolation routines
     Waveform& Interpolate(const std::vector<double>& Time);
     Waveform& Interpolate(const std::vector<double>& Time, const double ExtrapVal);
     Waveform& Interpolate(const double Time);
     Waveform& Interpolate(const Waveform& b);
     Waveform& Interpolate(const Waveform& b, const double ExtrapVal);
-    
+
     // Adjust time axis
     Waveform& AddToTime(const double t);
     Waveform& DropBefore(const double t);
@@ -172,7 +172,7 @@ namespace WaveformObjects {
     Waveform& UniformTime(const unsigned int N=200);
     Waveform& NSamplesPerCycle22(const unsigned int N=20);
     Waveform& MakeTimeMonotonic(const double MinTimeStep=1.e-5);
-    
+
     // Physical conversions for extrapolations or conversion to frequency space
     Waveform& SetArealRadius(const std::vector<double>& ArealRadius);
     Waveform& SetArealRadius(const std::string& AreaFileName);
@@ -183,7 +183,7 @@ namespace WaveformObjects {
     Waveform& TortoiseAdvance(const double ADMMass);
     Waveform& SetTotalMassToOne(const double TotalMassInCurrentUnits);
     Waveform& SetPhysicalMassAndDistance(const double TotalMassInSolarMasses, const double DistanceInMegaparsecs);
-    
+
     // Manipulate (l,m) modes
     Waveform& DropLMode(const int L);
     Waveform& DropLMMode(const int L, const int M);
@@ -196,18 +196,18 @@ namespace WaveformObjects {
     Waveform& UnfixNonOscillatingData(); // If M=0, convert from ReIm to MagArg
     Waveform& ConvertReImToMagArg();
     Waveform& ConvertMagArgToReIm();
-    
+
     // Align and hybridize waveforms
     Waveform& AlignPhasesToTwoPi(const Waveform& a, const double tFrac=0.25);
     Waveform& AlignTo(const Waveform& a, const double t1, const double t2);
     Waveform& AlignWithIntermediate(const Waveform& a, Waveform Intermediate, const double t1, const double t2);
     Waveform HybridizeWith(const Waveform& b, const double t1, const double t2, const double MinStep=0.005) const;
     Waveform& AlignTo_F(const Waveform& a, const double omega, const double omegat1=-1e300, const double omegat2=1e300,
-			const double DeltaT=1e300, const double MinStep=0.005);
+                        const double DeltaT=1e300, const double MinStep=0.005);
     Waveform HybridizeWith_F(const Waveform& a, const double omega, const double omegat1=-1e300, const double omegat2=1e300,
-			     const double DeltaT=10.0, const double MinStep=0.005) const;
+                             const double DeltaT=10.0, const double MinStep=0.005) const;
     Waveform& AttachQNMs(const double delta, const double chiKerr, double dt=0.0, const double TLength=500.0);
-    
+
     // Rotate by the given Euler angles or Quaternion
     Waveform& RotatePhysicalSystem(const double alpha, const double beta, const double gamma);
     Waveform& RotatePhysicalSystem(const std::vector<double>& alpha, const std::vector<double>& beta, const std::vector<double>& gamma);
@@ -218,19 +218,19 @@ namespace WaveformObjects {
     Waveform& RotateCoordinates(const WaveformUtilities::Quaternion& Q);
     Waveform& RotateCoordinates(const std::vector<WaveformUtilities::Quaternion>& Q);
     //Waveform& ReconcileAxisDirection(const Waveform& W, const double TimeFraction=0.5);
-    
+
     // Radiation-frame utilities
     Waveform& TransformToSchmidtFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0);
     Waveform& TransformToMinimalRotationFrame(const double alpha0Guess=0.0, const double beta0Guess=0.0, const unsigned int NIterations=5);
     Waveform& TransformToStandardFrame();
     Waveform& TransformToStationaryFrame(const WaveformUtilities::Quaternion Q=WaveformUtilities::Quaternion(1,0,0,0));
-    
+
     // Nice, easy way of compressing and outputting to NINJA
     Waveform& MinimalGrid(const double MagTol=1.e-5, const double ArgTol=1.e-5);
     void OutputToNINJAFormat(const std::string& MetadataFileName, const std::string ExtractionRadiusString="", const std::string WaveformIdentifier="") const;
-    
+
   }; // class Waveform
-  
+
 } // namespace WaveformObjects
 
 // Output functions (non-members)

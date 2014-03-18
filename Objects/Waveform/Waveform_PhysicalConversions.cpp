@@ -93,7 +93,7 @@ Waveform& WaveformObjects::Waveform::RescaleMagForRadius(const double OldRadius)
   } else {
     for(unsigned int t=0; t<NTimes(); ++t) {
       for(unsigned int mode=0; mode<NModes(); ++mode) {
-	MagRef(mode,t) *= R(t)/OldRadius;
+        MagRef(mode,t) *= R(t)/OldRadius;
       }
     }
   }
@@ -196,8 +196,8 @@ Waveform& WaveformObjects::Waveform::SetTotalMassToOne(const double TotalMassInC
 
 Waveform& WaveformObjects::Waveform::SetPhysicalMassAndDistance(const double CurrentUnitMassInSolarMasses, const double DistanceInMegaparsecs) {
   History() << "### this->SetPhysicalMassAndDistance(" << setprecision(16)
-	  << CurrentUnitMassInSolarMasses << ", "
-	  << DistanceInMegaparsecs << ");" << endl;
+          << CurrentUnitMassInSolarMasses << ", "
+          << DistanceInMegaparsecs << ");" << endl;
   // See the note above Waveform::Types.  This function removes the (G*M/c^3)
   // from each type, then scales the Time into seconds, and Radius into meters.
   // It then removes the (r/c) from the amplitude of each type.

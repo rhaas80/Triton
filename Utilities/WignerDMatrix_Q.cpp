@@ -84,7 +84,7 @@ void WignerDMatrix_Q::Value(double& Mag, double& Arg) {
   // ValArg=Arg;
   // Recalculated=true;
   // std::cout << "l=" << L << "\tmp=" << MP << "\tM=" << M << std::setprecision(16) << "\tMag=" << Mag << "\tArg=" << Arg << "\t:\t"
-  // 	    << R << " " << Mag_R_0_3 << " " << Mag_R_1_2 << " " << Arg_R_0_3 << " " << Arg_R_1_2 << std::endl;
+  //        << R << " " << Mag_R_0_3 << " " << Mag_R_1_2 << " " << Arg_R_0_3 << " " << Arg_R_1_2 << std::endl;
   return;
 }
 
@@ -123,26 +123,26 @@ void WignerDMatrix_Q::SetQuaternion(const Quaternion& iR) {
 void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
   if(iL==L && iMP==MP && iM==M) { return; }
   Recalculated = false;
-  
+
   if(iL<0) {
     Calculator = &WignerDMatrix_Q::Uninitialized;
     return;
   }
-  
+
   if(iL>8) {
     std::cerr << "\nL=" << iL << std::endl;
     Throw1WithMessage("This L value not yet implemented for Wigner D matrices.");
   }
-  
+
   if(std::abs(iMP)>iL || std::abs(iM)>iL) {
     std::cerr << "\nL=" << iL << "  MP=" << iMP << "  M=" << iM << std::endl;
     Throw1WithMessage("Bad MP or M, out of range for Wigner D matrix.");
   }
-  
+
   L=iL;
   MP=iMP;
   M=iM;
-  
+
   switch(L) {
   case 8:
     switch(M) {
@@ -201,7 +201,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -7:
       switch(MP) {
       case -8:
@@ -257,7 +257,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -6:
       switch(MP) {
       case -8:
@@ -313,7 +313,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -8:
@@ -369,7 +369,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -8:
@@ -425,7 +425,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -8:
@@ -481,7 +481,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -8:
@@ -537,7 +537,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -8:
@@ -593,7 +593,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -8:
@@ -649,7 +649,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -8:
@@ -705,7 +705,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -8:
@@ -761,7 +761,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -8:
@@ -817,7 +817,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -8:
@@ -873,7 +873,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -8:
@@ -929,7 +929,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -8:
@@ -985,7 +985,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 7:
       switch(MP) {
       case -8:
@@ -1041,7 +1041,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 8:
       switch(MP) {
       case -8:
@@ -1097,10 +1097,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 7:
     switch(M) {
     case -7:
@@ -1152,7 +1152,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -6:
       switch(MP) {
       case -7:
@@ -1202,7 +1202,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -7:
@@ -1252,7 +1252,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -7:
@@ -1302,7 +1302,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -7:
@@ -1352,7 +1352,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -7:
@@ -1402,7 +1402,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -7:
@@ -1452,7 +1452,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -7:
@@ -1502,7 +1502,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -7:
@@ -1552,7 +1552,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -7:
@@ -1602,7 +1602,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -7:
@@ -1652,7 +1652,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -7:
@@ -1702,7 +1702,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -7:
@@ -1752,7 +1752,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -7:
@@ -1802,7 +1802,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 7:
       switch(MP) {
       case -7:
@@ -1852,10 +1852,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 6:
     switch(M) {
     case -6:
@@ -1901,7 +1901,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -5:
       switch(MP) {
       case -6:
@@ -1945,7 +1945,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -6:
@@ -1989,7 +1989,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -6:
@@ -2033,7 +2033,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -6:
@@ -2077,7 +2077,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -6:
@@ -2121,7 +2121,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -6:
@@ -2165,7 +2165,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -6:
@@ -2209,7 +2209,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -6:
@@ -2253,7 +2253,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -6:
@@ -2297,7 +2297,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -6:
@@ -2341,7 +2341,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -6:
@@ -2385,7 +2385,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 6:
       switch(MP) {
       case -6:
@@ -2429,10 +2429,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 5:
     switch(M) {
     case -5:
@@ -2472,7 +2472,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -4:
       switch(MP) {
       case -5:
@@ -2510,7 +2510,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -5:
@@ -2548,7 +2548,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -5:
@@ -2586,7 +2586,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -5:
@@ -2624,7 +2624,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -5:
@@ -2662,7 +2662,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -5:
@@ -2700,7 +2700,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -5:
@@ -2738,7 +2738,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -5:
@@ -2776,7 +2776,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -5:
@@ -2814,7 +2814,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 5:
       switch(MP) {
       case -5:
@@ -2852,10 +2852,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 4:
     switch(M) {
     case -4:
@@ -2889,7 +2889,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -3:
       switch(MP) {
       case -4:
@@ -2921,7 +2921,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -4:
@@ -2953,7 +2953,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -4:
@@ -2985,7 +2985,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -4:
@@ -3017,7 +3017,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -4:
@@ -3049,7 +3049,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -4:
@@ -3081,7 +3081,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -4:
@@ -3113,7 +3113,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 4:
       switch(MP) {
       case -4:
@@ -3145,10 +3145,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 3:
     switch(M) {
     case -3:
@@ -3176,7 +3176,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -2:
       switch(MP) {
       case -3:
@@ -3202,7 +3202,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -3:
@@ -3228,7 +3228,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -3:
@@ -3254,7 +3254,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -3:
@@ -3280,7 +3280,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -3:
@@ -3306,7 +3306,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 3:
       switch(MP) {
       case -3:
@@ -3332,10 +3332,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 2:
     switch(M) {
     case -2:
@@ -3357,7 +3357,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case -1:
       switch(MP) {
       case -2:
@@ -3377,7 +3377,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -2:
@@ -3397,7 +3397,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -2:
@@ -3417,7 +3417,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 2:
       switch(MP) {
       case -2:
@@ -3437,10 +3437,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 1:
     switch(M) {
     case -1:
@@ -3456,7 +3456,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 0:
       switch(MP) {
       case -1:
@@ -3470,7 +3470,7 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     case 1:
       switch(MP) {
       case -1:
@@ -3484,10 +3484,10 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   case 0:
     switch(M) {
     case 0:
@@ -3497,12 +3497,12 @@ void WignerDMatrix_Q::SetElement(const int iL, const int iMP, const int iM) {
         return;
       } // switch(MP)
       return;
-      
+
     } // switch(M)
     return;
-    
+
   } // switch(L)
-  
+
   Throw1WithMessage("Shouldn't have gotten here");
   return;
 }

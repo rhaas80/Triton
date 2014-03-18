@@ -94,13 +94,13 @@ std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const d
   /// increasing; the (2,2) frequency will typically be decreasing
   /// because of the definitions of h and Psi4 and the definition of
   /// the frequency as the derivative of `arg`.
-  
+
   // Find 2,2 component
   int TwomTwo = -1;
   for(unsigned int i=0; i<NModes(); ++i) {
     if(L(i)==2 && M(i)==-2) { TwomTwo=i; break; }
   }
-  
+
   // Error if not found
   if(TwomTwo==-1) {
     for(unsigned int i=0; i<NModes(); ++i) {
@@ -112,7 +112,7 @@ std::vector<double> WaveformObjects::Waveform::Omega2m2(const double t1, const d
     }
     cerr << "\n(2,-2) mode not found; proceeding with (2,2) mode.\n" << endl;
   }
-  
+
   // Return differentiated Arg data
   //ORIENTATION!!! following section
   if((t1!=-1e300 && t1>T(0)) && (t2!=1e300 && t2<T().back())) {
@@ -166,16 +166,16 @@ bool WaveformObjects::Waveform::HasNaNs() const {
   for(unsigned int i=0; i<NModes(); ++i) {
     for(unsigned int j=0; j<NTimes(); ++j) {
       if(Mag(i,j)!=Mag(i,j)) {
-	cerr << "\nChecking Waveform, a NaN was detected in the Mag at index i=" << i << ", j=" << j << " of " << Mag(i).size() << "." << endl;
-	hasnans = true;
+        cerr << "\nChecking Waveform, a NaN was detected in the Mag at index i=" << i << ", j=" << j << " of " << Mag(i).size() << "." << endl;
+        hasnans = true;
       }
     }
   }
   for(unsigned int i=0; i<NModes(); ++i) {
     for(unsigned int j=0; j<NTimes(); ++j) {
       if(Arg(i,j)!=Arg(i,j)) {
-	cerr << "\nChecking Waveform, a NaN was detected in the Arg at index i=" << i << ", j=" << j << " of " << Arg(i).size() << "." << endl;
-	hasnans = true;
+        cerr << "\nChecking Waveform, a NaN was detected in the Arg at index i=" << i << ", j=" << j << " of " << Arg(i).size() << "." << endl;
+        hasnans = true;
       }
     }
   }
@@ -189,7 +189,7 @@ std::vector<double> WaveformObjects::Waveform::Flux() const {
   /// automatically.  Because there is no automatic integration method
   /// implemented at this time, `rPsi4` cannot be used with this
   /// function.
-  /// 
+  ///
   /// Also, if the frame is non-constant, the Waveform is copied, the
   /// copy is transformed into the original frame, and the flux is
   /// calculated for that copy.  If you are using a constant frame for
@@ -276,11 +276,11 @@ std::vector<double> WaveformObjects::Waveform::L2NormDifference(const Waveform& 
 Waveform& WaveformObjects::Waveform::Differentiate() {
   /// Most useful for finding the Flux, or (when used twice) for
   /// comparing h to Psi4.
-  /// 
+  ///
   /// This function only works on data of type h or hdot (or multiples
   /// thereof).  In particular, the code does not know what data type
   /// Psi4 should be after being differentiated.
-  /// 
+  ///
   /// Also note that if the Waveform is in a rotating frame, the data
   /// is first transformed to a stationary frame, then differentiated,
   /// then transformed back into the original rotating frame.

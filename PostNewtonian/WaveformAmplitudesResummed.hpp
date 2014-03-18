@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace WaveformUtilities {
-  
+
   template <class Metric, class Hamiltonian>
   class WaveformAmplitudesResummed {
   private:
@@ -16,7 +16,7 @@ namespace WaveformUtilities {
     void rhOverM(const int L, const int M, const double v, const double psi, double& Mag, double& Arg) const;
     void rhOverM(const int L, const int M, const std::vector<double>& v, const std::vector<double>& psi, std::vector<double>& Mag, std::vector<double>& Arg) const;
   };
-  
+
   template <class Metric, class Hamiltonian>
   class WaveformAmplitudesResummedSumMMagSquared {
   private:
@@ -24,7 +24,7 @@ namespace WaveformUtilities {
     WaveformAmplitudesResummedSumMMagSquared(const double delta, const double chis, const double chia, const Metric& ig, const Hamiltonian& iH);
     double SumMMagSquared(const double v) const;
   };
-  
+
 }
 
 #endif // WAVEFORMAMPLITUDESRESUMMED_HPP

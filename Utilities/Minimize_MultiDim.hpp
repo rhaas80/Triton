@@ -7,7 +7,7 @@
 #include "Roots_MultiDim.hpp"
 
 namespace WaveformUtilities {
-  
+
   template <class T>
   void dfpmin(VecDoub_IO &p, const Doub gtol, Int &iter, Doub &fret, T &funcd)
   {
@@ -33,54 +33,54 @@ namespace WaveformUtilities {
       lnsrch(p,fp,g,xi,pnew,fret,stpmax,check,funcd);
       fp=fret;
       for (Int i=0;i<n;i++) {
-	xi[i]=pnew[i]-p[i];
-	p[i]=pnew[i];
+        xi[i]=pnew[i]-p[i];
+        p[i]=pnew[i];
       }
       test=0.0;
       for (Int i=0;i<n;i++) {
-	temp=std::abs(xi[i])/MAX(std::abs(p[i]),1.0);
-	if (temp > test) test=temp;
+        temp=std::abs(xi[i])/MAX(std::abs(p[i]),1.0);
+        if (temp > test) test=temp;
       }
       if (test < TOLX)
-	return;
+        return;
       for (Int i=0;i<n;i++) dg[i]=g[i];
       funcd.df(p,g);
       test=0.0;
       den=MAX(std::abs(fret),1.0);
       for (Int i=0;i<n;i++) {
-	temp=std::abs(g[i])*MAX(std::abs(p[i]),1.0)/den;
-	if (temp > test) test=temp;
+        temp=std::abs(g[i])*MAX(std::abs(p[i]),1.0)/den;
+        if (temp > test) test=temp;
       }
       if (test < gtol)
-	return;
+        return;
       for (Int i=0;i<n;i++)
-	dg[i]=g[i]-dg[i];
+        dg[i]=g[i]-dg[i];
       for (Int i=0;i<n;i++) {
-	hdg[i]=0.0;
-	for (Int j=0;j<n;j++) hdg[i] += hessin[i][j]*dg[j];
+        hdg[i]=0.0;
+        for (Int j=0;j<n;j++) hdg[i] += hessin[i][j]*dg[j];
       }
       fac=fae=sumdg=sumxi=0.0;
       for (Int i=0;i<n;i++) {
-	fac += dg[i]*xi[i];
-	fae += dg[i]*hdg[i];
-	sumdg += SQR(dg[i]);
-	sumxi += SQR(xi[i]);
+        fac += dg[i]*xi[i];
+        fae += dg[i]*hdg[i];
+        sumdg += SQR(dg[i]);
+        sumxi += SQR(xi[i]);
       }
       if (fac > sqrt(EPS*sumdg*sumxi)) {
-	fac=1.0/fac;
-	fad=1.0/fae;
-	for (Int i=0;i<n;i++) dg[i]=fac*xi[i]-fad*hdg[i];
-	for (Int i=0;i<n;i++) {
-	  for (Int j=i;j<n;j++) {
-	    hessin[i][j] += fac*xi[i]*xi[j]
-	      -fad*hdg[i]*hdg[j]+fae*dg[i]*dg[j];
-	    hessin[j][i]=hessin[i][j];
-	  }
-	}
+        fac=1.0/fac;
+        fad=1.0/fae;
+        for (Int i=0;i<n;i++) dg[i]=fac*xi[i]-fad*hdg[i];
+        for (Int i=0;i<n;i++) {
+          for (Int j=i;j<n;j++) {
+            hessin[i][j] += fac*xi[i]*xi[j]
+              -fad*hdg[i]*hdg[j]+fae*dg[i]*dg[j];
+            hessin[j][i]=hessin[i][j];
+          }
+        }
       }
       for (Int i=0;i<n;i++) {
-	xi[i]=0.0;
-	for (Int j=0;j<n;j++) xi[i] -= hessin[i][j]*g[j];
+        xi[i]=0.0;
+        for (Int j=0;j<n;j++) xi[i] -= hessin[i][j]*g[j];
       }
     }
     Throw1WithMessage("too many iterations in dfpmin");
@@ -102,19 +102,19 @@ namespace WaveformUtilities {
       VecDoub xh=x;
       Doub fold=f;
       for (Int j=0;j<n;j++) {
-	Doub temp=x[j];
-	Doub h=EPS*std::abs(temp);
-	if (h == 0.0) h=EPS;
-	xh[j]=temp+h;
-	h=xh[j]-temp;
-	Doub fh=operator()(xh);
-	xh[j]=temp;
-	df[j]=(fh-fold)/h;
+        Doub temp=x[j];
+        Doub h=EPS*std::abs(temp);
+        if (h == 0.0) h=EPS;
+        xh[j]=temp+h;
+        h=xh[j]-temp;
+        Doub fh=operator()(xh);
+        xh[j]=temp;
+        df[j]=(fh-fold)/h;
       }
     }
   };
-  
-  
+
+
 }
 
 #endif // MINIMIZE_MULTIDIM_HPP

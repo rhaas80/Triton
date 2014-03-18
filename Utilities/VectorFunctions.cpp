@@ -1159,7 +1159,7 @@ vector<double> WU::Unwrap(const vector<double>& In) {
   double Dp = 0.0;
   double Dps = 0.0;
   double CumCorr = 0.0;
-  
+
   // Dp will contain the incremental phase variations;
   // Dps will contain the equivalents, confined to [-pi,pi)
   // CumCorr will contain the incremental phase corrections
@@ -1175,7 +1175,7 @@ vector<double> WU::Unwrap(const vector<double>& In) {
     CumCorr += Dps - Dp;
     Out[i] += CumCorr;
   }
-  
+
   return Out;
 }
 
@@ -1185,7 +1185,7 @@ vector<double>& WU::Unwrap(vector<double>& Vec, const unsigned int i1, const uns
   double Dps = 0.0;
   double CumCorr = 0.0;
   unsigned int i=0;
-  
+
   // Dp will contain the incremental phase variations;
   // Dps will contain the equivalents, confined to [-pi,pi)
   // CumCorr will contain the incremental phase corrections
@@ -1202,16 +1202,16 @@ vector<double>& WU::Unwrap(vector<double>& Vec, const unsigned int i1, const uns
     CumCorr += Dps - Dp;
   }
   Vec[i-1] += CumCorr;
-  
+
   return Vec;
 }
 
 void WU::MagArg(const vector<double>& Re, const vector<double>& Im,
-		vector<double>& amp, vector<double>& phi)
+                vector<double>& amp, vector<double>& phi)
 {
   if(amp.size() != Re.size()) { amp = Re; }
   if(phi.size() != Re.size()) { phi = Re; }
-  
+
   for(unsigned int j=0; j<phi.size(); ++j) { // Loop over time
     amp[j] = sqrt(Re[j]*Re[j]+Im[j]*Im[j]);
     phi[j] = atan2(Im[j], Re[j]);
@@ -1220,11 +1220,11 @@ void WU::MagArg(const vector<double>& Re, const vector<double>& Im,
 }
 
 void WU::ReIm(const vector<vector<double> >& amp, const vector<vector<double> >& phi,
-	  vector<vector<double> >& Re, vector<vector<double> >& Im)
+          vector<vector<double> >& Re, vector<vector<double> >& Im)
 {
   if(amp.size() != Re.size() || amp[0].size() != Re[0].size()) { Re = amp; }
   if(amp.size() != Im.size() || amp[0].size() != Im[0].size()) { Im = amp; }
-  
+
   for(unsigned int i=0; i<Re.size(); ++i) {
     for(unsigned int j=0; j<Re[i].size(); ++j) {
       Re[i][j] = amp[i][j]*cos(phi[i][j]);
@@ -1305,10 +1305,10 @@ double WU::LogGammaFunction(const double xx) {
   int j;
   double x,tmp,y,ser;
   static const double cof[14]={57.1562356658629235,-59.5979603554754912,
-			       14.1360979747417471,-0.491913816097620199,.339946499848118887e-4,
-			       .465236289270485756e-4,-.983744753048795646e-4,.158088703224912494e-3,
-			       -.210264441724104883e-3,.217439618115212643e-3,-.164318106536763890e-3,
-			       .844182239838527433e-4,-.261908384015814087e-4,.368991826595316234e-5};
+                               14.1360979747417471,-0.491913816097620199,.339946499848118887e-4,
+                               .465236289270485756e-4,-.983744753048795646e-4,.158088703224912494e-3,
+                               -.210264441724104883e-3,.217439618115212643e-3,-.164318106536763890e-3,
+                               .844182239838527433e-4,-.261908384015814087e-4,.368991826595316234e-5};
   if (xx <= 0) {
     cerr << "\nxx=" << xx << endl;
     Throw1WithMessage("Bad arg in LogGamma");
@@ -1325,10 +1325,10 @@ complex<double> WU::LogGammaFunction(const complex<double>& xx) {
   int j;
   complex<double> x,tmp,y,ser;
   static const double cof[14]={57.1562356658629235,-59.5979603554754912,
-			       14.1360979747417471,-0.491913816097620199,.339946499848118887e-4,
-			       .465236289270485756e-4,-.983744753048795646e-4,.158088703224912494e-3,
-			       -.210264441724104883e-3,.217439618115212643e-3,-.164318106536763890e-3,
-			       .844182239838527433e-4,-.261908384015814087e-4,.368991826595316234e-5};
+                               14.1360979747417471,-0.491913816097620199,.339946499848118887e-4,
+                               .465236289270485756e-4,-.983744753048795646e-4,.158088703224912494e-3,
+                               -.210264441724104883e-3,.217439618115212643e-3,-.164318106536763890e-3,
+                               .844182239838527433e-4,-.261908384015814087e-4,.368991826595316234e-5};
   if (arg(xx)>M_PI/2.0 && arg(x)<3*M_PI/2.0) {
     cerr << "\nxx=" << xx << "\targ(xx)=" << arg(xx) << endl;
     Throw1WithMessage("Bad arg in LogGamma");
@@ -1367,8 +1367,8 @@ bool WU::hasnan(const WaveformUtilities::Matrix<double>& a) {
   for(unsigned int row=0; row<a.nrows(); ++row) {
     for(unsigned int col=0; col<a.ncols(); ++col) {
       if(isnan(a[row][col])) {
-	cerr << "\nNaN at (row,col)=(" << row << "," << col << ")" << endl;
-	return true;
+        cerr << "\nNaN at (row,col)=(" << row << "," << col << ")" << endl;
+        return true;
       }
     }
   }
@@ -1387,8 +1387,8 @@ bool WU::hasinf(const WaveformUtilities::Matrix<double>& a) {
   for(unsigned int row=0; row<a.nrows(); ++row) {
     for(unsigned int col=0; col<a.ncols(); ++col) {
       if(isinf(a[row][col])) {
-	cerr << "\nInf at (row,col)=(" << row << "," << col << ")" << endl;
-	return true;
+        cerr << "\nInf at (row,col)=(" << row << "," << col << ")" << endl;
+        return true;
       }
     }
   }
@@ -1399,15 +1399,15 @@ bool WU::ismonotonic(const vector<double>& a) {
   if(a[1]<a[0]) { // Decreasing
     for(unsigned int i=1; i<a.size(); ++i) {
       if(a[i]>=a[i-1]) {
-	cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
-	Return=false;
+        cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
+        Return=false;
       }
     }
   } else if(a[1]>a[0]) { // Increasing
     for(unsigned int i=1; i<a.size(); ++i) {
       if(a[i]<=a[i-1]) {
-	cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
-	Return=false;
+        cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
+        Return=false;
       }
     }
   } else { // Equal
@@ -1421,15 +1421,15 @@ bool WU::ismonotonic(const vector<double>& a) {
 //   if(a[1]<a[0]) { // Decreasing
 //     for(unsigned int i=1; i<a.size(); ++i) {
 //       if(a[i]>=a[i-1]) {
-// 	cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
-// 	return false;
+//      cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
+//      return false;
 //       }
 //     }
 //   } else if(a[1]>a[0]) { // Increasing
 //     for(unsigned int i=1; i<a.size(); ++i) {
 //       if(a[i]<=a[i-1]) {
-// 	cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
-// 	return false;
+//      cerr << "\nNon-montonicity: a[" << i << "]=" << a[i] << "  a[" << i-1 << "]=" << a[i-1] <<  endl;
+//      return false;
 //       }
 //     }
 //   } else { // Equal
@@ -1438,4 +1438,3 @@ bool WU::ismonotonic(const vector<double>& a) {
 //   }
 //   return true;
 // }
-

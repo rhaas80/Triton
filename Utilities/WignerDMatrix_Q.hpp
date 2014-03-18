@@ -4,11 +4,11 @@
 #include "Quaternions.hpp"
 
 namespace WaveformUtilities {
-  
+
   /// Compute Wigner D matrix elements in terms of a quaternion.
   class WignerDMatrix_Q {
     /// Note that m' comes before m in the argument lists.
-    /// 
+    ///
     /// The reason for using a class is to speed up the evaluation.
     /// For example, frequently the function will be called many times
     /// with the same (l,m',m); rather than re-switching, we just
@@ -40,17 +40,17 @@ namespace WaveformUtilities {
     void Value(double& Mag, double& Arg);
     void ValueReIm(double& Re, double& Im);
   };
-  
+
   /// Evaluate the requested Wigner D matrix element.
-  /// 
+  ///
   /// Note that m' comes before m in the argument list.
-  /// 
+  ///
   /// This function instantiates an object of class WignerDMatrix_Q.
   /// If this function is called multiple times, it would almost
   /// certainly be more efficient to use the class directly, rather
   /// than this function.
   void WignerD_Q(const int L, const int MP, const int M, const Quaternion& R, double& mag, double& arg);
-  
+
 }
 
 #endif // WIGNERDMATRIX_Q_HPP

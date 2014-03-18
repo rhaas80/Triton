@@ -17,7 +17,7 @@ inline double SQR(const double x) { return x*x; }
 inline double CUB(const double x) { return x*x*x; }
 
 namespace T4SpinLocal {
-  
+
   void cross(double& x, double& y, double& z, const vector<double>& a, const vector<double>& b) {
     vector<double> c = WaveformUtilities::cross(a, b);
     x=c[0];
@@ -25,13 +25,13 @@ namespace T4SpinLocal {
     z=c[2];
     return;
   }
-  
+
   double dot(const vector<double>& a, const vector<double>& b) {
     return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
   }
-  
+
   vector<double> dot(const vector<double>& x1, const vector<double>& y1, const vector<double>& z1,
-		     const vector<double>& x2, const vector<double>& y2, const vector<double>& z2) {
+                     const vector<double>& x2, const vector<double>& y2, const vector<double>& z2) {
     vector<double> d(x1.size(), 0.0);
     for(unsigned int i=0; i<d.size(); ++i) {
       d[i] = x1[i]*x2[i]+y1[i]*y2[i]+z1[i]*z2[i];
@@ -46,7 +46,7 @@ private:
   vector<double> chis, chia;
   double chischis, chischia, chiachia, chisLNHat, chiaLNHat;
   double dvdt2, dvdt3, dvdt4, dvdt5, dvdt6, dvdt6Ln4v, dvdt7;
-  
+
 public:
   T4Spin(const double idelta, const vector<double>& chi1, const vector<double>& chi2)
     : delta(idelta),
@@ -66,7 +66,7 @@ public:
       dvdt6Ln4v(-16.304761904761904),
       dvdt7(-3.440012789087038 - 18.84955592153876*(chiachia + chischis - 3.*pow(chisLNHat,2) + 2.*chischia*delta - 3.*chiaLNHat*(chiaLNHat + 2.*chisLNHat*delta)) + 0.000036743092298647854*(-2.512188e6*pow(chisLNHat,3) - 7.536564e6*chiaLNHat*pow(chisLNHat,2)*delta + chiaLNHat*delta*(-2.529407e6 + 794178.*chiachia - 2.512188e6*pow(chiaLNHat,2) + 732942.*chischis + 1.649592e6*chischia*delta) + chisLNHat*(-2.529407e6 + 732942.*chiachia + 794178.*chischis + 1.649592e6*chischia*delta - 2.512188e6*pow(chiaLNHat,2)*(1. + 2.*pow(delta,2)))) + (186.31130043424588 + 75.39822368615503*chiachia - 226.1946710584651*pow(chiaLNHat,2) + 53.1875*pow(chisLNHat,3) + 369.5*pow(chiaLNHat,3)*delta + 0.00016534391534391533*chiaLNHat*(845827. - 738864.*chiachia + 29904.*chischis)*delta + 106.65277777777777*chiaLNHat*pow(chisLNHat,2)*delta - 0.000018371546149323927*chisLNHat*(-1.0772921e7 + 7.13097e6*chiachia - 2.3022846e7*pow(chiaLNHat,2) + 674730.*chischis + 1.914948e6*chischia*delta))*nu + 0.00016534391534391533*(1.1497600793607924e6 + 3.*(-398017. + 146076.*chiachia - 431424.*pow(chiaLNHat,2) - 1204.*chischis)*chisLNHat + 840.*pow(chisLNHat,3) + 7.*chiaLNHat*(-41551. + 108.*chiachia + 324.*chischis)*delta)*pow(nu,2) + 9.467592592592593*chisLNHat*pow(nu,3))
   { }
-  
+
   void operator() (const double t, const vector<double>& y, vector<double>& dydt) {
     const double& v=y[0];
     vector<double> S1(3, 0.0), S2(3, 0.0), LN(3, 0.0);
@@ -96,11 +96,11 @@ public:
     const double powv5 = v*v*dydt[1];
     // Omega_{1,2} taken from Eq. (4.5) of http://arxiv.org/abs/1212.5520v1
     const double Omega1 = powv5 * (0.75*(1-delta) + 0.5*nu
-				   + v*v*(0.5625*(1-delta)+1.25*nu*(1+0.5*delta)-0.041666666666666667*nu*nu
-					  + v*v*(0.84375 + delta*(-0.84375 + (4.875 - 0.15625*nu)*nu) + nu*(0.1875 + (-3.28125 - 0.020833333333333332*nu)*nu))));
+                                   + v*v*(0.5625*(1-delta)+1.25*nu*(1+0.5*delta)-0.041666666666666667*nu*nu
+                                          + v*v*(0.84375 + delta*(-0.84375 + (4.875 - 0.15625*nu)*nu) + nu*(0.1875 + (-3.28125 - 0.020833333333333332*nu)*nu))));
     const double Omega2 = powv5 * (0.75*(1+delta) + 0.5*nu
-				   + v*v*(0.5625*(1+delta)+1.25*nu*(1-0.5*delta)-0.041666666666666667*nu*nu
-					  + v*v*(0.84375 - delta*(-0.84375 + (4.875 - 0.15625*nu)*nu) + nu*(0.1875 + (-3.28125 - 0.020833333333333332*nu)*nu))));
+                                   + v*v*(0.5625*(1+delta)+1.25*nu*(1-0.5*delta)-0.041666666666666667*nu*nu
+                                          + v*v*(0.84375 - delta*(-0.84375 + (4.875 - 0.15625*nu)*nu) + nu*(0.1875 + (-3.28125 - 0.020833333333333332*nu)*nu))));
     const double m2overm1 = (1-delta)/(1+delta);
     const double S2Mag = sqrt(T4SpinLocal::dot(S2,S2));
     const double chi2LNHat = chisLNHat - chiaLNHat;
@@ -112,19 +112,19 @@ public:
     T4SpinLocal::cross(dydt[5], dydt[6], dydt[7], Omega2*LNHat, S2);
     T4SpinLocal::cross(dydt[8], dydt[9], dydt[10], OmegaLN, LN);
   }
-  
+
   bool ContinueIntegrating(const double& t, const vector<double>& y, const vector<double>& dydt) const {
     return (dydt[0]>0.0 && y[0]<1.0);
   }
-  
+
 };
 
 typedef bool (T4Spin::*ContinueTest)(const double& t, const vector<double>& y, const vector<double>& dydt) const;
 
 void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vector<double>& chi2, const double v0,
-		      vector<double>& t, vector<double>& v, vector<double>& Phi,
-		      vector<double>& chis, vector<double>& chia, vector<double>& alpha, vector<double>& beta, vector<double>& gamma,
-		      const int nsave, const bool denseish)
+                      vector<double>& t, vector<double>& v, vector<double>& Phi,
+                      vector<double>& chis, vector<double>& chia, vector<double>& alpha, vector<double>& beta, vector<double>& gamma,
+                      const int nsave, const bool denseish)
 {
   const double nu( (1.0-delta*delta)/4.0 );
   const double GuessedLength = 1.1 * 5.0/(256.0*nu*pow(v0,8));
@@ -149,14 +149,14 @@ void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vect
   try {
     ode.integrate();
   } catch(NRerror err) { }
-  
+
   out.xsave.resize(out.count);
   t.swap(out.xsave);
   t -= t.back();
   out.ysave.resize(out.ysave.nrows(), out.count);
   v.swap(out.ysave[0]);
   Phi.swap(out.ysave[1]);
-  
+
   out.ysave[2] *= 2/SQR(1+delta);
   out.ysave[3] *= 2/SQR(1+delta);
   out.ysave[4] *= 2/SQR(1+delta);
@@ -165,19 +165,19 @@ void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vect
   out.ysave[7] *= 2/SQR(1-delta);
   chis = T4SpinLocal::dot(out.ysave[8], out.ysave[9], out.ysave[10], out.ysave[2]+out.ysave[5], out.ysave[3]+out.ysave[6], out.ysave[4]+out.ysave[7]);
   chia = T4SpinLocal::dot(out.ysave[8], out.ysave[9], out.ysave[10], out.ysave[2]-out.ysave[5], out.ysave[3]-out.ysave[6], out.ysave[4]-out.ysave[7]);
-  
+
   alpha = WaveformUtilities::Unwrap(atan2(out.ysave[9], out.ysave[8]));
   beta = WaveformUtilities::Unwrap(acos(out.ysave[10]));
   gamma = -alpha*out.ysave[10] + cumtrapz(t, dydx(out.ysave[10], t)*alpha);
-  
+
   return;
 }
 
 
 void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vector<double>& chi2, const double v0,
-		      vector<double>& t, vector<double>& v, vector<double>& Phi,
-		      vector<vector<double> >& S1, vector<vector<double> >& S2, vector<vector<double> >& LNHat,
-		      const int nsave, const bool denseish)
+                      vector<double>& t, vector<double>& v, vector<double>& Phi,
+                      vector<vector<double> >& S1, vector<vector<double> >& S2, vector<vector<double> >& LNHat,
+                      const int nsave, const bool denseish)
 {
   const double nu( (1.0-delta*delta)/4.0 );
   const double GuessedLength = 1.1 * 5.0/(256.0*nu*pow(v0,8));
@@ -202,14 +202,14 @@ void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vect
   try {
     ode.integrate();
   } catch(NRerror err) { }
-  
+
   out.xsave.resize(out.count);
   t.swap(out.xsave);
   t -= t.back();
   out.ysave.resize(out.ysave.nrows(), out.count);
   v.swap(out.ysave[0]);
   Phi.swap(out.ysave[1]);
-  
+
   S1.resize(3);
   S1[0].swap(out.ysave[2]);
   S1[1].swap(out.ysave[3]);
@@ -222,6 +222,6 @@ void WU::TaylorT4Spin(const double delta, const vector<double>& chi1, const vect
   LNHat[0].swap(out.ysave[8]);
   LNHat[1].swap(out.ysave[9]);
   LNHat[2].swap(out.ysave[10]);
-  
+
   return;
 }
