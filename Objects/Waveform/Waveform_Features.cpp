@@ -157,7 +157,7 @@ bool WaveformObjects::Waveform::HasNaNs() const {
       hasnans = true;
     }
   }
-  for(unsigned int i=0; i<NTimes(); ++i) {
+  for(unsigned int i=0; i<frame.size(); ++i) {
     if(Frame(i)!=Frame(i)) {
       cerr << "\nChecking Waveform, a NaN was detected in the Frame at index i=" << i << "." << endl;
       hasnans = true;
