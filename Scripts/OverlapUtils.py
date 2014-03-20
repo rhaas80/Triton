@@ -317,16 +317,16 @@ def WindowPlanckTaper(times, t1, t2, t3, t4):
   # t4: end of windowing function; function is 0 after t4
 
   ind1 = np.argmin(abs(times-t1))
-  if (times[ind1]<t1):
-    ind1=ind1+1
+  if (times[ind1]>=t1):
+    ind1=ind1-1
 
   ind2 = np.argmin(abs(times-t2))
   if (times[ind2]<t2):
     ind2=ind2+1
 
   ind3 = np.argmin(abs(times-t3))
-  if (times[ind3]<t3):
-    ind3=ind3+1
+  if (times[ind3]>=t3):
+    ind3=ind3-1
 
   ind4 = np.argmin(abs(times-t4))
   if (times[ind4]<t4):
