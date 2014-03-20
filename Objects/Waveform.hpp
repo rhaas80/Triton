@@ -35,6 +35,15 @@ namespace WaveformObjects {
     //       const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
     //       const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
     //       const int nsave=-1, const bool denseish=true, const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
+
+    //Constructor for the Taylor T4 Tidal Waveform
+    Waveform(const std::string& Approximant, const double delta, const double chis,
+	     const double chia, const double v0, const double love1, const double love2,
+	     const double compact1, const double compact2,
+	     const WaveformUtilities::Matrix<int> LM=WaveformUtilities::Matrix<int>(0,0),
+	     const int nsave=-1, const bool denseish=true,
+	     const double PNPhaseOrder=3.5, const double PNAmplitudeOrder=3.0);
+
     ~Waveform() { }
     void swap(Waveform& b);
     void clear() { t.clear(); r.clear(); lm.clear(); mag.clear(); arg.clear(); }

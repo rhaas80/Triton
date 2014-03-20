@@ -18,6 +18,7 @@ namespace WaveformUtilities {
 #include "OrbitalPhasing_T4.hpp"
 #include "OrbitalPhasing_T4_Spin.hpp"
 #include "OrbitalPhasing_EOB.hpp"
+#include "OrbitalPhasing_T4_Tidal.hpp"
 #include "QNMs.hpp"
 #include "WaveformAmplitudes.hpp"
 // #include "WaveformAmplitudesResummed.hpp"

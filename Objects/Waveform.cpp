@@ -739,6 +739,95 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 }
 
 
+///PN Constructor for tidal systems
+WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const double chis,
+				    const double chia, const double v0, const double love1, const double love2,
+				    const double compact1, const double compact2,
+				    const WaveformUtilities::Matrix<int> LM, const int nsave, const bool denseish,
+				    const double PNPhaseOrder, const double PNAmplitudeOrder) :
+  history(""), typeIndex(2), timeScale("(t-r*)/M"), t(0), r(0), frame(0),
+  lm(LM.nrows()>0 ? LM : Matrix<int>((PNLMax+3)*(PNLMax-1), 2)), mag(lm.nrows(), 0), arg(lm.nrows(), 0)
+{
+  /// \param Approximant ("TaylorT4Tidal")
+  /// \param delta \f$\delta = (M_1 - M_2) / (M_2 + M_2)\f$
+  /// \param chis \f$\chi_s = (\chi_1+\chi_2)/2\f$
+  /// \param chia \f$\chi_a = (\chi_1-\chi_2)/2\f$
+  /// \param v0 Initial Newtonian velocity: \f$v = \left( \frac{G\, M\, \Omega}{c^3} \right)^{1/3}\f$
+  /// \param love1 = Object 1's Love Number corresponding to the gravito-electric tidal polarizability
+  /// \param love2 = Object 2's Love Number corresponding to the gravito-electric tidal polarizability
+  /// \param compact1 = Object 1's Compactness Parameter
+  /// \param compact2 = Object 2's Compactness Parameter
+  /// \param LM Desired set of (l,m) modes for the output; if empty, output all modes up to \f$L = 8\f$
+  /// \param nsave Number of points to output; note denseish
+  /// \param denseish If true, output nsave points per time step taken by the integrator
+  /// \param PNPhaseOrder Unused parameter
+  /// \param PNAmplitudeOrder Unused parameter
+  ///
+  /// Construct a TaylorT4 Waveform including Tidal terms at 10th and 12th order in the PN parameter, v.
+  /// This is only for the inspiral portion of the binary.
+  /// The expression of the tidal terms can be found in [Phys. Rev. D 84, 024017
+  /// (2011)] which is also [arXiv:1103.3874]
+  /// This might be only good for the l=2 modes.
+
+  SetWaveformTypes();
+
+  {
+    history << "### Code revision 'git rev-parse HEAD' = " << GitRevision << endl
+	    << "### Waveform("
+	    << Approximant << ", "
+	    << delta << ", "
+	    << chis << ", "
+	    << chia << ", "
+	    << v0 << ", "
+	    << love1 << ", "
+	    << love2 << ", "
+	    << compact1 << ", "
+	    << compact2 << ", "
+	    << PNPhaseOrder << ", "
+	    << PNAmplitudeOrder << ", "
+	    << RowFormat(lm) << ", "
+	    << nsave << ", "
+	    << denseish
+	    << "); // PN constructor" << endl;
+  }
+
+  std::vector<double> v(0), Phi(0);
+  if(Approximant.compare("TaylorT4Tidal")==0) {
+    if(nsave==-1) {
+      TaylorT4Tidal(delta, chis, chia, v0, t, v, Phi,
+		   love1, love2, compact1, compact2);
+    } else {
+      TaylorT4Tidal(delta, chis, chia, v0, t, v, Phi,
+		   love1, love2, compact1, compact2,
+		   nsave, denseish);
+    }
+  } else {
+    cerr << "Unknown approximant '" << Approximant << "'." << endl;
+    Throw1WithMessage("Bad approximant");
+  }
+
+  mag.resize(lm.nrows(), t.size());
+  arg.resize(lm.nrows(), t.size());
+  WaveformAmplitudes PNAmp(delta, chis, chia);
+  if(LM.nrows()>0) {
+    for(unsigned int m=0; m<NModes(); ++m) {
+      PNAmp.rhOverM(L(m), M(m), v, Phi, mag[m], arg[m]);
+    }
+  } else {
+    unsigned int i=0;
+    for(int l=2; l<=PNLMax; ++l) {
+      for(int m=-l; m<=l; ++m) {
+	lm[i][0] = l;
+	lm[i][1] = m;
+	PNAmp.rhOverM(l, m, v, Phi, mag[i], arg[i]);
+	++i;
+      }
+    }
+  }
+  r.resize(1, 0.0);
+}
+
+
 // /// PN/EOB constructor for precessing systems
 // WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double delta, const std::vector<double>& chi1, const std::vector<double>& chi2,
 //                                  const double v0, std::vector<double>& alpha, std::vector<double>& beta, std::vector<double>& gamma,
