@@ -17,6 +17,10 @@ import PyGW_IS_FOR_OLD_DATA as PyGW
 import matplotlib
 import math
 
+import cProfile
+pr = cProfile.Profile()
+pr.enable()
+
 
 ###
 #Set up the parameters and load the data
@@ -194,3 +198,6 @@ for nsnsorbs in range(18,19):
     #print [f0,dtshift[0],dphishift,dh_by_h,overlap,rel_error]
 
     # compute overlap between trial hybridization frequncy and reference hybridization frequency
+
+pr.disable()
+#pr.print_stats(sort='cumtime')
