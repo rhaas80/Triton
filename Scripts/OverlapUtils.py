@@ -1,7 +1,7 @@
 from scipy.optimize import fmin
 import numpy as np
 from math import pi
-import PyGW
+import PyGW_IS_FOR_OLD_DATA as PyGW
 import ctypes
 
 # Compute the noise weighted inner product of two waves that are

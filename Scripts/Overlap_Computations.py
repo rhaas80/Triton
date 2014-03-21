@@ -3,12 +3,17 @@
 #This script has the process of creating hybrid NSNS (and BBH) waveforms
 #then determining their overlap.
 
+ScriptsDir = "/mnt/data/rhaas/postdoc/gr/Triton/Scripts"
+DataDir = "/mnt/data/rhaas/postdoc/papers/NsNsInspirals/data"
+NoiseDir = "/mnt/data/rhaas/postdoc/gr/noise"
+Zwicky = "/home/rhaas/mnt/zwicky/"
+
 import sys
-sys.path.append("/home/kbarkett/Caltech/Scripts/OverlapFiles")
+sys.path.append(ScriptsDir)
 from OverlapUtils import *
 import numpy as np
-import PyGW
-import PyGW.plot
+import PyGW_IS_FOR_OLD_DATA as PyGW
+#import PyGW.plot
 import matplotlib
 import math
 
