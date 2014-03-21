@@ -87,8 +87,8 @@ def ComputeOverlap(freqs, wave1f, wave2cf, wave2sf, noisecurve):
   # in both directions to find the best choice. Takes up time so can be
   # removed if reasonalbly confident it won't find a local minimum in the
   # wrong direction
-  test_plus, test_plus_res, iterations, funcalls, warnflag   = fmin( OverlapMaxing, 0., args=(freqs, wave1fNoise, wave2cfNoise, wave2sfNoise, 1.0), maxiter = 5, ftol = set_ftol, full_output=True)
-  test_minus, test_minus_res, iterations, funcalls, warnflag = fmin( OverlapMaxing, -0.0001, args=(freqs, wave1fNoise, wave2cfNoise, wave2sfNoise, 1.0), maxiter = 5, ftol = set_ftol, full_output=True)
+  test_plus, test_plus_res, iterations, funcalls, warnflag   = fmin( OverlapMaxing, 0., args=(freqs, wave1fNoise, wave2cfNoise, wave2sfNoise, 1.0), maxiter = 5, ftol = set_ftol, full_output=False)
+  test_minus, test_minus_res, iterations, funcalls, warnflag = fmin( OverlapMaxing, -0.0001, args=(freqs, wave1fNoise, wave2cfNoise, wave2sfNoise, 1.0), maxiter = 5, ftol = set_ftol, full_output=False)
 
   if abs(test_plus_res) > abs(test_minus_res):
     t0 = test_plus
@@ -106,7 +106,7 @@ def ComputeOverlap(freqs, wave1f, wave2cf, wave2sf, noisecurve):
   # Compute the full waveform which maximizes the overlap
   h = (wave2cfNoise*np.cos(dphi)+np.sin(dphi)*wave2sfNoise)*np.exp(2*pi*1j*freqs*dt_max)
 
-  overlap = abs(numerator)/((NoiseWeightedFreqInnerProduct(wave1fNoise,wave1fNoise,1.0,df)*NoiseWeightedFreqInnerProduct(h,h,1.0,df))**(1./2.))
+  overlap = abs(numerator)/(np.sqrt(NoiseWeightedFreqInnerProduct(wave1fNoise,wave1fNoise,1.0,df)*NoiseWeightedFreqInnerProduct(h,h,1.0,df)))
   deltah = wave1fNoise-h
   rel_error = np.sqrt(1.0*NoiseWeightedFreqInnerProduct(deltah,deltah,1.0,df)/NoiseWeightedFreqInnerProduct(h,h,1.0,df))
 
