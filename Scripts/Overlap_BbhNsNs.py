@@ -179,9 +179,9 @@ for bbhnsnsorbs in range(18,4,-1):
 
   ## compute overlap between tripple waveform and highest accuracy NsNs assuming NsNs is the 'real' waveform
   dtshift, dphishift, overlap, rel_error = ComputeOverlap(freqs[indexl:indexh],fcTIDnoise,fcTRInoise,fsTRInoise,1.0)
-  dh_by_h = np.sqrt(2.*(1.-overlap))
-  datarray.append([f0,bbhnsnsorbs,dtshift[0],dphishift,dh_by_h,overlap,rel_error])
-  print [f0,bbhnsnsorbs,dtshift[0],dphishift,dh_by_h,overlap,rel_error]
+  dh_over_h = np.sqrt(2.*(1.-overlap))
+  datarray.append([f0,bbhnsnsorbs,dtshift[0],dphishift,dh_over_h,overlap,rel_error])
+  print [f0,bbhnsnsorbs,dtshift[0],dphishift,dh_over_h,overlap,rel_error]
 
 
 np.savetxt("datarray.dat", datarray)
