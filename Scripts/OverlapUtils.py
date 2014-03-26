@@ -1,5 +1,6 @@
 import sys
 from scipy.optimize import fmin
+from scipy.signal import hann
 import numpy as np
 from math import pi
 import PyGW_IS_FOR_OLD_DATA as PyGW
@@ -391,6 +392,39 @@ def NoiseCurveLimits(freqs, freq_min, freq_max):
   print "Upper frequency bound: ", freqs[indexh-1]
 
   return indexl, indexh
+
+def SmoothedClipOutsideSmoothedFrequencyRange(waveform, total_mass,
+    freqmin, freqmax, smoothing_width, taper_width)
+  # first computes the instantaneous frequency averaged over segments of
+  # smoothing_width milliseconds then removes the data before the time this
+  # frequency reaches freqmin using a one sided Hann window of width
+  # taper_width milliseconds centered at this time. Anything after the
+  # frequency reaches freqmax is dropped with a sharp cut.
+  #
+  # Assumptions: * grid spacing in time is uniform
+  #              * time in waveform is measured in total_mass M_sun
+  min_omega =  (2.*pi) * freqmin * (total_mass * Scale())
+  max_omega =  (2.*pi) * freqmax * (total_mass * Scale())
+  dt = (waveform.T()[1] - waveform.T()[0]) * total_mass * Scale()
+  if(np.any(np.abs(1. - (waveform.T()[1:0] - waveform.T()[0:-1]) / dt) > 1e-8)):
+    raise ValueError("Non uniform timesteps in waveform")
+  taper_width_points = np.floor(taper_width/dt)
+  # rolling averaged of angular frequency
+  smoothing_width_points = np.ceil(smoothing_width/dt)
+  smoothing_window = np.ones(smoothing_width_points,dtype='float') / \
+                     smoothing_width_points
+  smoothed_omega = np.convolve(smoothing_window,
+                               np.gradient(abs(waveform.Arg(0)), dt))
+  # beginning and end of kept region
+  transition_index = np.nonzero(smoothed_omega >= min_omega)[0][0]
+  cutoff_index = np.nonzero(smoothed_omega < max_omega)[0][0]
+  # clip with smooth transition on the left side and hard cut on the right
+  retval = Waveform(waveform)
+  retval.Mag(0)[transition_index-taper_width_points:transition_index] *= \
+    hann(2*taper_window_points+1)[0:tapir_window_width+1]
+  tmin = retval.T()[transition_index-tapir_width_points]
+  tmax = retval.T()[cutoff_index]
+  return retval.DropBefore(tmin).DropAfter(tmax)
 
 """
 def InnerProduct(freqs, fwave1, fwave2, noisecurve):
