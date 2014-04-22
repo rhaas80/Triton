@@ -801,6 +801,12 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 		   love1, love2, compact1, compact2,
 		   nsave, denseish);
     }
+  } else if(Approximant.compare("TaylorT4")==0) {
+    if(nsave==-1) {
+      TaylorT4(delta, chis, chia, v0, t, v, Phi);
+    } else {
+      TaylorT4(delta, chis, chia, v0, t, v, Phi);
+    }
   } else {
     cerr << "Unknown approximant '" << Approximant << "'." << endl;
     Throw1WithMessage("Bad approximant");
