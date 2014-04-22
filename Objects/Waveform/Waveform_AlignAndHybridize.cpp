@@ -132,6 +132,23 @@ Waveform& WaveformObjects::Waveform::AlignPhasesToTwoPi(const Waveform& a, const
   return *this;
 }
 
+/// @brief Align this waveform with a reference waveform 'a' by chosing a time
+///        and phase offset to minimize the integrated phase difference between
+///        t1 and t2 in the 2,2 mode.
+///
+/// This member function aligns the with a reference waveform 'a' by chosing a
+/// time and phase offset to minimize the integrated phase difference between
+/// t1 and t2 in the 2,2 mode.
+/// It modifies this waveform by applying the phase and time offsets.
+/// The time offset is found through numerical minimization while the phase offset
+/// can be computed analytically (once the time offset is known) as
+/// @f \Delta \phi = \frac{1}{t2-t1} \int_{t1}^{t2} (\Phi2(t;\Delta_t) -
+///                                                  \Phi1(t)) dt @f
+///
+/// @param a reference waveform, will not be changed
+/// @param t1 lower bound of alignment interval
+/// @param t2 upper bound of alignment interval
+/// @return this waveform
 Waveform& WaveformObjects::Waveform::AlignTo(const Waveform& a, const double t1, const double t2) {
   History() << "### this->AlignTo(a, " << t1 << ", " << t2 << ");\n#" << flush;
   WaveformAligner Align(a, *this, t1, t2);
