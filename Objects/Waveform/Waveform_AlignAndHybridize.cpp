@@ -45,6 +45,11 @@ public:
   WaveformAligner(const Waveform& A, const Waveform& B, const double t1, const double t2)
     : a(A), b(B), t(a.T()), arga(0), LMa(-1), LMb(-1)
   {
+    if(t1 >= t2) {
+      cerr << "\nTrying to Align Waveforms with invalid interval [t1,t2] = ["
+           << t1 << ", " << t2 << "]" << endl;
+      Throw1WithMessage("Invalid alignment interval");
+    }
     if(a.NModes() != b.NModes()) {
       cerr << "\nTrying to Align Waveforms with mismatched LM data." << endl;
       cerr << "a.NModes()=" << a.NModes() << "\tb.NModes()=" << b.NModes() << endl;
@@ -89,11 +94,27 @@ public:
     }
     arga = a.Arg(LMa);
     i=t.size()-1;
-    while(t[i]>t2 && i>0) { --i; }
+    while(t[i]>t2) {
+      i -= 1;
+      if(i < 0) {
+        cerr << "Count not find index such that T(index) <= t2. "
+             << "a.T.size() = " << t.size() << ", t1 = " << t1
+             << ", t2 = " << t2;
+        Throw1WithMessage("Out of bounds access finding t2 in Align Waveform");
+      }
+    }
     t.erase(t.begin()+i, t.end());
     arga.erase(arga.begin()+i, arga.end());
     i=0;
-    while(i<a.T().size() && a.T(i)<t1) { ++i; }
+    while(t[i]<t1) {
+      i += 1;
+      if(i >= t.size()) {
+        cerr << "Count not find index such that T(index) >= t1. "
+             << "t.size() = " << t.size() << ", t1 = " << t1
+             << ", t2 = " << t2;
+        Throw1WithMessage("Out of bounds access finding t1 in Align Waveform");
+      }
+    }
     t.erase(t.begin(), t.begin()+i);
     arga.erase(arga.begin(), arga.begin()+i);
   }
