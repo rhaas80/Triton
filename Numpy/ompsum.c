@@ -9,7 +9,7 @@ ompsum = Extension('ompsum', sources=['ompsum.c'],
                    extra_compile_args = ['-fopenmp',
                                          '-Wall', '-std=gnu99',
                                          '-Ofast', '-g', '-march=native',
-                                         '-funroll-loops', '-mfma4', '-mavx',
+                                         '-funroll-loops', '-mfma', '-mfma4', '-mavx',
                                          '-ftree-vectorizer-verbose=1'],
                    extra_link_args=['-lgomp'],)
 # run the setup
@@ -108,9 +108,9 @@ static PyObject* ompsum_func(PyObject* self, PyObject* args)
     /* do actual work */
     const ssize_t nvals = PyArray_DIM(in_array, 0);
     double sum;
-    if(in_array->strides[0] == sizeof(double))
+    if(PyArray_TYPE(in_array) == NPY_DOUBLE)
       sum = omp_sum_double((double*)in_array->data, nvals);
-    else if(in_array->strides[0] == sizeof(float))
+    else if(PyArray_TYPE(in_array) == NPY_FLOAT)
       sum = omp_sum_float((float*)in_array->data, nvals);
     else
       assert(0 && "Internal error"), sum=0.;
