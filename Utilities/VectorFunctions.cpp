@@ -1153,6 +1153,59 @@ vector<double> WU::Union(const vector<double>& t1, const vector<double>& t2, con
   return t;
 }
 
+vector<double> WU::Join(const vector<double>& t1, const vector<double>& t2, const double MinStep) {
+  if(t1.size()==0) {
+    cerr << "\nt1 is empty at " << __LINE__ << " of " << __FILE__ << ".  Returning trivial Union." << endl;
+    return vector<double>(t2);
+  }
+  if(t2.size()==0) {
+    cerr << "\nt2 is empty at " << __LINE__ << " of " << __FILE__ << ".  Returning trivial Union." << endl;
+    return vector<double>(t1);
+  }
+  vector<double> t(t1.size()+t2.size()+4);
+  double min1 = t1[0];
+  double min2 = t2[0];
+  double mint = min1;
+  double max1 = t1.back();
+  double max2 = t2.back();
+  double maxt = max2;
+  if(min2 > max1 || min1 > max2) {
+    cerr << "\nmin(t1)=" << min1 << "\tmin(t2)=" << min2 << endl;
+    cerr << "max(t1)=" << max1 << "\tmax(t2)=" << max2 << endl;
+    Throw1WithMessage("Disjoint Union");
+  }
+  t[0] = mint;
+  unsigned int I=0, I1=0, I2=0;
+  const unsigned int size1=t1.size(), size2=t2.size();
+  while(t[I] < maxt) {
+    // adjust I1 to ensure that t[I] is in the interval ( t1[I1-1], t1[I1] ]
+    if(t[I]<min1 || t[I]>max1) { // if t[I] is less than the smallest t1, or greater than the largest t1, I1=0;
+      I1=0;
+    } else {
+      I1 = std::max(I1, (unsigned int)1);
+      while(t[I]>t1[I1] && I1<size1) { I1++; }
+    }
+    // adjust I2 to ensure that t[I] is in the interval ( t2[I2-1], t2[I2] ]
+    if(t[I]<min2 || t[I]>max2) { // if t[I] is less than the smallest t2, or greater than the largest t2, I2=0;
+      I2=0;
+    } else {
+      I2 = std::max(I2, (unsigned int)1);
+      while(t[I]>t2[I2] && I2<size2) { I2++; }
+    }
+    if(I1==0) {
+      t[I+1] = t[I] + std::max(t2[I2]-t2[I2-1], MinStep);
+    } else if(I2==0) {
+      t[I+1] = t[I] + std::max(t1[I1]-t1[I1-1], MinStep);
+    } else {
+      t[I+1] = t[I] + std::max(std::min(t1[I1]-t1[I1-1], t2[I2]-t2[I2-1]), MinStep);
+    }
+    if(t[I+1]>maxt) { break; }
+    I++;
+  }
+  t.erase(t.begin()+I+1, t.end()); // only take the relevant part of the reserved vector
+  return t;
+}
+
 vector<double> WU::Unwrap(const vector<double>& In) {
   // Compare Matlab's unwrap.m file
   vector<double> Out = In;

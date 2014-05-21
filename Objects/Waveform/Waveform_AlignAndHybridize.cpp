@@ -211,7 +211,7 @@ Waveform WaveformObjects::Waveform::HybridizeWith(const Waveform& b, const doubl
     Throw1WithMessage("Different modes");
   }
   Waveform c(*this);
-  c.TRef() = Union(T(), b.T(), MinStep);
+  c.TRef() = Join(T(), b.T(), MinStep);
   int it=c.NTimes()-1;
   while(c.T(it)>b.T().back() && it>0) { --it; }
   c.TRef().erase(c.TRef().begin()+it, c.TRef().end());

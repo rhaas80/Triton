@@ -185,6 +185,11 @@ namespace WaveformUtilities {
   ///   similar to the 'Intersection' function above.
   ///   This is used when hybridizing Waveform objects.
   std::vector<double> Union(const std::vector<double>& t1, const std::vector<double>& t2, const double MinStep);
+  /// This function returns the union of two time sequences,
+  ///   similar to the 'Union' function above but clips t1 to max(t2) and t2 to
+  ///   min(t1).
+  ///   This is used when hybridizing Waveform objects.
+  std::vector<double> Join(const std::vector<double>& t1, const std::vector<double>& t2, const double MinStep);
 
   /// Phase-conversion functions
   std::vector<double> Unwrap(const std::vector<double>& a);
