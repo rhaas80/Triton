@@ -7,9 +7,9 @@ import sys
 ompsum = Extension('ompsum', sources=['ompsum.c'],
                    include_dirs=[numpy.get_include()],
                    extra_compile_args = ['-fopenmp',
-                                         '-Wall', '-std=gnu99',
-                                         '-Ofast', '-g', '-march=native',
-                                         '-funroll-loops', '-mfma', '-mfma4', '-mavx',
+                                         '-Wall', '-std=gnu99', '-g',
+                                         '-O3', '-march=native',
+                                         '-funroll-loops', '-mavx',
                                          '-ftree-vectorizer-verbose=1'],
                    extra_link_args=['-lgomp'],)
 # run the setup
