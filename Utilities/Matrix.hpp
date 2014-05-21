@@ -22,6 +22,8 @@ namespace WaveformUtilities {
     typedef T value_type; // make T available externally
     inline std::vector<T>& operator[](const unsigned int row); //subscripting: reference to row data
     inline const std::vector<T>& operator[](const unsigned int row) const;
+    inline std::vector<T>& at(const unsigned int row); //subscripting: reference to row data
+    inline const std::vector<T>& at(const unsigned int row) const;
     bool operator==(const Matrix<T>& b) const;
     bool operator!=(const Matrix<T>& b) const;
     inline const std::vector<std::vector<T> >& RawData() const { return Data; }
@@ -92,6 +94,24 @@ namespace WaveformUtilities {
       Throw1WithMessage("Matrix subscript out of bounds");
     }
     #endif
+    return Data[i];
+  }
+
+  template <class T>
+  inline std::vector<T>& Matrix<T>::at(const unsigned int i) {
+    if (i<0 || i>=nrows()) {
+      std::cerr << "\ni=" << i << "\tnrows()=" << nrows() << std::endl;
+      Throw1WithMessage("Matrix subscript out of bounds");
+    }
+    return Data[i];
+  }
+
+  template <class T>
+  inline const std::vector<T>& Matrix<T>::at(const unsigned int i) const {
+    if (i<0 || i>=nrows()) {
+      std::cerr << "\ni=" << i << "\tnrows()=" << nrows() << std::endl;
+      Throw1WithMessage("Matrix subscript out of bounds");
+    }
     return Data[i];
   }
 

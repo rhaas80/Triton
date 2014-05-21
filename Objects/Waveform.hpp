@@ -68,22 +68,22 @@ namespace WaveformObjects {
     inline const unsigned int TypeIndex() const { return typeIndex; }
     inline const std::string HistoryStr() const { return history.str(); }
     inline const std::string TimeScale() const { return timeScale; }
-    inline const std::string Type() const { return Types[typeIndex]; }
+    inline const std::string Type() const { return Types.at(typeIndex); }
     // Data from a single mode at an instant of time
-    inline const double T(const unsigned int Time) const { return t[Time]; }
-    inline const double R(const unsigned int Time) const { if(r.size()>1) {return r[Time]; } else { return r[0]; } }
-    inline const WaveformUtilities::Quaternion& Frame(const unsigned int Time) const { if(frame.size()>1) {return frame[Time]; } else { return frame[0]; } }
-    inline const double Mag(const unsigned int Mode, const unsigned int Time) const { return mag[Mode][Time]; }
-    inline const double Arg(const unsigned int Mode, const unsigned int Time) const { return arg[Mode][Time]; }
+    inline const double T(const unsigned int Time) const { return t.at(Time); }
+    inline const double R(const unsigned int Time) const { if(r.size()>1) {return r.at(Time); } else { return r.at(0); } }
+    inline const WaveformUtilities::Quaternion& Frame(const unsigned int Time) const { if(frame.size()>1) {return frame.at(Time); } else { return frame.at(0); } }
+    inline const double Mag(const unsigned int Mode, const unsigned int Time) const { return mag.at(Mode).at(Time); }
+    inline const double Arg(const unsigned int Mode, const unsigned int Time) const { return arg.at(Mode).at(Time); }
     // Data from a single mode throughout time
     inline const std::vector<double>& T() const { return t; }
     inline const std::vector<double>& R() const { return r; }
     inline const std::vector<WaveformUtilities::Quaternion>& Frame() const { return frame; }
-    inline const int L(const unsigned int Mode) const { return lm[Mode][0]; }
-    inline const int M(const unsigned int Mode) const { return lm[Mode][1]; }
-    inline const std::vector<int>& LM(const unsigned int Mode) const { return lm[Mode]; }
-    inline const std::vector<double>& Mag(const unsigned int Mode) const { return mag[Mode]; }
-    inline const std::vector<double>& Arg(const unsigned int Mode) const { return arg[Mode]; }
+    inline const int L(const unsigned int Mode) const { return lm.at(Mode).at(0); }
+    inline const int M(const unsigned int Mode) const { return lm.at(Mode).at(1); }
+    inline const std::vector<int>& LM(const unsigned int Mode) const { return lm.at(Mode); }
+    inline const std::vector<double>& Mag(const unsigned int Mode) const { return mag.at(Mode); }
+    inline const std::vector<double>& Arg(const unsigned int Mode) const { return arg.at(Mode); }
     // Data for all modes throughout time
     #if defined(SWIG) || defined(DOXYGEN)
     inline const std::vector<std::vector<int> >& LM() const { return lm.RawData(); }
@@ -102,20 +102,20 @@ namespace WaveformObjects {
     inline std::stringstream& History() { return history; }
     inline std::string& TimeScaleRef() { return timeScale; }
     // Data from a single mode at an instant of time
-    inline double& TRef(const unsigned int Time) { return t[Time]; }
-    inline double& RRef(const unsigned int Time) { if(r.size()>1) {return r[Time]; } else { return r[0]; } }
-    inline WaveformUtilities::Quaternion& FrameRef(const unsigned int Time) { if(frame.size()>1) {return frame[Time]; } else { return frame[0]; } }
-    inline double& MagRef(const unsigned int Mode, const unsigned int Time) { return mag[Mode][Time]; }
-    inline double& ArgRef(const unsigned int Mode, const unsigned int Time) { return arg[Mode][Time]; }
+    inline double& TRef(const unsigned int Time) { return t.at(Time); }
+    inline double& RRef(const unsigned int Time) { if(r.size()>1) {return r.at(Time); } else { return r.at(0); } }
+    inline WaveformUtilities::Quaternion& FrameRef(const unsigned int Time) { if(frame.size()>1) {return frame.at(Time); } else { return frame.at(0); } }
+    inline double& MagRef(const unsigned int Mode, const unsigned int Time) { return mag.at(Mode).at(Time); }
+    inline double& ArgRef(const unsigned int Mode, const unsigned int Time) { return arg.at(Mode).at(Time); }
     // Data from a single mode throughout time
     inline std::vector<double>& TRef() { return t; }
     inline std::vector<double>& RRef() { return r; }
     inline std::vector<WaveformUtilities::Quaternion>& FrameRef() { return frame; }
-    inline int& LRef(const unsigned int Mode) { return lm[Mode][0]; }
-    inline int& MRef(const unsigned int Mode) { return lm[Mode][1]; }
-    inline std::vector<int>& LMRef(const unsigned int Mode) { return lm[Mode]; }
-    inline std::vector<double>& MagRef(const unsigned int Mode) { return mag[Mode]; }
-    inline std::vector<double>& ArgRef(const unsigned int Mode) { return arg[Mode]; }
+    inline int& LRef(const unsigned int Mode) { return lm.at(Mode)[0]; }
+    inline int& MRef(const unsigned int Mode) { return lm.at(Mode)[1]; }
+    inline std::vector<int>& LMRef(const unsigned int Mode) { return lm.at(Mode); }
+    inline std::vector<double>& MagRef(const unsigned int Mode) { return mag.at(Mode); }
+    inline std::vector<double>& ArgRef(const unsigned int Mode) { return arg.at(Mode); }
     // Data for all modes throughout time
     inline WaveformUtilities::Matrix<int>& LMRef() { return lm; }
     inline WaveformUtilities::Matrix<double>& MagRef() { return mag; }
@@ -128,19 +128,19 @@ namespace WaveformObjects {
     #if defined( SWIG ) || defined( DOXYGEN )
     inline void SetTypeIndex(const unsigned int NewTypeIndex) { typeIndex = NewTypeIndex; }
     inline void SetTimeScale(const std::string& NewTimeScale) { timeScale = NewTimeScale; }
-    inline void SetT(const unsigned int Time, const double a) { t[Time] = a; }
+    inline void SetT(const unsigned int Time, const double a) { t.at(Time) = a; }
     inline void SetT(const std::vector<double>& a) { t = a; }
-    inline void SetR(const unsigned int Time, const double a) { r[Time] = a; }
+    inline void SetR(const unsigned int Time, const double a) { r.at(Time) = a; }
     inline void SetR(const std::vector<double>& a) { r = a; }
-    inline void SetFrame(const unsigned int Time, const WaveformUtilities::Quaternion& a) { frame[Time] = a; }
+    inline void SetFrame(const unsigned int Time, const WaveformUtilities::Quaternion& a) { frame.at(Time) = a; }
     inline void SetFrame(const std::vector<WaveformUtilities::Quaternion>& a) { frame = a; }
-    inline void SetLM(const unsigned int Mode, const std::vector<int>& a) { lm[Mode] = a; }
+    inline void SetLM(const unsigned int Mode, const std::vector<int>& a) { lm.at(Mode) = a; }
     inline void SetLM(const WaveformUtilities::Matrix<int>& a) { lm = a; }
-    inline void SetMag(const unsigned int Mode, const unsigned int Time, const double a) { mag[Mode][Time] = a; }
-    inline void SetMag(const unsigned int Mode, const std::vector<double>& a) { mag[Mode] = a; }
+    inline void SetMag(const unsigned int Mode, const unsigned int Time, const double a) { mag.at(Mode).at(Time) = a; }
+    inline void SetMag(const unsigned int Mode, const std::vector<double>& a) { mag.at(Mode) = a; }
     inline void SetMag(const WaveformUtilities::Matrix<double>& a) { mag = a; }
-    inline void SetArg(const unsigned int Mode, const unsigned int Time, const double a) { arg[Mode][Time] = a; }
-    inline void SetArg(const unsigned int Mode, const std::vector<double>& a) { arg[Mode] = a; }
+    inline void SetArg(const unsigned int Mode, const unsigned int Time, const double a) { arg.at(Mode).at(Time) = a; }
+    inline void SetArg(const unsigned int Mode, const std::vector<double>& a) { arg.at(Mode) = a; }
     inline void SetArg(const WaveformUtilities::Matrix<double>& a) { arg = a; }
     #endif // Only used above for SWIG or doxygen
 

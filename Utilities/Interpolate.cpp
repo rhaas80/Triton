@@ -105,12 +105,17 @@ double WaveformUtilities::Interpolate(const vector<double>& X1, const vector<dou
 Interpolator::Interpolator(const vector<double>& x, const vector<double>& y, int m)
   : n(x.size()), mm(m), jsav(0), cor(0), xx(x), yy(y)
 {
+  if (n < 2 || mm < 2 || mm > n)
+    Throw1WithMessage("Interpolator::Interpolator size error (n = " << n
+                      << ", mm = " << mm << " but need mm>n>=2)");
   dj = MAX(1,int(pow(double(n),0.25)));
 }
 
 Int Interpolator::locate(const Doub x) {
   Int ju,jm,jl;
-  if (n < 2 || mm < 2 || mm > n) Throw1WithMessage("Interpolator::locate size error");
+  if (n < 2 || mm < 2 || mm > n)
+    Throw1WithMessage("Interpolator::locate size error (n = " << n
+                      << ", mm = " << mm << " but need mm>n>=2)");
   Bool ascnd=(xx[n-1] >= xx[0]);
   jl=0;
   ju=n-1;

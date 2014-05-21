@@ -49,7 +49,8 @@ import distutils.sysconfig as ds
 cfs=ds.get_config_vars()
 for key, value in cfs.iteritems():
     if(type(cfs[key])==str) :
-        cfs[key] = value.replace('-Wstrict-prototypes', '')
+        cfs[key] = value.replace('-Wstrict-prototypes', '')\
+                        .replace('-DNDEBUG', '') # never disable assert()
 
 ## This gets the list of files to build and the headers they depend on
 CPPFiles = glob.glob("Utilities/*.cpp") + glob.glob("PostNewtonian/*.cpp") + glob.glob("Objects/*.cpp") + glob.glob("Objects/Waveform/*.cpp")
