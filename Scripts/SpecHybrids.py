@@ -43,13 +43,19 @@ def HybridizationFunctional(p,
         # there's a memory leak somewhere.  Feeding in the full PN waveforms
         # into interp1d results in out-of-memory-errors for long waveforms. 
         idx=(shiftedtPN-(tNR_cut[0]-100))*(shiftedtPN-(tNR_cut[-1]+100))<0
-        interp=scipy.interpolate.interp1d(shiftedtPN[idx], shiftedphiPN[idx], kind='cubic', copy=False)
-        intphiPN=interp(tNR_cut)
+        #interp=scipy.interpolate.interp1d(shiftedtPN[idx], shiftedphiPN[idx], kind='cubic', copy=False)
+        #intphiPN=interp(tNR_cut)
+        tck = scipy.interpolate.splrep(shiftedtPN[idx], shiftedphiPN[idx])
+        intphiPN=scipy.interpolate.splev(tNR_cut, tck)
+        del tck
         #print "interpolated intphiPN, intphiPN.shape=", intphiPN.shape
-        del interp
-        interp=scipy.interpolate.interp1d(shiftedtPN[idx], AmpPN[idx], kind='cubic', copy=False)
-        intAmpPN=interp(tNR_cut)
-        del interp
+        #del interp
+        #interp=scipy.interpolate.interp1d(shiftedtPN[idx], AmpPN[idx], kind='cubic', copy=False)
+        #intAmpPN=interp(tNR_cut)
+        #del interp
+        tck = scipy.interpolate.splrep(shiftedtPN[idx], AmpPN[idx])
+        intAmpPN=scipy.interpolate.splev(tNR_cut, tck)
+        del tck
     if(matching_type==1):
         temp=intphiPN-phiNR_cut
     else:
