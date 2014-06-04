@@ -184,6 +184,26 @@ static void omp_conjrect(const double *mag, const double *phase,
   }
 }
 
+// double precision input and double precision output
+static void omp_rect(const double *mag, const double *phase,
+                     complex *out, const size_t nvals)
+{
+#pragma omp parallel
+  {
+    const int nthreads = omp_get_num_threads();
+    const int mythread = omp_get_thread_num();
+    const size_t chunk = (nvals+nthreads-1)/nthreads;
+    const size_t first = mythread * chunk;
+    const size_t length = first+chunk <= nvals ? chunk : nvals-first;
+    const double * restrict mag_loc = mag+first;
+    const double * restrict phase_loc = phase+first;
+    complex * restrict out_loc = out+first;
+    for(size_t j = 0 ; j < length ; ++j) {
+      out_loc[j] = mag_loc[j]*cexp(phase_loc[j]*I);
+    }
+  }
+}
+
 // boilerplate code copied from scipy lecture at
 // http://scipy-lectures.github.io/advanced/interfacing_with_c/interfacing_with_c.html#id1
 // some code copied from www.phys.cwru.edu/courses/p250/numpybook.pdf
@@ -392,6 +412,46 @@ static PyObject* ompconjrect_func(PyObject* self, PyObject* args)
     return out_array;
 }
 
+/*  wrapped omp_rect function */
+static PyObject* omprect_func(PyObject* self, PyObject* args)
+{
+
+    PyArrayObject *mag_array, *phase_array;
+    PyObject *out_array;
+
+    /*  parse single numpy array argument */
+    if (!PyArg_ParseTuple(args, "O!O!", &PyArray_Type, &mag_array,
+                          &PyArray_Type, &phase_array))
+        return NULL;
+
+    /* consistency check */
+    if (!check_array_is_double(mag_array) ||
+        !check_array_is_double(phase_array)) {
+      PyErr_Format(PyExc_ValueError,
+                   "input arrays are not onedimensional or not of type double");
+      return NULL;
+    }
+
+    const ssize_t nvals = PyArray_DIM(mag_array, 0);
+    if (PyArray_DIM(phase_array, 0) != nvals) {
+      PyErr_Format(PyExc_ValueError, "input arrays have incosistent sizes");
+      return NULL;
+    }
+
+    /* allocate output object */
+    out_array = PyArray_SimpleNew(PyArray_NDIM(mag_array),
+                                  mag_array->dimensions, NPY_CDOUBLE);
+    if (out_array == NULL)
+      return NULL;
+
+    /* do actual work */
+    omp_rect((double*)mag_array->data, (double*)phase_array->data,
+             (complex*)((PyArrayObject *)out_array)->data, nvals);
+
+    /*  construct the output from sum, from c double to python float */
+    return out_array;
+}
+
 /*  define functions in module */
 static PyMethodDef OmpSumMethods[] =
 {
@@ -402,6 +462,8 @@ static PyMethodDef OmpSumMethods[] =
      {"OverlapMaxing", ompOverlapMaxing_func, METH_VARARGS,
          "compute overlap between two waveforms for given time shift"},
      {"conjrect", ompconjrect_func, METH_VARARGS,
+         "construct the conjugate of a complex number given magnitude and phase"},
+     {"rect", omprect_func, METH_VARARGS,
          "construct a complex number given magnitude and phase"},
      {NULL, NULL}
 };
