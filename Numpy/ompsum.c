@@ -118,7 +118,9 @@ static double omp_OverlapMaxing(const double dt, const double * restrict freqs,
                                 const size_t nvals)
 
 {
-  double sum = 0.;
+  double NWFIc = 0.;
+  double NWFIs = 0.;
+  double dhdh = 0.;
 #pragma omp parallel
   {
     const int nthreads = omp_get_num_threads();
@@ -157,11 +159,47 @@ static double omp_OverlapMaxing(const double dt, const double * restrict freqs,
       NWFIc_loc -= 0.5*creal(conj(fwave_ref[j])*fwave_tem_c_shifted);
       NWFIs_loc -= 0.5*creal(conj(fwave_ref[j])*fwave_tem_s_shifted);
     }
-    const double sum_loc = -4.*deltaf*sqrt(NWFIc_loc*NWFIc_loc + NWFIs_loc*NWFIs_loc);
 #pragma omp atomic
-    sum += sum_loc;
+    NWFIc += NWFIc_loc;
+#pragma omp atomic
+    NWFIs += NWFIs_loc;
+#pragma omp barrier
+    const double dphi = atan2(NWFIs, NWFIc);
+    const double cosdphi = cos(dphi);
+    const double sindphi = sin(dphi);
+
+    double dhdh_loc = 0.;
+    // this integral is missing the factor of 1/2 at the endpoints of the
+    // trapezoid rule. We correct for this just below.
+    for(size_t j = 0 ; j < length ; ++j) {
+      const double phase = two_PI_dt*freqs_loc[j];
+      const complex exp_freq = cexp(phase*I);
+      const complex fwave_tem_c_shifted = fwave_tem_c_loc[j]*exp_freq;
+      const complex fwave_tem_s_shifted = fwave_tem_s_loc[j]*exp_freq;
+      const complex h_loc = cosdphi*fwave_tem_c_shifted +
+                            sindphi*fwave_tem_s_shifted;
+      const complex h_loc_minus_g = h_loc - fwave_ref_loc[j];
+      dhdh_loc += creal(h_loc_minus_g)*creal(h_loc_minus_g) +
+                  cimag(h_loc_minus_g)*cimag(h_loc_minus_g);
+    }
+    // correct for different weight at endpoints of integral
+#pragma omp master
+    for(size_t j = 0 ; j < nvals ; j += nvals-1) {
+      const double phase = two_PI_dt*freqs_loc[j];
+      const complex exp_freq = cexp(phase*I);
+      const complex fwave_tem_c_shifted = fwave_tem_c_loc[j]*exp_freq;
+      const complex fwave_tem_s_shifted = fwave_tem_s_loc[j]*exp_freq;
+      const complex h_loc = cosdphi*fwave_tem_c_shifted +
+                            sindphi*fwave_tem_s_shifted;
+      const complex h_loc_minus_g = h_loc - fwave_ref_loc[j];
+      dhdh_loc -= 0.5*(creal(h_loc_minus_g)*creal(h_loc_minus_g) +
+                       cimag(h_loc_minus_g)*cimag(h_loc_minus_g));
+    }
+    dhdh_loc *= 4*deltaf;
+#pragma omp atomic
+    dhdh += dhdh_loc;
   }
-  return sum;
+  return dhdh;
 }
 
 // double precision input and double precision output
