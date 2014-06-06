@@ -2,7 +2,7 @@
 #This script has the process of creating hybrid NSNS waveforms
 #then determining their overlap.
 
-ScriptsDir = "/home/rhaas/postdoc/gr/Triton/Scripts" #"/mnt/data/rhaas/postdoc/gr/Triton/Scripts"
+ScriptsDir = "/home/rhaas/data/postdoc/gr/Triton/Scripts" #"/mnt/data/rhaas/postdoc/gr/Triton/Scripts"
 DataDir = "." #"/mnt/data/rhaas/postdoc/papers/NsNsInspirals/data"
 NoiseDir = "." #"/mnt/data/rhaas/postdoc/gr/noise"
 #Zwicky = "/home/rhaas/mnt/zwicky/"
@@ -457,4 +457,5 @@ for itrial in range(len(OM)):
         results += workfun(PyGW.Waveform(REFERENCE), PyGW.Waveform(TRIAL),
                            LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
 
-np.savetxt("dh_over_h_Ilana.dat", results, header = "totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error")
+np.savetxt("dh_over_h_Ilana.dat", results,
+           header = "totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error")
