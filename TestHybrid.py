@@ -348,6 +348,7 @@ PN.SetMag(0,data[:,2])
 LIGO = np.loadtxt(NoiseDir+"/ZERO_DET_high_P.txt")
 LIGOfreq = LIGO[:,0]
 LIGOsig  = LIGO[:,1]
+max_freq = LIGOfreq[-1]
 
 results = []
 for itrial in range(len(OM)):
@@ -385,23 +386,24 @@ for itrial in range(len(OM)):
         #REFERENCE.SetT(data[:,0])
         #REFERENCE.SetArg(0,data[:,1])
         #REFERENCE.SetMag(0,data[:,2])
-    
-        t1 = np.arange(np.amin(REFERENCE.T()),np.amax(REFERENCE.T()),1.)
-        t2 = np.arange(np.amin(TRIAL.T()),np.amax(TRIAL.T()),1.)
 
-        #I think this assumes initial alignment at merger
-        if (len(t1) < len(t2)):
-          t = t1
-        else:
-          t = t2
-            
-        if (TRIAL.T()[-1] < REFERENCE.T()[-1]):
-          difft = REFERENCE.T()[-1] - TRIAL.T()[-1];
-          REFERENCE.AddToTime(-difft)
-        else:
-          difft = TRIAL.T()[-1] - REFERENCE.T()[-1]
-          TRIAL.AddToTime(-difft)
+        # align in time at merger
+        indexmTRIAL, timemTRIAL, phasemTRIAL, magmTRIAL = FindMerger(TRIAL)
+        indexmREFERENCE, timemREFERENCE, phasemREFERENCE, magmREFERENCE = FindMerger(REFERENCE)
+        TRIAL.AddToTime(timemREFERENCE-timemTRIAL)
+
+        # sample frequently enough so that FFT capturs highest LIGO frequency
         
+        #dtime = 1. # Ilana's choice
+        # use highest frequency as Nyquist frequency
+        # NB: this could be made mass dependent
+        dtime = 0.5 / max_freq / (Scale() * np.amax(masses))
+
+        # clip to common time interval
+        t1 = max(np.amin(REFERENCE.T()),np.amin(TRIAL.T()))
+        t2 = min(np.amax(REFERENCE.T()),np.amax(TRIAL.T()))
+        t = np.arange(t1,t2,dtime)
+
         print "Begin interpolating..."
         # this matches matlab's spline interpolation
         useSpline = True
