@@ -66,7 +66,7 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
     """
 
     print "Begin windowing..."
-    inds = np.nonzero(np.abs(REFERENCE.Arg(0)-REFERENCE.Arg(0)[0]) > orbits_for_taper_window_t1 * 2.*math.pi)[0]
+    inds = np.nonzero(np.abs(REFERENCE.Arg(0)-REFERENCE.Arg(0)[0]) > orbits_for_taper_window_t1 * 4.*math.pi)[0]
     time_for_five_orbits = REFERENCE.T(inds[0]) - REFERENCE.T(0)
     times = REFERENCE.T()
     window = KechanWindow(times, 8, 0.001, 90, len(times))
