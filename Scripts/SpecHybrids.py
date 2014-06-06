@@ -109,11 +109,20 @@ def LeastSquareFit(tNR, phiNR, AmpNR,
                    tPN, phiPN, AmpPN, 
                    omega_min, omega_max,
                    matching_type):
-    
-    idx,tmin,tmax=Find_tmin_tmax(tNR,phiNR, omega_min, omega_max)
+    # Finds the time and phase corresponding to the merger by locating the point
+    # of maximum amplitude.
+    indexmerger = AmpNR.argmax()
+    idx,tmin,tmax=Find_tmin_tmax(tNR[:indexmerger],phiNR[:indexmerger], omega_min, omega_max)
 ### find start frequency in PN waveform, to get
 ### initial guesses for minimization
     omegaPN=ComputeOmega(tPN, phiPN)
+    print "omega_min: ", omega_min
+    print "omega_max: ", omega_max
+    print "om0: ", omegaPN[0]
+    print "om1: ", omegaPN[-1]
+    omegaNR=ComputeOmega(tNR, phiNR)
+    print "omNR0: ", omegaNR[tNR == tmin]
+    print "omNR1: ", omegaNR[tNR == tmax]
     
     idx_min=numpy.where(omegaPN>omega_min)[0][0]
     Dt0=tNR[idx[0]]-tPN[idx_min]
