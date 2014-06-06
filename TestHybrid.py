@@ -321,7 +321,6 @@ NR.SetMag(0,data[:,2])
 #PN = PyGW.Waveform('TaylorT4',0,0.,0.,v0)
 PN = PyGW.Waveform('TaylorT3',0,0.,0.,v0)
 PN = PN[4]
-PN.DropAfter(PN.T()[-1]-100.) # drop data very close to merger
 """
 t0 = PN.T()[0]
 t1 = PN.T()[-1]
@@ -343,6 +342,9 @@ PN.SetT(data[:,0])
 PN.SetArg(0,data[:,1])
 PN.SetMag(0,data[:,2])
 """
+
+PN.AddToTime(PN.T()[-1])
+PN.DropAfter(PN.T()[-1]-100.) # drop data very close to merger
 
 # Noise curve, using optimal aLIGO curve
 LIGO = np.loadtxt(NoiseDir+"/ZERO_DET_high_P.txt")
