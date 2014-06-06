@@ -73,12 +73,14 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
     #window = WindowPlanckTaper(times, times[0],times[0]+time_for_five_orbits, times[-1]-100,times[-1])
     windowedMag = REFERENCE.Mag(0) * window
     REFERENCE.SetMag(0, windowedMag)
-    REF = REFERENCE.Mag(0) * np.exp(1j*REFERENCE.Arg(0))
+    REF = ompsum.rect(REFERENCE.Mag(0), REFERENCE.Arg(0))
+    #REF = REFERENCE.Mag(0) * np.exp(1j*REFERENCE.Arg(0))
 
     # same window as for REFERENCE waveform
     windowedMag = TRIAL.Mag(0) * window
     TRIAL.SetMag(0, windowedMag)
-    TRI = TRIAL.Mag(0) * np.exp(1j*TRIAL.Arg(0))
+    TRI = ompsum.rect(TRIAL.Mag(0), TRIAL.Arg(0))
+    #TRI = TRIAL.Mag(0) * np.exp(1j*TRIAL.Arg(0))
     print "Done windowing..."
 
     """

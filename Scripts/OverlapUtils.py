@@ -36,7 +36,7 @@ def NoiseWeightedFreqInnerProduct(wave1, wave2, noisesqrt, deltaf):
 
   # The factor of 2 in front is canceled out by the 1/2 by trapezoid rule
   # we then gain another factor of 2 due to conj(g)*h+g*conj(h) = 2*Re(conj(g)*h)
-  total = 2.*(integrand[0]+2*np.sum(integrand[1:-1])+integrand[-1])*deltaf
+  total = 2.*(integrand[0]+2*ompsum.sum(integrand[1:-1])+integrand[-1])*deltaf
   return total
 
 
@@ -58,14 +58,14 @@ def NoiseWeightedFreqInnerProduct(wave1, wave2, noisesqrt, deltaf):
 # TODO rewrite as C code
 def OverlapMaxing(dt, freqs, fwave_ref, fwave_tem_c, fwave_tem_s, noise_sqrt):
   
-  #retval = ompsum.OverlapMaxing(dt, freqs, fwave_ref, fwave_tem_c, fwave_tem_s)
+  retvalC = ompsum.OverlapMaxing(dt, freqs, fwave_ref, fwave_tem_c, fwave_tem_s)
 
-  #print "olap: %g %g" % (dt, retval)
+  #print "olap: %g %g" % (dt, retvalC)
 
-  #return retval
+  return retvalC
 
   phases = (2*pi*dt)*freqs
-  #"""
+  """
   # this is actually faster than exp(1j*angle) since it does compute the
   # exp(real) part of exp(complex)
   # faster even would be np.sincos (if it existed) or some expi(...) or
@@ -73,8 +73,8 @@ def OverlapMaxing(dt, freqs, fwave_ref, fwave_tem_c, fwave_tem_s, noise_sqrt):
   exp_freqs = np.empty(phases.shape,dtype=np.complex128)
   exp_freqs.real = np.cos(phases)
   exp_freqs.imag = np.sin(phases)
-  #"""
-  #exp_freqs = ompsum.expi(phases)
+  """
+  exp_freqs = ompsum.expi(phases)
   """
   for i in range(phases.shape[0]):
     if exp2_freqs[i] != exp_freqs[i]:
@@ -111,7 +111,7 @@ def OverlapMaxing(dt, freqs, fwave_ref, fwave_tem_c, fwave_tem_s, noise_sqrt):
   #retval = -overlap
   #retval = -abs(np.sqrt(NWFIc**2 + NWFIs**2))
 
-  #print "olap: %g %g" % (dt, retval)
+  print "olap: %g %g %g %g" % (dt, retval, retvalC, retvalC/retval)
 
   return retval
 
