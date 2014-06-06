@@ -292,7 +292,10 @@ v0 = (0.95*f0*Scale()*minimummass*math.pi)**(1./3.) #Start waves a bit sooner fo
 #NR = PyGW.Waveform(Zwicky+"/home/kbarkett/Caltech/Scripts/NSNS_Tidal_Scripts/BBH/rhOverM_Extrapolated_N3.dat", 'MagArg')
 NR = PyGW.Waveform("rhOverM_Extrapolated_N3.dat", 'MagArg')
 NR = NR[4]
-NR.DropBefore(100.) # chop of some junk radiation
+NR.DropBefore(NR.T()[0]+200.) # chop of some junk radiation
+#NR = PyGW.Waveform(DataDir+"/Lev2/rh_CceR2090_l2_m2.dat", 'ReIm')
+#time_to_worldtube = 2090 / nsnsmass # assumes signal speed = 1
+#NR.DropBefore(NR.T()[0]+time_to_worldtube+200.) # chop of some junk radiation
 """
 t0 = NR.T()[0]
 t1 = NR.T()[-1]
