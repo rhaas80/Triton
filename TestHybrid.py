@@ -410,8 +410,30 @@ for itrial in range(len(OM)):
         # this matches matlab's spline interpolation
         useSpline = True
         if (useSpline):
-            REFERENCE.Interpolate(t)
-            TRIAL.Interpolate(t)
+            tck = scipy.interpolate.splrep(REFERENCE.T(), REFERENCE.Arg(0))
+            res=scipy.interpolate.splev(t, tck)
+            del tck
+            REFERENCE.SetArg(0, res)
+            del res
+            tck = scipy.interpolate.splrep(REFERENCE.T(), REFERENCE.Mag(0))
+            res=scipy.interpolate.splev(t, tck)
+            del tck
+            REFERENCE.SetMag(0, res)
+            del res
+            REFERENCE.SetT(t)
+            tck = scipy.interpolate.splrep(TRIAL.T(), TRIAL.Arg(0))
+            res=scipy.interpolate.splev(t, tck)
+            del tck
+            TRIAL.SetArg(0, res)
+            del res
+            tck = scipy.interpolate.splrep(TRIAL.T(), TRIAL.Mag(0))
+            res=scipy.interpolate.splev(t, tck)
+            del tck
+            TRIAL.SetMag(0, res)
+            del res
+            TRIAL.SetT(t)
+            #REFERENCE.Interpolate(t)
+            #TRIAL.Interpolate(t)
         # this matches matlab's cubic or pchip interpolation
         usePchip = False
         if (usePchip):
