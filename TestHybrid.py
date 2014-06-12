@@ -13,6 +13,7 @@ sys.path.append(ScriptsDir)
 sys.path.append(ScriptsDir+"/../Numpy/build/lib.linux-x86_64-2.7")
 from OverlapUtils import *
 import ompsum
+from PyWaveform import *
 import copy
 import numpy as np
 import scipy.interpolate as interpolate
@@ -27,6 +28,8 @@ import inspect
 #import cProfile
 #pr = cProfile.Profile()
 #pr.enable()
+
+use_PyWaveform = True
 
 def lineno():
     """Returns the current line number in our program."""
@@ -290,8 +293,12 @@ minimummass = min(masses)
 v0 = (0.95*f0*Scale()*minimummass*math.pi)**(1./3.) #Start waves a bit sooner for windowing
 
 #NR = PyGW.Waveform(Zwicky+"/home/kbarkett/Caltech/Scripts/NSNS_Tidal_Scripts/BBH/rhOverM_Extrapolated_N3.dat", 'MagArg')
-NR = PyGW.Waveform("rhOverM_Extrapolated_N3.dat", 'MagArg')
-NR = NR[4]
+if (use_PyWaveform):
+    NR = PyWaveform()
+    NR.LoadFromFile("rhOverM_Extrapolated_N3.dat", usecols=(0,9,10))
+else:
+    NR = PyGW.Waveform("rhOverM_Extrapolated_N3.dat", 'MagArg')
+    NR = NR[4]
 NR.DropBefore(NR.T()[0]+200.) # chop of some junk radiation
 #NR = PyGW.Waveform(DataDir+"/Lev2/rh_CceR2090_l2_m2.dat", 'ReIm')
 #time_to_worldtube = 2090 / nsnsmass # assumes signal speed = 1
@@ -318,9 +325,14 @@ NR.SetArg(0,data[:,1])
 NR.SetMag(0,data[:,2])
 """
 
-#PN = PyGW.Waveform('TaylorT4',0,0.,0.,v0)
-PN = PyGW.Waveform('TaylorT3',0,0.,0.,v0)
-PN = PN[4]
+TritonPN = PyGW.Waveform('TaylorT4',0,0.,0.,v0)
+#PN = PyGW.Waveform('TaylorT3',0,0.,0.,v0)
+#PN = PyGW.Waveform('TaylorT4Tidal',0,0.,0.,v0,0.07124843942665074,0.07124843942665074,0.16001855052369648,0.16001855052369648)
+if (use_PyWaveform):
+    PN = PyWaveform(TritonPN[4])
+else:
+    PN = PyGW.Waveform(TritonPN[4])
+del TritonPN
 """
 t0 = PN.T()[0]
 t1 = PN.T()[-1]
@@ -357,9 +369,16 @@ for itrial in range(len(OM)):
     omegatrial = OM[itrial]
     fn = "hHybrid_%g_MagArg_l2_m2.dat" % omegatrial
     if(os.access(fn, os.R_OK)):
-        orig_TRIAL = PyGW.Waveform(fn, 'MagArg')
+        if (use_PyWaveform):
+            orig_TRIAL = PyWaveform()
+            orig_TRIAL.LoadFromFile(fn)
+        else:
+            orig_TRIAL = PyGW.Waveform(fn, 'MagArg')
     else:
-        orig_TRIAL = MakeHybrid(PyGW.Waveform(PN), PyGW.Waveform(NR), omegatrial, 0.1)
+        if (use_PyWaveform):
+            orig_TRIAL = MakeHybrid(copy.deepcopy(PN), copy.deepcopy(NR), omegatrial, 0.1)
+        else:
+            orig_TRIAL = MakeHybrid(PyGW.Waveform(PN), PyGW.Waveform(NR), omegatrial, 0.1)
         data = np.array((orig_TRIAL.T(), orig_TRIAL.Mag(0), orig_TRIAL.Arg(0))).transpose()
         np.savetxt(fn, data, header="t, Mag, Arg")
     #fn = "../IlanaWaveformScripts/Hybridization/hybrid_%.3f.dat" % omegatrial
@@ -371,14 +390,24 @@ for itrial in range(len(OM)):
     #orig_TRIAL.SetMag(0,data[:,2])
     for ireference in range(itrial+1):
         # make a copy of TRIAL waveform since we modify it
-        TRIAL = PyGW.Waveform(orig_TRIAL)
+        if (use_PyWaveform):
+            TRIAL = copy.deepcopy(orig_TRIAL)
+        else:
+            TRIAL = PyGW.Waveform(orig_TRIAL)
 
         omegareference = OM[ireference]
         fn = "hHybrid_%g_MagArg_l2_m2.dat" % omegareference
         if(os.access(fn, os.R_OK)):
-            REFERENCE = PyGW.Waveform(fn, 'MagArg')
+            if (use_PyWaveform):
+                REFERENCE = PyWaveform()
+                REFERENCE.LoadFromFile(fn)
+            else:
+                REFERENCE = PyGW.Waveform(fn, 'MagArg')
         else:
-            REFERENCE = MakeHybrid(PyGW.Waveform(PN), PyGW.Waveform(NR), omegareference, 0.1)
+            if (use_PyWaveform):
+                REFERENCE = MakeHybrid(copy.deepcopy(PN), copy.deepcopy(NR), omegareference, 0.1)
+            else:
+                REFERENCE = MakeHybrid(PyGW.Waveform(PN), PyGW.Waveform(NR), omegareference, 0.1)
             data = np.array((REFERENCE.T(), REFERENCE.Mag(0), REFERENCE.Arg(0))).transpose()
             np.savetxt(fn, data, header="t, Mag, Arg")
         #fn = "../IlanaWaveformScripts/Hybridization/hybrid_%.3f.dat" % omegareference
@@ -454,8 +483,12 @@ for itrial in range(len(OM)):
         print "Done interpolating"
 
         # pass in copies since some of PyGW's routines modify their argument
-        results += workfun(PyGW.Waveform(REFERENCE), PyGW.Waveform(TRIAL),
-                           LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
+        if (use_PyWaveform):
+            results += workfun(copy.deepcopy(REFERENCE), copy.deepcopy(TRIAL),
+                               LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
+        else:
+            results += workfun(PyGW.Waveform(REFERENCE), PyGW.Waveform(TRIAL),
+                               LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
 
 np.savetxt("dh_over_h_Ilana.dat", results,
            header = "totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error")

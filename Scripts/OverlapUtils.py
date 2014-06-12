@@ -1,5 +1,6 @@
 import sys
 import ompsum
+from PyWaveform import *
 from scipy.optimize import fmin
 from scipy.signal import hann
 import scipy.interpolate
@@ -7,10 +8,13 @@ import numpy as np
 from math import pi
 import PyGW_IS_FOR_OLD_DATA as PyGW
 import ctypes
+import copy
 import warnings
 import SpecHybrids
 
 import matplotlib.pyplot as plt
+
+use_PyWaveform = True
 
 # Compute the noise weighted inner product of two waves that are
 # have been converted to their frequency domain
@@ -449,7 +453,10 @@ def HybridizeHP(PN,NR,timem,omega_min,omega_max):
     useTritonHybrid = False
     if useTritonHybrid: # this linearly blends
         # drop all NR data before PN begins (behaves strange otherwise)
-        cutNR = PyGW.Waveform(NR)
+        if(use_PyWaveform):
+            cutNR = np.deepcopy(NR)
+        else:
+            cutNR = PyGW.Waveform(NR)
         cutNR.DropBefore(tNR_min)
         HYBRID = PN.HybridizeWith(cutNR,tNR_min,tNR_max)
     useCosHybrid = True
@@ -513,8 +520,11 @@ def HybridizeHP(PN,NR,timem,omega_min,omega_max):
         #print "tOut.shape=",tOut.shape
         #print "dataOut.shape=",dataOut.shape
         
-        # cannot create a non-empty Waveform object it seems, so need to copy
-        HYBRID = PyGW.Waveform(PN)
+        if(use_PyWaveform):
+            HYBRID = PyWaveform()
+        else:
+            # cannot create a non-empty Waveform object it seems, so need to copy
+            HYBRID = PyGW.Waveform(PN)
         HYBRID.SetT(tOut)
         HYBRID.SetMag(0, dataOut[:,1])
         HYBRID.SetArg(0, dataOut[:,0])
