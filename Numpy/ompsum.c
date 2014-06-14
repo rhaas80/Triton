@@ -185,13 +185,13 @@ static double omp_OverlapMaxing(const double dt, const double * restrict freqs,
     // correct for different weight at endpoints of integral
 #pragma omp master
     for(size_t j = 0 ; j < nvals ; j += nvals-1) {
-      const double phase = two_PI_dt*freqs_loc[j];
+      const double phase = two_PI_dt*freqs[j];
       const complex exp_freq = cexp(phase*I);
-      const complex fwave_tem_c_shifted = fwave_tem_c_loc[j]*exp_freq;
-      const complex fwave_tem_s_shifted = fwave_tem_s_loc[j]*exp_freq;
+      const complex fwave_tem_c_shifted = fwave_tem_c[j]*exp_freq;
+      const complex fwave_tem_s_shifted = fwave_tem_s[j]*exp_freq;
       const complex h_loc = cosdphi*fwave_tem_c_shifted +
                             sindphi*fwave_tem_s_shifted;
-      const complex h_loc_minus_g = h_loc - fwave_ref_loc[j];
+      const complex h_loc_minus_g = h_loc - fwave_ref[j];
       dhdh_loc -= 0.5*(creal(h_loc_minus_g)*creal(h_loc_minus_g) +
                        cimag(h_loc_minus_g)*cimag(h_loc_minus_g));
     }
