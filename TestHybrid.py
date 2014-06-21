@@ -16,7 +16,6 @@ import ompsum
 from PyWaveform import *
 import copy
 import numpy as np
-import scipy.interpolate as interpolate
 import PyGW_IS_FOR_OLD_DATA as PyGW
 #import PyGW.plot
 import matplotlib
@@ -42,6 +41,8 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
     orbits_for_taper_window_t1 = 5.
     freq_resolution =  0.1*LIGOfreq[0]
 
+    # this cannot be done since the input waveforms are still unevenly space
+    """
     dtime = TRIAL.T(1) - TRIAL.T(0)
     if(np.any(TRIAL.T()[1:] - TRIAL.T()[:-1] != dtime)):
         raise ValueError("Non uniform time in trial waveform")
@@ -49,7 +50,8 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
         raise ValueError("Non uniform time in reference waveform")
     if(np.any(REFERENCE.T() != TRIAL.T())):
         raise ValueError("Incompatible TRIAL and REFERENCE waveforms, times differ.")
-     
+    """
+
     ###
     # Fourier Transforms
     # h = (h+) - 1j*(hx)
@@ -76,14 +78,17 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
     window = WindowPlanckTaper(times, times[0],times[0]+time_for_five_orbits, times[-1]-100,times[-1])
     windowedMag = REFERENCE.Mag(0) * window
     REFERENCE.SetMag(0, windowedMag)
-    REF = ompsum.rect(REFERENCE.Mag(0), REFERENCE.Arg(0))
-    #REF = REFERENCE.Mag(0) * np.exp(1j*REFERENCE.Arg(0))
+    del times
 
     # same window as for REFERENCE waveform
+    inds = np.nonzero(np.abs(TRIAL.Arg(0)-TRIAL.Arg(0)[0]) > orbits_for_taper_window_t1 * 4.*math.pi)[0]
+    time_for_five_orbits = TRIAL.T(inds[0]) - TRIAL.T(0)
+    times = TRIAL.T()
+    #window = KechanWindow(times, 8, 0.001, 90, len(times))
+    window = WindowPlanckTaper(times, times[0],times[0]+time_for_five_orbits, times[-1]-100,times[-1])
     windowedMag = TRIAL.Mag(0) * window
     TRIAL.SetMag(0, windowedMag)
-    TRI = ompsum.rect(TRIAL.Mag(0), TRIAL.Arg(0))
-    #TRI = TRIAL.Mag(0) * np.exp(1j*TRIAL.Arg(0))
+    del times
     print "Done windowing..."
 
     """
@@ -104,44 +109,73 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
     plt.show()
     """
 
+    # sample frequently enough so that FFT capturs highest LIGO frequency
+    
+    #dtime = 1. # Ilana's choice
+    # use highest frequency as Nyquist frequency
+    # NB: this could be made mass dependent
+    dtime = 0.5 / max_freq / (Scale() * np.amax(masses))
+
+    # clip to common time interval
+    t1 = max(np.amin(REFERENCE.T()),np.amin(TRIAL.T()))
+    t2 = min(np.amax(REFERENCE.T()),np.amax(TRIAL.T()))
+    print "Times: ",t1,t2,dtime
+    print "Ref:" , np.amin(REFERENCE.T()), np.amax(REFERENCE.T())
+    print "Trial:" , np.amin(TRIAL.T()), np.amax(TRIAL.T())
+
     print "Beginning ffts..."
     # zero pad to power of two to make splitting into sections easier
+    # this does not work since we have onot yet interpolated
+    """
     if (len(TRI) != len(REF)):
         raise ValueError("Internal error: REF and TRI of different length: %d, %d" % \
                          (len(REF), len(TRI)))
+    """
     totalfftlen = 1
-    while (totalfftlen < len(REF)):
+    while (totalfftlen < np.ceil(t2-t1)/dtime):
         totalfftlen *= 2
+    times = t1+dtime*np.arange(totalfftlen)
+    """
     REF = np.append(REF, np.zeros(totalfftlen - len(REF), dtype=REF.dtype))
     TRI = np.append(TRI, np.zeros(totalfftlen - len(TRI), dtype=TRI.dtype))
+    """
 
     # do fft in chunks large enough to give desired frequency resolution
     # this should not make a difference as far as speed goes (or only as
     # 1+log(M)/log(N) for M chunks of size N) but for some reason it does
     # indeed matter
-    dt = (REFERENCE.T()[1] - REFERENCE.T()[0]) * np.amin(masses) * Scale()
-    min_duration = 2./freq_resolution
-    min_length = np.ceil(min_duration/dt)
-    if (min_length > len(REF)):
+    min_duration = 2./freq_resolution / (Scale() * np.amin(masses))
+    min_length = np.ceil(min_duration/dtime)
+    if (t2-t1 < min_duration):
         #raise ValueError("Timeseries is too short for desired frequency resolution of %g: %g" % \
-        #                 (freq_resolution, len(REF)*dt))
+        #                 (freq_resolution, len(REF)*dtime))
         print ("Timeseries is too short for desired frequency resolution of %g: %g" % \
-               (freq_resolution, len(REF)*dt))
-        min_length = len(REF)
+               (freq_resolution, (t2-t1)*Scale()*np.amin(masses)))
+        min_length = len(times)
     fftlen = 1
     while (fftlen < min_length):
         fftlen *= 2
-    if (len(REF) % fftlen != 0 or len(TRI) % fftlen != 0):
+    if (totalfftlen % fftlen != 0):
         raise ValueError("Length of FFT data is not divisible by fftlen: (%d,%d)" % \
-                         (len(REF), fftlen))
+                         (totalfftlen, fftlen))
 
     fREF = np.zeros(fftlen, dtype=np.complex128)
     fTRI = np.zeros(fftlen, dtype=np.complex128)
-    print "Using %d FFT chunks (speedup %g)" % \
-           (len(REF)/fftlen, 1.+np.log(len(REF)/fftlen)/np.log(len(REF)))
-    for i in range(0,len(REF),fftlen):
-        fREF += np.fft.fft(np.conj(REF[i:i+fftlen]))
-        fTRI += np.fft.fft(np.conj(TRI[i:i+fftlen]))
+    print "Using %d FFT chunks (speedup %g) of length %d (%g s)" % \
+           (totalfftlen/fftlen,
+            1.+np.log(totalfftlen/fftlen)/np.log(totalfftlen),
+            fftlen, fftlen*dtime*Scale()*np.amax(masses))
+    REFERENCE.SetupForInterpolation()
+    TRIAL.SetupForInterpolation()
+    for i in range(0,totalfftlen,fftlen):
+        wREF = REFERENCE.Interpolated(times[i:i+fftlen], extrap_to_zero=True)
+        REF = ompsum.rect(wREF.Mag(0), wREF.Arg(0))
+        wTRI = TRIAL.Interpolated(times[i:i+fftlen], extrap_to_zero=True)
+        TRI = ompsum.rect(wTRI.Mag(0), wTRI.Arg(0))
+        fREF += np.fft.fft(np.conj(REF))
+        fTRI += np.fft.fft(np.conj(TRI))
+    REFERENCE.FinishInterpolation()
+    TRIAL.FinishInterpolation()
     fcREF, fsREF = UnpackTwoFFT(fREF)
     fcTRI, fsTRI = UnpackTwoFFT(fTRI)
     print "done with fft"
@@ -426,64 +460,9 @@ for m in allmasses:
             indexmREFERENCE, timemREFERENCE, phasemREFERENCE, magmREFERENCE = FindMerger(REFERENCE)
             TRIAL.AddToTime(timemREFERENCE-timemTRIAL)
 
-            # sample frequently enough so that FFT capturs highest LIGO frequency
-            
-            #dtime = 1. # Ilana's choice
-            # use highest frequency as Nyquist frequency
-            # NB: this could be made mass dependent
-            dtime = 0.5 / max_freq / (Scale() * np.amax(masses))
-
-            # clip to common time interval
-            t1 = max(np.amin(REFERENCE.T()),np.amin(TRIAL.T()))
-            t2 = min(np.amax(REFERENCE.T()),np.amax(TRIAL.T()))
-            t = np.arange(t1,t2,dtime)
-
-            print "Begin interpolating..."
-            # this matches matlab's spline interpolation
-            useSpline = True
-            if (useSpline):
-                tck = scipy.interpolate.splrep(REFERENCE.T(), REFERENCE.Arg(0))
-                res=scipy.interpolate.splev(t, tck)
-                del tck
-                REFERENCE.SetArg(0, res)
-                del res
-                tck = scipy.interpolate.splrep(REFERENCE.T(), REFERENCE.Mag(0))
-                res=scipy.interpolate.splev(t, tck)
-                del tck
-                REFERENCE.SetMag(0, res)
-                del res
-                REFERENCE.SetT(t)
-                tck = scipy.interpolate.splrep(TRIAL.T(), TRIAL.Arg(0))
-                res=scipy.interpolate.splev(t, tck)
-                del tck
-                TRIAL.SetArg(0, res)
-                del res
-                tck = scipy.interpolate.splrep(TRIAL.T(), TRIAL.Mag(0))
-                res=scipy.interpolate.splev(t, tck)
-                del tck
-                TRIAL.SetMag(0, res)
-                del res
-                TRIAL.SetT(t)
-                #REFERENCE.Interpolate(t)
-                #TRIAL.Interpolate(t)
-            # this matches matlab's cubic or pchip interpolation
-            usePchip = False
-            if (usePchip):
-                intp = interpolate.PchipInterpolator(REFERENCE.T(), REFERENCE.Mag(0))
-                newmag = intp(t)
-                intp = interpolate.PchipInterpolator(REFERENCE.T(), REFERENCE.Arg(0))
-                newarg = intp(t)
-                REFERENCE.SetT(t)
-                REFERENCE.SetArg(0, newarg)
-                REFERENCE.SetMag(0, newmag)
-                intp = interpolate.PchipInterpolator(TRIAL.T(), TRIAL.Mag(0))
-                newmag = intp(t)
-                intp = interpolate.PchipInterpolator(TRIAL.T(), TRIAL.Arg(0))
-                newarg = intp(t)
-                TRIAL.SetT(t)
-                TRIAL.SetArg(0, newarg)
-                TRIAL.SetMag(0, newmag)
-            print "Done interpolating"
+            # we interpolate inside of workfun since we do the FFT in chunks
+            # and it seems to be faster to interpolate in the same chunks (it
+            # also saves on memory)
 
             # pass in copies since some of PyGW's routines modify their argument
             if (use_PyWaveform):
