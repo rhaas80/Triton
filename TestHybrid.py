@@ -290,7 +290,8 @@ masses = [ 1.1681854e+02, 1.0818126e+02,
 
 # generate waveforms long enough for lowest mass (so we generate them only once)
 minimummass = min(masses)
-v0 = (0.95*f0*Scale()*minimummass*math.pi)**(1./3.) #Start waves a bit sooner for windowing
+# division by 2 is to convert from GW wave frequency (f0) to orbital frequency
+v0 = (0.95*f0/2.*Scale()*minimummass*math.pi)**(1./3.) #Start waves a bit sooner for windowing
 
 #NR = PyGW.Waveform(Zwicky+"/home/kbarkett/Caltech/Scripts/NSNS_Tidal_Scripts/BBH/rhOverM_Extrapolated_N3.dat", 'MagArg')
 if (use_PyWaveform):
