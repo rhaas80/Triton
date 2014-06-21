@@ -344,7 +344,7 @@ PN.Interpolate(times)
 PN.SetArg(0,-PN.Arg(0))
 
 data = np.array((PN.T(), PN.Arg(0), PN.Mag(0))).transpose()
-np.savetxt("hPN_ArgMag_f%g_l2_m2.dat" % f0, data, header="t, Arg, Mag, v0 = %g" % v0)
+np.savetxt("hPN_ArgMag_f%g_M%g_l2_m2.dat" % (f0, minimummass), data, header="t, Arg, Mag, v0 = %g" % v0)
 
 """
 fn = "../IlanaWaveformScripts/Hybridization/hPN.dat"
@@ -368,7 +368,7 @@ max_freq = LIGOfreq[-1]
 results = []
 for itrial in range(len(OM)):
     omegatrial = OM[itrial]
-    fn = "hHybrid_%g_MagArg_l2_m2.dat" % omegatrial
+    fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegatrial, minimummass)
     if(os.access(fn, os.R_OK)):
         if (use_PyWaveform):
             orig_TRIAL = PyWaveform()
@@ -397,7 +397,7 @@ for itrial in range(len(OM)):
             TRIAL = PyGW.Waveform(orig_TRIAL)
 
         omegareference = OM[ireference]
-        fn = "hHybrid_%g_MagArg_l2_m2.dat" % omegareference
+        fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegareference, minimummass)
         if(os.access(fn, os.R_OK)):
             if (use_PyWaveform):
                 REFERENCE = PyWaveform()
