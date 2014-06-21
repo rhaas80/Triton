@@ -278,7 +278,7 @@ def MakeHybrid(PN, NR, omega, frac_omega):
 
     return HYBRID
 
-masses = [ 1.1681854e+02, 1.0818126e+02,
+allmasses = [ 1.1681854e+02, 1.0818126e+02,
 1.0018260e+02, 9.2775341e+01, 8.5915756e+01, 7.9563352e+01, 7.3680630e+01,
 6.8232862e+01, 6.3187889e+01, 5.8515928e+01, 5.4189402e+01, 5.0182768e+01,
 4.6472375e+01, 4.3036320e+01, 3.9854318e+01, 3.6907586e+01, 3.4178728e+01,
@@ -287,209 +287,211 @@ masses = [ 1.1681854e+02, 1.0818126e+02,
 1.4682456e+01, 1.3596871e+01, 1.2591551e+01, 1.1660562e+01, 1.0798408e+01,
 1.0000000e+01]
 
-
-# generate waveforms long enough for lowest mass (so we generate them only once)
-minimummass = min(masses)
-# division by 2 is to convert from GW wave frequency (f0) to orbital frequency
-v0 = (0.95*f0/2.*Scale()*minimummass*math.pi)**(1./3.) #Start waves a bit sooner for windowing
-
-#NR = PyGW.Waveform(Zwicky+"/home/kbarkett/Caltech/Scripts/NSNS_Tidal_Scripts/BBH/rhOverM_Extrapolated_N3.dat", 'MagArg')
-if (use_PyWaveform):
-    NR = PyWaveform()
-    NR.LoadFromFile("rhOverM_Extrapolated_N3.dat", usecols=(0,9,10))
-else:
-    NR = PyGW.Waveform("rhOverM_Extrapolated_N3.dat", 'MagArg')
-    NR = NR[4]
-NR.DropBefore(NR.T()[0]+200.) # chop of some junk radiation
-#NR = PyGW.Waveform(DataDir+"/Lev2/rh_CceR2090_l2_m2.dat", 'ReIm')
-#time_to_worldtube = 2090 / nsnsmass # assumes signal speed = 1
-#NR.DropBefore(NR.T()[0]+time_to_worldtube+200.) # chop of some junk radiation
-"""
-t0 = NR.T()[0]
-t1 = NR.T()[-1]
-numcells = np.floor(t1-t0)
-times = t0 + np.arange(numcells+1)
-NR.Interpolate(times)
-"""
-NR.SetArg(0,-NR.Arg(0))
-
-data = np.array((NR.T(), NR.Arg(0), NR.Mag(0))).transpose()
-np.savetxt("hNR_ArgMag_l2_m2.dat", data, header="t, Arg, Mag")
-
-"""
-fn = "../IlanaWaveformScripts/Hybridization/hNR.dat"
-data = np.loadtxt(fn)
-# NB: we cannot start from an empty one since Triton does not provide us
-# with a means of creating modes
-NR.SetT(data[:,0])
-NR.SetArg(0,data[:,1])
-NR.SetMag(0,data[:,2])
-"""
-
-TritonPN = PyGW.Waveform('TaylorT4',0,0.,0.,v0)
-#PN = PyGW.Waveform('TaylorT3',0,0.,0.,v0)
-#PN = PyGW.Waveform('TaylorT4Tidal',0,0.,0.,v0,0.07124843942665074,0.07124843942665074,0.16001855052369648,0.16001855052369648)
-if (use_PyWaveform):
-    PN = PyWaveform(TritonPN[4])
-else:
-    PN = PyGW.Waveform(TritonPN[4])
-del TritonPN
-"""
-t0 = PN.T()[0]
-t1 = PN.T()[-1]
-numcells = np.floor(t1-t0)
-times = t0 + np.arange(numcells+1)
-PN.Interpolate(times)
-"""
-PN.SetArg(0,-PN.Arg(0))
-
-data = np.array((PN.T(), PN.Arg(0), PN.Mag(0))).transpose()
-np.savetxt("hPN_ArgMag_f%g_M%g_l2_m2.dat" % (f0, minimummass), data, header="t, Arg, Mag, v0 = %g" % v0)
-
-"""
-fn = "../IlanaWaveformScripts/Hybridization/hPN.dat"
-data = np.loadtxt(fn)
-# NB: we cannot start from an empty one since Triton does not provide us
-# with a means of creating modes
-PN.SetT(data[:,0])
-PN.SetArg(0,data[:,1])
-PN.SetMag(0,data[:,2])
-"""
-
-PN.AddToTime(PN.T()[-1])
-PN.DropAfter(PN.T()[-1]-100.) # drop data very close to merger
-
-# Noise curve, using optimal aLIGO curve
-LIGO = np.loadtxt(NoiseDir+"/ZERO_DET_high_P.txt")
-LIGOfreq = LIGO[:,0]
-LIGOsig  = LIGO[:,1]
-max_freq = LIGOfreq[-1]
-
 results = []
-for itrial in range(len(OM)):
-    omegatrial = OM[itrial]
-    fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegatrial, minimummass)
-    if(os.access(fn, os.R_OK)):
-        if (use_PyWaveform):
-            orig_TRIAL = PyWaveform()
-            orig_TRIAL.LoadFromFile(fn)
-        else:
-            orig_TRIAL = PyGW.Waveform(fn, 'MagArg')
-    else:
-        if (use_PyWaveform):
-            orig_TRIAL = MakeHybrid(copy.deepcopy(PN), copy.deepcopy(NR), omegatrial, 0.1)
-        else:
-            orig_TRIAL = MakeHybrid(PyGW.Waveform(PN), PyGW.Waveform(NR), omegatrial, 0.1)
-        data = np.array((orig_TRIAL.T(), orig_TRIAL.Mag(0), orig_TRIAL.Arg(0))).transpose()
-        np.savetxt(fn, data, header="t, Mag, Arg")
-    #fn = "../IlanaWaveformScripts/Hybridization/hybrid_%.3f.dat" % omegatrial
-    #data = np.loadtxt(fn)
-    ## NB: we cannot start from an empty one since Triton does not provide us
-    ## with a means of creating modes
-    #orig_TRIAL.SetT(data[:,0])
-    #orig_TRIAL.SetArg(0,data[:,1])
-    #orig_TRIAL.SetMag(0,data[:,2])
-    for ireference in range(itrial+1):
-        # make a copy of TRIAL waveform since we modify it
-        if (use_PyWaveform):
-            TRIAL = copy.deepcopy(orig_TRIAL)
-        else:
-            TRIAL = PyGW.Waveform(orig_TRIAL)
+for m in allmasses:
+    masses = [m]
 
-        omegareference = OM[ireference]
-        fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegareference, minimummass)
+    # generate waveforms long enough for lowest mass (so we generate them only once)
+    minimummass = min(masses)
+    # division by 2 is to convert from GW wave frequency (f0) to orbital frequency
+    v0 = (0.95*f0/2.*Scale()*minimummass*math.pi)**(1./3.) #Start waves a bit sooner for windowing
+
+    #NR = PyGW.Waveform(Zwicky+"/home/kbarkett/Caltech/Scripts/NSNS_Tidal_Scripts/BBH/rhOverM_Extrapolated_N3.dat", 'MagArg')
+    if (use_PyWaveform):
+        NR = PyWaveform()
+        NR.LoadFromFile("rhOverM_Extrapolated_N3.dat", usecols=(0,9,10))
+    else:
+        NR = PyGW.Waveform("rhOverM_Extrapolated_N3.dat", 'MagArg')
+        NR = NR[4]
+    NR.DropBefore(NR.T()[0]+200.) # chop of some junk radiation
+    #NR = PyGW.Waveform(DataDir+"/Lev2/rh_CceR2090_l2_m2.dat", 'ReIm')
+    #time_to_worldtube = 2090 / nsnsmass # assumes signal speed = 1
+    #NR.DropBefore(NR.T()[0]+time_to_worldtube+200.) # chop of some junk radiation
+    """
+    t0 = NR.T()[0]
+    t1 = NR.T()[-1]
+    numcells = np.floor(t1-t0)
+    times = t0 + np.arange(numcells+1)
+    NR.Interpolate(times)
+    """
+    NR.SetArg(0,-NR.Arg(0))
+
+    data = np.array((NR.T(), NR.Arg(0), NR.Mag(0))).transpose()
+    np.savetxt("hNR_ArgMag_l2_m2.dat", data, header="t, Arg, Mag")
+
+    """
+    fn = "../IlanaWaveformScripts/Hybridization/hNR.dat"
+    data = np.loadtxt(fn)
+    # NB: we cannot start from an empty one since Triton does not provide us
+    # with a means of creating modes
+    NR.SetT(data[:,0])
+    NR.SetArg(0,data[:,1])
+    NR.SetMag(0,data[:,2])
+    """
+
+    TritonPN = PyGW.Waveform('TaylorT4',0,0.,0.,v0)
+    #PN = PyGW.Waveform('TaylorT3',0,0.,0.,v0)
+    #PN = PyGW.Waveform('TaylorT4Tidal',0,0.,0.,v0,0.07124843942665074,0.07124843942665074,0.16001855052369648,0.16001855052369648)
+    if (use_PyWaveform):
+        PN = PyWaveform(TritonPN[4])
+    else:
+        PN = PyGW.Waveform(TritonPN[4])
+    del TritonPN
+    """
+    t0 = PN.T()[0]
+    t1 = PN.T()[-1]
+    numcells = np.floor(t1-t0)
+    times = t0 + np.arange(numcells+1)
+    PN.Interpolate(times)
+    """
+    PN.SetArg(0,-PN.Arg(0))
+
+    data = np.array((PN.T(), PN.Arg(0), PN.Mag(0))).transpose()
+    np.savetxt("hPN_ArgMag_f%g_M%g_l2_m2.dat" % (f0, minimummass), data, header="t, Arg, Mag, v0 = %g" % v0)
+
+    """
+    fn = "../IlanaWaveformScripts/Hybridization/hPN.dat"
+    data = np.loadtxt(fn)
+    # NB: we cannot start from an empty one since Triton does not provide us
+    # with a means of creating modes
+    PN.SetT(data[:,0])
+    PN.SetArg(0,data[:,1])
+    PN.SetMag(0,data[:,2])
+    """
+
+    PN.AddToTime(PN.T()[-1])
+    PN.DropAfter(PN.T()[-1]-100.) # drop data very close to merger
+
+    # Noise curve, using optimal aLIGO curve
+    LIGO = np.loadtxt(NoiseDir+"/ZERO_DET_high_P.txt")
+    LIGOfreq = LIGO[:,0]
+    LIGOsig  = LIGO[:,1]
+    max_freq = LIGOfreq[-1]
+
+    for itrial in range(len(OM)):
+        omegatrial = OM[itrial]
+        fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegatrial, minimummass)
         if(os.access(fn, os.R_OK)):
             if (use_PyWaveform):
-                REFERENCE = PyWaveform()
-                REFERENCE.LoadFromFile(fn)
+                orig_TRIAL = PyWaveform()
+                orig_TRIAL.LoadFromFile(fn)
             else:
-                REFERENCE = PyGW.Waveform(fn, 'MagArg')
+                orig_TRIAL = PyGW.Waveform(fn, 'MagArg')
         else:
             if (use_PyWaveform):
-                REFERENCE = MakeHybrid(copy.deepcopy(PN), copy.deepcopy(NR), omegareference, 0.1)
+                orig_TRIAL = MakeHybrid(copy.deepcopy(PN), copy.deepcopy(NR), omegatrial, 0.1)
             else:
-                REFERENCE = MakeHybrid(PyGW.Waveform(PN), PyGW.Waveform(NR), omegareference, 0.1)
-            data = np.array((REFERENCE.T(), REFERENCE.Mag(0), REFERENCE.Arg(0))).transpose()
+                orig_TRIAL = MakeHybrid(PyGW.Waveform(PN), PyGW.Waveform(NR), omegatrial, 0.1)
+            data = np.array((orig_TRIAL.T(), orig_TRIAL.Mag(0), orig_TRIAL.Arg(0))).transpose()
             np.savetxt(fn, data, header="t, Mag, Arg")
-        #fn = "../IlanaWaveformScripts/Hybridization/hybrid_%.3f.dat" % omegareference
+        #fn = "../IlanaWaveformScripts/Hybridization/hybrid_%.3f.dat" % omegatrial
         #data = np.loadtxt(fn)
         ## NB: we cannot start from an empty one since Triton does not provide us
         ## with a means of creating modes
-        #REFERENCE.SetT(data[:,0])
-        #REFERENCE.SetArg(0,data[:,1])
-        #REFERENCE.SetMag(0,data[:,2])
+        #orig_TRIAL.SetT(data[:,0])
+        #orig_TRIAL.SetArg(0,data[:,1])
+        #orig_TRIAL.SetMag(0,data[:,2])
+        for ireference in range(itrial+1):
+            # make a copy of TRIAL waveform since we modify it
+            if (use_PyWaveform):
+                TRIAL = copy.deepcopy(orig_TRIAL)
+            else:
+                TRIAL = PyGW.Waveform(orig_TRIAL)
 
-        # align in time at merger
-        indexmTRIAL, timemTRIAL, phasemTRIAL, magmTRIAL = FindMerger(TRIAL)
-        indexmREFERENCE, timemREFERENCE, phasemREFERENCE, magmREFERENCE = FindMerger(REFERENCE)
-        TRIAL.AddToTime(timemREFERENCE-timemTRIAL)
+            omegareference = OM[ireference]
+            fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegareference, minimummass)
+            if(os.access(fn, os.R_OK)):
+                if (use_PyWaveform):
+                    REFERENCE = PyWaveform()
+                    REFERENCE.LoadFromFile(fn)
+                else:
+                    REFERENCE = PyGW.Waveform(fn, 'MagArg')
+            else:
+                if (use_PyWaveform):
+                    REFERENCE = MakeHybrid(copy.deepcopy(PN), copy.deepcopy(NR), omegareference, 0.1)
+                else:
+                    REFERENCE = MakeHybrid(PyGW.Waveform(PN), PyGW.Waveform(NR), omegareference, 0.1)
+                data = np.array((REFERENCE.T(), REFERENCE.Mag(0), REFERENCE.Arg(0))).transpose()
+                np.savetxt(fn, data, header="t, Mag, Arg")
+            #fn = "../IlanaWaveformScripts/Hybridization/hybrid_%.3f.dat" % omegareference
+            #data = np.loadtxt(fn)
+            ## NB: we cannot start from an empty one since Triton does not provide us
+            ## with a means of creating modes
+            #REFERENCE.SetT(data[:,0])
+            #REFERENCE.SetArg(0,data[:,1])
+            #REFERENCE.SetMag(0,data[:,2])
 
-        # sample frequently enough so that FFT capturs highest LIGO frequency
-        
-        #dtime = 1. # Ilana's choice
-        # use highest frequency as Nyquist frequency
-        # NB: this could be made mass dependent
-        dtime = 0.5 / max_freq / (Scale() * np.amax(masses))
+            # align in time at merger
+            indexmTRIAL, timemTRIAL, phasemTRIAL, magmTRIAL = FindMerger(TRIAL)
+            indexmREFERENCE, timemREFERENCE, phasemREFERENCE, magmREFERENCE = FindMerger(REFERENCE)
+            TRIAL.AddToTime(timemREFERENCE-timemTRIAL)
 
-        # clip to common time interval
-        t1 = max(np.amin(REFERENCE.T()),np.amin(TRIAL.T()))
-        t2 = min(np.amax(REFERENCE.T()),np.amax(TRIAL.T()))
-        t = np.arange(t1,t2,dtime)
+            # sample frequently enough so that FFT capturs highest LIGO frequency
+            
+            #dtime = 1. # Ilana's choice
+            # use highest frequency as Nyquist frequency
+            # NB: this could be made mass dependent
+            dtime = 0.5 / max_freq / (Scale() * np.amax(masses))
 
-        print "Begin interpolating..."
-        # this matches matlab's spline interpolation
-        useSpline = True
-        if (useSpline):
-            tck = scipy.interpolate.splrep(REFERENCE.T(), REFERENCE.Arg(0))
-            res=scipy.interpolate.splev(t, tck)
-            del tck
-            REFERENCE.SetArg(0, res)
-            del res
-            tck = scipy.interpolate.splrep(REFERENCE.T(), REFERENCE.Mag(0))
-            res=scipy.interpolate.splev(t, tck)
-            del tck
-            REFERENCE.SetMag(0, res)
-            del res
-            REFERENCE.SetT(t)
-            tck = scipy.interpolate.splrep(TRIAL.T(), TRIAL.Arg(0))
-            res=scipy.interpolate.splev(t, tck)
-            del tck
-            TRIAL.SetArg(0, res)
-            del res
-            tck = scipy.interpolate.splrep(TRIAL.T(), TRIAL.Mag(0))
-            res=scipy.interpolate.splev(t, tck)
-            del tck
-            TRIAL.SetMag(0, res)
-            del res
-            TRIAL.SetT(t)
-            #REFERENCE.Interpolate(t)
-            #TRIAL.Interpolate(t)
-        # this matches matlab's cubic or pchip interpolation
-        usePchip = False
-        if (usePchip):
-            intp = interpolate.PchipInterpolator(REFERENCE.T(), REFERENCE.Mag(0))
-            newmag = intp(t)
-            intp = interpolate.PchipInterpolator(REFERENCE.T(), REFERENCE.Arg(0))
-            newarg = intp(t)
-            REFERENCE.SetT(t)
-            REFERENCE.SetArg(0, newarg)
-            REFERENCE.SetMag(0, newmag)
-            intp = interpolate.PchipInterpolator(TRIAL.T(), TRIAL.Mag(0))
-            newmag = intp(t)
-            intp = interpolate.PchipInterpolator(TRIAL.T(), TRIAL.Arg(0))
-            newarg = intp(t)
-            TRIAL.SetT(t)
-            TRIAL.SetArg(0, newarg)
-            TRIAL.SetMag(0, newmag)
-        print "Done interpolating"
+            # clip to common time interval
+            t1 = max(np.amin(REFERENCE.T()),np.amin(TRIAL.T()))
+            t2 = min(np.amax(REFERENCE.T()),np.amax(TRIAL.T()))
+            t = np.arange(t1,t2,dtime)
 
-        # pass in copies since some of PyGW's routines modify their argument
-        if (use_PyWaveform):
-            results += workfun(copy.deepcopy(REFERENCE), copy.deepcopy(TRIAL),
-                               LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
-        else:
-            results += workfun(PyGW.Waveform(REFERENCE), PyGW.Waveform(TRIAL),
-                               LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
+            print "Begin interpolating..."
+            # this matches matlab's spline interpolation
+            useSpline = True
+            if (useSpline):
+                tck = scipy.interpolate.splrep(REFERENCE.T(), REFERENCE.Arg(0))
+                res=scipy.interpolate.splev(t, tck)
+                del tck
+                REFERENCE.SetArg(0, res)
+                del res
+                tck = scipy.interpolate.splrep(REFERENCE.T(), REFERENCE.Mag(0))
+                res=scipy.interpolate.splev(t, tck)
+                del tck
+                REFERENCE.SetMag(0, res)
+                del res
+                REFERENCE.SetT(t)
+                tck = scipy.interpolate.splrep(TRIAL.T(), TRIAL.Arg(0))
+                res=scipy.interpolate.splev(t, tck)
+                del tck
+                TRIAL.SetArg(0, res)
+                del res
+                tck = scipy.interpolate.splrep(TRIAL.T(), TRIAL.Mag(0))
+                res=scipy.interpolate.splev(t, tck)
+                del tck
+                TRIAL.SetMag(0, res)
+                del res
+                TRIAL.SetT(t)
+                #REFERENCE.Interpolate(t)
+                #TRIAL.Interpolate(t)
+            # this matches matlab's cubic or pchip interpolation
+            usePchip = False
+            if (usePchip):
+                intp = interpolate.PchipInterpolator(REFERENCE.T(), REFERENCE.Mag(0))
+                newmag = intp(t)
+                intp = interpolate.PchipInterpolator(REFERENCE.T(), REFERENCE.Arg(0))
+                newarg = intp(t)
+                REFERENCE.SetT(t)
+                REFERENCE.SetArg(0, newarg)
+                REFERENCE.SetMag(0, newmag)
+                intp = interpolate.PchipInterpolator(TRIAL.T(), TRIAL.Mag(0))
+                newmag = intp(t)
+                intp = interpolate.PchipInterpolator(TRIAL.T(), TRIAL.Arg(0))
+                newarg = intp(t)
+                TRIAL.SetT(t)
+                TRIAL.SetArg(0, newarg)
+                TRIAL.SetMag(0, newmag)
+            print "Done interpolating"
+
+            # pass in copies since some of PyGW's routines modify their argument
+            if (use_PyWaveform):
+                results += workfun(copy.deepcopy(REFERENCE), copy.deepcopy(TRIAL),
+                                   LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
+            else:
+                results += workfun(PyGW.Waveform(REFERENCE), PyGW.Waveform(TRIAL),
+                                   LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
 
 np.savetxt("dh_over_h_Ilana.dat", results,
            header = "totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error")
