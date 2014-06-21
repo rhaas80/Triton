@@ -1,3 +1,4 @@
+import scipy
 import numpy as np
 
 # I'm sure there is some special way to mark packages, I'll do so later.
@@ -13,6 +14,8 @@ class PyWaveform:
             self.T_ = np.copy(T)
             self.Mag_ = np.copy(Mag)
             self.Arg_ = np.copy(Arg)
+        self.useSpline = True
+        self.usePchip = False
     def LoadFromFile(self, fn, usecols = None):
         self.T_, self.Mag_, self.Arg_ = np.loadtxt(fn, unpack=True,
                                                    usecols=usecols)
@@ -53,3 +56,45 @@ class PyWaveform:
         self.T_ = self.T_[idx]
         self.Mag_ = self.Mag_[idx]
         self.Arg_ = self.Arg_[idx]
+    def SetupForInterpolation(self):
+        if (self.useSpline):
+            self.tckArg_ = scipy.interpolate.splrep(self.T(),self.Arg(0))
+            self.tckMag_ = scipy.interpolate.splrep(self.T(),self.Mag(0))
+        if (self.usePchip):
+            self.intpArg_ = scipy.interpolate.PchipInterpolator(self.T(), self.Arg(0))
+            self.intpMag_ = scipy.interpolate.PchipInterpolator(self.T(), self.Mag(0))
+    def Interpolated(self, times, extrap_to_zero=False):
+        retval = PyWaveform()
+        if(extrap_to_zero):
+            intp_idx = (times >= self.T(0)) * (times <= self.T(-1))
+            intp_times = times[intp_idx]
+        else:
+            intp_times = times
+        if(len(intp_times)):
+            if (self.useSpline):
+                newarg = scipy.interpolate.splev(intp_times, self.tckArg_)
+                newmag = scipy.interpolate.splev(intp_times, self.tckMag_)
+            if (self.usePchip):
+                newmag = self.intpMag_(intp_times)
+                newarg = self.intpArg_(intp_times)
+        retval.SetT(times)
+        if(extrap_to_zero and len(intp_times) < len(times)):
+            extrap_newarg = np.zeros(len(times))
+            if(len(intp_times)):
+                extrap_newarg[intp_idx] = newarg
+            retval.SetArg(0, extrap_newarg)
+            extrap_newmag = np.zeros(len(times))
+            if(len(intp_times)):
+                extrap_newmag[intp_idx] = newmag
+            retval.SetMag(0, extrap_newmag)
+        else:
+            retval.SetArg(0, newarg)
+            retval.SetMag(0, newmag)
+        return retval
+    def FinishInterpolation(self):
+        if (self.useSpline):
+            self.tckArg_ = None
+            self.tckMag_ = None
+        if (self.usePchip):
+            self.intpArg_ = None
+            self.intpMag_ = None
