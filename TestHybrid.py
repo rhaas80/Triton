@@ -72,8 +72,8 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
     inds = np.nonzero(np.abs(REFERENCE.Arg(0)-REFERENCE.Arg(0)[0]) > orbits_for_taper_window_t1 * 4.*math.pi)[0]
     time_for_five_orbits = REFERENCE.T(inds[0]) - REFERENCE.T(0)
     times = REFERENCE.T()
-    window = KechanWindow(times, 8, 0.001, 90, len(times))
-    #window = WindowPlanckTaper(times, times[0],times[0]+time_for_five_orbits, times[-1]-100,times[-1])
+    #window = KechanWindow(times, 8, 0.001, 90, len(times))
+    window = WindowPlanckTaper(times, times[0],times[0]+time_for_five_orbits, times[-1]-100,times[-1])
     windowedMag = REFERENCE.Mag(0) * window
     REFERENCE.SetMag(0, windowedMag)
     REF = ompsum.rect(REFERENCE.Mag(0), REFERENCE.Arg(0))
