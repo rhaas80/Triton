@@ -81,7 +81,11 @@ def HybridizationFunctional(p,
 
 def ComputeOmega(t, phase):
     omega=phase.copy()
-    omega[1:-1] = (phase[2:]-phase[0:-2])/(t[2:]-t[0:-2])
+    #omega[1:-1] = (phase[2:]-phase[0:-2])/(t[2:]-t[0:-2])
+    # second order accureate derivate for unequally spaced points
+    omega[1:-1] =  (t[1:-1]-t[2:  ])/((t[0:-2]-t[2:  ])*(t[0:-2]-t[1:-1]))*phase[0:-2] \
+                 - (t[0:-2]-2.*t[1:-1]+t[2:  ])/((t[1:-1]-t[2:  ])*(t[1:-1]-t[0:-2]))*phase[1:-1] \
+                 + (t[1:-1]-t[0:-2])/((t[2:  ]-t[1:-1])*(t[2:  ]-t[0:-2]))*phase[2:  ]
     # attach less accurate first/last point, to avoid pains
     # with different sized arrays
     #omega[0] = (phase[1]-phase[0])/(t[1]-t[0])
