@@ -9,7 +9,7 @@ ompsum = Extension('ompsum', sources=['ompsum.c'],
                    extra_compile_args = ['-fopenmp',
                                          '-Wall', '-std=gnu99', '-g',
                                          '-O3', '-march=native',
-                                         '-funroll-loops', '-mavx',
+                                         '-funroll-loops', #'-mavx',
                                          '-ftree-vectorizer-verbose=1'],
                    extra_link_args=['-lgomp'],)
 # run the setup
