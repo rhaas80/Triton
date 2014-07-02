@@ -38,6 +38,7 @@ f0 = 10. # approx 7.5e-4 for M=10M_sun (same as MacDonald et al CQG 28 134002)
 #OM = [0.032, 0.035 , 0.038, 0.042, 0.046, 0.049, 0.052, 0.058, 0.064]
 OM = [0.032, 0.035 ,0.038, 0.042, 0.046, 0.049, 0.052, 0.058, 0.064]
 nsnsmass = 2*1.643704202509977
+cache_waveforms = False # try caching PN and hybrids. Possibly dangerous.
 
 def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference,
             omegatrial):
@@ -418,7 +419,7 @@ for m in allmasses:
     for itrial in range(len(OM)): #(len(OM)-1,): #
         omegatrial = OM[itrial]
         fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegatrial, minimummass)
-        if(os.access(fn, os.R_OK)):
+        if(cache_waveforms and os.access(fn, os.R_OK)):
             if (use_PyWaveform):
                 orig_TRIAL = PyWaveform()
                 orig_TRIAL.LoadFromFile(fn)
@@ -447,7 +448,7 @@ for m in allmasses:
 
             omegareference = OM[ireference]
             fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegareference, minimummass)
-            if(os.access(fn, os.R_OK)):
+            if(cache_waveforms and os.access(fn, os.R_OK)):
                 if (use_PyWaveform):
                     REFERENCE = PyWaveform()
                     REFERENCE.LoadFromFile(fn)
