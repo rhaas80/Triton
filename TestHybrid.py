@@ -37,7 +37,8 @@ def lineno():
 f0 = 5. # approx 7.5e-4 for M=10M_sun (same as MacDonald et al CQG 28 134002)
 OM = [0.046, 0.049, 0.052, 0.058, 0.064]
 
-def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatrial):
+def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference,
+            omegatrial):
     orbits_for_taper_window_t1 = 5.
     freq_resolution =  0.1*LIGOfreq[0]
 
@@ -134,6 +135,7 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
     totalfftlen = 1
     while (totalfftlen < np.ceil(t2-t1)/dtime):
         totalfftlen *= 2
+    print "fftlen: ",totalfftlen
     times = t1+dtime*np.arange(totalfftlen)
     """
     REF = np.append(REF, np.zeros(totalfftlen - len(REF), dtype=REF.dtype))
@@ -293,6 +295,7 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference, omegatr
         print "overlap: ",overlap
         print "dh_h: ",dh_over_h
         results.append((totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error))
+        sys.stdout.flush()
     return results
 
 def MakeHybrid(PN, NR, omega, frac_omega):
@@ -383,15 +386,12 @@ for m in allmasses:
     data = np.array((PN.T(), PN.Arg(0), PN.Mag(0))).transpose()
     np.savetxt("hPN_ArgMag_f%g_M%g_l2_m2.dat" % (f0, minimummass), data, header="t, Arg, Mag, v0 = %g" % v0)
 
-    """
-    fn = "../IlanaWaveformScripts/Hybridization/hPN.dat"
-    data = np.loadtxt(fn)
-    # NB: we cannot start from an empty one since Triton does not provide us
-    # with a means of creating modes
-    PN.SetT(data[:,0])
-    PN.SetArg(0,data[:,1])
-    PN.SetMag(0,data[:,2])
-    """
+    ##fn = "../IlanaWaveformScripts/Hybridization/hPN.dat"
+    #fn = "/home/rhaas/tmp/LAL_TaylorT3_ArgMag_l2m2.dat"
+    #fn = "/mnt/data/rhaas/postdoc/papers/NrErrorAssessment/PnWaveforms/PN_22_TaylorT3_35_30_3228orb_20ppo_ArgMag.dat"
+    #fn = "/home/rhaas/tmp/LAL_TaylorT3Tidal_ArgMag_l2m2.dat"
+    #PN = PyWaveform()
+    #PN.LoadFromFile(fn, usecols=(0,2,1))
 
     PN.AddToTime(PN.T()[-1])
     PN.DropAfter(PN.T()[-1]-100.) # drop data very close to merger
@@ -402,7 +402,11 @@ for m in allmasses:
     LIGOsig  = LIGO[:,1]
     max_freq = LIGOfreq[-1]
 
-    for itrial in range(len(OM)):
+    #plt.plot(PN.T(), PN.Arg(0))
+    #plt.plot(NR.T(), NR.Arg(0))
+    #plt.show()
+
+    for itrial in range(len(OM)): #(len(OM)-1,): #
         omegatrial = OM[itrial]
         fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegatrial, minimummass)
         if(os.access(fn, os.R_OK)):
@@ -459,6 +463,11 @@ for m in allmasses:
             indexmTRIAL, timemTRIAL, phasemTRIAL, magmTRIAL = FindMerger(TRIAL)
             indexmREFERENCE, timemREFERENCE, phasemREFERENCE, magmREFERENCE = FindMerger(REFERENCE)
             TRIAL.AddToTime(timemREFERENCE-timemTRIAL)
+            #print "TRIAL.T(0)",TRIAL.T(0)
+            #print "TRIAL.T(indexmTRIAL)",TRIAL.T(indexmTRIAL)
+            #plt.plot(TRIAL.T(), (TRIAL.Arg(0)-TRIAL.Arg(0)[indexmTRIAL])/(4*np.pi))
+            #plt.show()
+            #sys.exit(0)
 
             # we interpolate inside of workfun since we do the FFT in chunks
             # and it seems to be faster to interpolate in the same chunks (it

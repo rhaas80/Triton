@@ -101,6 +101,9 @@ def Find_tmin_tmax(tNR, phiNR, omega_min, omega_max):
 ### find indices over which we'll be averaging
     idx_min=numpy.where(omegaNR>omega_min)[0][0]
     idx_max=numpy.where(omegaNR>omega_max)[0][0]
+    idx_min2=numpy.where(omegaNR<omega_min)[0][-1]
+    idx_max2=numpy.where(omegaNR<omega_max)[0][-1]
+    print "idx: ", idx_min, idx_max, idx_min2, idx_max2
     idx=range(idx_min,idx_max+1)
     tNR_min=tNR[idx_min]
     tNR_max=tNR[idx_max]
@@ -127,6 +130,14 @@ def LeastSquareFit(tNR, phiNR, AmpNR,
     omegaNR=ComputeOmega(tNR, phiNR)
     print "omNR0: ", omegaNR[tNR == tmin]
     print "omNR1: ", omegaNR[tNR == tmax]
+    #plt.plot(tPN, omegaPN)
+    #plt.plot(tNR[:indexmerger], omegaNR[:indexmerger])
+    #plt.plot(tNR-tNR[indexmerger], omegaNR)
+    #plt.plot((phiNR[:indexmerger]-phiNR[indexmerger])/4/3.1415927, omegaNR[:indexmerger])
+    #plt.hlines(y=(omega_min + omega_max)/2., xmin=(phiNR[0]-phiNR[indexmerger])/4/3.1415927, xmax=(phiNR[-1]-phiNR[indexmerger])/4/3.1415927)
+    #ylim = plt.ylim()
+    #plt.vlines([tmin,tmax], ylim[0], ylim[1])
+    #plt.show()
     
     idx_min=numpy.where(omegaPN>omega_min)[0][0]
     Dt0=tNR[idx[0]]-tPN[idx_min]
@@ -145,6 +156,7 @@ def LeastSquareFit(tNR, phiNR, AmpNR,
     tNR_cut=tNR[idx]
     phiNR_cut=phiNR[idx]
     AmpNR_cut=AmpNR[idx]
+    #plt.plot(phiNR/4/3.1415927, omegaNR)
     p_out,success=scipy.optimize.leastsq(HybridizationFunctional, p_in, args=(tNR_cut, phiNR_cut, AmpNR_cut, tPN, phiPN, AmpPN, matching_type))
     
     res_in=HybridizationFunctional(p_in,

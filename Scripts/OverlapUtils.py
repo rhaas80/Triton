@@ -489,6 +489,8 @@ def HybridizeHP(PN,NR,timem,omega_min,omega_max):
         #interp=scipy.interpolate.interp1d(tPN[tPN>t0-200.], dataPN[tPN>t0-200.],axis=0,kind='cubic')
         #blendPN=interp(tblend)
         blendPN = np.zeros((len(tblend),2))
+        print "t0: ", t0
+        print "tPN: ", tPN[0], tPN[-1]
         spl =  scipy.interpolate.splrep(tPN[tPN>t0-200.], dataPN[tPN>t0-200.,0])
         blendPN[:,0] = scipy.interpolate.splev(tblend, spl, ext=2)
         spl =  scipy.interpolate.splrep(tPN[tPN>t0-200.], dataPN[tPN>t0-200.,1])
