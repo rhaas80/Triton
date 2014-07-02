@@ -29,6 +29,7 @@ import inspect
 #pr.enable()
 
 use_PyWaveform = True
+cache_waveforms = False # try caching PN and hybrids? Possibly dangerous.
 
 def lineno():
     """Returns the current line number in our program."""
@@ -38,7 +39,6 @@ f0 = 10. # approx 7.5e-4 for M=10M_sun (same as MacDonald et al CQG 28 134002)
 #OM = [0.032, 0.035 , 0.038, 0.042, 0.046, 0.049, 0.052, 0.058, 0.064]
 OM = [0.032, 0.035 ,0.038, 0.042, 0.046, 0.049, 0.052, 0.058, 0.064]
 nsnsmass = 2*1.643704202509977
-cache_waveforms = False # try caching PN and hybrids. Possibly dangerous.
 
 def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference,
             omegatrial):
