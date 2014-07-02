@@ -34,8 +34,10 @@ def lineno():
     """Returns the current line number in our program."""
     return inspect.currentframe().f_back.f_lineno
 
-f0 = 5. # approx 7.5e-4 for M=10M_sun (same as MacDonald et al CQG 28 134002)
-OM = [0.046, 0.049, 0.052, 0.058, 0.064]
+f0 = 10. # approx 7.5e-4 for M=10M_sun (same as MacDonald et al CQG 28 134002)
+#OM = [0.032, 0.035 , 0.038, 0.042, 0.046, 0.049, 0.052, 0.058, 0.064]
+OM = [0.032, 0.035 ,0.038, 0.042, 0.046, 0.049, 0.052, 0.058, 0.064]
+nsnsmass = 2*1.643704202509977
 
 def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference,
             omegatrial):
@@ -315,14 +317,19 @@ def MakeHybrid(PN, NR, omega, frac_omega):
 
     return HYBRID
 
-allmasses = [ 1.1681854e+02, 1.0818126e+02,
-1.0018260e+02, 9.2775341e+01, 8.5915756e+01, 7.9563352e+01, 7.3680630e+01,
-6.8232862e+01, 6.3187889e+01, 5.8515928e+01, 5.4189402e+01, 5.0182768e+01,
-4.6472375e+01, 4.3036320e+01, 3.9854318e+01, 3.6907586e+01, 3.4178728e+01,
-3.1651635e+01, 2.9311390e+01, 2.7144176e+01, 2.5137201e+01, 2.3278617e+01,
-2.1557452e+01, 1.9963546e+01, 1.8487490e+01, 1.7120569e+01, 1.5854716e+01,
-1.4682456e+01, 1.3596871e+01, 1.2591551e+01, 1.1660562e+01, 1.0798408e+01,
-1.0000000e+01]
+allmasses = [
+#float(sys.argv[1])
+ nsnsmass,
+#    1.1681854e+02, 1.0818126e+02,
+#    1.0018260e+02, 9.2775341e+01, 8.5915756e+01, 7.9563352e+01, 7.3680630e+01,
+#    6.8232862e+01, 6.3187889e+01, 5.8515928e+01, 5.4189402e+01, 5.0182768e+01,
+#    4.6472375e+01, 4.3036320e+01, 3.9854318e+01, 3.6907586e+01, 3.4178728e+01,
+#    3.1651635e+01, 2.9311390e+01, 2.7144176e+01, 2.5137201e+01, 2.3278617e+01,
+#    2.1557452e+01, 1.9963546e+01, 1.8487490e+01, 1.7120569e+01, 1.5854716e+01,
+#    1.4682456e+01, 1.3596871e+01, 1.2591551e+01, 1.1660562e+01, 1.0798408e+01,
+#    1.0000000e+01
+]
+
 
 results = []
 for m in allmasses:
@@ -336,14 +343,17 @@ for m in allmasses:
     #NR = PyGW.Waveform(Zwicky+"/home/kbarkett/Caltech/Scripts/NSNS_Tidal_Scripts/BBH/rhOverM_Extrapolated_N3.dat", 'MagArg')
     if (use_PyWaveform):
         NR = PyWaveform()
-        NR.LoadFromFile("rhOverM_Extrapolated_N3.dat", usecols=(0,9,10))
+        #NR.LoadFromFile("rhOverM_Extrapolated_N3.dat", usecols=(0,9,10))
+        #NR.LoadFromFile("../IlanaWaveformScripts/Hybridization/hNR.dat", usecols=(0,2,1))
+        #NR.LoadFromFile("BBH_0066/Lev5/Y_l2_m2_ArgMag.dat", usecols=(0,2,1))
+        NR.LoadFromFile(DataDir+"/Lev2/rh_CceR2090_l2_m2_ArgMag.dat", usecols=(0,2,1))
     else:
         NR = PyGW.Waveform("rhOverM_Extrapolated_N3.dat", 'MagArg')
         NR = NR[4]
-    NR.DropBefore(NR.T()[0]+200.) # chop of some junk radiation
+    #NR.DropBefore(NR.T()[0]+1500.) # chop of some junk radiation
     #NR = PyGW.Waveform(DataDir+"/Lev2/rh_CceR2090_l2_m2.dat", 'ReIm')
-    #time_to_worldtube = 2090 / nsnsmass # assumes signal speed = 1
-    #NR.DropBefore(NR.T()[0]+time_to_worldtube+200.) # chop of some junk radiation
+    time_to_worldtube = 2090 / nsnsmass # assumes signal speed = 1
+    NR.DropBefore(NR.T()[0]+time_to_worldtube+200.) # chop of some junk radiation
     """
     t0 = NR.T()[0]
     t1 = NR.T()[-1]
@@ -351,7 +361,7 @@ for m in allmasses:
     times = t0 + np.arange(numcells+1)
     NR.Interpolate(times)
     """
-    NR.SetArg(0,-NR.Arg(0))
+    #NR.SetArg(0,-NR.Arg(0))
 
     data = np.array((NR.T(), NR.Arg(0), NR.Mag(0))).transpose()
     np.savetxt("hNR_ArgMag_l2_m2.dat", data, header="t, Arg, Mag")
@@ -366,9 +376,8 @@ for m in allmasses:
     NR.SetMag(0,data[:,2])
     """
 
-    TritonPN = PyGW.Waveform('TaylorT4',0,0.,0.,v0)
-    #PN = PyGW.Waveform('TaylorT3',0,0.,0.,v0)
-    #PN = PyGW.Waveform('TaylorT4Tidal',0,0.,0.,v0,0.07124843942665074,0.07124843942665074,0.16001855052369648,0.16001855052369648)
+    #TritonPN = PyGW.Waveform('TaylorT3',0,0.,0.,v0)
+    TritonPN = PyGW.Waveform('TaylorT4Tidal',0,0.,0.,v0,0.07124843942665074,0.07124843942665074,0.16001855052369648,0.16001855052369648)
     if (use_PyWaveform):
         PN = PyWaveform(TritonPN[4])
     else:
