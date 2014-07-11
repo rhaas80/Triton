@@ -791,6 +791,11 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 	    << "); // PN constructor" << endl;
   }
 
+  if( compact1==0 or compact2==0 ){
+    cerr << "Compactness parameter of an object is M/R= 0." << endl;
+    Throw1WithMessage("Bad compactness parameter");
+  }
+
   std::vector<double> v(0), Phi(0);
   if(Approximant.compare("TaylorT4Tidal")==0) {
     if(nsave==-1) {
@@ -798,6 +803,24 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 		   love1, love2, compact1, compact2);
     } else {
       TaylorT4Tidal(delta, chis, chia, v0, t, v, Phi,
+		   love1, love2, compact1, compact2,
+		   nsave, denseish);
+    }
+  } else if(Approximant.compare("TaylorT2Tidal")==0) {
+    if(nsave==-1) {
+      TaylorT2Tidal(delta, chis, chia, v0, t, v, Phi,
+		   love1, love2, compact1, compact2);
+    } else {
+      TaylorT2Tidal(delta, chis, chia, v0, t, v, Phi,
+		   love1, love2, compact1, compact2,
+		   nsave);
+    }
+  } else if(Approximant.compare("TaylorT1Tidal")==0) {
+    if(nsave==-1) {
+      TaylorT1Tidal(delta, chis, chia, v0, t, v, Phi,
+		   love1, love2, compact1, compact2);
+    } else {
+      TaylorT1Tidal(delta, chis, chia, v0, t, v, Phi,
 		   love1, love2, compact1, compact2,
 		   nsave, denseish);
     }

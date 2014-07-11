@@ -20,14 +20,14 @@ inline double CUB(const double x) { return x*x*x; }
 
 class T4Tidal {
 private:
-  const double nu,m1,m2;
-  const double dvdt2, dvdt3, dvdt4, dvdt5, dvdt6, dvdt6Ln4v, dvdt7;
-  const double dvdt10a, dvdt10b, dvdt12a, dvdt12b; //tidal terms
+  double nu,m1,m2;
+  double dvdt2, dvdt3, dvdt4, dvdt5, dvdt6, dvdt6Ln4v, dvdt7;
+  double dvdt10a, dvdt10b, dvdt12a, dvdt12b; //tidal terms
   
 public:
   T4Tidal(const double delta, const double chis, const double chia, const double love1, const double love2, const double compact1, const double compact2)
     : m1((delta+1.)/2.),
-      m2(1-m1),
+      m2(1.-m1),
       nu((1.0-delta*delta)/4.0),
       dvdt2(-2.2113095238095237 - 2.75*nu),
       dvdt3(0.08333333333333333*(150.79644737231007 - 113.*chis - 113.*chia*delta + 76.*chis*nu)),
@@ -38,11 +38,13 @@ public:
       dvdt7(9.185773074661964e-6*(-374493.5522711713 + 4.104076111684791e6*pow(chia,2) - 1.0117628e7*chis - 7.116984e6*pow(chia,2)*chis + 4.104076111684791e6*pow(chis,2) - 6.87204e6*pow(chis,3) - 1.0117628e7*chia*delta - 6.87204e6*pow(chia,3)*delta + 8.208152223369582e6*chia*chis*delta - 2.061612e7*chia*pow(chis,2)*delta - 1.3499136e7*pow(chia,2)*chis*pow(delta,2) + 2.028259341047374e7*nu - 1.6416304446739163e7*pow(chia,2)*nu + 2.1545842e7*chis*nu + 3.1783752e7*pow(chia,2)*chis*nu + 4.440744e6*pow(chis,3)*nu + 1.5224886e7*chia*delta*nu + 2.6925696e7*pow(chia,3)*delta*nu + 8.319024e6*chia*pow(chis,2)*delta*nu + 2.0695681428494263e7*pow(nu,2) - 2.1492918e7*chis*pow(nu,2) - 1.5408792e7*pow(chia,2)*chis*pow(nu,2) - 49896.*pow(chis,3)*pow(nu,2) - 5.235426e6*chia*delta*pow(nu,2) + 13608.*pow(chia,3)*delta*pow(nu,2) + 40824.*chia*pow(chis,2)*delta*pow(nu,2) + 1.03068e6*chis*pow(nu,3))),
 
       // Eq. (19) using (21)
-      dvdt10a(love1*pow((m1/compact1),5)*(48.-44.*m1)/m1),
-      dvdt10b(love2*pow((m2/compact2),5)*(48.-44.*m2)/m2),
+      //dvdt10a(love1*pow((m1/compact1),5)*(48.-44.*m1)/m1),
+      //dvdt10b(love2*pow((m2/compact2),5)*(48.-44.*m2)/m2),
       // Eq. (20)
-      dvdt12a(love1*pow((m1/compact1),5)*(4421.-12263.*m1+26502.*m1*m1-18508*m1*m1*m1)/(m1*84.)),
-      dvdt12b(love2*pow((m2/compact2),5)*(4421.-12263.*m2+26502.*m2*m2-18508*m2*m2*m2)/(m2*84.))
+      dvdt10a(love1*pow((m1/compact1),5)*(4.+44.*m2)/m1),
+      dvdt10b(love2*pow((m2/compact2),5)*(4.+44.*m1)/m2),
+      dvdt12a(love1*pow((m1/compact1),5)*(4421.-12263.*m1+26502.*m1*m1-18508.*m1*m1*m1)/(m1*84.)),
+      dvdt12b(love2*pow((m2/compact2),5)*(4421.-12263.*m2+26502.*m2*m2-18508.*m2*m2*m2)/(m2*84.))
   { }
   
   void operator() (const double t, const vector<double>& y, vector<double>& dydt) {
