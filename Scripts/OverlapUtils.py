@@ -62,11 +62,43 @@ def NoiseWeightedFreqInnerProduct(wave1, wave2, noisesqrt, deltaf):
 # TODO rewrite as C code
 def OverlapMaxing(dt, freqs, fwave_ref, fwave_tem_c, fwave_tem_s, noise_sqrt):
   
+  """
+  # formula from "overlap maximization" notes of Roland
+  deltaf = freqs[1]-freqs[0]
+  phases = (2*pi*dt)*freqs
+  exp_freqs = ompsum.expi(phases)
+  fwave_tem_c_shifted = fwave_tem_c*exp_freqs
+  fwave_tem_s_shifted = fwave_tem_s*exp_freqs
+
+  N = NoiseWeightedFreqInnerProduct(fwave_tem_c_shifted, fwave_ref, noise_sqrt, deltaf)
+  M = NoiseWeightedFreqInnerProduct(fwave_tem_s_shifted, fwave_ref, noise_sqrt, deltaf)
+  A = NoiseWeightedFreqInnerProduct(fwave_tem_c_shifted, fwave_tem_c_shifted, noise_sqrt, deltaf)
+  B = 2.*NoiseWeightedFreqInnerProduct(fwave_tem_c_shifted, fwave_tem_s_shifted, noise_sqrt, deltaf)
+  C = NoiseWeightedFreqInnerProduct(fwave_tem_s_shifted, fwave_tem_s_shifted, noise_sqrt, deltaf)
+  H = NoiseWeightedFreqInnerProduct(fwave_ref, fwave_ref, noise_sqrt, deltaf)
+
+  # the formula only gives tan(phi) and apparently I need the minus signs here
+  # TODO: add proper code to catch both cases
+  dphi = np.arctan2(-(N*B-2*M*A), -(M*B-2*N*C))
+
+  # Compute the full waveform which maximizes the overlap
+  h = fwave_tem_c_shifted*np.cos(dphi)+np.sin(dphi)*fwave_tem_s_shifted
+
+  dh = h - fwave_ref
+  retval = NoiseWeightedFreqInnerProduct(dh, dh, noise_sqrt, deltaf)
+  """
+
   retvalC = ompsum.OverlapMaxing(dt, freqs, fwave_ref, fwave_tem_c, fwave_tem_s)
+
+  
+  #no1 = NoiseWeightedFreqInnerProduct(fwave_ref, fwave_ref, noise_sqrt, deltaf)
+  #no2 = NoiseWeightedFreqInnerProduct(h, h, noise_sqrt, deltaf)
+  #print "olap: %g %g %g %g %g %g" % (dt, retval, retvalC, retvalC/retval, no1, no2)
+  return retvalC
 
   #print "olap: %g %g" % (dt, retvalC)
 
-  return retvalC
+  #return retvalC
 
   phases = (2*pi*dt)*freqs
   """
