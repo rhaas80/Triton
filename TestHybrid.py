@@ -273,6 +273,7 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference,
         inv_noisecurve = 1./np.interp(freqs[indexl:indexh],LIGOfreq,LIGOsig)
 
         fcTRInoise = fcTRI[indexl:indexh]*inv_noisecurve
+        fsTRInoise = fsTRI[indexl:indexh]*inv_noisecurve
 
         # Include noise into f-waveforms so speed up computations later
         fcREFnoise = fcREF[indexl:indexh]*inv_noisecurve
