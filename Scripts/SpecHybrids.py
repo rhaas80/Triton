@@ -1,5 +1,6 @@
 import scipy.optimize, scipy.interpolate
 import numpy
+import pylab
 from scipy.interpolate import InterpolatedUnivariateSpline
 import SpecError
 
@@ -235,19 +236,27 @@ def LeastSquareFit_FixedDeltaT(tNR, phiNR, AmpNR,
 ################################################################
 # Perform least squares fit, make nice plot, including
 # contor plot varying DeltaT, DeltaPhi.
-def PerformFitWithContourPlot(tNR, phiNR, tPN, phiPN, omega_min, omega_max):
+def PerformFitWithContourPlot(tNR, phiNR, AmpNR,
+                              tPN, phiPN, AmpPN,
+                              omega_min, omega_max,
+                              matching_type):
 
+    from matplotlib.pyplot import *
     # find index range, do some diagnostic output
-    idx, tNR_min, tNR_max=Find_tmin_tmax(tNR, phiNR, omega_min, omega_max)
+    # Finds the time and phase corresponding to the merger by locating the point
+    # of maximum amplitude.
+    indexmerger = AmpNR.argmax()
+    idx, tNR_min, tNR_max=Find_tmin_tmax(tNR[:indexmerger],phiNR[:indexmerger], omega_min, omega_max)
     print "len(idx)=",len(idx)
     phiNR_min=phiNR[idx[0]]
     phiNR_max=phiNR[idx[-1]]
     print
     print "Matching interval %g<omega<%g  -->  %g<t_NR<%g"%(omega_min, omega_max, tNR_min, tNR_max)
-    print "tmax-tmin=%g, N_GWcycles=%g, N_datapoints=%i"%(tNR_max-tNR_min,  (phiNR_max-phiNR_min)/2/pi,idx[-1]-idx[0]+1)  
+    print "tmax-tmin=%g, N_GWcycles=%g, N_datapoints=%i"%(tNR_max-tNR_min,  (phiNR_max-phiNR_min)/2/numpy.pi,idx[-1]-idx[0]+1)  
 
     # do work
-    p,res =LeastSquareFit(tNR, phiNR, tPN, phiPN, omega_min, omega_max)
+    p,res =LeastSquareFit(tNR, phiNR, AmpNR, tPN, phiPN, AmpPN,
+                          omega_min, omega_max, matching_type)
     print "Best fit DeltaT=%g, DeltaPhi=%g with rms-residual=%0.2g"%(p[0],p[1], res)
 
 #### NOTE TO HARALD
@@ -264,14 +273,28 @@ def PerformFitWithContourPlot(tNR, phiNR, tPN, phiPN, omega_min, omega_max):
     #### GENERATE PLOT #####
     tNR_cut=tNR[idx]
     phiNR_cut=phiNR[idx]
+    AmpNR_cut=AmpNR[idx]
     #res_in=HybridizationFunctional(p_in,tNR_cut,phiNR_cut,tPN,phiPN,ForLeastSq=0)
-    res_out=HybridizationFunctional(p,tNR[idx],phiNR[idx],tPN,phiPN,ForLeastSq=0)
+    res_out=HybridizationFunctional(p,tNR[idx],phiNR[idx],AmpNR[idx],tPN,phiPN,AmpPN,matching_type, ForLeastSq=0)
 
     #print "p_in=", p_in, "res_in=",res_in[0]
     
     ### Phase-difference for best-fit params
+    idx_plt = (tNR > tNR_min - 1000) * (tNR < tNR_max + 1000)
+    tNR_plt = tNR[idx_plt]
+    phiNR_plt = phiNR[idx_plt]
+
+    shiftedtPN = tPN + p[0]
+    shiftedphiPN = phiPN + p[1]
+    idx=(shiftedtPN-(tNR_plt[0]-100))*(shiftedtPN-(tNR_plt[-1]+100))<0
+    interp = InterpolatedUnivariateSpline(shiftedtPN[idx],
+                                          shiftedphiPN[idx], k=3)
+    intphiPN=interp(tNR_plt)
+    del interp
+
     subplot(2,1,1)
-    plot(tNR_cut, res_out[1])
+    plot(tNR_plt, intphiPN - phiNR_plt)
+    vlines((tNR_min, tNR_max), ylim()[0],ylim()[1])
     title("phase difference PN-NR, omega_match=[%g,%g]\nDeltaT=%g, DeltaPhi=%g, rms-difference=%0.2g"%(omega_min,omega_max,p[0], p[1], res_out[0]))
     
 ### generate contour plot around best-fit params
@@ -282,10 +305,10 @@ def PerformFitWithContourPlot(tNR, phiNR, tPN, phiPN, omega_min, omega_max):
     RES=T.copy()
     for Ti in range(0,deltat.shape[0]):
         for phii in range(0,deltaphi.shape[0]):
-            RES[Ti,phii],bla=HybridizationFunctional([p[0]+deltat[Ti],
+            RES[Ti,phii],bla,bla2=HybridizationFunctional([p[0]+deltat[Ti],
                                                       p[1]+deltaphi[phii]+deltat[Ti]*0.5*(omega_min+omega_max) 
                                                       ]
-                                                     ,tNR_cut,phiNR_cut,tPN,phiPN,ForLeastSq=0)
+                                                     ,tNR_cut,phiNR_cut,AmpNR_cut,tPN,phiPN,AmpPN, matching_type, ForLeastSq=0)
             
             
     # sanity check, because minimization will proceed even if 
