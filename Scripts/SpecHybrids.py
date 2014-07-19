@@ -175,8 +175,7 @@ def LeastSquareFit(tNR, phiNR, AmpNR,
                                     matching_type,
                                     ForLeastSq=0)
 
-    #print "p_in=", p_in, "res_in=",res_in[0]
-    #print "p_out=", p_out, "res_out=",res_out[0]
+    print "omega ",(omega_min+omega_max)/2, p_out[0], p_out[1], res_out[0]
     return p_out,res_out[0]
 
 ################################################################

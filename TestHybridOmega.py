@@ -417,6 +417,11 @@ for m in allmasses:
     #plt.plot(NR.T(), NR.Arg(0))
     #plt.show()
 
+    #MakeHybrid(copy.deepcopy(PN), copy.deepcopy(NR), 0.032, 0.10)
+    #for om in 0.042+(np.arange(-10,10,1)/10. * 0.003):
+    #    MakeHybrid(copy.deepcopy(PN), copy.deepcopy(NR), om, 0.1)
+    #sys.exit(0)
+
     for itrial in range(len(OM)): #(len(OM)-1,): #
         omegatrial = OM[itrial]
         fn = "hHybrid_%g_M%g_MagArg_l2_m2.dat" % (omegatrial, minimummass)

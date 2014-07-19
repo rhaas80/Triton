@@ -468,10 +468,16 @@ def HybridizeUsingAngularFrequencyInterval(PN,NR,omega,frac_omega):
 def HybridizeHP(PN,NR,timem,omega_min,omega_max):
     matching_type = 1 # (delta-phase)
 
+    #SpecHybrids.PerformFitWithContourPlot(NR.T(), NR.Arg(0), NR.Mag(0),
+    #                                 PN.T(), PN.Arg(0), PN.Mag(0),
+    #                                 omega_min, omega_max,
+    #                                 matching_type)
+    #sys.exit(0)
     p,res=SpecHybrids.LeastSquareFit(NR.T(), NR.Arg(0), NR.Mag(0),
                                      PN.T(), PN.Arg(0), PN.Mag(0),
                                      omega_min, omega_max,
                                      matching_type)
+    sys.exit(0)
     idx, tNR_min, tNR_max=SpecHybrids.Find_tmin_tmax(NR.T(), NR.Arg(0), omega_min, omega_max)
     
 
