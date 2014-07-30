@@ -298,7 +298,7 @@ def workfun(REFERENCE, TRIAL, LIGOfreq, LIGOsig, masses, omegareference,
         print "mass: ",totalmass
         print "overlap: ",overlap
         print "dh_h: ",dh_over_h
-        results.append((totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error))
+        results.append((totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error, dtshift, dphishift))
         sys.stdout.flush()
     return results
 
@@ -492,5 +492,5 @@ for m in allmasses:
                 results += workfun(PyGW.Waveform(REFERENCE), PyGW.Waveform(TRIAL),
                                    LIGOfreq, LIGOsig, masses , omegareference, omegatrial)
 
-np.savetxt("dh_over_h_Ilana.dat", results,
-           header = "totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error")
+np.savetxt("dh_over_h_R220.dat", results,
+           header = "totalmass, omegareference, omegatrial, overlap, dh_over_h, rel_error, dtshift, dphishift")
