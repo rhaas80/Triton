@@ -806,6 +806,15 @@ WaveformObjects::Waveform::Waveform(const std::string& Approximant, const double
 		   love1, love2, compact1, compact2,
 		   nsave, denseish);
     }
+  } else if(Approximant.compare("TaylorT3Tidal")==0) {
+    if(nsave==-1) {
+      TaylorT3Tidal(delta, chis, chia, v0, t, v, Phi,
+                   love1, love2, compact1, compact2);
+    } else {
+      TaylorT3Tidal(delta, chis, chia, v0, t, v, Phi,
+                   love1, love2, compact1, compact2,
+                   nsave);
+    }
   } else if(Approximant.compare("TaylorT2Tidal")==0) {
     if(nsave==-1) {
       TaylorT2Tidal(delta, chis, chia, v0, t, v, Phi,
